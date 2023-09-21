@@ -57,29 +57,37 @@
 	  }
 	  
 	  #slideshow-container {
-		position: relative;
-		height: 500px;
-	  }	
+		  position: relative;
+		  height: 500px;
+		  display: flex;
+		  align-items: center;
+		  justify-content: center;
+		}
 
 	  #slideshow-container img {
-		position: absolute;
-		top: 0;
-		left: 475px;
-		width: 50%;
-		height: 90%;
-		opacity: 0;
-	  }
+		  max-height: 100%;
+		  max-width: 100%;
+		  opacity: 0;
+		  transition: opacity 0.5s;
+		  position: absolute; 
+		}
 
-	  /* Separate the champion selector and slideshow with a line */
 	  .separator {
 		border-top: 2px solid #000;
 		margin-top: 20px;
 	  }
 
-	  /* Give the bottom part a black background */
 	  #bottom-section {
 		background-color: #000;
 		padding: 20px;
+	  }
+	  
+	  #bottom-section-container {
+	  display: absolute;
+	  justify-content: center;
+	  align-items: center;
+	  height: 100vh; /* Set the container to full viewport height */
+	  margin-bottom: 20px; /* Add margin to push it up from the bottom */
 	  }
 
     </style>
@@ -112,18 +120,20 @@
       </div>
     </div>
 	<div class="separator"></div>
-	<div id="bottom-section">
-	<div id="slideshow-text">
-	  <p id="skin-name">New skins are available:</p>
-	<div id="slideshow-container">
-	  <img src="Skins/Demon Hunter Ibuki.png" alt="Demon Hunter Ibuki">
-	  <img src="Skins/Spider Scorpion.png" alt="Spider Scorpion">
-	  <img src="Skins/Spring Spirit Jun.png" alt="Spring Spirit Jun">
-	  <img src="Skins/Rockstar Birdie.png" alt="Rockstar Birdie">
-	  <img src="Skins/Demon Lord Kotal Kahn.png" alt="Demon Lord Kotal Kahn">
-	</div>
-	</div>
-	</div>
+	<div id="bottom-section-container">
+  <div id="bottom-section">
+    <div id="slideshow-text">
+      <p id="skin-name">New skins are available:</p>
+      <div id="slideshow-container">
+        <img src="Skins/Demon Hunter Ibuki.png" alt="Demon Hunter Ibuki">
+        <img src="Skins/Spider Scorpion.png" alt="Spider Scorpion">
+        <img src="Skins/Spring Spirit Jun.png" alt="Spring Spirit Jun">
+        <img src="Skins/Rockstar Birdie.png" alt="Rockstar Birdie">
+        <img src="Skins/Demon Lord Kotal Kahn.png" alt="Demon Lord Kotal Kahn">
+      </div>
+    </div>
+  </div>
+</div>
 	<script>
 	  const originalOrder = document.querySelector('#champion-selector').innerHTML;
 	  let isSorted = false;
