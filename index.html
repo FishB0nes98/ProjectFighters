@@ -1,221 +1,198 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="UTF-8">
     <title>Champion Selector</title>
     <style>
-      body {
-        margin: 0;
-        padding: 0;
-        background-color: #333333;
-        color: white;
-        font-family: Arial, sans-serif;
-      }
-      h1 {
-        text-align: center;
-        font-size: 36px;
-        margin-top: 20px;
-      }
-      #champion-selector-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-      #champion-selector {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        align-items: center;
-        background-color: #FFFFFF;
-        padding: 10px;
-        max-width: 800px;
-        margin: 0 auto;
-      }
-      .champion-image {
-        margin: 5px;
-        border: 2px solid #333;
-        cursor: pointer;
-        transition: transform 0.2s;
-        flex: 1 1 150px;
-        max-width: 100px;
-        max-height: 100px;
-        position: relative;
-      }
-      .gray {
-        filter: grayscale(100%);
-      }
-      .champion-image:hover {
-        transform: scale(1.15);
-      }
-	  
-	  #slideshow-text {
-		text-align: center;
-		font-size: 50px;
-		margin-top: 0px;
-		color: gold;
-		margin-bottom: 0px;
-	  }
-	  
-	  #slideshow-container {
-		  position: relative;
-		  height: 500px;
-		  display: flex;
-		  align-items: center;
-		  justify-content: center;
-		}
-
-	  #slideshow-container img {
-		  max-height: 100%;
-		  max-width: 100%;
-		  opacity: 0;
-		  transition: opacity 0.5s;
-		  position: absolute; 
-		}
-
-	  .separator {
-		border-top: 2px solid #000;
-		margin-top: 20px;
-	  }
-
-	  #bottom-section {
-		background-color: #000;
-		padding: 20px;
-	  }
-	  
-	  #bottom-section-container {
-	  display: absolute;
-	  justify-content: center;
-	  align-items: center;
-	  height: 100vh; /* Set the container to full viewport height */
-	  margin-bottom: 20px; /* Add margin to push it up from the bottom */
-	  }
-
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #333333;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+            font-size: 36px;
+            margin-top: 20px;
+        }
+        #champion-selector-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #champion-selector {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: center;
+            background-color: #FFFFFF;
+            padding: 10px;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .champion-image {
+            margin: 5px;
+            border: 2px solid #333;
+            cursor: pointer;
+            transition: transform 0.2s;
+            flex: 1 1 150px;
+            max-width: 100px;
+            max-height: 100px;
+            position: relative;
+        }
+        .champion-image:hover {
+            transform: scale(1.15);
+        }
+        .selected {
+            border-color: gold;
+        }
+        .gray {
+            filter: grayscale(100%);
+        }
+        #filter-container, #search-container {
+            margin: 20px;
+            text-align: center;
+        }
+        #search-container input {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+            border-radius: 5px;
+            border: none;
+        }
+        #menu {
+            background-color: #444;
+            overflow: hidden;
+        }
+        #menu a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+        #menu a:hover {
+            background-color: #111;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #333;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            color: white;
+            text-align: left;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
-	
-  </head>
-  <body>
-    <button id="sort-button" onclick="toggleSort()">Alphabetical Order</button>
+</head>
+<body>
+    <div id="menu">
+        <a href="index.html">Home</a>
+        <a href="event.html">Event</a>
+		<a href="Team Builder.html">Team Builder</a>
+		<a href="skins.html">Skins</a>
+    </div>
     <h1>Champion Selector</h1>
     <div id="champion-selector-container">
-      <div id="champion-selector">
-        <a href="Julia Page.html"><img src="Icons/Julia.png" alt="Julia" width="100" height="100" class="champion-image"></a>
-        <a href="Birdie Page.html"><img src="Icons/birdie.png" alt="Birdie" width="100" height="100" class="champion-image"></a>
-        <a href="Erronblack Page.html"><img src="Icons/erronblack.png" alt="Erron Black" width="100" height="100" class="champion-image"></a>
-        <a href="ChamCham Page.html"><img src="Icons/chamcham.png" alt="Cham Cham" width="100" height="100" class="champion-image"></a>
-        <a href="Morrigan Page.html"><img src="Icons/morrigan.png" alt="Morrigan" width="100" height="100" class="champion-image"></a>
-        <a href="Jun Page.html"><img src="Icons/Jun.png" alt="Jun" width="100" height="100" class="champion-image"></a>
-        <a href="Reptile Page.html"><img src="Icons/Reptile.png" alt="Reptile" width="100" height="100" class="champion-image"></a>
-        <a href="Akuma Page.html"><img src="Icons/Akuma.png" alt="Akuma" width="100" height="100" class="champion-image"></a>
-        <a href="Elphelt Page.html"><img src="Icons/Elphelt.png" alt="Elphelt" width="100" height="100" class="champion-image"></a>
-        <a href="Kotal Kahn Page.html"><img src="Icons/Kotalkahn.png" alt="Kotal Kahn" width="100" height="100" class="champion-image"></a>
-        <a href="Scorpion Page.html"><img src="Icons/Scorpion.png" alt="Scorpion" width="100" height="100" class="champion-image"></a>
-        <a href="Peacock Page.html"><img src="Icons/Peacock.png" alt="Peacock" width="100" height="100" class="champion-image"></a>
-        <a href="Angel Page.html"><img src="Icons/Angel.png" alt="Angel" width="100" height="100" class="champion-image"></a>
-        <a href="Astaroth Page.html"><img src="Icons/Astaroth.png" alt="Asteroth" width="100" height="100" class="champion-image"></a>
-        <a href="Ibuki Page.html"><img src="Icons/Ibuki.png" alt="Ibuki" width="100" height="100" class="champion-image"></a>
-		<a href="R.Mika Page.html"><img src="Icons/RMika.png" alt="R.Mika" width="100" height="100" class="champion-image"></a>
-        <img src="Icons/Raiden.png" alt="Raiden" width="100" height="100" onclick="downloadChampionBio('Raiden.docx')" class="champion-image gray">
-        <img src="Icons/Yugo.png" alt="Yugo" width="100" height="100" onclick="downloadChampionBio('Yugo.docx')" class="champion-image gray">
-        <img src="Icons/Talim.png" alt="Talim" width="100" height="100" onclick="downloadChampionBio('Talim.docx')" class="champion-image gray">
-        <img src="Icons/Noel.png" alt="Noel" width="100" height="100" onclick="downloadChampionBio('Noel.docx')" class="champion-image gray">
-      </div>
+        <div id="search-container">
+            <input type="text" id="search-bar" placeholder="Search for a champion..." onkeyup="searchChampion()">
+        </div>
+        <div id="champion-selector">
+            <a href="Julia Page.html"><img src="Icons/Julia.png" alt="Julia" class="champion-image" onclick="showModal('Julia')"></a>
+            <a href="Birdie Page.html"><img src="Icons/birdie.png" alt="Birdie" class="champion-image" onclick="showModal('Birdie')"></a>
+            <a href="Erronblack Page.html"><img src="Icons/erronblack.png" alt="Erron Black" class="champion-image" onclick="showModal('Erron Black')"></a>
+            <a href="ChamCham Page.html"><img src="Icons/chamcham.png" alt="Cham Cham" class="champion-image" onclick="showModal('Cham Cham')"></a>
+            <a href="Morrigan Page.html"><img src="Icons/morrigan.png" alt="Morrigan" class="champion-image" onclick="showModal('Morrigan')"></a>
+            <a href="Jun Page.html"><img src="Icons/Jun.png" alt="Jun" class="champion-image" onclick="showModal('Jun')"></a>
+            <a href="Reptile Page.html"><img src="Icons/Reptile.png" alt="Reptile" class="champion-image" onclick="showModal('Reptile')"></a>
+            <a href="Akuma Page.html"><img src="Icons/Akuma.png" alt="Akuma" class="champion-image" onclick="showModal('Akuma')"></a>
+            <a href="Elphelt Page.html"><img src="Icons/Elphelt.png" alt="Elphelt" class="champion-image" onclick="showModal('Elphelt')"></a>
+            <a href="Kotal Kahn Page.html"><img src="Icons/Kotalkahn.png" alt="Kotal Kahn" class="champion-image" onclick="showModal('Kotal Kahn')"></a>
+            <a href="Scorpion Page.html"><img src="Icons/Scorpion.png" alt="Scorpion" class="champion-image" onclick="showModal('Scorpion')"></a>
+            <a href="Peacock Page.html"><img src="Icons/Peacock.png" alt="Peacock" class="champion-image" onclick="showModal('Peacock')"></a>
+            <a href="Angel Page.html"><img src="Icons/Angel.png" alt="Angel" class="champion-image" onclick="showModal('Angel')"></a>
+            <a href="Astaroth Page.html"><img src="Icons/Astaroth.png" alt="Astaroth" class="champion-image" onclick="showModal('Astaroth')"></a>
+            <a href="Ibuki Page.html"><img src="Icons/Ibuki.png" alt="Ibuki" class="champion-image" onclick="showModal('Ibuki')"></a>
+            <a href="R.Mika Page.html"><img src="Icons/RMika.png" alt="R.Mika" class="champion-image" onclick="showModal('R.Mika')"></a>
+            <a href="Raiden Page.html"><img src="Icons/Raiden.png" alt="Raiden" class="champion-image" onclick="showModal('Raiden')"></a>
+            <a href="Yugo Page.html"><img src="Icons/Yugo.png" alt="Yugo" class="champion-image" onclick="showModal('Yugo')"></a>
+            <img src="Icons/Talim.png" alt="Talim" onclick="downloadChampionBio('Talim.docx')" class="champion-image gray">
+            <img src="Icons/Noel.png" alt="Noel" onclick="downloadChampionBio('Noel.docx')" class="champion-image gray">
+        </div>
     </div>
-	<div class="separator"></div>
-	<div id="bottom-section-container">
-  <div id="bottom-section">
-    <div id="slideshow-text">
-      <p id="skin-name">New skins are available:</p>
-      <div id="slideshow-container">
-        <img src="Skins/River Spirit Julia.png" alt="River Spirit Julia">
-        <img src="Skins/Red Stone Ibuki.png" alt="RedStone Ibuki">
-        <img src="Skins/Spring Spirit Jun.png" alt="Spring Spirit Jun">
-        <img src="Skins/Blood Predator Reptile.png" alt="Blood Predator Reptile">
-        <img src="Skins/Spider Scorpion.png" alt="Spider Scorpion">
-      </div>
+
+    <div id="champion-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="champion-name"></h2>
+            <p id="champion-details"></p>
+        </div>
     </div>
-  </div>
-</div>
-	<script>
-	  const originalOrder = document.querySelector('#champion-selector').innerHTML;
-	  let isSorted = false;
 
-	  function toggleSort() {
-		if (isSorted) {
-		  releaseChampions();
-		  isSorted = false;
-		  document.querySelector('#sort-button').innerHTML = 'Alphabetical Order';
-		} else {
-		  sortChampions();
-		  isSorted = true;
-		  document.querySelector('#sort-button').innerHTML = 'Release Order';
-		}
-	  }
+    <script>
+        const originalOrder = document.querySelector('#champion-selector').innerHTML;
 
-	  function downloadChampionBio(fileName) {
-		if (fileName !== undefined) {
-		  const downloadLink = document.createElement("a");
-		  downloadLink.href = fileName;
-		  downloadLink.download = fileName;
-		  downloadLink.click();
-		} else {
-		  alert('Champion bio not found!');
-		}
-	  }
+        function downloadChampionBio(fileName) {
+            if (fileName !== undefined) {
+                const downloadLink = document.createElement("a");
+                downloadLink.href = fileName;
+                downloadLink.download = fileName;
+                downloadLink.click();
+            } else {
+                alert('Champion bio not found!');
+            }
+        }
 
-	  function sortChampions() {
-		const championSelector = document.querySelector('#champion-selector');
-		const championImages = Array.from(championSelector.querySelectorAll('.champion-image'));
-		championImages.sort((a, b) => a.alt.localeCompare(b.alt));
-		championSelector.innerHTML = '';
-		championImages.forEach((image) => championSelector.appendChild(image));
-	  }
+        function showModal(championName) {
+            document.getElementById("champion-name").innerText = championName;
+            document.getElementById("champion-details").innerText = `Details about ${championName} will go here.`;
+            document.getElementById("champion-modal").style.display = "block";
+        }
 
-	  function releaseChampions() {
-		document.querySelector('#champion-selector').innerHTML = originalOrder;
-	  }
+        function closeModal() {
+            document.getElementById("champion-modal").style.display = "none";
+        }
 
-	  function playSound(soundfile) {
-		var audio = new Audio(soundfile);
-		audio.play();
-	  }
-
-	  const slideshowImages = document.querySelectorAll('#slideshow-container img');
-	  let currentImageIndex = 0;
-	  const skinNameElement = document.getElementById('skin-name');
-	  const skinNames = ["RedStone Ibuki", "Spring Spirit Jun", "Blood Predator Reptile", "Spider Scorpion", "River Spirit Julia"];
-
-	  function showNextImage() {
-		// Hide the current image
-		slideshowImages[currentImageIndex].style.opacity = 0;
-
-		// Update the text with the name of the current skin
-		skinNameElement.textContent = skinNames[currentImageIndex];
-
-
-		// Move to the next image
-		currentImageIndex = (currentImageIndex + 1) % slideshowImages.length;
-
-		// Show the next image
-		let opacity = 0;
-		const intervalId = setInterval(() => {
-		  opacity += 0.1;
-		  slideshowImages[currentImageIndex].style.opacity = opacity;
-		  if (opacity >= 1) {
-			clearInterval(intervalId);
-		  }
-		}, 50);
-	  }
-
-	  // Hide all images initially
-	  for (let i = 0; i < slideshowImages.length; i++) {
-		slideshowImages[i].style.opacity = 0;
-	  }
-
-	  // Show the first image initially
-	  slideshowImages[currentImageIndex].style.opacity = 1;
-
-	  // Set up the slideshow to advance every 5 seconds
-	  setInterval(showNextImage, 5000);
-	</script>
-  </body>
+        function searchChampion() {
+            const input = document.getElementById('search-bar').value.toLowerCase();
+            const images = document.getElementsByClassName('champion-image');
+            for (let i = 0; i < images.length; i++) {
+                const altText = images[i].alt.toLowerCase();
+                if (altText.includes(input)) {
+                    images[i].style.display = '';
+                } else {
+                    images[i].style.display = 'none';
+                }
+            }
+        }
+    </script>
+</body>
 </html>

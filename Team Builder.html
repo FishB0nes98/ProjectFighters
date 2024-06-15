@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Team Builder</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #222;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            text-align: center;
+            font-size: 36px;
+            margin-top: 20px;
+        }
+        #team-builder-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1500px;
+            margin-top: 20px;
+        }
+        .team-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #333;
+            padding: 40px;
+            border-radius: 10px;
+            width: 40%;
+        }
+        .champion-pool {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            background-color: #333;
+            padding: 10px;
+            max-width: 1000px;
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+        .champion-image {
+            margin: 5px;
+            border: 2px solid #444;
+            cursor: pointer;
+            transition: transform 0.2s;
+            flex: 1 1 100px;
+            max-width: 100px;
+            max-height: 100px;
+            position: relative;
+        }
+        .champion-image:hover {
+            transform: scale(1.15);
+        }
+        .selected {
+            border-color: green;
+        }
+        .banned {
+            border-color: red;
+        }
+        #menu {
+            background-color: #444;
+            overflow: hidden;
+            width: 100%;
+        }
+        #menu a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+        #menu a:hover {
+            background-color: #111;
+        }
+        .team, .ban {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .team .champion-slot, .ban .champion-slot {
+            width: 100px;
+            height: 100px;
+            margin: 0 10px;
+            border: 2px dashed #555;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+        .ban .champion-slot {
+            width: 50px;
+            height: 50px;
+        }
+        .team .champion-slot.selected, .ban .champion-slot.banned {
+            border-color: transparent;
+        }
+        .team .champion-slot img, .ban .champion-slot img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .ban .champion-slot img {
+            max-width: 50px;
+            max-height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div id="menu">
+        <a href="index.html">Home</a>
+        <a href="event.html">Event</a>
+        <a href="team builder.html">Team Builder</a>
+		<a href="skins.html">Skins</a>
+    </div>
+    <h1>Team Builder</h1>
+    <div id="team-builder-container">
+        <div class="team-container" id="my-team-container">
+            <h2>My Team</h2>
+            <div id="my-bans" class="ban">
+                <div class="champion-slot" onclick="banChampion('my', 0)"></div>
+                <div class="champion-slot" onclick="banChampion('my', 1)"></div>
+                <div class="champion-slot" onclick="banChampion('my', 2)"></div>
+            </div>
+            <div id="my-team" class="team">
+                <div class="champion-slot" onclick="selectForTeam('my', 0)"></div>
+                <div class="champion-slot" onclick="selectForTeam('my', 1)"></div>
+                <div class="champion-slot" onclick="selectForTeam('my', 2)"></div>
+                <div class="champion-slot" onclick="selectForTeam('my', 3)"></div>
+                <div class="champion-slot" onclick="selectForTeam('my', 4)"></div>
+            </div>
+        </div>
+        <div class="team-container" id="enemy-team-container">
+            <h2>Enemy Team</h2>
+            <div id="enemy-bans" class="ban">
+                <div class="champion-slot" onclick="banChampion('enemy', 0)"></div>
+                <div class="champion-slot" onclick="banChampion('enemy', 1)"></div>
+                <div class="champion-slot" onclick="banChampion('enemy', 2)"></div>
+            </div>
+            <div id="enemy-team" class="team">
+                <div class="champion-slot" onclick="selectForTeam('enemy', 0)"></div>
+                <div class="champion-slot" onclick="selectForTeam('enemy', 1)"></div>
+                <div class="champion-slot" onclick="selectForTeam('enemy', 2)"></div>
+                <div class="champion-slot" onclick="selectForTeam('enemy', 3)"></div>
+                <div class="champion-slot" onclick="selectForTeam('enemy', 4)"></div>
+            </div>
+        </div>
+    </div>
+    <div class="champion-pool" id="champion-pool">
+        <img src="Icons/Julia.png" alt="Julia" class="champion-image" onclick="selectChampion('Julia')">
+        <img src="Icons/birdie.png" alt="Birdie" class="champion-image" onclick="selectChampion('Birdie')">
+        <img src="Icons/erronblack.png" alt="Erron Black" class="champion-image" onclick="selectChampion('Erron Black')">
+        <img src="Icons/chamcham.png" alt="Cham Cham" class="champion-image" onclick="selectChampion('Cham Cham')">
+        <img src="Icons/morrigan.png" alt="Morrigan" class="champion-image" onclick="selectChampion('Morrigan')">
+        <img src="Icons/Jun.png" alt="Jun" class="champion-image" onclick="selectChampion('Jun')">
+        <img src="Icons/Reptile.png" alt="Reptile" class="champion-image" onclick="selectChampion('Reptile')">
+        <img src="Icons/Akuma.png" alt="Akuma" class="champion-image" onclick="selectChampion('Akuma')">
+        <img src="Icons/Elphelt.png" alt="Elphelt" class="champion-image" onclick="selectChampion('Elphelt')">
+        <img src="Icons/Kotalkahn.png" alt="Kotal Kahn" class="champion-image" onclick="selectChampion('Kotal Kahn')">
+        <img src="Icons/Scorpion.png" alt="Scorpion" class="champion-image" onclick="selectChampion('Scorpion')">
+        <img src="Icons/Peacock.png" alt="Peacock" class="champion-image" onclick="selectChampion('Peacock')">
+        <img src="Icons/Angel.png" alt="Angel" class="champion-image" onclick="selectChampion('Angel')">
+        <img src="Icons/Astaroth.png" alt="Astaroth" class="champion-image" onclick="selectChampion('Astaroth')">
+        <img src="Icons/Ibuki.png" alt="Ibuki" class="champion-image" onclick="selectChampion('Ibuki')">
+        <img src="Icons/RMika.png" alt="R.Mika" class="champion-image" onclick="selectChampion('R.Mika')">
+        <img src="Icons/Raiden.png" alt="Raiden" class="champion-image" onclick="selectChampion('Raiden')">
+        <img src="Icons/Yugo.png" alt="Yugo" class="champion-image" onclick="selectChampion('Yugo')">
+        <img src="Icons/Talim.png" alt="Talim" class="champion-image" onclick="selectChampion('Talim')">
+        <img src="Icons/Noel.png" alt="Noel" class="champion-image" onclick="selectChampion('Noel')">
+    </div>
+
+    <script>
+        let selectedChampion = null;
+        const teamSlots = {
+            my: Array(5).fill(null),
+            enemy: Array(5).fill(null)
+        };
+        const banSlots = {
+            my: Array(3).fill(null),
+            enemy: Array(3).fill(null)
+        };
+
+        function selectChampion(championName) {
+            selectedChampion = championName;
+        }
+
+        function banChampion(team, slotIndex) {
+            if (selectedChampion && !banSlots[team].includes(selectedChampion) && !teamSlots.my.includes(selectedChampion) && !teamSlots.enemy.includes(selectedChampion)) {
+                banSlots[team][slotIndex] = selectedChampion;
+                updateBans(team);
+                selectedChampion = null;
+            }
+        }
+
+        function selectForTeam(team, slotIndex) {
+            if (selectedChampion && !teamSlots[team].includes(selectedChampion) && !banSlots.my.includes(selectedChampion) && !banSlots.enemy.includes(selectedChampion)) {
+                teamSlots[team][slotIndex] = selectedChampion;
+                updateTeam(team);
+                selectedChampion = null;
+            }
+        }
+
+        function updateBans(team) {
+            const banElements = document.querySelectorAll(`#${team}-bans .champion-slot`);
+            banElements.forEach((el, index) => {
+                el.innerHTML = banSlots[team][index] ? `<img src="Icons/${banSlots[team][index]}.png" alt="${banSlots[team][index]}">` : '';
+                el.classList.toggle('banned', Boolean(banSlots[team][index]));
+            });
+        }
+
+        function updateTeam(team) {
+            const teamElements = document.querySelectorAll(`#${team}-team .champion-slot`);
+            teamElements.forEach((el, index) => {
+                el.innerHTML = teamSlots[team][index] ? `<img src="Icons/${teamSlots[team][index]}.png" alt="${teamSlots[team][index]}">` : '';
+                el.classList.toggle('selected', Boolean(teamSlots[team][index]));
+            });
+        }
+    </script>
+</body>
+</html>
