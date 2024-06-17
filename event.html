@@ -9,7 +9,7 @@
         body {
             margin: 0;
             padding: 0;
-            background: url('Event/Music Event.png') no-repeat center center fixed;
+            background: url('Event/Blossom Event.png') no-repeat center center fixed;
             background-size: cover;
             color: white;
             font-family: Arial, sans-serif;
@@ -20,7 +20,7 @@
             margin-top: 100px;
             color: white;
             font-family: 'Great Vibes', cursive;
-            text-shadow: 2px 2px 4px #000000;
+            text-shadow: 4px 4px 6px #000000;
         }
         #skin-gallery {
             display: flex;
@@ -45,13 +45,14 @@
         }
         .skin-item img:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 15px blue;
+            box-shadow: 0 0 15px pink;
         }
         .skin-name {
             margin-top: 10px;
-            font-size: 18px;
+            font-size: 32px;
             color: white;
-            text-shadow: 1px 1px 2px lightblue;
+            text-shadow: 4px 4px 6px black;
+			font-family: 'Great Vibes';
         }
 		#menu {
             background-color: #444;
@@ -69,6 +70,46 @@
         #menu a:hover {
             background-color: #111;
         }
+        /* Style for video popup */
+        .video-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+        }
+        .video-popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: url('Event/Blossom Event.png') no-repeat center center fixed;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            text-align: center;
+        }
+        .video-popup video {
+            width: 80%;
+            max-width: 800px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: black;
+            font-size: 60px;
+            cursor: pointer;
+        }
+        .close-btn:hover {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -78,33 +119,51 @@
 		<a href="Team Builder.html">Team Builder</a>
 		<a href="Skins.html">Skins</a>
     </div>
-    <h1>Music Stars Event</h1>
+    <h1>Blossom Event</h1>
     <div id="skin-gallery">
         <!-- Example skin items, add all your skins similarly -->
         <div class="skin-item">
-            <img src="Skins/Disco Queen Julia.jpeg" alt="Disco Queen Julia">
-            <div class="skin-name">Disco Queen Julia</div>
+            <img src="Skins/Blossom Angel.png" alt="Blossom Angel">
+            <div class="skin-name">Blossom Angel</div>
         </div>
         <div class="skin-item">
-            <img src="Skins/Pop Star R.Mika.png" alt="Pop Star R.Mika">
-            <div class="skin-name">Pop Star R.Mika</div>
+            <img src="Skins/Blossom Jun.png" alt="Blossom Juna">
+            <div class="skin-name">Blossom Jun</div>
         </div>
         <div class="skin-item">
-            <img src="Skins/DJ Ibuki.png" alt="DJ Ibuki">
-            <div class="skin-name">DJ Ibuki</div>
+            <img src="Skins/Blossom Cham Cham.png" alt="Blossom Cham Cham">
+            <div class="skin-name">Blossom Cham Cham</div>
         </div>
         <div class="skin-item">
-            <img src="Skins/Rockstar Birdie.png" alt="Rockstar Birdie">
-            <div class="skin-name">Rockstar Birdie</div>
-        </div>
-        <div class="skin-item">
-            <img src="Skins/Rockstar Akuma.jpeg" alt="Rockstar Akuma">
-            <div class="skin-name">Rockstar Akuma</div>
-        </div>
-        <div class="skin-item">
-            <img src="Skins/Country Erron Black.png" alt="Country Erron Black">
-            <div class="skin-name">Country Erron Black</div>
+            <img src="Skins/Blossom Scorpion.png" alt="Blossom Scorpion">
+            <div class="skin-name">Blossom Scorpion</div>
         </div>
     </div>
+
+    <!-- Video Popup -->
+    <div class="video-popup" id="videoPopup">
+        <div class="video-popup-content">
+            <span class="close-btn" onclick="closeVideoPopup()">&times;</span>
+            <video autoplay controls>
+                <source src="Event/Blossom Video.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+
+    <!-- JavaScript to control the video popup -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            openVideoPopup();
+        });
+
+        function openVideoPopup() {
+            document.getElementById('videoPopup').style.display = 'block';
+        }
+
+        function closeVideoPopup() {
+            document.getElementById('videoPopup').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
