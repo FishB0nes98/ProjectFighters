@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Loading Screen</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #222;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+            font-size: 36px;
+            margin-top: 20px;
+        }
+        #loading-screen-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px auto;
+            max-width: 1000px;
+        }
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+        .slot {
+            flex: 1;
+            margin: 5px;
+            position: relative;
+            border: 2px solid #444;
+        }
+        .slot img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .dropdown {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        .dropdown select {
+            padding: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Loading Screen</h1>
+    <div id="loading-screen-container">
+        <div class="row">
+            <div class="slot">
+                <div class="dropdown">
+                    <select id="top-slot-1-select" onchange="updateSkin(this, 'top-slot-1')"></select>
+                </div>
+                <img id="top-slot-1" src="skins/default.jpg" alt="Skin 1">
+            </div>
+            <div class="slot">
+                <div class="dropdown">
+                    <select id="top-slot-2-select" onchange="updateSkin(this, 'top-slot-2')"></select>
+                </div>
+                <img id="top-slot-2" src="skins/default.jpg" alt="Skin 2">
+            </div>
+            <div class="slot">
+                <div class="dropdown">
+                    <select id="top-slot-3-select" onchange="updateSkin(this, 'top-slot-3')"></select>
+                </div>
+                <img id="top-slot-3" src="skins/default.jpg" alt="Skin 3">
+            </div>
+            <div class="slot">
+                <div class="dropdown">
+                    <select id="top-slot-4-select" onchange="updateSkin(this, 'top-slot-4')"></select>
+                </div>
+                <img id="top-slot-4" src="skins/default.jpg" alt="Skin 4">
+            </div>
+            <div class="slot">
+                <div class="dropdown">
+                    <select id="top-slot-5-select" onchange="updateSkin(this, 'top-slot-5')"></select>
+                </div>
+                <img id="top-slot-5" src="skins/default.jpg" alt="Skin 5">
+            </div>
+        </div>
+        <div class="row">
+            <div class="slot">
+                <div class="dropdown">
+                    <select id="bottom-slot-1-select" onchange="updateSkin(this, 'bottom-slot-1')"></select>
+                </div>
+                <img id="bottom-slot-1" src="skins/default.jpg" alt="Skin 1">
+            </div>
+            <div class="slot">
+                <div class="dropdown">
+                    <select id="bottom-slot-2-select" onchange="updateSkin(this, 'bottom-slot-2')"></select>
+                </div>
+                <img id="bottom-slot-2" src="skins/default.jpg" alt="Skin 2">
+            </div>
+            <div class="slot">
+                <div class="dropdown">
+                    <select id="bottom-slot-3-select" onchange="updateSkin(this, 'bottom-slot-3')"></select>
+                </div>
+                <img id="bottom-slot-3" src="skins/default.jpg" alt="Skin 3">
+            </div>
+            <div class="slot">
+                <div class="dropdown">
+                    <select id="bottom-slot-4-select" onchange="updateSkin(this, 'bottom-slot-4')"></select>
+                </div>
+                <img id="bottom-slot-4" src="skins/default.jpg" alt="Skin 4">
+            </div>
+            <div class="slot">
+                <div class="dropdown">
+                    <select id="bottom-slot-5-select" onchange="updateSkin(this, 'bottom-slot-5')"></select>
+                </div>
+                <img id="bottom-slot-5" src="skins/default.jpg" alt="Skin 5">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch('load_skins.php')
+                .then(response => response.json())
+                .then(skins => {
+                    const slots = [
+                        'top-slot-1-select', 'top-slot-2-select', 'top-slot-3-select',
+                        'top-slot-4-select', 'top-slot-5-select', 'bottom-slot-1-select',
+                        'bottom-slot-2-select', 'bottom-slot-3-select', 'bottom-slot-4-select',
+                        'bottom-slot-5-select'
+                    ];
+                    slots.forEach(slot => {
+                        const selectElement = document.getElementById(slot);
+                        skins.forEach(skin => {
+                            const option = document.createElement('option');
+                            option.value = skin;
+                            option.text = skin;
+                            selectElement.add(option);
+                        });
+                    });
+                });
+        });
+
+        function updateSkin(select, slotId) {
+            const skin = select.value;
+            document.getElementById(slotId).src = `skins/${skin}`;
+        }
+    </script>
+</body>
+</html>
