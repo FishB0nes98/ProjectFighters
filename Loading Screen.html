@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Loading Screen</title>
@@ -53,7 +53,7 @@
 <body>
     <h1>Loading Screen</h1>
     <div id="loading-screen-container">
-        <div class="row">
+        <div class="row" id="top-row">
             <div class="slot">
                 <div class="dropdown">
                     <select id="top-slot-1-select" onchange="updateSkin(this, 'top-slot-1')"></select>
@@ -85,7 +85,7 @@
                 <img id="top-slot-5" src="Skins/default.jpg" alt="Skin 5">
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="bottom-row">
             <div class="slot">
                 <div class="dropdown">
                     <select id="bottom-slot-1-select" onchange="updateSkin(this, 'bottom-slot-1')"></select>
@@ -129,26 +129,32 @@
                     return response.json();
                 })
                 .then(skins => {
-                    const slots = [
-                        'top-slot-1-select', 'top-slot-2-select', 'top-slot-3-select',
-                        'top-slot-4-select', 'top-slot-5-select', 'bottom-slot-1-select',
-                        'bottom-slot-2-select', 'bottom-slot-3-select', 'bottom-slot-4-select',
-                        'bottom-slot-5-select'
-                    ];
-                    slots.forEach(slot => {
-                        const selectElement = document.getElementById(slot);
-                        skins.forEach(skin => {
-                            const option = document.createElement('option');
-                            option.value = skin;
-                            option.text = skin.replace('.png', '');
-                            selectElement.add(option);
-                        });
-                    });
+                    console.log('Fetched skins:', skins);
+                    populateDropdowns(skins);
                 })
                 .catch(error => {
                     console.error('There was a problem with the fetch operation:', error);
                 });
         });
+
+        function populateDropdowns(skins) {
+            const slots = [
+                'top-slot-1-select', 'top-slot-2-select', 'top-slot-3-select',
+                'top-slot-4-select', 'top-slot-5-select', 'bottom-slot-1-select',
+                'bottom-slot-2-select', 'bottom-slot-3-select', 'bottom-slot-4-select',
+                'bottom-slot-5-select'
+            ];
+
+            slots.forEach(slot => {
+                const selectElement = document.getElementById(slot);
+                skins.forEach(skin => {
+                    const option = document.createElement('option');
+                    option.value = skin;
+                    option.textContent = skin;
+                    selectElement.add(option);
+                });
+            });
+        }
 
         function updateSkin(select, slotId) {
             const skin = select.value;
