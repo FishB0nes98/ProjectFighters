@@ -1,17 +1,12 @@
 <?php
-$directory = '../Skins';
-$skins = array();
+header('Content-Type: application/json');
 
-if (is_dir($directory)) {
-    if ($dh = opendir($directory)) {
-        while (($file = readdir($dh)) !== false) {
-            if (pathinfo($file, PATHINFO_EXTENSION) == 'png') {
-                $skins[] = $file;
-            }
-        }
-        closedir($dh);
-    }
-}
+$dir = 'Skins';
+$files = array_diff(scandir($dir), array('.', '..'));
 
-echo json_encode($skins);
+$skins = array_filter($files, function($file) use ($dir) {
+    return pathinfo($file, PATHINFO_EXTENSION) === 'png';
+});
+
+echo json_encode(array_values($skins));
 ?>
