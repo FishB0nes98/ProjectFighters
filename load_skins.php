@@ -1,9 +1,8 @@
 <?php
-$directory = 'Skins';
-$skins = array_filter(scandir($directory), function($file) use ($directory) {
-    return is_file("$directory/$file") && pathinfo($file, PATHINFO_EXTENSION) === 'png';
-});
-
-header('Content-Type: application/json');
-echo json_encode(array_values($Skins));
+$dir = '../Skins';
+$files = array_diff(scandir($dir), array('.', '..'));
+$skins = array_values(array_filter($files, function($file) {
+    return pathinfo($file, PATHINFO_EXTENSION) === 'png';
+}));
+echo json_encode($skins);
 ?>

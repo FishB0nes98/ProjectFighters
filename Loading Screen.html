@@ -58,31 +58,31 @@
                 <div class="dropdown">
                     <select id="top-slot-1-select" onchange="updateSkin(this, 'top-slot-1')"></select>
                 </div>
-                <img id="top-slot-1" src="skins/default.jpg" alt="Skin 1">
+                <img id="top-slot-1" src="Skins/default.jpg" alt="Skin 1">
             </div>
             <div class="slot">
                 <div class="dropdown">
                     <select id="top-slot-2-select" onchange="updateSkin(this, 'top-slot-2')"></select>
                 </div>
-                <img id="top-slot-2" src="skins/default.jpg" alt="Skin 2">
+                <img id="top-slot-2" src="Skins/default.jpg" alt="Skin 2">
             </div>
             <div class="slot">
                 <div class="dropdown">
                     <select id="top-slot-3-select" onchange="updateSkin(this, 'top-slot-3')"></select>
                 </div>
-                <img id="top-slot-3" src="skins/default.jpg" alt="Skin 3">
+                <img id="top-slot-3" src="Skins/default.jpg" alt="Skin 3">
             </div>
             <div class="slot">
                 <div class="dropdown">
                     <select id="top-slot-4-select" onchange="updateSkin(this, 'top-slot-4')"></select>
                 </div>
-                <img id="top-slot-4" src="skins/default.jpg" alt="Skin 4">
+                <img id="top-slot-4" src="Skins/default.jpg" alt="Skin 4">
             </div>
             <div class="slot">
                 <div class="dropdown">
                     <select id="top-slot-5-select" onchange="updateSkin(this, 'top-slot-5')"></select>
                 </div>
-                <img id="top-slot-5" src="skins/default.jpg" alt="Skin 5">
+                <img id="top-slot-5" src="Skins/default.jpg" alt="Skin 5">
             </div>
         </div>
         <div class="row">
@@ -90,40 +90,40 @@
                 <div class="dropdown">
                     <select id="bottom-slot-1-select" onchange="updateSkin(this, 'bottom-slot-1')"></select>
                 </div>
-                <img id="bottom-slot-1" src="skins/default.jpg" alt="Skin 1">
+                <img id="bottom-slot-1" src="Skins/default.jpg" alt="Skin 1">
             </div>
             <div class="slot">
                 <div class="dropdown">
                     <select id="bottom-slot-2-select" onchange="updateSkin(this, 'bottom-slot-2')"></select>
                 </div>
-                <img id="bottom-slot-2" src="skins/default.jpg" alt="Skin 2">
+                <img id="bottom-slot-2" src="Skins/default.jpg" alt="Skin 2">
             </div>
             <div class="slot">
                 <div class="dropdown">
                     <select id="bottom-slot-3-select" onchange="updateSkin(this, 'bottom-slot-3')"></select>
                 </div>
-                <img id="bottom-slot-3" src="skins/default.jpg" alt="Skin 3">
+                <img id="bottom-slot-3" src="Skins/default.jpg" alt="Skin 3">
             </div>
             <div class="slot">
                 <div class="dropdown">
                     <select id="bottom-slot-4-select" onchange="updateSkin(this, 'bottom-slot-4')"></select>
                 </div>
-                <img id="bottom-slot-4" src="skins/default.jpg" alt="Skin 4">
+                <img id="bottom-slot-4" src="Skins/default.jpg" alt="Skin 4">
             </div>
             <div class="slot">
                 <div class="dropdown">
                     <select id="bottom-slot-5-select" onchange="updateSkin(this, 'bottom-slot-5')"></select>
                 </div>
-                <img id="bottom-slot-5" src="skins/default.jpg" alt="Skin 5">
+                <img id="bottom-slot-5" src="Skins/default.jpg" alt="Skin 5">
             </div>
         </div>
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            fetch('load_skins.php')
+            fetch('php/load_skins.php')
                 .then(response => response.json())
-                .then(Skins => {
+                .then(skins => {
                     const slots = [
                         'top-slot-1-select', 'top-slot-2-select', 'top-slot-3-select',
                         'top-slot-4-select', 'top-slot-5-select', 'bottom-slot-1-select',
@@ -135,7 +135,7 @@
                         skins.forEach(skin => {
                             const option = document.createElement('option');
                             option.value = skin;
-                            option.text = skin;
+                            option.text = skin.replace('.png', '');
                             selectElement.add(option);
                         });
                     });
