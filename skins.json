@@ -1,0 +1,10 @@
+<?php
+$dir = 'Skins';
+$files = array_diff(scandir($dir), array('.', '..'));
+
+$skins = array_filter($files, function($file) use ($dir) {
+    return pathinfo($file, PATHINFO_EXTENSION) === 'png';
+});
+
+file_put_contents('skins.json', json_encode(array_values($skins)));
+?>
