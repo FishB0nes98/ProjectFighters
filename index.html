@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Champion Selector</title>
@@ -10,43 +10,51 @@
             background-color: #333333;
             color: white;
             font-family: Arial, sans-serif;
+            position: relative;
+            overflow: hidden;
         }
         h1 {
             text-align: center;
             font-size: 36px;
-            margin-top: 20px;
+            margin-top: 100px;
         }
         #champion-selector-container {
             display: flex;
-            justify-content: center;
-            align-items: center;
             flex-direction: column;
+            align-items: center;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
         }
         #champion-selector {
             display: flex;
             flex-wrap: wrap;
             justify-content: flex-start;
             align-items: center;
-            background-color: darkgray;
             padding: 10px;
-            max-width: 800px;
-            margin: 20px auto;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 20px;
         }
         .champion-image {
-            margin: 5px;
-            border: 2px solid #333;
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            border: 2px solid #444;
+            border-radius: 10px;
             cursor: pointer;
-            transition: transform 0.2s;
-            flex: 1 1 150px;
-            max-width: 100px;
-            max-height: 100px;
+            transition: transform 0.2s, box-shadow 0.3s;
             position: relative;
         }
         .champion-image:hover {
-            transform: scale(1.15);
+            transform: scale(1.1);
+            box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
         }
         .selected {
-            border-color: gold;
+            border-color: gold !important;
         }
         .gray {
             filter: grayscale(100%);
@@ -110,94 +118,208 @@
             color: white;
             text-decoration: none;
             cursor: pointer;
+		}
+		#quests-container {
+			position: fixed;
+			bottom: 70px;
+			right: 20px;
+			background-color: #444;
+			padding: 15px;
+			border-radius: 10px;
+			width: 300px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+			transition: transform 0.3s ease, opacity 0.3s ease;
+			transform: translateY(100%);
+			opacity: 0;
+		}
+
+		#quests-container.open {
+			transform: translateY(0);
+			opacity: 1;
+		}
+
+		.quest-section {
+			margin-bottom: 20px;
+		}
+
+		.quest-section h2 {
+			color: gold;
+			font-size: 18px;
+			margin-bottom: 10px;
+		}
+
+		.quest-section ul {
+			list-style-type: none;
+			padding: 0;
+		}
+
+		.quest-section ul li {
+			font-size: 14px;
+			margin-bottom: 8px;
+			line-height: 1.6;
+		}
+
+		.quest-section ul li::before {
+			content: "\2022";  /* Bullet point */
+			color: gold;
+			display: inline-block;
+			width: 1em;
+			margin-left: -1em;
+		}
+
+		#quests-toggle {
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			background-color: #444;
+			padding: 15px;
+			border-radius: 10px;
+			color: white;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+		}
+
+		#quest-count {
+			background-color: red;
+			color: white;
+			border-radius: 50%;
+			padding: 5px 10px;
+			margin-right: 10px;
+			font-size: 14px;
+			font-weight: bold;
+		}
+
+        #video-background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            filter: brightness(70%);
         }
     </style>
 </head>
 <body>
+    <video id="video-background" autoplay muted loop>
+        <source src="Event/Cyber City Event.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
     <div id="menu">
         <a href="index.html">Home</a>
+        <a href="Skins.html">Skins</a>
         <a href="event.html">Event</a>
-		<a href="Team Builder.html">Team Builder</a>
-		<a href="Skins.html">Skins</a>
+        <a href="team builder.html">Team Builder</a>
+        <a href="Loading Screen.html">Loading Screen</a>
     </div>
-    <h1>Champion Selector</h1>
     <div id="champion-selector-container">
         <div id="search-container">
             <input type="text" id="search-bar" placeholder="Search for a champion..." onkeyup="searchChampion()">
         </div>
+
         <div id="champion-selector">
-            <a href="Julia Page.html"><img src="Icons/Julia.png" alt="Julia" class="champion-image" onclick="showModal('Julia')"></a>
-            <a href="Birdie Page.html"><img src="Icons/birdie.png" alt="Birdie" class="champion-image" onclick="showModal('Birdie')"></a>
-            <a href="Erronblack Page.html"><img src="Icons/erronblack.png" alt="Erron Black" class="champion-image" onclick="showModal('Erron Black')"></a>
-            <a href="ChamCham Page.html"><img src="Icons/chamcham.png" alt="Cham Cham" class="champion-image" onclick="showModal('Cham Cham')"></a>
-            <a href="Morrigan Page.html"><img src="Icons/morrigan.png" alt="Morrigan" class="champion-image" onclick="showModal('Morrigan')"></a>
-            <a href="Jun Page.html"><img src="Icons/Jun.png" alt="Jun" class="champion-image" onclick="showModal('Jun')"></a>
-            <a href="Reptile Page.html"><img src="Icons/Reptile.png" alt="Reptile" class="champion-image" onclick="showModal('Reptile')"></a>
-            <a href="Akuma Page.html"><img src="Icons/Akuma.png" alt="Akuma" class="champion-image" onclick="showModal('Akuma')"></a>
-            <a href="Elphelt Page.html"><img src="Icons/Elphelt.png" alt="Elphelt" class="champion-image" onclick="showModal('Elphelt')"></a>
-            <a href="Kotal Kahn Page.html"><img src="Icons/Kotalkahn.png" alt="Kotal Kahn" class="champion-image" onclick="showModal('Kotal Kahn')"></a>
-            <a href="Scorpion Page.html"><img src="Icons/Scorpion.png" alt="Scorpion" class="champion-image" onclick="showModal('Scorpion')"></a>
-            <a href="Peacock Page.html"><img src="Icons/Peacock.png" alt="Peacock" class="champion-image" onclick="showModal('Peacock')"></a>
-            <a href="Angel Page.html"><img src="Icons/Angel.png" alt="Angel" class="champion-image" onclick="showModal('Angel')"></a>
-            <a href="Astaroth Page.html"><img src="Icons/Astaroth.png" alt="Astaroth" class="champion-image" onclick="showModal('Astaroth')"></a>
-            <a href="Ibuki Page.html"><img src="Icons/Ibuki.png" alt="Ibuki" class="champion-image" onclick="showModal('Ibuki')"></a>
-            <a href="R.Mika Page.html"><img src="Icons/RMika.png" alt="R.Mika" class="champion-image" onclick="showModal('R.Mika')"></a>
-            <a href="Raiden Page.html"><img src="Icons/Raiden.png" alt="Raiden" class="champion-image" onclick="showModal('Raiden')"></a>
-            <a href="Yugo Page.html"><img src="Icons/Yugo.png" alt="Yugo" class="champion-image" onclick="showModal('Yugo')"></a>
-            <a href="Talim Page.html"><img src="Icons/Talim.png" alt="Talim" class="champion-image" onclick="showModal('Talim')"></a>
-            <img src="Icons/Noel.png" alt="Noel" onclick="downloadChampionBio('Noel.docx')" class="champion-image gray">
-			<img src="Icons/q.jpg" alt="q" onclick="downloadChampionBio('q.docx')" class="champion-image gray">
-			<img src="Icons/q.jpg" alt="q" onclick="downloadChampionBio('q.docx')" class="champion-image gray">
-			<img src="Icons/q.jpg" alt="q" onclick="downloadChampionBio('q.docx')" class="champion-image gray">
-			<img src="Icons/q.jpg" alt="q" onclick="downloadChampionBio('q.docx')" class="champion-image gray">
-			<img src="Icons/q.jpg" alt="q" onclick="downloadChampionBio('q.docx')" class="champion-image gray">
-        </div>
+            <a href="Julia Page.html"><img src="Icons/Julia.png" alt="Julia" class="champion-image"></a>
+            <a href="Birdie Page.html"><img src="Icons/Birdie.png" alt="Birdie" class="champion-image"></a>
+            <a href="Erronblack Page.html"><img src="Icons/Erron Black.png" alt="Erron Black" class="champion-image"></a>
+            <a href="ChamCham Page.html"><img src="Icons/Cham Cham.png" alt="Cham Cham" class="champion-image"></a>
+            <a href="Morrigan Page.html"><img src="Icons/Morrigan.png" alt="Morrigan" class="champion-image"></a>
+            <a href="Jun Page.html"><img src="Icons/Jun.png" alt="Jun" class="champion-image"></a>
+            <a href="Reptile Page.html"><img src="Icons/Reptile.png" alt="Reptile" class="champion-image"></a>
+            <a href="Akuma Page.html"><img src="Icons/Akuma.png" alt="Akuma" class="champion-image"></a>
+            <a href="Elphelt Page.html"><img src="Icons/Elphelt.png" alt="Elphelt" class="champion-image"></a>
+            <a href="Kotal Kahn Page.html"><img src="Icons/Kotal Kahn.png" alt="Kotal Kahn" class="champion-image"></a>
+            <a href="Scorpion Page.html"><img src="Icons/Scorpion.png" alt="Scorpion" class="champion-image"></a>
+            <a href="Peacock Page.html"><img src="Icons/Peacock.png" alt="Peacock" class="champion-image"></a>
+            <a href="Angel Page.html"><img src="Icons/Angel.png" alt="Angel" class="champion-image"></a>
+            <a href="Astaroth Page.html"><img src="Icons/Astaroth.png" alt="Astaroth" class="champion-image"></a>
+            <a href="Ibuki Page.html"><img src="Icons/Ibuki.png" alt="Ibuki" class="champion-image"></a>
+			<img src="Icons/R.Mika.png" alt="R.Mika" class="champion-image"></a>
+			<a href="Raiden Page.html"><img src="Icons/Raiden.png" alt="Raiden" class="champion-image"></a>
+			<a href="Yugo Page.html"><img src="Icons/Yugo.png" alt="Yugo" class="champion-image"></a>
+			<a href="Talim Page.html"><img src="Icons/Talim.png" alt="Talim" class="champion-image"></a>
+			<a href="Noel Page.html"><img src="Icons/Noel.png" alt="Noel" class="champion-image"></a>
+			<a href="Blanka Page.html"><img src="Icons/Blanka.png" alt="Blanka" class="champion-image gray"></a>
+			<a href="Nina Page.html"><img src="Icons/Nina.png" alt="Nina" class="champion-image gray"></a>
+			<a href="Ayane Page.html"><img src="Icons/Ayane.png" alt="Ayane" class="champion-image gray"></a>
+			<a href="Siegfried Page.html"><img src="Icons/Siegfried.png" alt="Siegfried" class="champion-image gray"></a>
+			<a href="Shoma Page.html"><img src="Icons/Shoma.png" alt="Shoma" class="champion-image gray"></a>
+			</div>
+			</div>
+
+<div id="quests-container" class="quests-container">
+    <div class="quest-section">
+        <h2>Daily Quests</h2>
+        <ul>
+            <li>Play [1] match</li>
+            <li>Win [2] matches with Mortal Kombat characters</li>
+            <li>Heal [16.000] in games</li>
+        </ul>
     </div>
-
-    <div id="champion-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2 id="champion-name"></h2>
-            <p id="champion-details"></p>
-        </div>
+    <div class="quest-section">
+        <h2>Weekly Quests</h2>
+        <ul>
+            <li>Play [7] games</li>
+            <li>Get [125] kills or assists</li>
+            <li>Mitigate [100.000] damage</li>
+        </ul>
     </div>
+</div>
 
-    <script>
-        const originalOrder = document.querySelector('#champion-selector').innerHTML;
+<div id="quests-toggle">
+    <span id="quest-count">6</span>
+    Quests
+</div>
 
-        function downloadChampionBio(fileName) {
-            if (fileName !== undefined) {
-                const downloadLink = document.createElement("a");
-                downloadLink.href = fileName;
-                downloadLink.download = fileName;
-                downloadLink.click();
+<script>
+    const originalOrder = document.querySelector('#champion-selector').innerHTML;
+    
+    const video = document.getElementById('video-background');
+    video.playbackRate = 0.5; // Set playback rate to 50% (0.5x speed)
+
+    function downloadChampionBio(fileName) {
+        if (fileName !== undefined) {
+            const downloadLink = document.createElement("a");
+            downloadLink.href = fileName;
+            downloadLink.download = fileName;
+            downloadLink.click();
+        } else {
+            alert('Champion bio not found!');
+        }
+    }
+
+    function showModal(championName) {
+        document.getElementById("champion-name").innerText = championName;
+        document.getElementById("champion-details").innerText = `Details about ${championName} will go here.`;
+        document.getElementById("champion-modal").style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById("champion-modal").style.display = "none";
+    }
+
+    function searchChampion() {
+        const input = document.getElementById('search-bar').value.toLowerCase();
+        const images = document.getElementsByClassName('champion-image');
+        for (let i = 0; i < images.length; i++) {
+            const altText = images[i].alt.toLowerCase();
+            if (altText.includes(input)) {
+                images[i].style.display = '';
             } else {
-                alert('Champion bio not found!');
+                images[i].style.display = 'none';
             }
         }
+    }
 
-        function showModal(championName) {
-            document.getElementById("champion-name").innerText = championName;
-            document.getElementById("champion-details").innerText = `Details about ${championName} will go here.`;
-            document.getElementById("champion-modal").style.display = "block";
-        }
+    const questContainer = document.querySelector('.quests-container');
+    const questToggle = document.getElementById('quests-toggle');
 
-        function closeModal() {
-            document.getElementById("champion-modal").style.display = "none";
-        }
-
-        function searchChampion() {
-            const input = document.getElementById('search-bar').value.toLowerCase();
-            const images = document.getElementsByClassName('champion-image');
-            for (let i = 0; i < images.length; i++) {
-                const altText = images[i].alt.toLowerCase();
-                if (altText.includes(input)) {
-                    images[i].style.display = '';
-                } else {
-                    images[i].style.display = 'none';
-                }
-            }
-        }
-    </script>
+    questToggle.addEventListener('click', () => {
+        questContainer.classList.toggle('open');
+    });
+</script>
 </body>
 </html>

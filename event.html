@@ -4,22 +4,21 @@
     <meta charset="UTF-8">
     <title>Event Page</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+
         body {
             margin: 0;
             padding: 0;
-            background: url('Event/Blossom Event.png') no-repeat center center fixed;
+            background: url('Event/Cyber City Event.png') no-repeat center center fixed;
             background-size: cover;
             color: white;
-            font-family: Arial, sans-serif;
+            font-family: 'Orbitron', sans-serif;
         }
         h1 {
             text-align: center;
             font-size: 72px;
             margin-top: 100px;
             color: white;
-            font-family: 'Great Vibes', cursive;
             text-shadow: 4px 4px 6px #000000;
         }
         #skin-gallery {
@@ -28,11 +27,11 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            max-width: 1200px;
+            max-width: 1550px;
             margin: 0 auto;
         }
         .skin-item {
-            margin: 15px;
+            margin: 50px;
             text-align: center;
         }
         .skin-item img {
@@ -45,19 +44,19 @@
         }
         .skin-item img:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 15px pink;
+            box-shadow: 0 0 15px blue;
         }
         .skin-name {
             margin-top: 10px;
             font-size: 32px;
             color: white;
-            text-shadow: 4px 4px 6px black;
-			font-family: 'Great Vibes';
+            text-shadow: 4px 4px 6px blue;
         }
-		#menu {
+        #menu {
             background-color: #444;
             overflow: hidden;
             width: 100%;
+            font-family: 'arial', sans-serif; /* Ensure menu font is consistent */
         }
         #menu a {
             float: left;
@@ -70,99 +69,146 @@
         #menu a:hover {
             background-color: #111;
         }
-        /* Style for video popup */
-        .video-popup {
+        /* Lightbox styles */
+        .lightbox {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 9999;
-        }
-        .video-popup-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: url('Event/Blossom Event.png') no-repeat center center fixed;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
             text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .video-popup video {
-            width: 80%;
-            max-width: 800px;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-        }
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: black;
-            font-size: 60px;
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border: 3px solid white;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
             cursor: pointer;
         }
-        .close-btn:hover {
-            color: red;
+        .lightbox .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 36px;
+            cursor: pointer;
+        }
+        .lightbox .prev, .lightbox .next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 48px;
+            cursor: pointer;
+        }
+        .lightbox .prev {
+            left: 20px;
+        }
+        .lightbox .next {
+            right: 20px;
         }
     </style>
 </head>
 <body>
     <div id="menu">
         <a href="index.html">Home</a>
+        <a href="Skins.html">Skins</a>
         <a href="event.html">Event</a>
-		<a href="Team Builder.html">Team Builder</a>
-		<a href="Skins.html">Skins</a>
+        <a href="team builder.html">Team Builder</a>
+        <a href="Loading Screen.html">Loading Screen</a>
     </div>
-    <h1>Blossom Event</h1>
+    <h1>Cyber City Event</h1>
     <div id="skin-gallery">
         <!-- Example skin items, add all your skins similarly -->
         <div class="skin-item">
-            <img src="Skins/Blossom Angel.png" alt="Blossom Angel">
-            <div class="skin-name">Blossom Angel</div>
+            <a href="Skins/Cyber Predator Yugo.png" class="lightbox-link" data-caption="Cyber Predator Yugo">
+                <img src="Skins/Cyber Predator Yugo.png" alt="Cyber Predator Yugo">
+            </a>
+            <div class="skin-name">Cyber Predator Yugo</div>
         </div>
         <div class="skin-item">
-            <img src="Skins/Blossom Jun.png" alt="Blossom Juna">
-            <div class="skin-name">Blossom Jun</div>
+            <a href="Skins/Cyber Ninja Reptile.png" class="lightbox-link" data-caption="Cyber Ninja Reptile">
+                <img src="Skins/Cyber Ninja Reptile.png" alt="Cyber Ninja Reptile">
+            </a>
+            <div class="skin-name">Cyber Ninja Reptile</div>
         </div>
         <div class="skin-item">
-            <img src="Skins/Blossom Cham Cham.png" alt="Blossom Cham Cham">
-            <div class="skin-name">Blossom Cham Cham</div>
+            <a href="Skins/Cyber Warrior Kotal Kahn.png" class="lightbox-link" data-caption="Cyber Warrior Kotal Kahn">
+                <img src="Skins/Cyber Warrior Kotal Kahn.png" alt="Cyber Warrior Kotal Kahn">
+            </a>
+            <div class="skin-name">Cyber Warrior Kotal Kahn</div>
         </div>
         <div class="skin-item">
-            <img src="Skins/Blossom Scorpion.png" alt="Blossom Scorpion">
-            <div class="skin-name">Blossom Scorpion</div>
+            <a href="Skins/Cyber Hunter Elphelt.png" class="lightbox-link" data-caption="Cyber Hunter Elphelt">
+                <img src="Skins/Cyber Hunter Elphelt.png" alt="Cyber Hunter Elphelt">
+            </a>
+            <div class="skin-name">Cyber Hunter Elphelt</div>
         </div>
     </div>
 
-    <!-- Video Popup -->
-    <div class="video-popup" id="videoPopup">
-        <div class="video-popup-content">
-            <span class="close-btn" onclick="closeVideoPopup()">&times;</span>
-            <video autoplay controls>
-                <source src="Event/Blossom Video.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        </div>
+    <!-- Lightbox HTML -->
+    <div id="lightbox" class="lightbox">
+        <span class="close-btn" onclick="closeLightbox()">&times;</span>
+        <img id="lightbox-image" src="" alt="">
+        <span class="prev" onclick="prevImage()">&#10094;</span>
+        <span class="next" onclick="nextImage()">&#10095;</span>
     </div>
-
-    <!-- JavaScript to control the video popup -->
+    <!-- JavaScript to control the lightbox -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            openVideoPopup();
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightbox-image');
+        let currentImageIndex = 0;
+        const lightboxLinks = document.querySelectorAll('.lightbox-link');
+
+        // Ensure lightbox is hidden initially
+        window.addEventListener('load', () => {
+            lightbox.style.display = 'none';
         });
 
-        function openVideoPopup() {
-            document.getElementById('videoPopup').style.display = 'block';
+        // Add event listener to each lightbox link
+        lightboxLinks.forEach((link, index) => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                currentImageIndex = index;
+                const imageUrl = link.getAttribute('href');
+                const caption = link.getAttribute('data-caption');
+                openLightbox(imageUrl, caption);
+            });
+        });
+
+        // Open lightbox function
+        function openLightbox(imageUrl, caption) {
+            lightboxImage.src = imageUrl;
+            lightboxImage.alt = caption;
+            lightbox.style.display = 'flex';
         }
 
-        function closeVideoPopup() {
-            document.getElementById('videoPopup').style.display = 'none';
+        // Close lightbox function
+        function closeLightbox() {
+            lightbox.style.display = 'none';
+        }
+
+        // Previous image function
+        function prevImage() {
+            currentImageIndex = (currentImageIndex - 1 + lightboxLinks.length) % lightboxLinks.length;
+            const imageUrl = lightboxLinks[currentImageIndex].getAttribute('href');
+            const caption = lightboxLinks[currentImageIndex].getAttribute('data-caption');
+            openLightbox(imageUrl, caption);
+        }
+
+        // Next image function
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % lightboxLinks.length;
+            const imageUrl = lightboxLinks[currentImageIndex].getAttribute('href');
+            const caption = lightboxLinks[currentImageIndex].getAttribute('data-caption');
+            openLightbox(imageUrl, caption);
         }
     </script>
 </body>
