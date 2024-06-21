@@ -1,108 +1,176 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>Erron Black</title>
-	<style>
-		/* CSS styles go here */
-		.champion-image {
-			position: absolute;
-			top: 50px;
-			right: 150px;
-			width: 300px;
-			height: 300px;
-		}
-		body {
-			font-family: "Times New Roman", Times, serif;
-			font-size: 16px;
-			line-height: 1.5;
-			color: #333;
-		}
-		.red {
-			color: red;
-		}
-		.blue {
-			color: blue;
-		}
-		.green {
-			color: darkgreen;
-		}
-		.light-blue {
-			color: #ADD8F9;
-		}
-		.grey {
-			color: grey;
-		}
-		.orange {
-			color: orange;
-		}
-		.purple {
-			color: purple;
-		}	
-	</style>
-		<script>
-		window.onload = function() {
-			var audio = new Audio('Voices/Erronblackpick.mp3');
-			audio.volume = 0.3;
-			audio.play();
-		}
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erron Black - The Outlaw Gunslinger</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@400;700&family=Raleway:wght@400;600&display=swap');
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            background: linear-gradient(135deg, #1e1e1e 30%, #282828 100%);
+            color: #e1e1e1;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: rgba(34, 34, 34, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
+
+        .champion-image {
+            display: block;
+            margin: 0 auto 20px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid #444;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3em;
+            color: #ff6347;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2em;
+            color: #ffa07a;
+            margin-top: 40px;
+        }
+
+        h3, h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5em;
+            color: #ffa07a;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+
+        ul li {
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+
+        .stat, .mana, .cd {
+            font-weight: bold;
+        }
+
+        .stat span, .mana span, .cd span {
+            font-size: 1.2em;
+        }
+
+        .red { color: #ff4500; }
+        .blue { color: #00bfff; }
+        .green { color: #32cd32; }
+        .light-blue { color: #87cefa; }
+        .grey { color: #a9a9a9; }
+        .orange { color: #ffa500; }
+        .purple { color: #800080; }
+
+        p, ul {
+            margin: 10px 20px;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .abilities, .talents, .patch-notes {
+            margin-top: 40px;
+        }
+
+        audio {
+            display: none;
+        }
+    </style>
+    <script>
+        window.onload = function() {
+            var audio = new Audio('Voices/Erronblackpick.mp3');
+            audio.volume = 0.3;
+            audio.play();
+        }
+    </script>
 </head>
 <body>
-	<img src="Icons/erronblack.png" alt="Birdie" width="100" height="100" class="champion-image">
-	<h1>Erron Black</h1>
-	<h2>Stats</h2>
-	<ul>
-	<li><span class="red">AD:</span> 70 (+7/lvl) -> 238</li>
-	<li><span class="blue">AP:</span> 0 (+0/lvl) -> 0</li>
-	<li><span class="green">HP:</span> 586 (+100/lvl) -> 3086</li>
-	<li><span class="light-blue">Mana:</span> 298 (+20/lvl) -> 818</li>
-	<li><span class="grey">MS:</span> 340 (+3/lvl) -> 415</li>
-	<li><span class="orange">AS:</span> 0.7 (+0.01/lvl) -> 0,95 (Capped to 1.0)</li>
-	</ul>
-	<h2>Abilities</h2>
-	<h3>Passive: A Hog-Killin’ Time</h3>
-	<p>Erron has <span class="red">125%</span> damage against enemies below <span class="green">20% HP</span>.</p>
-	<h3>Q: Coin Flip</h3>
-	<p><span class="light-blue">[30 mana]</span> <span class="purple">[8s cd]</span></p>
-	<p>Erron flips a coin (0.5s). Upon activation, there is a [50%] chance that Erron's next basic attack deals <span class="red">[200%]</span> damage. If the double damage is not dealt, it disappears after 2s.</p>
-	<h3>W: Dynamite Throw</h3>
-	<p><span class="light-blue">[85 Mana]</span> <span class="purple">[10s cd]</span></p>
-	<p>Erron throws a dynamite in the designated direction, which explodes upon impact and damages affected enemies <span class="blue">[100/210/335/400/480/520]</span> + <span class="blue">[35/50/80/100/155/200]</span> over 2s and slows them by 35% (1.5s).</p>
-	<h3>E: Shotgun Burst</h3>
-	<p><span class="light-blue">[85 Mana]</span> <span class="purple">[13s cd]</span></p>
-	<p>Erron pulls out his shotgun, aims in the designated direction, and damages nearby enemies <span class="red">[70/100/210/300/355/410]</span> and stuns them (0.5s).</p>
-	<h3>R: Sight of Kill</h3>
-	<p><span class="light-blue">[90 Mana]</span> <span class="purple">[140s cd]</span></p>
-	<p>Erron takes a huge look in the designated direction, measures the enemy heroes, and after 1.5s, fires his weapon. It deals <span class="red">[380/580/750/1000]</span> damage to every hit enemy. Shots can be blocked by other enemies or walls. An enemy can only suffer damage from one shot.</p>
-	<h2>Talents</h2>
-	<h3>Level 1</h3>
-	<ul>
-		<li>a. Basic attacks deal 3% more damage when the enemy's HP is below 50%.</li>
-		<li>b. Dynamite Throw increases the slow effect by 10%.</li>
-		<li>c. QUEST: Use the double damage of Q 25 times -> The chance increases from 50% to 100%.</li>
-	</ul>
-	<h3>Level 5</h3>
-	<ul>
-		<li>a. The first shot deals 6% more damage to all enemies (40s cooldown/enemy).</li>
-		<li>b. Dynamite Throw deals 15% more damage.</li>
-		<li>c. Shotgun Burst deals 15% more damage if the enemy is under the effect of Dynamite Throw.</li>
-	</ul>
-	<h3>Level 10</h3>
-	<ul>
-		<li>a. Enemies hit by R are rooted for 1s.</li>
-		<li>b. The charging time of R is reduced by 50% for every killed enemy.</li>
-	</ul>
-	<h3>Level 15</h3>
-	<ul>
-		<li>a. When your HP drops below 25%, you resist all negative effects (stun, slow, silence, etc.) for 3s.</li>
-		<li>b. If all basic abilities are on cooldown, basic attacks deal 10% more damage.</li>
-		<li>c. Erron gets a magic shield that blocks 13% of damage.</li>
-	</ul>
-	<h3>Level 20</h3>
-	<ul>
-		<li>a. When your HP drops below 15%, you automatically regain 25% of your health and become immune to damage for 2s (105s cooldown).</li>
-		<li>b. R instantly kills enemies below 1200 HP, ignoring shields, damage reduction, etc.</li>
-		<li>c. Poison flask (item): When used, affected enemies suffer 10% more damage from anyone for 5s.</li>
-		<li>d. Enemies killed by Erron stay dead for an additional 10s.</li>
-	</ul>
+    <div class="container">
+        <img src="Icons/Erron Black.png" alt="Erron Black" class="champion-image">
+        <h1>Erron Black - The Outlaw Gunslinger</h1>
+        <h2>Stats</h2>
+        <ul>
+            <li class="stat"><span class="red">AD:</span> 70 (+8/lvl) <span class="green">-></span> 238</li>
+            <li class="stat"><span class="blue">AP:</span> 0 (+0/lvl) <span class="green">-></span> 0</li>
+            <li class="stat"><span class="green">HP:</span> 586 (+100/lvl) <span class="green">-></span> 3086</li>
+            <li class="stat"><span class="light-blue">Mana:</span> 298 (+20/lvl) <span class="green">-></span> 818</li>
+            <li class="stat"><span class="grey">MS:</span> 340 (+3/lvl) <span class="green">-></span> 415</li>
+            <li class="stat"><span class="orange">AS:</span> 0.7 (+0.01/lvl) <span class="green">-></span> 0.95 (Capped to 1.0)</li>
+        </ul>
+        <div class="abilities">
+            <h2>Abilities</h2>
+            <h3>Passive: A Hog-Killin’ Time</h3>
+            <p>Erron has <span class="red">125%</span> damage against enemies below <span class="green">20% HP</span>.</p>
+            <h3>Q: Coin Flip</h3>
+            <p class="mana"><span class="light-blue">[30 mana]</span> <span class="cd purple">[8s cd]</span></p>
+            <p>Erron flips a coin (0.5s). Upon activation, there is a [50%] chance that Erron's next basic attack deals <span class="red">[200%]</span> damage. If the double damage is not dealt, it disappears after 2s.</p>
+            <h3>W: Dynamite Throw</h3>
+            <p class="mana"><span class="light-blue">[85 Mana]</span> <span class="cd purple">[10s cd]</span></p>
+            <p>Erron throws a dynamite in the designated direction, which explodes upon impact and damages affected enemies <span class="blue">[100/210/335/400/480/520]</span> + <span class="blue">[35/50/80/100/155/200]</span> over 2s and slows them by 35% (1.5s).</p>
+            <h3>E: Shotgun Burst</h3>
+            <p class="mana"><span class="light-blue">[85 Mana]</span> <span class="cd purple">[13s cd]</span></p>
+            <p>Erron pulls out his shotgun, aims in the designated direction, and damages nearby enemies <span class="red">[70/100/210/300/355/410]</span> and stuns them (0.5s).</p>
+            <h3>R: Sight of Kill</h3>
+            <p class="mana"><span class="light-blue">[90 Mana]</span> <span class="cd purple">[140s cd]</span></p>
+            <p>Erron takes a huge look in the designated direction, measures the enemy heroes, and after 1.5s, fires his weapon. It deals <span class="red">[550/820/1250/1700]</span> damage to every hit enemy. Shots can be blocked by other enemies or walls. An enemy can only suffer damage from one shot.</p>
+        </div>
+        <div class="talents">
+            <h2>Talents</h2>
+            <h3>Level 1</h3>
+            <ul>
+                <li>a. Basic attacks deal 3% more damage when the enemy's HP is below 50%.</li>
+                <li>b. Dynamite Throw increases the slow effect by 10%.</li>
+                <li>c. QUEST: Use the double damage of Q 25 times -> The chance increases from 50% to 100%.</li>
+            </ul>
+            <h3>Level 5</h3>
+            <ul>
+                <li>a. The first shot deals 6% more damage to all enemies (40s cooldown/enemy).</li>
+                <li>b. Dynamite Throw deals 15% more damage.</li>
+                <li>c. Shotgun Burst deals 15% more damage if the enemy is under the effect of Dynamite Throw.</li>
+            </ul>
+            <h3>Level 10</h3>
+            <ul>
+                <li>a. Enemies hit by R are rooted for 1s.</li>
+                <li>b. The charging time of R is reduced by 50% for every killed enemy.</li>
+            </ul>
+            <h3>Level 15</h3>
+            <ul>
+                <li>a. When your HP drops below 25%, you resist all negative effects (stun, slow, silence, etc.) for 3s.</li>
+                <li>b. If all basic abilities are on cooldown, basic attacks deal 10% more damage.</li>
+                <li>c. Erron gets a magic shield that blocks 13% of damage.</li>
+            </ul>
+            <h3>Level 20</h3>
+            <ul>
+                <li>a. When your HP drops below 15%, you automatically regain 25% of your health and become immune to damage for 2s (105s cooldown).</li>
+			<li>b. R instantly kills enemies below 2000 HP, ignoring shields, damage reduction, etc.</li>
+			<li>c. Poison flask (item): When used, affected enemies suffer 10% more damage from anyone for 5s.</li>
+			<li>d. Enemies killed by Erron stay dead for an additional 10s.</li>
+		</ul>
 
+		<h2>Patch Notes (0.06)</h2>
+		<ul>
+			<li>AD/lvl: 7 to 8</li>
+			<li>R damage: [380/580/750/1000] to [550/820/1250/1700]</li>
+			<li>Level 20 b talent: 1200 HP instant kill to 2000 HP instant kill</li>
+		</ul>
+</body>
+</html>

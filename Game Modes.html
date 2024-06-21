@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Game Mode Selector</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #333333;
+            color: white;
+            font-family: Arial, sans-serif;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            font-size: 48px;
+            margin-bottom: 40px;
+        }
+        .container {
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        .game-mode {
+            display: inline-block;
+            margin: 20px;
+            padding: 20px;
+            width: 200px;
+            height: 200px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .game-mode:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .game-mode:hover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            animation: highlight 1s ease-out;
+        }
+        .game-mode img {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+        }
+        .game-mode span {
+            display: block;
+            font-size: 18px;
+        }
+        .menu {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            background-color: #444;
+            overflow: hidden;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .menu .menu-items {
+            display: flex;
+        }
+        .menu a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+        .play-button {
+            background-color: orange;
+            color: black;
+            border-radius: 20px;
+            padding: 14px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s, color 0.3s;
+            margin-right: 960px;
+        }
+        .play-button:hover {
+            background-color: darkgoldenrod;
+            color: white;
+            transform: scale(1.2);
+        }
+        #video-background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            filter: brightness(50%);
+        }
+        @keyframes highlight {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <video id="video-background" autoplay muted loop>
+        <source src="Event/Desert Wars Event.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="menu">
+        <div class="menu-items">
+            <a href="index.html">Home</a>
+            <a href="Skins.html">Skins</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+        </div>
+        <a href="Game Modes.html" class="play-button">Play</a>
+    </div>
+
+    <div class="container">
+        <h1>Select Game Mode</h1>
+        <div class="game-mode" onclick="location.href='Loading Screen.html'">
+            <img src="Draft Mode.png" alt="Draft Mode">
+            <span>Draft Mode</span>
+        </div>
+        <div class="game-mode" onclick="location.href='ARAM.html'">
+            <img src="ARAM.png" alt="ARAM">
+            <span>ARAM</span>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('video-background');
+        video.playbackRate = 0.5; // Set playback rate to 50% (0.5x speed)
+    </script>
+</body>
+</html>

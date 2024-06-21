@@ -1,43 +1,99 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Ibuki Character Bio</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ibuki - The Stealthy Ninja</title>
     <style>
-        /* CSS styles go here */
-        .champion-image {
-            position: absolute;
-            top: 50px;
-            right: 150px;
-            width: 300px;
-            height: 300px;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@400;700&family=Raleway:wght@400;600&display=swap');
+
         body {
-            font-family: "Times New Roman", Times, serif;
-            font-size: 16px;
-            line-height: 1.5;
-            color: #333;
+            font-family: 'Raleway', sans-serif;
+            background: linear-gradient(135deg, #1e1e1e 30%, #282828 100%);
+            color: #e1e1e1;
+            margin: 0;
+            padding: 0;
         }
-        .red {
-            color: red;
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: rgba(34, 34, 34, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            text-align: center;
         }
-        .blue {
-            color: blue;
+
+        .champion-image {
+            display: block;
+            margin: 0 auto 20px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid #444;
         }
-        .green {
-            color: darkgreen;
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3em;
+            color: #ff6347;
+            margin-bottom: 10px;
         }
-        .light-blue {
-            color: #ADD8F9;
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2em;
+            color: #ffa07a;
+            margin-top: 40px;
         }
-        .grey {
-            color: grey;
+
+        h3, h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5em;
+            color: #ffa07a;
         }
-        .orange {
-            color: orange;
+
+        ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
         }
-        .purple {
-            color: purple;
-        }   
+
+        ul li {
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+
+        .stat, .mana, .cd {
+            font-weight: bold;
+        }
+
+        .stat span, .mana span, .cd span {
+            font-size: 1.2em;
+        }
+
+        .red { color: #ff4500; }
+        .blue { color: #00bfff; }
+        .green { color: #32cd32; }
+        .light-blue { color: #87cefa; }
+        .grey { color: #a9a9a9; }
+        .orange { color: #ffa500; }
+        .purple { color: #800080; }
+
+        p, ul {
+            margin: 10px 20px;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .abilities, .talents, .patch-notes {
+            margin-top: 40px;
+        }
+
+        audio {
+            display: none;
+        }
     </style>
     <script>
         window.onload = function() {
@@ -48,71 +104,84 @@
     </script>
 </head>
 <body>
-    <img src="Icons/Ibuki.png" alt="Ibuki" width="100" height="100" class="champion-image">
-    <h1>Ibuki Character Bio</h1>
-    <h2>Stats</h2>
-    <ul>
-        <li><span class="red">(AD):</span> 70 (+10/lvl) -> 310</li>
-        <li><span class="blue">(AP):</span> - (+-/lvl) -> -</li>
-        <li><span class="green">(HP):</span> 711 (+135/lvl) -> 3951</li>
-        <li><span class="light-blue">Mana:</span> - (+-/lvl) -> -</li>
-        <li><span class="grey">(MS):</span> 370 (+2/lvl) -> 418</li>
-        <li><span class="orange">(AS):</span> 0.62 (+0.029/lvl) -> 1.31</li>
-    </ul>
-    <h2>Abilities</h2>
-    <h3>Passive: Mark of the Assassin</h3>
-    <p>Ibuki's accurate abilities mark the enemy for [6s]. The marked enemy takes a bonus <span class="red">[50%]</span> damage from Ibuki on the next hit. If the marked enemy is below <span class="green">[23% MaxHP]</span>, they take <span class="red">[200%]</span> damage from Ibuki. The mark disappears after taking damage.</p>
-    <h3>Q: Kunai Toss</h3>
-    <p><span class="light-blue">[0 mana]</span> <span class="purple">[7s/7s/6s/5s/5s cd/charge]</span></p>
-    <p>Ibuki throws a Kunai in the targeted direction. Two options are available:</p>
-    <p>Click: Short range <span class="red">[75/100/300/385/465/555]</span> damage</p>
-    <p>Hold: Long range <span class="red">[105/210/400/615/800]</span> damage</p>
-    <h3>W: Shinobi Dash</h3>
-    <p><span class="light-blue">[0 Mana]</span> <span class="purple">[0s cd]</span></p>
-    <p>Ibuki can jump to an enemy marked by her passive.</p>
-    <h3>E: Shadowstep</h3>
-    <p><span class="light-blue">[- Mana]</span> <span class="purple">[10s cd/charge]</span> <span class="purple">[2 charge]</span></p>
-    <p>After activating the ability, Ibuki becomes invisible for a maximum of [2s] after [0.45s]. If Ibuki deals damage or uses an ability, the invisibility is canceled. In addition, she gains <span class="grey">[+35% MS]</span> during invisibility.</p>
-    <h3>R: Sonic Leap</h3>
-    <p><span class="light-blue">[- Mana]</span> <span class="purple">[120s cd]</span></p>
-    <p>Ibuki leaps onto all enemies she has damaged in the last [8s]. During this time, Ibuki becomes untargetable and continuously dashes. All affected enemies take <span class="red">[555/1225/1400/1805]</span> damage and are marked with her passive again. This ability does not work with passive damage.</p>
-    <h2>Talents</h2>
-    <h3>Level 1</h3>
-    <ul>
-        <li>a. If Ibuki damages an enemy, she gains a bonus [20% MS] for [1.2s].</li>
-        <li>b. After using Shinobi Dash, Ibuki is immune to crowd control for [1s].</li>
-        <li>c. Ibuki cannot be slowed during the game.</li>
-    </ul>
-    <h3>Level 5</h3>
-    <ul>
-        <li>a. Shadowstep lasts [1s] longer and deals [4%] more damage for [2s] after use.</li>
-        <li>b. Ibuki's basic attacks deal [10%] more damage.</li>
-        <li>c. When Ibuki's HP is below [30%], she deals [18%] more damage.</li>
-    </ul>
-    <h3>Level 10</h3>
-    <ul>
-        <li>a. After using the R ability, Ibuki enters Shadowstep, and the E ability can be reactivated for extension.</li>
-        <li>b. After using the R ability, Ibuki gains [+50% MS] for [4s].</li>
-    </ul>
-    <h3>Level 15</h3>
-    <ul>
-        <li>a. Ibuki's short and long Kunai range increases.</li>
-        <li>b. The Q ability's cooldown is reduced by [1s].</li>
-        <li>c. Ibuki's HP increases by [15%].</li>
-    </ul>
-    <h3>Level 20</h3>
-    <ul>
-        <li>a. Ibuki can stay in Shadowstep for up to [20s], but enemy damage can break it, and nearby enemies reveal her.</li>
-        <li>b. If both Kunai hit the same target, Ibuki's next basic attack deals [50%] more damage to that enemy.</li>
-        <li>c. Item: Upon activation, Ibuki gains [+100% MS] for [4s] with a [30s cd]. On a kill, the cooldown is reduced to [5s].</li>
-        <li>d. Item: Upon activation, Ibuki gains [+2 Kunai charge] with a [45s cd].</li>
-    </ul>
-
-    <h2>Changelog (Patch 0.07)</h2>
-    <ul>
-        <li><span class="red">(AD/lvl):</span> Increased from +7 to +10.</li>
-        <li><span class="blue">Passive:</span> Mark cooldown per target removed.</li>
-        <li><span class="purple">Q cooldown:</span> Changed from [7s cd/charge] to [7s/7s/6s/5s/5s cd/charge].</li>
-    </ul>
+    <div class="container">
+        <img src="Icons/Ibuki.png" alt="Ibuki" class="champion-image">
+        <h1>Ibuki - The Stealthy Ninja</h1>
+        <h2>Stats</h2>
+        <ul>
+            <li class="stat"><span class="red">AD:</span> 70 (+10/lvl) <span class="green">-></span> 310</li>
+            <li class="stat"><span class="blue">AP:</span> - (+-/lvl) <span class="green">-></span> -</li>
+            <li class="stat"><span class="green">HP:</span> 711 (+135/lvl) <span class="green">-></span> 3951</li>
+            <li class="stat"><span class="light-blue">Mana:</span> - (+-/lvl) <span class="green">-></span> -</li>
+            <li class="stat"><span class="grey">MS:</span> 370 (+2/lvl) <span class="green">-></span> 418</li>
+            <li class="stat"><span class="orange">AS:</span> 0.62 (+0.029/lvl) <span class="green">-></span> 1.31</li>
+        </ul>
+        <div class="abilities">
+            <h2>Abilities</h2>
+            <h3>Passive: Mark of the Assassin</h3>
+            <p>Ibuki's accurate abilities mark the enemy for [6s]. The marked enemy takes a bonus <span class="red">[50%]</span> damage from Ibuki on the next hit. If the marked enemy is below <span class="green">[18% MaxHP]</span>, they take <span class="red">[200%]</span> damage from Ibuki. The mark disappears after taking damage.</p>
+            <h3>Q: Kunai Toss</h3>
+            <p class="mana"><span class="light-blue">[0 mana]</span> <span class="cd purple">[7s/7s/6s/5s/5s cd/charge]</span></p>
+            <p>Ibuki throws a Kunai in the targeted direction. Two options are available:</p>
+            <p>Click: Short range <span class="red">[75/100/300/385/465/555]</span> damage</p>
+            <p>Hold: Long range <span class="red">[95/200/375/600/700]</span> damage</p>
+            <h3>W: Shinobi Dash</h3>
+            <p class="mana"><span class="light-blue">[0 Mana]</span> <span class="cd purple">[0s cd]</span></p>
+            <p>Ibuki can jump to an enemy marked by her passive.</p>
+            <h3>E: Shadowstep</h3>
+            <p class="mana"><span class="light-blue">[- Mana]</span> <span class="cd purple">[10s cd/charge]</span> <span class="cd purple">[2 charge]</span></p>
+            <p>After activating the ability, Ibuki becomes invisible for a maximum of [2s] after [0.45s]. If Ibuki deals damage or uses an ability, the invisibility is canceled. In addition, she gains <span class="grey">[+35% MS]</span> during invisibility.</p>
+            <h3>R: Sonic Leap</h3>
+            <p class="mana"><span class="light-blue">[- Mana]</span> <span class="cd purple">[120s cd]</span></p>
+            <p>Ibuki leaps onto all enemies she has damaged in the last [8s]. During this time, Ibuki becomes untargetable and continuously dashes. All affected enemies take <span class="red">[555/1225/1400/1805]</span> damage and are marked with her passive again. This ability does not work with passive damage.</p>
+        </div>
+        <div class="talents">
+            <h2>Talents</h2>
+            <h3>Level 1</h3>
+            <ul>
+                <li>a. If Ibuki damages an enemy, she gains a bonus [20% MS] for [1.2s].</li>
+                <li>b. After using Shinobi Dash, Ibuki is immune to crowd control for [1s].</li>
+                <li>c. Ibuki cannot be slowed during the game.</li>
+            </ul>
+            <h3>Level 5</h3>
+            <ul>
+                <li>a. Shadowstep lasts [1s] longer and deals [4%] more damage for [2s] after use.</li>
+                <li>b. Ibuki's basic attacks deal [10%] more damage.</li>
+                <li>c. When Ibuki's HP is below [40%], she deals [10%] more damage.</li>
+            </ul>
+            <h3>Level 10</h3>
+            <ul>
+                <li>a. After using the R ability, Ibuki enters Shadowstep, and the E ability can be reactivated for extension.</li>
+                <li>b. After using the R ability, Ibuki gains [+50% MS] for [4s].</li>
+            </ul>
+            <h3>Level 15</h3>
+            <ul>
+                <li>a. Ibuki's short and long Kunai range increases.</li>
+                <li>b. The Q ability's cooldown is reduced by [1s].</li>
+                <li>c. Ibuki's HP increases by [15%].</li>
+            </ul>
+            <h3>Level 20</h3>
+            <ul>
+                <li>a. Ibuki can stay in Shadowstep for up to [20s], but enemy damage can break it, and nearby enemies reveal her.</li>
+                <li>b. If both Kunai hit the same target, Ibuki's next basic attack deals [50%] more damage to that enemy.</li>
+                <li>c. Item: Upon activation, Ibuki gains [+100% MS] for [4s] with a [30s cd]. On a kill, the cooldown is reduced to [5s].</li>
+                <li>d. Item: Upon activation, Ibuki gains [+2 Kunai charge] with a [45s cd].</li>
+            </ul>
+        </div>
+        <div class="patch-notes">
+            <h2>Changelog (Patch 0.07)</h2>
+            <ul>
+                <li><span class="red">(AD/lvl):</span> Increased from +7 to +10.</li>
+                <li><span class="blue">Passive:</span> Mark cooldown per target removed.</li>
+                <li><span class="purple">Q cooldown:</span> Changed from [7s cd/charge] to [7s/7s/6s/5s/5s cd/charge].</li>
+            </ul>
+            <h2>Changelog (Patch 0.08)</h2>
+            <ul>
+                <li><span class="blue">Passive:</span> Bonus damage trigger changed from <span class="green">23% MaxHP</span> to <span class="green">18% MaxHP</span>.</li>
+                <li><span class="purple">Q:</span> Long range damage decreased from <span class="red">[105/210/400/615/800]</span> to <span class="red">[95/200/375/600/700]</span>.</li>
+                <li><span class="orange">LVL 5 Talent c:</span> When Ibuki's HP is below [40%], she deals [10%] more damage.</li>
+            </ul>
+        </div>
+    </div>
 </body>
 </html>

@@ -3,40 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <title>Champion Skins</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
             padding: 0;
-            background-color: #222;
-            color: white;
-            font-family: Arial, sans-serif;
+            background-color: #1b1b1b;
+            color: #eaeaea;
+            font-family: 'Open Sans', sans-serif;
         }
         h1 {
             text-align: center;
-            font-size: 36px;
+            font-size: 3em;
             margin-top: 50px;
+            color: #ffcc00;
+        }
+        .menu {
+            position: top;
+            top: 0;
+            width: 100%;
+            background-color: #444;
+            overflow: hidden;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .menu .menu-items {
+            display: flex;
+        }
+        .menu a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+        .play-button {
+            background-color: orange;
+            color: black;
+            border-radius: 20px;
+            padding: 14px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s, color 0.3s;
+            margin-right: 910px;
+        }
+        .play-button:hover {
+            background-color: darkgoldenrod;
+            color: white;
+            transform: scale(1.2);
         }
         .container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             padding: 20px;
-            max-width: 1900px;
+            max-width: 1800px;
             margin: 0 auto;
         }
         .character {
-            flex: 1 1 30%;
-            max-width: 50%;
-            margin: 10px;
-            background-color: #333;
+            flex: 1 1 300px;
+            max-width: 300px;
+            margin: 20px;
+            background-color: #2c2c2c;
             border-radius: 10px;
             padding: 20px;
             box-sizing: border-box;
+            transition: transform 0.3s;
+        }
+        .character:not(.no-hover):hover {
+            transform: translateY(-10px);
         }
         .character h2 {
             text-align: center;
-            font-size: 24px;
-            margin-bottom: 10px;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #ffcc00;
         }
         .skins {
             display: flex;
@@ -50,34 +99,21 @@
             cursor: pointer;
         }
         .skin img {
-            max-width: 200px;
+            max-width: 100%;
             border: 2px solid #444;
             border-radius: 10px;
             transition: transform 0.2s;
         }
         .skin img:hover {
-            transform: scale(1.2);
+            transform: scale(1.1);
+            border-color: #ffcc00;
         }
         .skin-name {
             margin-top: 15px;
-            font-size: 14px;
+            font-size: 1em;
+            color: #eaeaea;
         }
-		#menu {
-            background-color: #444;
-            overflow: hidden;
-        }
-        #menu a {
-            float: left;
-            display: block;
-            color: white;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-        }
-        #menu a:hover {
-            background-color: #111;
-        }
-        .modal {
+        .lightbox {
             display: none;
             position: fixed;
             z-index: 1000;
@@ -86,58 +122,98 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.9);
-            overflow: auto;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease;
         }
-		.modal-content {
-			position: relative;
-			margin: center;
-			display: center;
-			justify-content: center; /* Center horizontally */
-			align-items: center; /* Center vertically */
-			width: 100%;
-			max-width: 80%;
-			max-height: 80%;
-			cursor: pointer;
-		}
-
-		.modal-content img {
-			max-width: 100%;
-			max-height: 100%;
-			border-radius: 10px;
-		}
-
+        .lightbox-content {
+            position: relative;
+            max-width: 80%;
+            max-height: 80%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+        }
         .close {
             position: absolute;
-            top: 10px;
-            right: 20px;
-            font-size: 50px;
-            color: white;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            color: #ffcc00;
             cursor: pointer;
         }
         .close:hover {
-            color: #ccc;
+            color: #eaeaea;
+        }
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            margin-top: -22px;
+            padding: 16px;
+            color: #ffcc00;
+            font-weight: bold;
+            font-size: 20px;
+            transition: 0.3s;
+        }
+        .prev:hover, .next:hover {
+            color: #eaeaea;
+        }
+        .prev {
+            left: 0;
+        }
+        .next {
+            right: 0;
+        }
+		        .search-container {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .search-container input {
+            margin: 0 10px;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #444;
+            border-radius: 10px;
+            background-color: #2c2c2c;
+            color: #eaeaea;
+        }
+        .search-container input::placeholder {
+            color: #888;
         }
     </style>
 </head>
 <body>
-    <div id="menu">
-        <a href="index.html">Home</a>
-		<a href="Skins.html">Skins</a>
-        <a href="event.html">Event</a>
-        <a href="Team Builder.html">Team Builder</a>
-		<a href="Loading Screen.html">Loading Screen</a>
+    <div class="menu">
+        <div class="menu-items">
+            <a href="index.html">Home</a>
+            <a href="Skins.html">Skins</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+        </div>
+        <a href="Game Modes.html" class="play-button">Play</a>
     </div>
-    <h1>Champion Skins</h1>
+    <div class="search-container">
+        <input type="text" id="characterSearch" placeholder="Search Characters">
+        <input type="text" id="skinSearch" placeholder="Search Skins">
+    </div>
     <div class="container">
         <!-- Group by Characters -->
         <div class="character">
             <h2>Julia</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Disco Queen Julia.jpeg">
                     <img src="Skins/Disco Queen Julia.jpeg" alt="Disco Queen Julia">
                     <div class="skin-name">Disco Queen Julia</div>
                 </div>
-                <div class="skin">
+                <div class="skin" data-src="Skins/River Spirit Julia.jpeg">
                     <img src="Skins/River Spirit Julia.jpeg" alt="River Spirit Julia">
                     <div class="skin-name">River Spirit Julia</div>
                 </div>
@@ -146,20 +222,24 @@
         <div class="character">
             <h2>Birdie</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Rockstar Birdie.png">
                     <img src="Skins/Rockstar Birdie.png" alt="Rockstar Birdie">
                     <div class="skin-name">Rockstar Birdie</div>
+                </div>
+                <div class="skin" data-src="Skins/Sand Soldier Birdie.jpeg">
+                    <img src="Skins/Sand Soldier Birdie.jpeg" alt="Sand Soldier Birdie">
+                    <div class="skin-name">Sand Soldier Birdie</div>
                 </div>
             </div>
         </div>
         <div class="character">
             <h2>Erron Black</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Country Erron Black.png">
                     <img src="Skins/Country Erron Black.png" alt="Country Erron Black">
                     <div class="skin-name">Country Erron Black</div>
                 </div>
-                <div class="skin">
+                <div class="skin" data-src="Skins/Mafia Leader Erron Black.png">
                     <img src="Skins/Mafia Leader Erron Black.png" alt="Mafia Leader Erron Black">
                     <div class="skin-name">Mafia Leader Erron Black</div>
                 </div>
@@ -168,7 +248,7 @@
         <div class="character">
             <h2>Morrigan</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Neon Morrigan.jpeg">
                     <img src="Skins/Neon Morrigan.jpeg" alt="Neon Morrigan">
                     <div class="skin-name">Neon Morrigan</div>
                 </div>
@@ -177,16 +257,16 @@
         <div class="character">
             <h2>Jun</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Blossom Jun.png">
                     <img src="Skins/Blossom Jun.png" alt="Blossom Jun">
                     <div class="skin-name">Blossom Jun</div>
                 </div>
             </div>
         </div>
-		<div class="character">
+        <div class="character">
             <h2>Cham Cham</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Blossom Cham Cham.png">
                     <img src="Skins/Blossom Cham Cham.png" alt="Blossom Cham Cham">
                     <div class="skin-name">Blossom Cham Cham</div>
                 </div>
@@ -195,24 +275,28 @@
         <div class="character">
             <h2>Reptile</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Blood Predator Reptile.png">
                     <img src="Skins/Blood Predator Reptile.png" alt="Blood Predator Reptile">
                     <div class="skin-name">Blood Predator Reptile</div>
                 </div>
-				<div class="skin">
+                <div class="skin" data-src="Skins/Cyber Ninja Reptile.png">
                     <img src="Skins/Cyber Ninja Reptile.png" alt="Cyber Ninja Reptile">
                     <div class="skin-name">Cyber Ninja Reptile</div>
+                </div>
+                <div class="skin" data-src="Skins/Sand Soldier Reptile.jpeg">
+                    <img src="Skins/Sand Soldier Reptile.jpeg" alt="Sand Soldier Reptile">
+                    <div class="skin-name">Sand Soldier Reptile</div>
                 </div>
             </div>
         </div>
         <div class="character">
             <h2>Akuma</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Rockstar Akuma.jpeg">
                     <img src="Skins/Rockstar Akuma.jpeg" alt="Rockstar Akuma">
                     <div class="skin-name">Rockstar Akuma</div>
                 </div>
-                <div class="skin">
+                <div class="skin" data-src="Skins/Thunder God Akuma.png">
                     <img src="Skins/Thunder God Akuma.png" alt="Thunder God Akuma">
                     <div class="skin-name">Thunder God Akuma</div>
                 </div>
@@ -221,24 +305,24 @@
         <div class="character">
             <h2>Elphelt</h2>
             <div class="skins">
-                <div class="skin">
-                    <img src="Skins/Maid Elphelt.jpg" alt="Maid Elphelt">
+                <div class="skin" data-src="Skins/Maid Elphelt.jpg">
+                    <img src="Skins/Maid Elphelt.png" alt="Maid Elphelt">
                     <div class="skin-name">Maid Elphelt</div>
                 </div>
-				<div class="skin">
+                <div class="skin" data-src="Skins/Cyber Hunter Elphelt.png">
                     <img src="Skins/Cyber Hunter Elphelt.png" alt="Cyber Hunter Elphelt">
                     <div class="skin-name">Cyber Hunter Elphelt</div>
-				</div>
+                </div>
             </div>
         </div>
         <div class="character">
             <h2>Kotal Kahn</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Demon Lord Kotal Kahn.png">
                     <img src="Skins/Demon Lord Kotal Kahn.png" alt="Demon Lord Kotal Kahn">
                     <div class="skin-name">Demon Lord Kotal Kahn</div>
                 </div>
-				<div class="skin">
+                <div class="skin" data-src="Skins/Cyber Warrior Kotal Kahn.png">
                     <img src="Skins/Cyber Warrior Kotal Kahn.png" alt="Cyber Warrior Kotal Kahn">
                     <div class="skin-name">Cyber Warrior Kotal Kahn</div>
                 </div>
@@ -247,11 +331,11 @@
         <div class="character">
             <h2>Scorpion</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Spider Scorpion.png">
                     <img src="Skins/Spider Scorpion.png" alt="Spider Scorpion">
                     <div class="skin-name">Spider Scorpion</div>
                 </div>
-				<div class="skin">
+                <div class="skin" data-src="Skins/Blossom Scorpion.png">
                     <img src="Skins/Blossom Scorpion.png" alt="Blossom Scorpion">
                     <div class="skin-name">Blossom Scorpion</div>
                 </div>
@@ -260,7 +344,7 @@
         <div class="character">
             <h2>Peacock</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Cyber Bomber Peacock.jpeg">
                     <img src="Skins/Cyber Bomber Peacock.jpeg" alt="Cyber Bomber Peacock">
                     <div class="skin-name">Cyber Bomber Peacock</div>
                 </div>
@@ -269,11 +353,11 @@
         <div class="character">
             <h2>Angel</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Blossom Angel.png">
                     <img src="Skins/Blossom Angel.png" alt="Blossom Angel">
                     <div class="skin-name">Blossom Angel</div>
                 </div>
-                <div class="skin">
+                <div class="skin" data-src="Skins/Voidborn Angel.png">
                     <img src="Skins/Voidborn Angel.png" alt="Voidborn Angel">
                     <div class="skin-name">Voidborn Angel</div>
                 </div>
@@ -282,24 +366,28 @@
         <div class="character">
             <h2>Astaroth</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Royal Guard Astaroth.png">
                     <img src="Skins/Royal Guard Astaroth.png" alt="Royal Guard Astaroth">
                     <div class="skin-name">Royal Guard Astaroth</div>
+                </div>
+                <div class="skin" data-src="Skins/Sand Soldier Astaroth.png">
+                    <img src="Skins/Sand Soldier Astaroth.png" alt="Sand Soldier Astaroth">
+                    <div class="skin-name">Sand Soldier Astaroth</div>
                 </div>
             </div>
         </div>
         <div class="character">
             <h2>Ibuki</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/DJ Ibuki.png">
                     <img src="Skins/DJ Ibuki.png" alt="DJ Ibuki">
                     <div class="skin-name">DJ Ibuki</div>
                 </div>
-                <div class="skin">
+                <div class="skin" data-src="Skins/Demon Hunter Ibuki.png">
                     <img src="Skins/Demon Hunter Ibuki.png" alt="Demon Hunter Ibuki">
                     <div class="skin-name">Demon Hunter Ibuki</div>
                 </div>
-                <div class="skin">
+                <div class="skin" data-src="Skins/Red Stone Ibuki.png">
                     <img src="Skins/Red Stone Ibuki.png" alt="Red Stone Ibuki">
                     <div class="skin-name">Red Stone Ibuki</div>
                 </div>
@@ -308,11 +396,11 @@
         <div class="character">
             <h2>R.Mika</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Phoenix R.Mika.png">
                     <img src="Skins/Phoenix R.Mika.png" alt="Phoenix R.Mika">
                     <div class="skin-name">Phoenix R.Mika</div>
                 </div>
-                <div class="skin">
+                <div class="skin" data-src="Skins/Pop Star R.Mika.png">
                     <img src="Skins/Pop Star R.Mika.png" alt="Pop Star R.Mika">
                     <div class="skin-name">Pop Star R.Mika</div>
                 </div>
@@ -321,7 +409,7 @@
         <div class="character">
             <h2>Raiden</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Master of Monks Raiden.jpeg">
                     <img src="Skins/Master of Monks Raiden.jpeg" alt="Master of Monks Raiden">
                     <div class="skin-name">Master of Monks Raiden</div>
                 </div>
@@ -330,11 +418,11 @@
         <div class="character">
             <h2>Yugo</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Street Fighter Yugo.png">
                     <img src="Skins/Street Fighter Yugo.png" alt="Street Fighter Yugo">
                     <div class="skin-name">Street Fighter Yugo</div>
                 </div>
-				<div class="skin">
+                <div class="skin" data-src="Skins/Cyber Predator Yugo.png">
                     <img src="Skins/Cyber Predator Yugo.png" alt="Cyber Predator Yugo">
                     <div class="skin-name">Cyber Predator Yugo</div>
                 </div>
@@ -343,56 +431,116 @@
         <div class="character">
             <h2>Talim</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Vampire Talim.png">
                     <img src="Skins/Vampire Talim.png" alt="Vampire Talim">
                     <div class="skin-name">Vampire Talim</div>
                 </div>
+                <div class="skin" data-src="Skins/Sand Soldier Talim.jpeg">
+                    <img src="Skins/Sand Soldier Talim.jpeg" alt="Sand Soldier Talim">
+                    <div class="skin-name">Sand Soldier Talim</div>
+                </div>
             </div>
-		</div>
-		<div class="character">
+        </div>
+        <div class="character">
             <h2>Noel</h2>
             <div class="skins">
-                <div class="skin">
+                <div class="skin" data-src="Skins/Officer Noel.jpeg">
                     <img src="Skins/Officer Noel.jpeg" alt="Officer Noel">
                     <div class="skin-name">Officer Noel</div>
                 </div>
             </div>
-    <!-- The Modal -->
-    <div id="myModal" class="modal">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <div class="modal-content">
-            <img id="modalImg" src="" alt="">
+        </div>
+        <div class="character">
+            <h2>Blanka</h2>
+            <div class="skins">
+                <div class="skin" data-src="Skins/Enraged Blanka.png">
+                    <img src="Skins/Enraged Blanka.png" alt="Enraged Blanka">
+                    <div class="skin-name">Enraged Blanka</div>
+                </div>
+            </div>
+        </div>
+    </div>
+     <!-- The Lightbox -->
+    <div id="lightbox" class="lightbox">
+        <span class="close" onclick="closeLightbox()">&times;</span>
+        <div class="lightbox-content">
+            <span class="prev" onclick="changeSlide(-1)">&#10094;</span>
+            <img id="lightboxImg" src="" alt="">
+            <span class="next" onclick="changeSlide(1)">&#10095;</span>
         </div>
     </div>
 
-    <!-- Script for Modal functionality -->
+    <!-- Script for Lightbox functionality -->
     <script>
-        // Get the modal and modal image elements
-        var modal = document.getElementById('myModal');
-        var modalImg = document.getElementById('modalImg');
-
-        // Get all skin elements
+        var lightbox = document.getElementById('lightbox');
+        var lightboxImg = document.getElementById('lightboxImg');
+        var currentSkinIndex = 0;
         var skins = document.querySelectorAll('.skin');
+        var body = document.querySelector('body');
 
-        // Add click event listener to each skin
-        skins.forEach(function(skin) {
+        skins.forEach(function(skin, index) {
             skin.addEventListener('click', function() {
-                var img = this.querySelector('img');
-                openModal(img.src, img.alt);
+                currentSkinIndex = index;
+                openLightbox(skin.getAttribute('data-src'), skin.querySelector('img').alt);
             });
         });
 
-        // Function to open modal with clicked image
-        function openModal(imgSrc, imgAlt) {
-            modal.style.display = 'block';
-            modalImg.src = imgSrc;
-            modalImg.alt = imgAlt;
+        function openLightbox(imgSrc, imgAlt) {
+            lightbox.style.display = 'flex';
+            lightboxImg.src = imgSrc;
+            lightboxImg.alt = imgAlt;
+            body.classList.add('no-hover');
         }
 
-        // Function to close modal
-        function closeModal() {
-            modal.style.display = 'none';
+        function closeLightbox() {
+            lightbox.style.display = 'none';
+            body.classList.remove('no-hover');
         }
+
+        function changeSlide(step) {
+            currentSkinIndex += step;
+            if (currentSkinIndex < 0) currentSkinIndex = skins.length - 1;
+            if (currentSkinIndex >= skins.length) currentSkinIndex = 0;
+            var newSkin = skins[currentSkinIndex];
+            lightboxImg.src = newSkin.getAttribute('data-src');
+            lightboxImg.alt = newSkin.querySelector('img').alt;
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') closeLightbox();
+            if (event.key === 'ArrowLeft') changeSlide(-1);
+            if (event.key === 'ArrowRight') changeSlide(1);
+        });
+		 // Search functionality
+        document.getElementById('characterSearch').addEventListener('input', function() {
+            let filter = this.value.toLowerCase();
+            let characters = document.querySelectorAll('.character');
+            characters.forEach(character => {
+                let characterName = character.querySelector('h2').innerText.toLowerCase();
+                if (characterName.includes(filter)) {
+                    character.style.display = '';
+                } else {
+                    character.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('skinSearch').addEventListener('input', function() {
+            let filter = this.value.toLowerCase();
+            let skins = document.querySelectorAll('.skin');
+            skins.forEach(skin => {
+                let skinName = skin.querySelector('.skin-name').innerText.toLowerCase();
+                if (skinName.includes(filter)) {
+                    skin.parentElement.parentElement.style.display = '';
+                    skin.style.display = '';
+                } else {
+                    skin.style.display = 'none';
+                    if (skin.parentElement.querySelectorAll('.skin:not([style*="display: none"])').length === 0) {
+                        skin.parentElement.parentElement.style.display = 'none';
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>

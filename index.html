@@ -23,7 +23,7 @@
             flex-direction: column;
             align-items: center;
             max-width: 1000px;
-            margin: 20px auto;
+            margin: 120px auto 20px auto; /* Adjusted margin-top to account for the fixed menu */
             padding: 20px;
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
@@ -70,20 +70,48 @@
             border-radius: 5px;
             border: none;
         }
-        #menu {
+        .menu {
+            position: fixed;
+            top: 0;
+            width: 100%;
             background-color: #444;
             overflow: hidden;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000; /* Ensure the menu is above other content */
         }
-        #menu a {
-            float: left;
+        .menu .menu-items {
+            display: flex;
+        }
+        .menu a {
             display: block;
             color: white;
             text-align: center;
             padding: 14px 16px;
             text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s;
         }
-        #menu a:hover {
+        .menu a:hover {
             background-color: #111;
+            transform: scale(1.1);
+        }
+        .play-button {
+            background-color: orange;
+            color: black;
+            border-radius: 20px;
+            padding: 14px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s, color 0.3s;
+            margin-right: 960px;
+        }
+        .play-button:hover {
+            background-color: darkgoldenrod;
+            color: white;
+            transform: scale(1.2);
         }
         .modal {
             display: none;
@@ -118,80 +146,71 @@
             color: white;
             text-decoration: none;
             cursor: pointer;
-		}
-		#quests-container {
-			position: fixed;
-			bottom: 70px;
-			right: 20px;
-			background-color: #444;
-			padding: 15px;
-			border-radius: 10px;
-			width: 300px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-			transition: transform 0.3s ease, opacity 0.3s ease;
-			transform: translateY(100%);
-			opacity: 0;
-		}
-
-		#quests-container.open {
-			transform: translateY(0);
-			opacity: 1;
-		}
-
-		.quest-section {
-			margin-bottom: 20px;
-		}
-
-		.quest-section h2 {
-			color: gold;
-			font-size: 18px;
-			margin-bottom: 10px;
-		}
-
-		.quest-section ul {
-			list-style-type: none;
-			padding: 0;
-		}
-
-		.quest-section ul li {
-			font-size: 14px;
-			margin-bottom: 8px;
-			line-height: 1.6;
-		}
-
-		.quest-section ul li::before {
-			content: "\2022";  /* Bullet point */
-			color: gold;
-			display: inline-block;
-			width: 1em;
-			margin-left: -1em;
-		}
-
-		#quests-toggle {
-			position: fixed;
-			bottom: 20px;
-			right: 20px;
-			background-color: #444;
-			padding: 15px;
-			border-radius: 10px;
-			color: white;
-			cursor: pointer;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-		}
-
-		#quest-count {
-			background-color: red;
-			color: white;
-			border-radius: 50%;
-			padding: 5px 10px;
-			margin-right: 10px;
-			font-size: 14px;
-			font-weight: bold;
-		}
-
+        }
+        #quests-container {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background-color: #444;
+            padding: 15px;
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        #quests-container.open {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .quest-section {
+            margin-bottom: 20px;
+        }
+        .quest-section h2 {
+            color: gold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .quest-section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .quest-section ul li {
+            font-size: 14px;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        .quest-section ul li::before {
+            content: "\2022";  /* Bullet point */
+            color: gold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        #quests-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #444;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        #quest-count {
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 5px 10px;
+            margin-right: 10px;
+            font-size: 14px;
+            font-weight: bold;
+        }
         #video-background {
             position: fixed;
             right: 0;
@@ -199,22 +218,23 @@
             min-width: 100%;
             min-height: 100%;
             z-index: -1;
-            filter: brightness(70%);
+            filter: brightness(50%);
         }
     </style>
 </head>
 <body>
     <video id="video-background" autoplay muted loop>
-        <source src="Event/Cyber City Event.mp4" type="video/mp4">
+        <source src="Event/Desert Wars Event.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
-
-    <div id="menu">
-        <a href="index.html">Home</a>
-		<a href="Skins.html">Skins</a>
-        <a href="event.html">Event</a>
-        <a href="Team Builder.html">Team Builder</a>
-		<a href="Loading Screen.html">Loading Screen</a>
+    <div class="menu">
+        <div class="menu-items">
+            <a href="index.html">Home</a>
+            <a href="Skins.html">Skins</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+        </div>
+        <a href="Game Modes.html" class="play-button">Play</a>
     </div>
     <div id="champion-selector-container">
         <div id="search-container">
@@ -242,7 +262,7 @@
 			<a href="Yugo Page.html"><img src="Icons/Yugo.png" alt="Yugo" class="champion-image"></a>
 			<a href="Talim Page.html"><img src="Icons/Talim.png" alt="Talim" class="champion-image"></a>
 			<a href="Noel Page.html"><img src="Icons/Noel.png" alt="Noel" class="champion-image"></a>
-			<a href="Blanka Page.html"><img src="Icons/Blanka.png" alt="Blanka" class="champion-image gray"></a>
+			<a href="Blanka Page.html"><img src="Icons/Blanka.png" alt="Blanka" class="champion-image"></a>
 			<a href="Nina Page.html"><img src="Icons/Nina.png" alt="Nina" class="champion-image gray"></a>
 			<a href="Ayane Page.html"><img src="Icons/Ayane.png" alt="Ayane" class="champion-image gray"></a>
 			<a href="Siegfried Page.html"><img src="Icons/Siegfried.png" alt="Siegfried" class="champion-image gray"></a>
