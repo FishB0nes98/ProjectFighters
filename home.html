@@ -35,9 +35,13 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 		
+				// Import necessary functions from Firebase SDK
+		import { ref, set } from 'firebase/database';
+
 		// Function to update data in Firebase Realtime Database
-		function update(ref, updates) {
-			return set(ref, updates);
+		function updateData(refPath, updates) {
+			const dbRef = ref(database, refPath);
+			return set(dbRef, updates);
 		}
 
         // Function to check if user is logged in and update UI
@@ -108,12 +112,14 @@
         modal.style.display = 'none';
     };
 
-		// Function to select an icon
+		// Function to update user's icon selection
 		function selectIcon(icon) {
 			const user = auth.currentUser;
 			if (user) {
-				const userRef = ref(database, 'users/' + user.uid);
-				update(userRef, { icon: icon })
+				const userRefPath = `users/${user.uid}`;
+				const updates = { icon: icon };
+
+				updateData(userRefPath, updates)
 					.then(() => {
 						document.getElementById('profile-image').src = `Icons/${icon}`;
 						document.getElementById('profile-image').alt = 'Profile Icon';
