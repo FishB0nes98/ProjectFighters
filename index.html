@@ -96,9 +96,9 @@
     </div>
 
     <!-- Firebase JS SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"></script>
     <script>
         // Firebase configuration
         const firebaseConfig = {
@@ -159,15 +159,18 @@
                             username: username,
                             email: email,
                             icon: 'Julia.png' // Default icon
+                        }).then(() => {
+                            alert('Registration successful');
+                            window.location.href = 'home.html'; // Redirect to home page
+                        }).catch((error) => {
+                            alert('Error saving user data to database: ' + error.message);
                         });
-                        alert('Registration successful');
-                        window.location.href = 'home.html'; // Redirect to home page
                     }).catch((error) => {
-                        alert(error.message);
+                        alert('Error updating user profile: ' + error.message);
                     });
                 })
                 .catch((error) => {
-                    alert(error.message);
+                    alert('Error creating user: ' + error.message);
                 });
         }
 
