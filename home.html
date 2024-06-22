@@ -37,7 +37,7 @@
 		
 		// Function to update data in Firebase Realtime Database
 		function update(ref, updates) {
-			return set(ref, updates); // Using set to update data
+			return firebase.database().ref(ref).update(updates); // Using update to update data
 		} 
         // Function to check if user is logged in and update UI
         window.onload = function() {
@@ -109,11 +109,12 @@
     };
 
 	// Function to select an icon
-		function selectIcon(icon) {
-		const user = auth.currentUser;
+	function selectIcon(icon) {
+		const user = firebase.auth().currentUser;
 		if (user) {
-			const userRef = ref(database, 'users/' + user.uid);
-			update(userRef, { icon: icon })
+			const userRef = 'users/' + user.uid;
+			const updates = { icon: icon };
+			update(userRef, updates)
 				.then(() => {
 					document.getElementById('profile-image').src = `Icons/${icon}`;
 					document.getElementById('profile-image').alt = 'Profile Icon';
