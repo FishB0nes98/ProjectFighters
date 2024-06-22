@@ -14,7 +14,7 @@
         document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
     </script>
     <script type="module">
-        // Firebase configuration (same as above)
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
             authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
@@ -28,28 +28,32 @@
 
         // Initialize Firebase
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
-        import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
-        import { getDatabase } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
 
         // Function to check if user is logged in and update UI
-        window.onload = async function() {
-            const user = auth.currentUser;
-            if (user) {
-                const userRef = database.ref('users/' + user.uid);
-                const snapshot = await userRef.once('value');
-                const userData = snapshot.val();
-                if (userData) {
-                    // Update UI with user info
-                    document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
-                    document.getElementById('profile-image').src = `Icons/${userData.icon || 'Julia.png'}`;
-                    document.getElementById('profile-image').alt = 'Profile Icon';
-                    document.getElementById('user-info').style.display = 'flex'; // Show user info section
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        // Update UI with user info
+                        document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
+                        document.getElementById('profile-image').src = `Icons/${userData.icon || 'Julia.png'}`;
+                        document.getElementById('profile-image').alt = 'Profile Icon';
+                        document.getElementById('user-info').style.display = 'flex'; // Show user info section
+                    }
+                } else {
+                    // Redirect to login page if not logged in
+                    window.location.href = 'index.html';
                 }
-            }
+            });
         };
     </script>
     <script>
