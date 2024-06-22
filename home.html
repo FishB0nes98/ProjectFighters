@@ -70,10 +70,57 @@
             alert('Collection clicked');
         };
 
-        // Function to handle "Change Icon"
-        window.changeIcon = function() {
-            alert('Change Icon clicked');
+         // Function to open the modal for changing icon
+        window.openChangeIconModal = function() {
+            const modal = document.getElementById('change-icon-modal');
+            modal.style.display = 'block';
+
+         // Load icons dynamically
+           const iconList = document.getElementById('icon-list');
+            iconList.innerHTML = '';
+
+            const icons = [
+                'Julia.png', 'Birdie.png', 'Erron Black.png', 'Cham Cham.png', 'Morrigan.png',
+                'Jun.png', 'Reptile.png', 'Akuma.png', 'Elphelt.png', 'Kotal Kahn.png',
+                'Scorpion.png', 'Peacock.png', 'Angel.png', 'Astaroth.png', 'Ibuki.png',
+                'R.Mika.png', 'Raiden.png', 'Yugo.png', 'Talim.png', 'Noel.png',
+                'Blanka.png', 'Nina.png', 'Ayane.png', 'Siegfried.png', 'Shoma.png'
+            ];
+
+            icons.forEach(icon => {
+                const img = document.createElement('img');
+                img.src = `Icons/${icon}`;
+                img.alt = icon.replace('.png', '');
+                img.classList.add('champion-image');
+                img.onclick = () => selectIcon(icon);
+                iconList.appendChild(img);
+            });
         };
+
+        // Function to close the change icon modal
+        window.closeChangeIconModal = function() {
+            const modal = document.getElementById('change-icon-modal');
+            modal.style.display = 'none';
+        };
+
+        // Function to select an icon
+        function selectIcon(icon) {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = ref(database, 'users/' + user.uid);
+                update(userRef, { icon: icon })
+                    .then(() => {
+                        document.getElementById('profile-image').src = `Icons/${icon}`;
+                        document.getElementById('profile-image').alt = 'Profile Icon';
+                        closeChangeIconModal();
+                    })
+                    .catch(error => {
+                        console.error('Error updating icon:', error);
+                    });
+            } else {
+                console.error('User not authenticated');
+            }
+        }
 
         // Function to handle "Log Out"
         window.logOut = function() {
@@ -83,6 +130,16 @@
                 console.error('Sign out error:', error);
             });
         };
+		
+		// Function to handle "Log Out"
+			window.logOut = function() {
+			signOut(auth).then(() => {
+				window.location.href = 'index.html'; // Redirect to index.html after sign out
+			}).catch((error) => {
+				console.error('Sign out error:', error);
+			});
+		};
+
     </script>
     <script>
         // Function to search champions
@@ -243,7 +300,7 @@
 			padding: 5px 10px;
 			box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 			width: calc(100% - 340px);
-			max-width: 300px;
+			max-width: 275px;
 		}
 
 		#username-display {
@@ -416,6 +473,51 @@
             font-size: 14px;
             font-weight: bold;
         }
+		.modal {
+			display: none; /* Hidden by default */
+			position: fixed; /* Stay in place */
+			z-index: 1000; /* Sit on top */
+			left: 0;
+			top: 0;
+			width: 100%; /* Full width */
+			height: 100%; /* Full height */
+			overflow: auto; /* Enable scrolling if needed */
+			background-color: rgba(0, 0, 0, 0.5); /* Black with transparency */
+			padding-top: 50px; /* Center modal vertically */
+		}
+
+		.modal-content {
+			background-color: black;
+			margin: auto;
+			padding: 20px;
+			border-radius: 10px;
+			box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+			max-width: 90%; /* Adjust width as needed */
+			max-height: 80%; /* Adjust height as needed */
+			overflow: auto; /* Enable scrolling if content exceeds dimensions */
+		}
+
+		.close {
+			color: #aaaaaa;
+			float: right;
+			font-size: 30px;
+			font-weight: bold;
+			line-height: 1;
+		}
+
+		.close:hover,
+		.close:focus {
+			color: #000;
+			text-decoration: none;
+			cursor: pointer;
+		}
+
+		/* Media query for responsiveness */
+		@media (min-width: 800px) {
+			.modal-content {
+				max-width: 800px; /* Adjust maximum width for larger screens */
+			}
+		}
     </style>
 </head>
 <body>
@@ -444,16 +546,27 @@
         <img id="profile-image" class="champion-image" src="Icons/Birdie.png" alt="Profile Icon">
     </div>
 
-    <!-- Profile Menu Pop-up -->
-    <div id="profile-menu" class="profile-menu">
-        <ul>
-            <li onclick="profile()">Profile</li>
-            <li onclick="changeIcon()">Change Icon</li>
-            <li onclick="viewCollection()">Collection</li>
-            <li onclick="logOut()">Log Out</li>
-        </ul>
-    </div>
+	<!-- Profile Menu Pop-up -->
+	<div id="profile-menu" class="profile-menu">
+		<ul>
+			<li onclick="profile()">Profile</li>
+			<li onclick="openChangeIconModal()">Change Icon</li>
+			<li onclick="viewCollection()">Collection</li>
+			<li onclick="logOut()">Log Out</li>
+		</ul>
+	</div>
 
+	
+    <!-- Modal for Changing Profile Icon -->
+    <div id="change-icon-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeChangeIconModal()">&times;</span>
+            <h2>Select Your Profile Icon</h2>
+            <div id="icon-list">
+                <!-- Icons will be dynamically loaded here -->
+            </div>
+        </div>
+    </div>
     <!-- Champion Selector -->
     <div id="champion-selector-container">
         <div id="search-container">
