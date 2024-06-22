@@ -176,34 +176,41 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.7);
             padding: 10px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
-            backdrop-filter: blur(10px);
+            transition: background-color 0.3s ease;
         }
+
+        .menu:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
         .menu .menu-items {
             display: flex;
         }
+
         .menu a {
             display: block;
             color: white;
             text-align: center;
             padding: 14px 16px;
             text-decoration: none;
-            transition: background-color 0.3s, transform 0.3s;
             font-family: 'Roboto', sans-serif;
-            font-weight: 500;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
         }
+
         .menu a:hover {
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: #111;
             transform: scale(1.1);
         }
+
         .play-button {
-            margin-right: 960px;
+            margin-right: 20px; /* Adjust as needed */
             background-color: orange;
             color: black;
             border-radius: 20px;
@@ -213,6 +220,7 @@
             transition: background-color 0.3s, transform 0.3s, color 0.3s;
             padding: 10px 20px;
         }
+
         .play-button:hover {
             background-color: darkgoldenrod;
             color: white;
@@ -224,6 +232,7 @@
             align-items: center;
             margin-right: 20px;
         }
+
         #username-display {
             margin-right: 10px;
             font-size: 20px;
@@ -273,6 +282,7 @@
             background-color: #111;
             transform: scale(1.1);
         }
+
         #video-background {
             position: fixed;
             right: 0;
@@ -317,7 +327,9 @@
         .profile-menu ul li:last-child {
             border-bottom: none;
         }
-		        #quests-container {
+
+        /* Quests Container */
+        #quests-container {
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -331,27 +343,33 @@
             opacity: 0;
             z-index: 1000;
         }
+
         #quests-container.open {
             transform: translateY(0);
             opacity: 1;
         }
+
         .quest-section {
             margin-bottom: 10px;
         }
+
         .quest-section h2 {
             color: gold;
             font-size: 18px;
             margin-bottom: 10px;
         }
+
         .quest-section ul {
             list-style-type: none;
             padding: 0;
         }
+
         .quest-section ul li {
             font-size: 14px;
             margin-bottom: 8px;
             line-height: 1.6;
         }
+
         .quest-section ul li::before {
             content: "\2022";
             color: gold;
@@ -359,6 +377,8 @@
             width: 1em;
             margin-left: -1em;
         }
+
+        /* Quests Toggle Button */
         #quests-toggle {
             position: fixed;
             bottom: 20px;
@@ -373,6 +393,7 @@
             justify-content: center;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
+
         #quest-count {
             background-color: red;
             color: white;
@@ -381,6 +402,7 @@
             margin-right: 10px;
             font-size: 14px;
             font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -401,10 +423,12 @@
         <div>
             <a href="Game Modes.html" class="play-button">Play</a>
         </div>
-        <div id="user-info" style="display: none;" onclick="toggleProfileMenu()">
-            <span id="username-display"></span>
-            <img id="profile-image" class="champion-image" src="Icons/Birdie.png" alt="Profile Icon">
-        </div>
+    </div>
+
+    <!-- User Profile Info -->
+    <div id="user-info" style="display: none;" onclick="toggleProfileMenu()">
+        <span id="username-display"></span>
+        <img id="profile-image" class="champion-image" src="Icons/Birdie.png" alt="Profile Icon">
     </div>
 
     <!-- Profile Menu Pop-up -->
