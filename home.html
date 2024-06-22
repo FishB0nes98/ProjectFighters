@@ -242,7 +242,7 @@
         </div>
         <div id="user-info" style="display: none;">
             <span id="username-display"></span>
-            <img id="profile-image" class="champion-image" style="width: 50px; height: 50px; border-radius: 50%;" src="Icons/Julia.png" alt="Profile Icon">
+            <img id="profile-image" class="champion-image" style="width: 50px; height: 50px; border-radius: 50%;" src="Icons/Birdie.png" alt="Profile Icon">
         </div>
     </div>
 
@@ -329,32 +329,33 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        // Function to retrieve user info and update UI
-        window.onload = async function() {
-            const user = auth.currentUser;
-            if (user) {
-                const userRef = ref(database, 'users/' + user.uid);
-                const userDataSnapshot = await get(userRef);
-                if (userDataSnapshot.exists()) {
-                    const userData = userDataSnapshot.val();
-                    updateUserInfo(userData);
-                }
+   // Function to retrieve user info and update UI
+    window.onload = async function() {
+        const user = auth.currentUser;
+        if (user) {
+            const userRef = ref(database, 'users/' + user.uid);
+            const userDataSnapshot = await get(userRef);
+            if (userDataSnapshot.exists()) {
+                const userData = userDataSnapshot.val();
+                updateUserInfo(userData);
             }
-        };
-
-        // Function to update user info in the UI
-        function updateUserInfo(userData) {
-            const usernameDisplay = document.getElementById('username-display');
-            const profileImage = document.getElementById('profile-image');
-
-            // Display username and profile image
-            usernameDisplay.textContent = userData.username || userData.email.split('@')[0];
-            profileImage.src = `Icons/${userData.photoURL || 'Julia.png'}`; // Default to Julia.png if no photoURL
-            profileImage.alt = 'Profile Icon';
-
-            // Show user info
-            document.getElementById('user-info').style.display = 'flex';
         }
+    };
+
+    // Function to update user info in the UI
+    function updateUserInfo(userData) {
+        const usernameDisplay = document.getElementById('username-display');
+        const profileImage = document.getElementById('profile-image');
+
+        // Display username and profile image
+        usernameDisplay.textContent = userData.username || userData.email.split('@')[0];
+        profileImage.src = `Icons/${userData.icon || 'Julia.png'}`; // Default to Julia.png if no icon
+        profileImage.alt = 'Profile Icon';
+
+        // Show user info
+        document.getElementById('user-info').style.display = 'flex';
+    }
+
 
         // Function to search champions
         window.searchChampion = function() {
