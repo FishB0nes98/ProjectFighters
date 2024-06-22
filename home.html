@@ -34,63 +34,63 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        // Function to update data in Firebase Realtime Database
-        async function updateData(updates) {
-            const user = auth.currentUser;
-            if (user) {
-                const userRef = ref(database, 'users/' + user.uid);
-                try {
-                    await set(userRef, updates);
-                    console.log('Data updated successfully');
-                } catch (error) {
-                    console.error('Error updating data:', error);
-                }
-            } else {
-                console.error('User not authenticated');
+         // Function to update data in Firebase Realtime Database
+    async function updateData(updates) {
+        const user = auth.currentUser;
+        if (user) {
+            const userRef = ref(database, 'users/' + user.uid);
+            try {
+                await update(userRef, updates); // Use update instead of set
+                console.log('Data updated successfully');
+            } catch (error) {
+                console.error('Error updating data:', error);
             }
+        } else {
+            console.error('User not authenticated');
         }
+    }
 
         // Function to check if user is logged in and update UI
-        window.onload = function() {
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    console.log("User is authenticated", user); // Debugging line
-                    const userRef = ref(database, 'users/' + user.uid);
-                    const snapshot = await get(userRef);
-                    const userData = snapshot.val();
-                    if (userData) {
-                        console.log("User data retrieved", userData); // Debugging line
-                        // Update UI with user info
-                        document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
-                        document.getElementById('profile-image').src = `Icons/${userData.icon || 'Julia.png'}`;
-                        document.getElementById('profile-image').alt = 'Profile Icon';
-                        document.getElementById('user-info').style.display = 'flex'; // Show user info section
-                    } else {
-                        console.log("No user data found"); // Debugging line
-                    }
+         window.onload = function() {
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                console.log("User is authenticated", user); // Debugging line
+                const userRef = ref(database, 'users/' + user.uid);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+                if (userData) {
+                    console.log("User data retrieved", userData); // Debugging line
+                    // Update UI with user info
+                    document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
+                    document.getElementById('profile-image').src = `Icons/${userData.icon || 'Julia.png'}`;
+                    document.getElementById('profile-image').alt = 'Profile Icon';
+                    document.getElementById('user-info').style.display = 'flex'; // Show user info section
                 } else {
-                    console.log("User is not authenticated"); // Debugging line
+                    console.log("No user data found"); // Debugging line
                 }
-            });
-        };
+            } else {
+                console.log("User is not authenticated"); // Debugging line
+            }
+        });
+    };
 
         // Function to handle icon selection
-        function selectIcon(icon) {
-            const user = auth.currentUser;
-            if (user) {
-                updateData({ icon: icon })
-                    .then(() => {
-                        document.getElementById('profile-image').src = `Icons/${icon}`;
-                        document.getElementById('profile-image').alt = 'Profile Icon';
-                        closeChangeIconModal(); // Assuming this function closes the modal
-                    })
-                    .catch(error => {
-                        console.error('Error updating icon:', error);
-                    });
-            } else {
-                console.error('User not authenticated');
-            }
+    function selectIcon(icon) {
+        const user = auth.currentUser;
+        if (user) {
+            updateData({ icon: icon }) // Only update the icon field
+                .then(() => {
+                    document.getElementById('profile-image').src = `Icons/${icon}`;
+                    document.getElementById('profile-image').alt = 'Profile Icon';
+                    closeChangeIconModal(); // Assuming this function closes the modal
+                })
+                .catch(error => {
+                    console.error('Error updating icon:', error);
+                });
+        } else {
+            console.error('User not authenticated');
         }
+    }
 
         // Function to toggle profile menu visibility
         window.toggleProfileMenu = function() {
