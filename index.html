@@ -59,7 +59,7 @@
         .active-tab {
             background-color: #777;
         }
-		#video-background {
+        #video-background {
             position: fixed;
             right: 0;
             bottom: 0;
@@ -96,11 +96,11 @@
     </div>
 
     <!-- Firebase JS SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database-compat.js"></script>
     <script>
-        // Firebase configuration
+        /// Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
             authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
@@ -144,42 +144,42 @@
         }
 
         // Function to handle user registration
-		function register() {
-			const email = document.getElementById('register-email').value;
-			const username = document.getElementById('register-username').value;
-			const password = document.getElementById('register-password').value;
+        function register() {
+            const email = document.getElementById('register-email').value;
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
 
-			// Create user with email and password
-			auth.createUserWithEmailAndPassword(email, password)
-				.then((userCredential) => {
-					// Signed in 
-					const user = userCredential.user;
+            // Create user with email and password
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Signed in 
+                    const user = userCredential.user;
 
-					// Update user display name (username)
-					user.updateProfile({
-						displayName: username
-					}).then(() => {
-						// Update Firebase Realtime Database with user details
-						firebase.database().ref('users/' + user.uid).set({
-							username: username,
-							email: email,
-							icon: 'Julia.png' // Default icon
-						}).then(() => {
-							// Registration successful
-							alert('Registration successful');
-							window.location.href = 'home.html'; // Redirect to home page
-						}).catch((error) => {
-							alert(error.message);
-						});
-					}).catch((error) => {
-						alert(error.message);
-					});
+                    // Update user display name (username)
+                    user.updateProfile({
+                        displayName: username
+                    }).then(() => {
+                        // Update Firebase Realtime Database with user details
+                        firebase.database().ref('users/' + user.uid).set({
+                            username: username,
+                            email: email,
+                            icon: 'Julia.png' // Default icon
+                        }).then(() => {
+                            // Registration successful
+                            alert('Registration successful');
+                            window.location.href = 'home.html'; // Redirect to home page
+                        }).catch((error) => {
+                            alert(error.message);
+                        });
+                    }).catch((error) => {
+                        alert(error.message);
+                    });
 
-				})
-				.catch((error) => {
-					alert(error.message);
-				});
-		}
+                })
+                .catch((error) => {
+                    alert(error.message);
+                });
+        }
 
         // Function to show login form
         function showLogin() {
