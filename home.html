@@ -17,6 +17,7 @@
         // Initialize Firebase
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+		import { updateProfile } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'; // If you need to update user profile
         import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
 		
         const firebaseConfig = {
@@ -36,10 +37,21 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 		
-// Function to update data in Firebase Realtime Database
-        function updateData(ref, updates) {
-            return set(ref, updates); // Using set to update data
-        }
+			// Function to update data in Firebase Realtime Database
+	  async function updateData(updates) {
+		const user = auth.currentUser;
+		if (user) {
+		  const userRef = ref(database, 'users/' + user.uid);
+		  try {
+			await set(userRef, updates);
+			console.log('Data updated successfully');
+		  } catch (error) {
+			console.error('Error updating data:', error);
+		  }
+		} else {
+		  console.error('User not authenticated');
+		}
+	  }
 
         // Function to check if user is logged in and update UI
         window.onload = function() {
@@ -109,24 +121,27 @@
             modal.style.display = 'none';
         };
 
-        // Function to select an icon
-        function selectIcon(icon) {
-            const user = auth.currentUser;
-            if (user) {
-                const userRef = ref(database, 'users/' + user.uid);
-                updateData(userRef, { icon: icon })
-                    .then(() => {
-                        document.getElementById('profile-image').src = `Icons/${icon}`;
-                        document.getElementById('profile-image').alt = 'Profile Icon';
-                        closeChangeIconModal();
-                    })
-                    .catch(error => {
-                        console.error('Error updating icon:', error);
-                    });
-            } else {
-                console.error('User not authenticated');
-            }
-        }
+		   // Function to handle icon selection
+	  function selectIcon(icon) {
+		const user = auth.currentUser;
+		if (user) {
+		  const userRef = ref(database, 'users/' + user.uid);
+		  updateData({ icon: icon })
+			.then(() => {
+			  document.getElementById('profile-image').src = `Icons/${icon}`;
+			  document.getElementById('profile-image').alt = 'Profile Icon';
+			  closeChangeIconModal(); // Assuming this function closes the modal
+			})
+			.catch(error => {
+			  console.error('Error updating icon:', error);
+			});
+		} else {
+		  console.error('User not authenticated');
+		}
+	  }
+	    // Example usage in HTML (assuming you have an image with id='profile-image' and icons in a folder 'Icons/')
+	  const img = document.getElementById('profile-image');
+	  img.onclick = () => selectIcon('icon1'); // Example icon name
 
         // Function to handle "Log Out"
         window.logOut = function() {
