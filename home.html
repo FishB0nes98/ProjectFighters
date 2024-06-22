@@ -38,7 +38,7 @@
 		// Function to update data in Firebase Realtime Database
 		function update(ref, updates) {
 			return set(ref, updates); // Using set to update data
-
+		} 
         // Function to check if user is logged in and update UI
         window.onload = function() {
             onAuthStateChanged(auth, async (user) => {
@@ -63,11 +63,12 @@
             });
         };
 
-        // Function to toggle profile menu
-        window.toggleProfileMenu = function() {
-            const profileMenu = document.getElementById('profile-menu');
-            profileMenu.style.display = (profileMenu.style.display === 'block') ? 'none' : 'block';
-        };
+		// Function to toggle profile menu
+		window.toggleProfileMenu = function() {
+			const profileMenu = document.getElementById('profile-menu');
+			profileMenu.style.display = (profileMenu.style.display === 'block') ? 'none' : 'block';
+		};
+
 
         // Function to handle "Collection"
         window.viewCollection = function() {
@@ -134,16 +135,6 @@
                 console.error('Sign out error:', error);
             });
         };
-		
-		// Function to handle "Log Out"
-			window.logOut = function() {
-			signOut(auth).then(() => {
-				window.location.href = 'index.html'; // Redirect to index.html after sign out
-			}).catch((error) => {
-				console.error('Sign out error:', error);
-			});
-		};
-
     </script>
     <script>
         // Function to search champions
@@ -545,10 +536,10 @@
     </div>
 
     <!-- User Profile Info -->
-    <div id="profile-info" style="display: flex;" onclick="toggleProfileMenu()">
-        <span id="username-display"></span>
-        <img id="profile-image" class="champion-image" src="Icons/Birdie.png" alt="Profile Icon">
-    </div>
+	 <div id="profile-info" style="display: flex;" onclick="toggleProfileMenu()">
+		<span id="username-display"></span>
+		<img id="profile-image" class="champion-image" src="Icons/Birdie.png" alt="Profile Icon">
+	</div>
 
 	<!-- Profile Menu Pop-up -->
 	<div id="profile-menu" class="profile-menu">
