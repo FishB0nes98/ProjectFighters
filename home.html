@@ -37,8 +37,8 @@
 		
 		// Function to update data in Firebase Realtime Database
 		function update(ref, updates) {
-		return update(ref, updates); // Use update instead of set
-    }
+			return set(ref, updates);
+		}
 
         // Function to check if user is logged in and update UI
         window.onload = function() {
@@ -110,22 +110,22 @@
 
 		// Function to select an icon
 		function selectIcon(icon) {
-		const user = auth.currentUser;
-		if (user) {
-			const userRef = ref(database, 'users/' + user.uid);
-			update(userRef, { icon: icon })
-				.then(() => {
-					document.getElementById('profile-image').src = `Icons/${icon}`;
-					document.getElementById('profile-image').alt = 'Profile Icon';
-					closeChangeIconModal();
-				})
-				.catch(error => {
-					console.error('Error updating icon:', error);
-				});
-		} else {
-			console.error('User not authenticated');
+			const user = auth.currentUser;
+			if (user) {
+				const userRef = ref(database, 'users/' + user.uid);
+				update(userRef, { icon: icon })
+					.then(() => {
+						document.getElementById('profile-image').src = `Icons/${icon}`;
+						document.getElementById('profile-image').alt = 'Profile Icon';
+						closeChangeIconModal();
+					})
+					.catch(error => {
+						console.error('Error updating icon:', error);
+					});
+			} else {
+				console.error('User not authenticated');
+			}
 		}
-	}
 
         // Function to handle "Log Out"
         window.logOut = function() {
