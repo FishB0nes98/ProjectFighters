@@ -372,5 +372,57 @@
         <span id="quest-count">6</span>
         Quests
     </div>
+<script type="module">
+	const firebaseConfig = {
+	  apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+	  authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+	  databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+	  projectId: "project-fighters-by-fishb0nes",
+	  storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+	  messagingSenderId: "867339299995",
+	  appId: "1:867339299995:web:99c379940014b9c05cea3e",
+	  measurementId: "G-LNEM6HR842"
+};
+	 // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // Function to check if user is logged in and update UI
+        window.onload = async function() {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = database.ref('users/' + user.uid);
+                const snapshot = await userRef.once('value');
+                const userData = snapshot.val();
+                if (userData) {
+                    // Update UI with user info
+                    document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
+                    document.getElementById('profile-image').src = `Icons/${userData.icon || 'Julia.png'}`;
+                    document.getElementById('profile-image').alt = 'Profile Icon';
+                    document.getElementById('user-info').style.display = 'flex'; // Show user info section
+                }
+            }
+        };
+       // Function to search champions
+        window.searchChampion = function() {
+            const input = document.getElementById('search-bar').value.toLowerCase();
+            const images = document.getElementsByClassName('champion-image');
+            for (let i = 0; i < images.length; i++) {
+                const altText = images[i].alt.toLowerCase();
+                if (altText.includes(input)) {
+                    images[i].style.display = '';
+                } else {
+                    images[i].style.display = 'none';
+                }
+            }
+        };
+
+        // Toggle quests visibility
+        window.toggleQuests = function() {
+            const questsContainer = document.getElementById('quests-container');
+            questsContainer.classList.toggle('open');
+        };
+    </script>
 </body>
 </html>
