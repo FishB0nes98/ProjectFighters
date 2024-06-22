@@ -59,7 +59,7 @@
         .active-tab {
             background-color: #777;
         }
-		#video-background {
+        #video-background {
             position: fixed;
             right: 0;
             bottom: 0;
@@ -96,9 +96,9 @@
     </div>
 
     <!-- Firebase JS SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database-compat.js"></script>
     <script>
         // Firebase configuration
         const firebaseConfig = {
@@ -122,7 +122,7 @@
             const username = document.getElementById('login-username').value;
             const password = document.getElementById('login-password').value;
 
-            const userQuery = firebase.database().ref('users').orderByChild('username').equalTo(username);
+            const userQuery = database.ref('users').orderByChild('username').equalTo(username);
             const snapshot = await userQuery.once('value');
 
             if (snapshot.exists()) {
@@ -155,7 +155,7 @@
                     user.updateProfile({
                         displayName: username
                     }).then(() => {
-                        firebase.database().ref('users/' + user.uid).set({
+                        database.ref('users/' + user.uid).set({
                             username: username,
                             email: email,
                             icon: 'Julia.png' // Default icon
