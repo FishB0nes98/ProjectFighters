@@ -2,216 +2,64 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Champion Selector</title>
+    <title>Login and Register</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #333333;
+            background-color: #333;
             color: white;
             font-family: Arial, sans-serif;
-            position: relative;
-            overflow: hidden;
-        }
-        h1 {
-            text-align: center;
-            font-size: 36px;
-            margin-top: 100px;
-        }
-        #champion-selector-container {
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            max-width: 1000px;
-            margin: 120px auto 20px auto; /* Adjusted margin-top to account for the fixed menu */
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background-color: #444;
             padding: 20px;
-            background-color: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
-        #champion-selector {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-            align-items: center;
-            padding: 10px;
-            width: 100%;
-            max-width: 1000px;
-            margin-top: 20px;
-        }
-        .champion-image {
-            width: 100px;
-            height: 100px;
-            margin: 10px;
-            border: 2px solid #444;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.3s;
-            position: relative;
-        }
-        .champion-image:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
-        }
-        .selected {
-            border-color: gold !important;
-        }
-        .gray {
-            filter: grayscale(100%);
-        }
-        #filter-container, #search-container {
-            margin: 20px;
-            text-align: center;
-        }
-        #search-container input {
+        input {
             padding: 10px;
             font-size: 16px;
             width: 300px;
+            margin: 10px 0;
             border-radius: 5px;
             border: none;
         }
-        .menu {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background-color: #444;
-            overflow: hidden;
-            padding: 10px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000; /* Ensure the menu is above other content */
-        }
-        .menu .menu-items {
-            display: flex;
-        }
-        .menu a {
-            display: block;
-            color: white;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        .menu a:hover {
-            background-color: #111;
-            transform: scale(1.1);
-        }
-        .play-button {
-            margin-right: 250px;
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
             background-color: orange;
             color: black;
-            border-radius: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            text-decoration: none;
-            transition: background-color 0.3s, transform 0.3s, color 0.3s;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
         }
-        .play-button:hover {
+        button:hover {
             background-color: darkgoldenrod;
-            color: white;
-            transform: scale(1.2);
+            transform: scale(1.1);
         }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
-            padding-top: 60px;
-        }
-        .modal-content {
-            background-color: #333;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            color: white;
-            text-align: left;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: white;
-            text-decoration: none;
+        .tab {
+            margin: 10px;
             cursor: pointer;
-        }
-        #quests-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 15px;
-            border-radius: 10px;
-            width: 300px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            transform: translateY(100%);
-            opacity: 0;
-            z-index: 1000; /* Ensure the quests popup is above other content */
-        }
-        #quests-container.open {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        .quest-section {
-            margin-bottom: 10px;
-        }
-        .quest-section h2 {
-            color: gold;
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        .quest-section ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .quest-section ul li {
-            font-size: 14px;
-            margin-bottom: 8px;
-            line-height: 1.6;
-        }
-        .quest-section ul li::before {
-            content: "\2022";  /* Bullet point */
-            color: gold;
             display: inline-block;
-            width: 1em;
-            margin-left: -1em;
+            padding: 10px 20px;
+            background-color: #555;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.3s;
         }
-        #quests-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #444;
-            padding: 15px;
-            border-radius: 10px;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        .tab:hover {
+            background-color: #666;
+            transform: scale(1.1);
         }
-        #quest-count {
-            background-color: red;
-            color: white;
-            border-radius: 50%;
-            padding: 5px 10px;
-            margin-right: 10px;
-            font-size: 14px;
-            font-weight: bold;
+        .active-tab {
+            background-color: #777;
         }
-        #video-background {
+		#video-background {
             position: fixed;
             right: 0;
             bottom: 0;
@@ -223,48 +71,22 @@
     </style>
 </head>
 <body>
-    <!-- Video Background -->
     <video id="video-background" autoplay muted loop>
         <source src="Event/Desert Wars Event.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
-
-	<!-- Menu -->
-	<div class="menu">
-		<div class="menu-items">
-			<a href="index.html">Home</a>
-			<a href="Skins.html">Skins</a>
-			<a href="event.html">Event</a>
-			<a href="Team Builder.html">Team Builder</a>
-		</div>
-		<div>
-            <a href="Game Modes.html" class="play-button">Play</a>
+    <div class="container">
+        <div>
+            <span id="login-tab" class="tab active-tab" onclick="showLogin()">Login</span>
+            <span id="register-tab" class="tab" onclick="showRegister()">Register</span>
         </div>
-		<div id="user-info" style="display: none;">
-			<span id="username-display"></span>
-			<img id="profile-image" class="champion-image" style="width: 50px; height: 50px; border-radius: 50%;" src="Icons/Julia.png" alt="Profile Icon">
-		</div>
-		<div id="auth-buttons" class="auth-buttons">
-			<button onclick="showModal('login-modal')">Login</button>
-			<button onclick="showModal('register-modal')">Register</button>
-		</div>
-	</div>
-
-    <!-- Login Modal -->
-    <div id="login-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('login-modal')">&times;</span>
+        <div id="login-form">
             <h2>Login</h2>
             <input type="text" id="login-username" placeholder="Username">
             <input type="password" id="login-password" placeholder="Password">
             <button onclick="login()">Login</button>
         </div>
-    </div>
-
-    <!-- Register Modal -->
-    <div id="register-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('register-modal')">&times;</span>
+        <div id="register-form" style="display: none;">
             <h2>Register</h2>
             <input type="email" id="register-email" placeholder="Email">
             <input type="text" id="register-username" placeholder="Username">
@@ -273,201 +95,96 @@
         </div>
     </div>
 
-    <!-- Champion Selector -->
-    <div id="champion-selector-container">
-        <div id="search-container">
-            <input type="text" id="search-bar" placeholder="Search for a champion..." onkeyup="searchChampion()">
-        </div>
-
-        <div id="champion-selector">
-            <a href="Julia Page.html"><img src="Icons/Julia.png" alt="Julia" class="champion-image"></a>
-            <a href="Birdie Page.html"><img src="Icons/Birdie.png" alt="Birdie" class="champion-image"></a>
-            <a href="Erronblack Page.html"><img src="Icons/Erron Black.png" alt="Erron Black" class="champion-image"></a>
-            <a href="ChamCham Page.html"><img src="Icons/Cham Cham.png" alt="Cham Cham" class="champion-image"></a>
-            <a href="Morrigan Page.html"><img src="Icons/Morrigan.png" alt="Morrigan" class="champion-image"></a>
-            <a href="Jun Page.html"><img src="Icons/Jun.png" alt="Jun" class="champion-image"></a>
-            <a href="Reptile Page.html"><img src="Icons/Reptile.png" alt="Reptile" class="champion-image"></a>
-            <a href="Akuma Page.html"><img src="Icons/Akuma.png" alt="Akuma" class="champion-image"></a>
-            <a href="Elphelt Page.html"><img src="Icons/Elphelt.png" alt="Elphelt" class="champion-image"></a>
-            <a href="Kotal Kahn Page.html"><img src="Icons/Kotal Kahn.png" alt="Kotal Kahn" class="champion-image"></a>
-            <a href="Scorpion Page.html"><img src="Icons/Scorpion.png" alt="Scorpion" class="champion-image"></a>
-            <a href="Peacock Page.html"><img src="Icons/Peacock.png" alt="Peacock" class="champion-image"></a>
-            <a href="Angel Page.html"><img src="Icons/Angel.png" alt="Angel" class="champion-image"></a>
-            <a href="Astaroth Page.html"><img src="Icons/Astaroth.png" alt="Astaroth" class="champion-image"></a>
-            <a href="Ibuki Page.html"><img src="Icons/Ibuki.png" alt="Ibuki" class="champion-image"></a>
-            <a href="R.Mika Page.html"><img src="Icons/R.Mika.png" alt="R.Mika" class="champion-image"></a>
-            <a href="Raiden Page.html"><img src="Icons/Raiden.png" alt="Raiden" class="champion-image"></a>
-            <a href="Yugo Page.html"><img src="Icons/Yugo.png" alt="Yugo" class="champion-image"></a>
-            <a href="Talim Page.html"><img src="Icons/Talim.png" alt="Talim" class="champion-image"></a>
-            <a href="Noel Page.html"><img src="Icons/Noel.png" alt="Noel" class="champion-image"></a>
-            <a href="Blanka Page.html"><img src="Icons/Blanka.png" alt="Blanka" class="champion-image"></a>
-            <a href="Nina Page.html"><img src="Icons/Nina.png" alt="Nina" class="champion-image gray"></a>
-            <a href="Ayane Page.html"><img src="Icons/Ayane.png" alt="Ayane" class="champion-image gray"></a>
-            <a href="Siegfried Page.html"><img src="Icons/Siegfried.png" alt="Siegfried" class="champion-image gray"></a>
-            <a href="Shoma Page.html"><img src="Icons/Shoma.png" alt="Shoma" class="champion-image gray"></a>
-        </div>
-		</div>
-
-    <!-- Quests Popup Container -->
-    <div id="quests-container">
-        <div class="quest-section">
-            <h2>Daily Quests</h2>
-            <ul>
-                <li>Play [1] match</li>
-                <li>Win [2] matches with Mortal Kombat characters</li>
-                <li>Heal [16,000] in games</li>
-            </ul>
-        </div>
-        <div class="quest-section">
-            <h2>Weekly Quests</h2>
-            <ul>
-                <li>Play [7] games</li>
-                <li>Get [125] kills or assists</li>
-				<li>Mitigate [100,000] damage</li>
-			</ul>
-			</div>
-		</div>
-
-	<!-- Quests Toggle Button -->
-	<div id="quests-toggle" onclick="toggleQuests()">
-		<span id="quest-count">6</span>
-		Quests
-	</div>
-
-    <!-- JavaScript -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js";
-    import { getDatabase, ref, set, query, orderByChild, equalTo, get } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
-        authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
-        databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app/",  // Added database URL
-        projectId: "project-fighters-by-fishb0nes",
-        storageBucket: "project-fighters-by-fishb0nes.appspot.com",
-        messagingSenderId: "867339299995",
-        appId: "1:867339299995:web:99c379940014b9c05cea3e",
-        measurementId: "G-LNEM6HR842"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const database = getDatabase(app);
-
-    // Function to handle user login
-	window.login = async function() {
-    const username = document.getElementById('login-username').value;
-    const password = document.getElementById('login-password').value;
-
-    // Retrieve email associated with the username from Firebase database
-    const userQuery = query(ref(database, 'users'), orderByChild('username'), equalTo(username));
-    const snapshot = await get(userQuery);
-
-    if (snapshot.exists()) {
-        const userData = Object.values(snapshot.val())[0];
-        const email = userData.email;
-
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                alert('Login successful');
-                closeModal('login-modal');
-                // Update UI with user info
-                updateUserInfo(user);
-            })
-            .catch((error) => {
-                alert(error.message);
-            });
-    } else {
-        alert('Username not found');
-    }
-}
-
-// Function to update user info in the UI
-function updateUserInfo(user) {
-    const usernameDisplay = document.getElementById('username-display');
-    const profileImage = document.getElementById('profile-image');
-
-    // Display username and profile image
-    usernameDisplay.textContent = user.displayName || user.email.split('@')[0];
-    profileImage.src = `Icons/${user.photoURL || 'Julia.png'}`; // Default to Julia.png if no photoURL
-    profileImage.alt = 'Profile Icon';
-
-    // Hide authentication buttons and show user info
-    document.getElementById('auth-buttons').style.display = 'none';
-    document.getElementById('user-info').style.display = 'flex';
-}
-
-    // Function to handle user registration
-window.register = function() {
-    const email = document.getElementById('register-email').value;
-    const username = document.getElementById('register-username').value;
-    const password = document.getElementById('register-password').value;
-
-    createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            // Set display name (username)
-            user.updateProfile({
-                displayName: username
-            }).then(() => {
-                // Store additional user data in Firebase Realtime Database
-                set(ref(database, 'users/' + user.uid), {
-                    username: username,
-                    email: email
-                });
-                alert('Registration successful');
-                closeModal('register-modal');
-                // Update UI with user info
-                updateUserInfo(user);
-            }).catch((error) => {
-                alert(error.message);
-            });
-        })
-        .catch((error) => {
-            alert(error.message);
-        });
-}
-</script>
-
-    <!-- Global JavaScript (outside modules) -->
+    <!-- Firebase JS SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"></script>
     <script>
-        // Function to show modal
-        function showModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = "block";
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app/",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // Function to handle user login
+        async function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            const userQuery = firebase.database().ref('users').orderByChild('username').equalTo(username);
+            const snapshot = await userQuery.once('value');
+
+            if (snapshot.exists()) {
+                const userData = Object.values(snapshot.val())[0];
+                const email = userData.email;
+
+                auth.signInWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        const user = userCredential.user;
+                        alert('Login successful');
+                        window.location.href = 'home.html'; // Redirect to home page
+                    })
+                    .catch((error) => {
+                        alert(error.message);
+                    });
+            } else {
+                alert('Username not found');
             }
         }
 
-        // Function to close modal
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = "none";
-            }
+        // Function to handle user registration
+        function register() {
+            const email = document.getElementById('register-email').value;
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    user.updateProfile({
+                        displayName: username
+                    }).then(() => {
+                        firebase.database().ref('users/' + user.uid).set({
+                            username: username,
+                            email: email,
+                            icon: 'Julia.png' // Default icon
+                        });
+                        alert('Registration successful');
+                        window.location.href = 'home.html'; // Redirect to home page
+                    }).catch((error) => {
+                        alert(error.message);
+                    });
+                })
+                .catch((error) => {
+                    alert(error.message);
+                });
         }
 
-        // Function to search champions
-        function searchChampion() {
-            const input = document.getElementById('search-bar').value.toLowerCase();
-            const images = document.getElementsByClassName('champion-image');
-            for (let i = 0; i < images.length; i++) {
-                const altText = images[i].alt.toLowerCase();
-                if (altText.includes(input)) {
-                    images[i].style.display = '';
-                } else {
-                    images[i].style.display = 'none';
-                }
-            }
+        // Function to show login form
+        function showLogin() {
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('register-form').style.display = 'none';
+            document.getElementById('login-tab').classList.add('active-tab');
+            document.getElementById('register-tab').classList.remove('active-tab');
         }
 
-        // Toggle quests visibility
-        function toggleQuests() {
-            const questsContainer = document.getElementById('quests-container');
-            questsContainer.classList.toggle('open');
+        // Function to show register form
+        function showRegister() {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'block';
+            document.getElementById('login-tab').classList.remove('active-tab');
+            document.getElementById('register-tab').classList.add('active-tab');
         }
     </script>
 </body>
