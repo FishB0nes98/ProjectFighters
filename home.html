@@ -37,7 +37,7 @@
 		
 		// Function to update data in Firebase Realtime Database
 		function update(ref, updates) {
-        return set(ref, updates); // Assuming set is a function imported from firebase-database.js to set data
+		return update(ref, updates); // Use update instead of set
     }
 
         // Function to check if user is logged in and update UI
@@ -102,30 +102,30 @@
         });
     };
 
-    // Function to close the change icon modal
-    window.closeChangeIconModal = function() {
+		// Function to close the change icon modal
+		window.closeChangeIconModal = function() {
         const modal = document.getElementById('change-icon-modal');
         modal.style.display = 'none';
     };
 
-    // Function to select an icon
-    function selectIcon(icon) {
-        const user = auth.currentUser;
-        if (user) {
-            const userRef = ref(database, 'users/' + user.uid);
-            update(userRef, { icon: icon })
-                .then(() => {
-                    document.getElementById('profile-image').src = `Icons/${icon}`;
-                    document.getElementById('profile-image').alt = 'Profile Icon';
-                    closeChangeIconModal();
-                })
-                .catch(error => {
-                    console.error('Error updating icon:', error);
-                });
-        } else {
-            console.error('User not authenticated');
-        }
-    }
+		// Function to select an icon
+		function selectIcon(icon) {
+		const user = auth.currentUser;
+		if (user) {
+			const userRef = ref(database, 'users/' + user.uid);
+			update(userRef, { icon: icon })
+				.then(() => {
+					document.getElementById('profile-image').src = `Icons/${icon}`;
+					document.getElementById('profile-image').alt = 'Profile Icon';
+					closeChangeIconModal();
+				})
+				.catch(error => {
+					console.error('Error updating icon:', error);
+				});
+		} else {
+			console.error('User not authenticated');
+		}
+	}
 
         // Function to handle "Log Out"
         window.logOut = function() {
