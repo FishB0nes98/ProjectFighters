@@ -3,194 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Champion Selector</title>
-    <!-- Include Firebase SDK and configuration as module scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
-    <script nomodule>
-        // Fallback for non-module browsers (if needed)
-        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
-        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
-        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
-    </script>
-    <script type="module">
-        // Initialize Firebase
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
-        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
-		import { updateProfile } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'; // If you need to update user profile
-        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
-		
-        const firebaseConfig = {
-            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
-            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
-            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "project-fighters-by-fishb0nes",
-            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
-            messagingSenderId: "867339299995",
-            appId: "1:867339299995:web:99c379940014b9c05cea3e",
-            measurementId: "G-LNEM6HR842"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const database = getDatabase(app);
-		
-	// Function to update data in Firebase Realtime Database
-		async function updateData(updates) {
-			const user = auth.currentUser;
-			if (user) {
-				const userRef = ref(database, 'users/' + user.uid);
-				try {
-					await set(userRef, updates);
-					console.log('Data updated successfully');
-				} catch (error) {
-					console.error('Error updating data:', error);
-				}
-			} else {
-				console.error('User not authenticated');
-			}
-		}
-
-        // Function to check if user is logged in and update UI
-        window.onload = function() {
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    console.log("User is authenticated", user); // Debugging line
-                    const userRef = ref(database, 'users/' + user.uid);
-                    const snapshot = await get(userRef);
-                    const userData = snapshot.val();
-                    if (userData) {
-                        console.log("User data retrieved", userData); // Debugging line
-                        // Update UI with user info
-                        document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
-                        document.getElementById('profile-image').src = `Icons/${userData.icon || 'Julia.png'}`;
-                        document.getElementById('profile-image').alt = 'Profile Icon';
-                        document.getElementById('user-info').style.display = 'flex'; // Show user info section
-                    } else {
-                        console.log("No user data found"); // Debugging line
-                    }
-                } else {
-                    console.log("User is not authenticated"); // Debugging line
-                }
-            });
-        };
-
-        // Function to toggle profile menu visibility
-		function toggleProfileMenu() {
-			const profileMenu = document.getElementById('profile-menu');
-			profileMenu.classList.toggle('show');
-		}
-
-        // Function to handle "Collection"
-        window.viewCollection = function() {
-            alert('Collection clicked');
-        };
-
-        // Function to open the modal for changing icon
-        window.openChangeIconModal = function() {
-            const modal = document.getElementById('change-icon-modal');
-            modal.style.display = 'block';
-
-            // Load icons dynamically
-            const iconList = document.getElementById('icon-list');
-            iconList.innerHTML = '';
-
-            const icons = [
-                'Julia.png', 'Birdie.png', 'Erron Black.png', 'Cham Cham.png', 'Morrigan.png',
-                'Jun.png', 'Reptile.png', 'Akuma.png', 'Elphelt.png', 'Kotal Kahn.png',
-                'Scorpion.png', 'Peacock.png', 'Angel.png', 'Astaroth.png', 'Ibuki.png',
-                'R.Mika.png', 'Raiden.png', 'Yugo.png', 'Talim.png', 'Noel.png',
-                'Blanka.png', 'Nina.png', 'Ayane.png', 'Siegfried.png', 'Shoma.png'
-            ];
-
-            icons.forEach(icon => {
-                const img = document.createElement('img');
-                img.src = `Icons/${icon}`;
-                img.alt = icon.replace('.png', '');
-                img.classList.add('champion-image');
-                img.onclick = () => selectIcon(icon);
-                iconList.appendChild(img);
-            });
-        };
-
-        // Function to close the change icon modal
-        window.closeChangeIconModal = function() {
-            const modal = document.getElementById('change-icon-modal');
-            modal.style.display = 'none';
-        };
-
-		   // Function to handle icon selection
-	  function selectIcon(icon) {
-		const user = auth.currentUser;
-		if (user) {
-		  const userRef = ref(database, 'users/' + user.uid);
-		  updateData({ icon: icon })
-			.then(() => {
-			  document.getElementById('profile-image').src = `Icons/${icon}`;
-			  document.getElementById('profile-image').alt = 'Profile Icon';
-			  closeChangeIconModal(); // Assuming this function closes the modal
-			})
-			.catch(error => {
-			  console.error('Error updating icon:', error);
-			});
-		} else {
-		  console.error('User not authenticated');
-		}
-	  }
-	    // Example usage in HTML (assuming you have an image with id='profile-image' and icons in a folder 'Icons/')
-	  const img = document.getElementById('profile-image');
-	  img.onclick = () => selectIcon('icon1'); // Example icon name
-
-        // Function to handle "Log Out"
-        window.logOut = function() {
-            signOut(auth).then(() => {
-                window.location.href = 'index.html';
-            }).catch((error) => {
-                console.error('Sign out error:', error);
-            });
-        };
-
-        // Function to search champions
-        window.searchChampion = function() {
-            const input = document.getElementById('search-bar').value.toLowerCase();
-            const images = document.getElementsByClassName('champion-image');
-            for (let i = 0; i < images.length; i++) {
-                const altText = images[i].alt.toLowerCase();
-                if (altText.includes(input)) {
-                    images[i].style.display = '';
-                } else {
-                    images[i].style.display = 'none';
-                }
-            }
-        };
-
-        // Toggle quests visibility
-        window.toggleQuests = function() {
-            const questsContainer = document.getElementById('quests-container');
-            questsContainer.classList.toggle('open');
-        };
-    </script>
-    <script>
-        // Function to search champions
-        window.searchChampion = function() {
-            const input = document.getElementById('search-bar').value.toLowerCase();
-            const images = document.getElementsByClassName('champion-image');
-            for (let i = 0; i < images.length; i++) {
-                const altText = images[i].alt.toLowerCase();
-                if (altText.includes(input)) {
-                    images[i].style.display = '';
-                } else {
-                    images[i].style.display = 'none';
-                }
-            }
-        };
-
-        // Toggle quests visibility
-        window.toggleQuests = function() {
-            const questsContainer = document.getElementById('quests-container');
-            questsContainer.classList.toggle('open');
-        };
-    </script>
     <style>
         body {
             margin: 0;
@@ -262,41 +74,31 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: #444;
+            overflow: hidden;
             padding: 10px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
-            transition: background-color 0.3s ease;
         }
-
-        .menu:hover {
-            background-color: rgba(0, 0, 0, 0.9);
-        }
-
         .menu .menu-items {
             display: flex;
         }
-
         .menu a {
             display: block;
             color: white;
             text-align: center;
             padding: 14px 16px;
             text-decoration: none;
-            font-family: 'Roboto', sans-serif;
-            font-size: 16px;
             transition: background-color 0.3s, transform 0.3s;
         }
-
         .menu a:hover {
             background-color: #111;
             transform: scale(1.1);
         }
-
         .play-button {
-            margin-right: 20px; /* Adjust as needed */
+            margin-right: 250px;
             background-color: orange;
             color: black;
             border-radius: 20px;
@@ -304,130 +106,46 @@
             font-weight: bold;
             text-decoration: none;
             transition: background-color 0.3s, transform 0.3s, color 0.3s;
-            padding: 10px 20px;
         }
-
         .play-button:hover {
             background-color: darkgoldenrod;
             color: white;
             transform: scale(1.2);
         }
-        /* New styles for user info */
-		#user-info {
-			position: flex;
-			top: 0px; /* Adjust top position as needed */
-			right: 0px; /* Adjust right position as needed */
-		}
-		#profile-info {
-			display: flex;
-			position: fixed;
-			top: 68px;
-			right: 3px;
-			align-items: center;
-			justify-content: flex-end; /* Align content to the right */
-			background-color: rgba(0, 0, 0, 0.8);
-			padding: 5px 10px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-			width: calc(100% - 340px);
-			max-width: 275px;
-		}
-
-		#username-display {
-			margin-right: 10px;
-			font-size: 20px;
-			color: white;
-		}
-
-		#profile-image {
-			width: 70px;
-			height: 70px;
-			border-radius: 50%;
-			margin-left: 10px; /* Adjust margin as needed */
-		}
-        /* Transparent Menu */
-        .menu {
+        .modal {
+            display: none;
             position: fixed;
+            z-index: 1;
+            left: 0;
             top: 0;
             width: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            transition: background-color 0.3s ease;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
         }
-
-        .menu:hover {
-            background-color: rgba(0, 0, 0, 0.9);
-        }
-
-        .menu .menu-items {
-            display: flex;
-        }
-
-        .menu a {
-            display: block;
+        .modal-content {
+            background-color: #333;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
             color: white;
-            text-align: center;
-            padding: 14px 16px;
+            text-align: left;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: white;
             text-decoration: none;
-            font-family: 'Roboto', sans-serif;
-            font-size: 16px;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-
-        .menu a:hover {
-            background-color: #111;
-            transform: scale(1.1);
-        }
-
-        #video-background {
-            position: fixed;
-            right: 0;
-            bottom: 0;
-            min-width: 100%;
-            min-height: 100%;
-            z-index: -1;
-            filter: brightness(50%);
-        }
-
-        /* Profile Menu */
-        .profile-menu {
-            display: none;
-            position: absolute;
-            top: 60px;
-            right: 20px;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            z-index: 1001;
-            width: 200px;
-        }
-
-        .profile-menu ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .profile-menu ul li {
-            padding: 10px 20px;
             cursor: pointer;
-            border-bottom: 1px solid #555;
-            transition: background-color 0.3s;
         }
-
-        .profile-menu ul li:hover {
-            background-color: #555;
-        }
-
-        .profile-menu ul li:last-child {
-            border-bottom: none;
-        }
-
-        /* Quests Container */
         #quests-container {
             position: fixed;
             bottom: 20px;
@@ -442,33 +160,27 @@
             opacity: 0;
             z-index: 1000;
         }
-
         #quests-container.open {
             transform: translateY(0);
             opacity: 1;
         }
-
         .quest-section {
             margin-bottom: 10px;
         }
-
         .quest-section h2 {
             color: gold;
             font-size: 18px;
             margin-bottom: 10px;
         }
-
         .quest-section ul {
             list-style-type: none;
             padding: 0;
         }
-
         .quest-section ul li {
             font-size: 14px;
             margin-bottom: 8px;
             line-height: 1.6;
         }
-
         .quest-section ul li::before {
             content: "\2022";
             color: gold;
@@ -476,8 +188,6 @@
             width: 1em;
             margin-left: -1em;
         }
-
-        /* Quests Toggle Button */
         #quests-toggle {
             position: fixed;
             bottom: 20px;
@@ -492,7 +202,6 @@
             justify-content: center;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
-
         #quest-count {
             background-color: red;
             color: white;
@@ -502,51 +211,15 @@
             font-size: 14px;
             font-weight: bold;
         }
-		.modal {
-			display: none; /* Hidden by default */
-			position: fixed; /* Stay in place */
-			z-index: 1000; /* Sit on top */
-			left: 0;
-			top: 0;
-			width: 100%; /* Full width */
-			height: 100%; /* Full height */
-			overflow: auto; /* Enable scrolling if needed */
-			background-color: rgba(0, 0, 0, 0.5); /* Black with transparency */
-			padding-top: 50px; /* Center modal vertically */
-		}
-
-		.modal-content {
-			background-color: black;
-			margin: auto;
-			padding: 20px;
-			border-radius: 10px;
-			box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
-			max-width: 90%; /* Adjust width as needed */
-			max-height: 80%; /* Adjust height as needed */
-			overflow: auto; /* Enable scrolling if content exceeds dimensions */
-		}
-
-		.close {
-			color: #aaaaaa;
-			float: right;
-			font-size: 30px;
-			font-weight: bold;
-			line-height: 1;
-		}
-
-		.close:hover,
-		.close:focus {
-			color: #000;
-			text-decoration: none;
-			cursor: pointer;
-		}
-
-		/* Media query for responsiveness */
-		@media (min-width: 800px) {
-			.modal-content {
-				max-width: 800px; /* Adjust maximum width for larger screens */
-			}
-		}
+        #video-background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            filter: brightness(50%);
+        }
     </style>
 </head>
 <body>
@@ -567,35 +240,12 @@
         <div>
             <a href="Game Modes.html" class="play-button">Play</a>
         </div>
-    </div>
-
-	<!-- User Profile Info -->
-	<div id="profile-info" style="display: flex;" onclick="toggleProfileMenu()">
-		<span id="username-display"></span>
-		<img id="profile-image" class="champion-image" src="Icons/Birdie.png" alt="Profile Icon">
-	</div>
-
-	<!-- Profile Menu Pop-up -->
-	<div id="profile-menu" class="profile-menu">
-		<ul>
-			<li onclick="profile()">Profile</li>
-			<li onclick="openChangeIconModal()">Change Icon</li>
-			<li onclick="viewCollection()">Collection</li>
-			<li onclick="logOut()">Log Out</li>
-		</ul>
-	</div>
-
-	
-    <!-- Modal for Changing Profile Icon -->
-    <div id="change-icon-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeChangeIconModal()">&times;</span>
-            <h2>Select Your Profile Icon</h2>
-            <div id="icon-list">
-                <!-- Icons will be dynamically loaded here -->
-            </div>
+        <div id="user-info" style="display: none;">
+            <span id="username-display"></span>
+            <img id="profile-image" class="champion-image" style="width: 50px; height: 50px; border-radius: 50%;" src="Icons/Julia.png" alt="Profile Icon">
         </div>
     </div>
+
     <!-- Champion Selector -->
     <div id="champion-selector-container">
         <div id="search-container">
@@ -656,5 +306,76 @@
         <span id="quest-count">6</span>
         Quests
     </div>
+
+    <!-- JavaScript -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "your_api_key",
+            authDomain: "your_project_id.firebaseapp.com",
+            databaseURL: "https://your_project_id.firebaseio.com",
+            projectId: "your_project_id",
+            storageBucket: "your_project_id.appspot.com",
+            messagingSenderId: "your_messaging_sender_id",
+            appId: "your_app_id",
+            measurementId: "your_measurement_id"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // Function to retrieve user info and update UI
+        window.onload = async function() {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = ref(database, 'users/' + user.uid);
+                const userDataSnapshot = await get(userRef);
+                if (userDataSnapshot.exists()) {
+                    const userData = userDataSnapshot.val();
+                    updateUserInfo(userData);
+                }
+            }
+        };
+
+        // Function to update user info in the UI
+        function updateUserInfo(userData) {
+            const usernameDisplay = document.getElementById('username-display');
+            const profileImage = document.getElementById('profile-image');
+
+            // Display username and profile image
+            usernameDisplay.textContent = userData.username || userData.email.split('@')[0];
+            profileImage.src = `Icons/${userData.photoURL || 'Julia.png'}`; // Default to Julia.png if no photoURL
+            profileImage.alt = 'Profile Icon';
+
+            // Show user info
+            document.getElementById('user-info').style.display = 'flex';
+        }
+
+        // Function to search champions
+        window.searchChampion = function() {
+            const input = document.getElementById('search-bar').value.toLowerCase();
+            const images = document.getElementsByClassName('champion-image');
+            for (let i = 0; i < images.length; i++) {
+                const altText = images[i].alt.toLowerCase();
+                if (altText.includes(input)) {
+                    images[i].style.display = '';
+                } else {
+                    images[i].style.display = 'none';
+                }
+            }
+        };
+
+        // Toggle quests visibility
+        window.toggleQuests = function() {
+            const questsContainer = document.getElementById('quests-container');
+            questsContainer.classList.toggle('open');
+        };
+    </script>
+
 </body>
 </html>
