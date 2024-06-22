@@ -36,8 +36,6 @@
         const database = getDatabase(app);
 		
 		// Function to update data in Firebase Realtime Database
-		import { ref, set } from 'https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app/;
-
 		function update(ref, updates) {
 			return set(ref, updates); // Using set to update data
 
@@ -104,13 +102,13 @@
     };
 
     // Function to close the change icon modal
-    window.closeChangeIconModal = function() {
+		window.closeChangeIconModal = function() {
         const modal = document.getElementById('change-icon-modal');
         modal.style.display = 'none';
     };
 
 	// Function to select an icon
-	function selectIcon(icon) {
+		function selectIcon(icon) {
 		const user = auth.currentUser;
 		if (user) {
 			const userRef = ref(database, 'users/' + user.uid);
@@ -129,7 +127,7 @@
 	}
 
         // Function to handle "Log Out"
-        window.logOut = function() {
+			window.logOut = function() {
             signOut(auth).then(() => {
                 window.location.href = 'index.html';
             }).catch((error) => {
