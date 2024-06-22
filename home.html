@@ -58,6 +58,30 @@
                 }
             });
         };
+	// Function to toggle profile menu
+    window.toggleProfileMenu = function() {
+        const profileMenu = document.getElementById('profile-menu');
+        profileMenu.style.display = (profileMenu.style.display === 'block') ? 'none' : 'block';
+    };
+
+    // Function to handle "Change Icon"
+    window.changeIcon = function() {
+        alert('Change Icon clicked');
+    };
+
+    // Function to handle "Collection"
+    window.viewCollection = function() {
+        alert('Collection clicked');
+    };
+
+    // Function to handle "Log Out"
+    window.logOut = function() {
+        signOut(auth).then(() => {
+            window.location.href = 'index.html';
+        }).catch((error) => {
+            console.error('Sign out error:', error);
+        });
+    };
     </script>
     <script>
         // Function to search champions
@@ -153,7 +177,7 @@
 			width: 100%;
 			background-color: #444;
 			overflow: hidden;
-			padding: 10px 0;
+			padding: 5px 0;
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
@@ -328,6 +352,35 @@
             z-index: -1;
             filter: brightness(50%);
         }
+		.profile-menu {
+			display: none;
+			position: absolute;
+			top: 60px;
+			right: 20px;
+			background-color: #444;
+			color: white;
+			border-radius: 10px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+			z-index: 1001;
+			width: 200px;
+		}
+		.profile-menu ul {
+			list-style-type: none;
+			padding: 0;
+			margin: 0;
+		}
+		.profile-menu ul li {
+			padding: 10px 20px;
+			cursor: pointer;
+			border-bottom: 1px solid #555;
+			transition: background-color 0.3s;
+		}
+		.profile-menu ul li:hover {
+			background-color: #555;
+		}
+		.profile-menu ul li:last-child {
+			border-bottom: none;
+		}
     </style>
 </head>
 <body>
@@ -337,22 +390,31 @@
         Your browser does not support the video tag.
     </video>
 
-    <!-- Menu -->
-    <div class="menu">
-        <div class="menu-items">
-            <a href="home.html">Home</a>
-            <a href="Skins.html">Skins</a>
-            <a href="event.html">Event</a>
-            <a href="Team Builder.html">Team Builder</a>
-        </div>
-        <div>
-            <a href="Game Modes.html" class="play-button">Play</a>
-        </div>
-        <div id="user-info" style="display: none;">
-            <span id="username-display"></span>
-            <img id="profile-image" class="champion-image" style="width: 50px; height: 50px; border-radius: 50%;" src="Icons/Birdie.png" alt="Profile Icon">
-        </div>
-    </div>
+	<!-- Menu -->
+	<div class="menu">
+		<div class="menu-items">
+			<a href="home.html">Home</a>
+			<a href="Skins.html">Skins</a>
+			<a href="event.html">Event</a>
+			<a href="Team Builder.html">Team Builder</a>
+		</div>
+		<div>
+			<a href="Game Modes.html" class="play-button">Play</a>
+		</div>
+		<div id="user-info" style="display: none;" onclick="toggleProfileMenu()">
+			<span id="username-display"></span>
+			<img id="profile-image" class="champion-image" src="Icons/Birdie.png" alt="Profile Icon">
+		</div>
+	</div>
+
+	<!-- Profile Menu Pop-up -->
+	<div id="profile-menu" class="profile-menu">
+		<ul>
+			<li onclick="changeIcon()">Change Icon</li>
+			<li onclick="viewCollection()">Collection</li>
+			<li onclick="logOut()">Log Out</li>
+		</ul>
+	</div>
 
     <!-- Champion Selector -->
     <div id="champion-selector-container">
