@@ -229,22 +229,26 @@
         Your browser does not support the video tag.
     </video>
 
-    <!-- Menu -->
-    <div class="menu">
-        <div class="menu-items">
-            <a href="index.html">Home</a>
-            <a href="Skins.html">Skins</a>
-            <a href="event.html">Event</a>
-            <a href="Team Builder.html">Team Builder</a>
-        </div>
-        <div>
+	<!-- Menu -->
+	<div class="menu">
+		<div class="menu-items">
+			<a href="index.html">Home</a>
+			<a href="Skins.html">Skins</a>
+			<a href="event.html">Event</a>
+			<a href="Team Builder.html">Team Builder</a>
+		</div>
+		<div>
             <a href="Game Modes.html" class="play-button">Play</a>
         </div>
-        <div class="auth-buttons">
-            <button onclick="showModal('login-modal')">Login</button>
-            <button onclick="showModal('register-modal')">Register</button>
-        </div>
-    </div>
+		<div id="user-info" style="display: none;">
+			<span id="username-display"></span>
+			<img id="profile-image" class="champion-image" style="width: 50px; height: 50px; border-radius: 50%;" src="Icons/Julia.png" alt="Profile Icon">
+		</div>
+		<div id="auth-buttons" class="auth-buttons">
+			<button onclick="showModal('login-modal')">Login</button>
+			<button onclick="showModal('register-modal')">Register</button>
+		</div>
+	</div>
 
     <!-- Login Modal -->
     <div id="login-modal" class="modal">
@@ -353,51 +357,79 @@
     const database = getDatabase(app);
 
     // Function to handle user login
-    window.login = async function() {
-        const username = document.getElementById('login-username').value;
-        const password = document.getElementById('login-password').value;
+	window.login = async function() {
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
 
-        // Retrieve email associated with the username from Firebase database
-        const userQuery = query(ref(database, 'users'), orderByChild('username'), equalTo(username));
-        const snapshot = await get(userQuery);
+    // Retrieve email associated with the username from Firebase database
+    const userQuery = query(ref(database, 'users'), orderByChild('username'), equalTo(username));
+    const snapshot = await get(userQuery);
 
-        if (snapshot.exists()) {
-            const userData = Object.values(snapshot.val())[0];
-            const email = userData.email;
+    if (snapshot.exists()) {
+        const userData = Object.values(snapshot.val())[0];
+        const email = userData.email;
 
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    alert('Login successful');
-                    closeModal('login-modal');
-                })
-                .catch((error) => {
-                    alert(error.message);
-                });
-        } else {
-            alert('Username not found');
-        }
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                alert('Login successful');
+                closeModal('login-modal');
+                // Update UI with user info
+                updateUserInfo(user);
+            })
+            .catch((error) => {
+                alert(error.message);
+            });
+    } else {
+        alert('Username not found');
     }
+}
+
+// Function to update user info in the UI
+function updateUserInfo(user) {
+    const usernameDisplay = document.getElementById('username-display');
+    const profileImage = document.getElementById('profile-image');
+
+    // Display username and profile image
+    usernameDisplay.textContent = user.displayName || user.email.split('@')[0];
+    profileImage.src = `Icons/${user.photoURL || 'Julia.png'}`; // Default to Julia.png if no photoURL
+    profileImage.alt = 'Profile Icon';
+
+    // Hide authentication buttons and show user info
+    document.getElementById('auth-buttons').style.display = 'none';
+    document.getElementById('user-info').style.display = 'flex';
+}
 
     // Function to handle user registration
-    window.register = function() {
-        const email = document.getElementById('register-email').value;
-        const username = document.getElementById('register-username').value;
-        const password = document.getElementById('register-password').value;
+window.register = function() {
+    const email = document.getElementById('register-email').value;
+    const username = document.getElementById('register-username').value;
+    const password = document.getElementById('register-password').value;
 
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                // Store username in Firebase Realtime Database
-                set(ref(database, 'users/' + userCredential.user.uid), {
+    createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            // Set display name (username)
+            user.updateProfile({
+                displayName: username
+            }).then(() => {
+                // Store additional user data in Firebase Realtime Database
+                set(ref(database, 'users/' + user.uid), {
                     username: username,
                     email: email
                 });
                 alert('Registration successful');
                 closeModal('register-modal');
-            })
-            .catch((error) => {
+                // Update UI with user info
+                updateUserInfo(user);
+            }).catch((error) => {
                 alert(error.message);
             });
-    }
+        })
+        .catch((error) => {
+            alert(error.message);
+        });
+}
 </script>
 
     <!-- Global JavaScript (outside modules) -->
