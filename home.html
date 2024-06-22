@@ -35,13 +35,9 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 		
-				// Import necessary functions from Firebase SDK
-		import { ref, set } from 'firebase/database';
-
 		// Function to update data in Firebase Realtime Database
-		function updateData(refPath, updates) {
-			const dbRef = ref(database, refPath);
-			return set(dbRef, updates);
+		function update(ref, updates) {
+			return set(ref, updates);
 		}
 
         // Function to check if user is logged in and update UI
@@ -80,7 +76,7 @@
         };
 
          // Function to open the modal for changing icon
-    window.openChangeIconModal = function() {
+		window.openChangeIconModal = function() {
         const modal = document.getElementById('change-icon-modal');
         modal.style.display = 'block';
 
@@ -132,6 +128,7 @@
 				console.error('User not authenticated');
 			}
 		}
+
 
         // Function to handle "Log Out"
         window.logOut = function() {
