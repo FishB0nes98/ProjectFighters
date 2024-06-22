@@ -34,23 +34,49 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-         // Function to update data in Firebase Realtime Database
-    async function updateData(updates) {
+// Function to update icon data in Firebase Realtime Database
+		async function updateIcon(icon) {
+			const user = auth.currentUser;
+			if (user) {
+				const userRef = ref(database, 'users/' + user.uid);
+				try {
+					const snapshot = await get(userRef);
+					if (snapshot.exists()) {
+						const userData = snapshot.val();
+						userData.icon = icon; // Update the icon field
+						await set(userRef, userData); // Write back the updated data
+						console.log('Icon updated successfully');
+					} else {
+						console.error('No user data found');
+					}
+				} catch (error) {
+					console.error('Error updating icon:', error);
+				}
+			} else {
+				console.error('User not authenticated');
+			}
+		}
+
+
+        // Function to handle icon selection
+    function selectIcon(icon) {
         const user = auth.currentUser;
         if (user) {
-            const userRef = ref(database, 'users/' + user.uid);
-            try {
-                await update(userRef, updates); // Use update instead of set
-                console.log('Data updated successfully');
-            } catch (error) {
-                console.error('Error updating data:', error);
-            }
+            updateIcon(icon)
+                .then(() => {
+                    document.getElementById('profile-image').src = `Icons/${icon}`;
+                    document.getElementById('profile-image').alt = 'Profile Icon';
+                    closeChangeIconModal(); // Assuming this function closes the modal
+                })
+                .catch(error => {
+                    console.error('Error updating icon:', error);
+                });
         } else {
             console.error('User not authenticated');
         }
     }
 
-        // Function to check if user is logged in and update UI
+	     // Function to check if user is logged in and update UI
          window.onload = function() {
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -73,25 +99,6 @@
             }
         });
     };
-
-        // Function to handle icon selection
-    function selectIcon(icon) {
-        const user = auth.currentUser;
-        if (user) {
-            updateData({ icon: icon }) // Only update the icon field
-                .then(() => {
-                    document.getElementById('profile-image').src = `Icons/${icon}`;
-                    document.getElementById('profile-image').alt = 'Profile Icon';
-                    closeChangeIconModal(); // Assuming this function closes the modal
-                })
-                .catch(error => {
-                    console.error('Error updating icon:', error);
-                });
-        } else {
-            console.error('User not authenticated');
-        }
-    }
-
         // Function to toggle profile menu visibility
         window.toggleProfileMenu = function() {
             const profileMenu = document.getElementById('profile-menu');
