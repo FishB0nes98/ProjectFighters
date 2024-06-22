@@ -31,27 +31,25 @@
             measurementId: "G-LNEM6HR842"
         };
 
-
-
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
 		
-			// Function to update data in Firebase Realtime Database
-	  async function updateData(updates) {
-		const user = auth.currentUser;
-		if (user) {
-		  const userRef = ref(database, 'users/' + user.uid);
-		  try {
-			await set(userRef, updates);
-			console.log('Data updated successfully');
-		  } catch (error) {
-			console.error('Error updating data:', error);
-		  }
-		} else {
-		  console.error('User not authenticated');
+	// Function to update data in Firebase Realtime Database
+		async function updateData(updates) {
+			const user = auth.currentUser;
+			if (user) {
+				const userRef = ref(database, 'users/' + user.uid);
+				try {
+					await set(userRef, updates);
+					console.log('Data updated successfully');
+				} catch (error) {
+					console.error('Error updating data:', error);
+				}
+			} else {
+				console.error('User not authenticated');
+			}
 		}
-	  }
 
         // Function to check if user is logged in and update UI
         window.onload = function() {
@@ -77,11 +75,11 @@
             });
         };
 
-        // Function to toggle profile menu
-        window.toggleProfileMenu = function() {
-            const profileMenu = document.getElementById('profile-menu');
-            profileMenu.style.display = (profileMenu.style.display === 'block') ? 'none' : 'block';
-        };
+        // Function to toggle profile menu visibility
+		function toggleProfileMenu() {
+			const profileMenu = document.getElementById('profile-menu');
+			profileMenu.classList.toggle('show');
+		}
 
         // Function to handle "Collection"
         window.viewCollection = function() {
@@ -571,11 +569,11 @@
         </div>
     </div>
 
-    <!-- User Profile Info -->
-    <div id="profile-info" style="display: flex;" onclick="toggleProfileMenu()">
-        <span id="username-display"></span>
-        <img id="profile-image" class="champion-image" src="Icons/Birdie.png" alt="Profile Icon">
-    </div>
+	<!-- User Profile Info -->
+	<div id="profile-info" style="display: flex;" onclick="toggleProfileMenu()">
+		<span id="username-display"></span>
+		<img id="profile-image" class="champion-image" src="Icons/Birdie.png" alt="Profile Icon">
+	</div>
 
 	<!-- Profile Menu Pop-up -->
 	<div id="profile-menu" class="profile-menu">
