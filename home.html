@@ -3,6 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <title>Champion Selector</title>
+    <!-- Include Firebase SDK and configuration as module scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        // Fallback for non-module browsers (if needed)
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+    <script type="module">
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        // Initialize Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // Function to check if user is logged in and update UI
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    console.log("User is authenticated", user); // Debugging line
+                    const userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        console.log("User data retrieved", userData); // Debugging line
+                        // Update UI with user info
+                        document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
+                        document.getElementById('profile-image').src = `Icons/${userData.icon || 'Julia.png'}`;
+                        document.getElementById('profile-image').alt = 'Profile Icon';
+                        document.getElementById('user-info').style.display = 'flex'; // Show user info section
+                    } else {
+                        console.log("No user data found"); // Debugging line
+                    }
+                } else {
+                    console.log("User is not authenticated"); // Debugging line
+                }
+            });
+        };
+    </script>
+    <script>
+        // Function to search champions
+        window.searchChampion = function() {
+            const input = document.getElementById('search-bar').value.toLowerCase();
+            const images = document.getElementsByClassName('champion-image');
+            for (let i = 0; i < images.length; i++) {
+                const altText = images[i].alt.toLowerCase();
+                if (altText.includes(input)) {
+                    images[i].style.display = '';
+                } else {
+                    images[i].style.display = 'none';
+                }
+            }
+        };
+
+        // Toggle quests visibility
+        window.toggleQuests = function() {
+            const questsContainer = document.getElementById('quests-container');
+            questsContainer.classList.toggle('open');
+        };
+    </script>
     <style>
         body {
             margin: 0;
@@ -70,33 +147,64 @@
             border-radius: 5px;
             border: none;
         }
-        .menu {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background-color: #444;
-            overflow: hidden;
-            padding: 10px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-        }
-        .menu .menu-items {
-            display: flex;
-        }
-        .menu a {
-            display: block;
-            color: white;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        .menu a:hover {
-            background-color: #111;
-            transform: scale(1.1);
-        }
+		.menu {
+			position: fixed;
+			top: 0;
+			width: 100%;
+			background-color: #444;
+			overflow: hidden;
+			padding: 10px 0;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			z-index: 1000;
+		}
+		.menu .menu-items {
+			display: flex;
+		}
+		.menu a {
+			display: block;
+			color: white;
+			text-align: center;
+			padding: 14px 16px;
+			text-decoration: none;
+			transition: background-color 0.3s, transform 0.3s;
+		}
+		.menu a:hover {
+			background-color: #111;
+			transform: scale(1.1);
+		}
+		.play-button {
+			margin-right: 250px;
+			background-color: orange;
+			color: black;
+			border-radius: 20px;
+			font-size: 18px;
+			font-weight: bold;
+			text-decoration: none;
+			transition: background-color 0.3s, transform 0.3s, color 0.3s;
+		}
+		.play-button:hover {
+			background-color: darkgoldenrod;
+			color: white;
+			transform: scale(1.2);
+		}
+		/* New styles for user info */
+		#user-info {
+			display: flex;
+			align-items: center;
+			margin-right: 20px;
+		}
+		#username-display {
+			margin-right: 10px;
+			font-size: 16px;
+			color: white;
+		}
+		#profile-image {
+			width: 50px;
+			height: 50px;
+			border-radius: 50%;
+		}
         .play-button {
             margin-right: 250px;
             background-color: orange;
@@ -242,7 +350,7 @@
         </div>
         <div id="user-info" style="display: none;">
             <span id="username-display"></span>
-            <img id="profile-image" class="champion-image" style="width: 50px; height: 50px; border-radius: 50%;" src="Icons/Julia.png" alt="Profile Icon">
+            <img id="profile-image" class="champion-image" style="width: 50px; height: 50px; border-radius: 50%;" src="Icons/Birdie.png" alt="Profile Icon">
         </div>
     </div>
 
@@ -306,76 +414,5 @@
         <span id="quest-count">6</span>
         Quests
     </div>
-
-    <!-- JavaScript -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js";
-        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "your_api_key",
-            authDomain: "your_project_id.firebaseapp.com",
-            databaseURL: "https://your_project_id.firebaseio.com",
-            projectId: "your_project_id",
-            storageBucket: "your_project_id.appspot.com",
-            messagingSenderId: "your_messaging_sender_id",
-            appId: "your_app_id",
-            measurementId: "your_measurement_id"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const database = getDatabase(app);
-
-        // Function to retrieve user info and update UI
-        window.onload = async function() {
-            const user = auth.currentUser;
-            if (user) {
-                const userRef = ref(database, 'users/' + user.uid);
-                const userDataSnapshot = await get(userRef);
-                if (userDataSnapshot.exists()) {
-                    const userData = userDataSnapshot.val();
-                    updateUserInfo(userData);
-                }
-            }
-        };
-
-        // Function to update user info in the UI
-        function updateUserInfo(userData) {
-            const usernameDisplay = document.getElementById('username-display');
-            const profileImage = document.getElementById('profile-image');
-
-            // Display username and profile image
-            usernameDisplay.textContent = userData.username || userData.email.split('@')[0];
-            profileImage.src = `Icons/${userData.photoURL || 'Julia.png'}`; // Default to Julia.png if no photoURL
-            profileImage.alt = 'Profile Icon';
-
-            // Show user info
-            document.getElementById('user-info').style.display = 'flex';
-        }
-
-        // Function to search champions
-        window.searchChampion = function() {
-            const input = document.getElementById('search-bar').value.toLowerCase();
-            const images = document.getElementsByClassName('champion-image');
-            for (let i = 0; i < images.length; i++) {
-                const altText = images[i].alt.toLowerCase();
-                if (altText.includes(input)) {
-                    images[i].style.display = '';
-                } else {
-                    images[i].style.display = 'none';
-                }
-            }
-        };
-
-        // Toggle quests visibility
-        window.toggleQuests = function() {
-            const questsContainer = document.getElementById('quests-container');
-            questsContainer.classList.toggle('open');
-        };
-    </script>
-
 </body>
 </html>
