@@ -36,9 +36,10 @@
         const database = getDatabase(app);
 		
 		// Function to update data in Firebase Realtime Database
+		import { ref, set } from 'https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app/;
+
 		function update(ref, updates) {
-        return set(ref, updates); // Assuming set is a function imported from firebase-database.js to set data
-    }
+			return set(ref, updates); // Using set to update data
 
         // Function to check if user is logged in and update UI
         window.onload = function() {
@@ -108,24 +109,24 @@
         modal.style.display = 'none';
     };
 
-    // Function to select an icon
-    function selectIcon(icon) {
-        const user = auth.currentUser;
-        if (user) {
-            const userRef = ref(database, 'users/' + user.uid);
-            update(userRef, { icon: icon })
-                .then(() => {
-                    document.getElementById('profile-image').src = `Icons/${icon}`;
-                    document.getElementById('profile-image').alt = 'Profile Icon';
-                    closeChangeIconModal();
-                })
-                .catch(error => {
-                    console.error('Error updating icon:', error);
-                });
-        } else {
-            console.error('User not authenticated');
-        }
-    }
+	// Function to select an icon
+	function selectIcon(icon) {
+		const user = auth.currentUser;
+		if (user) {
+			const userRef = ref(database, 'users/' + user.uid);
+			update(userRef, { icon: icon })
+				.then(() => {
+					document.getElementById('profile-image').src = `Icons/${icon}`;
+					document.getElementById('profile-image').alt = 'Profile Icon';
+					closeChangeIconModal();
+				})
+				.catch(error => {
+					console.error('Error updating icon:', error);
+				});
+		} else {
+			console.error('User not authenticated');
+		}
+	}
 
         // Function to handle "Log Out"
         window.logOut = function() {
