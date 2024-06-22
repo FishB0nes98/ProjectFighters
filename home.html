@@ -3,6 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <title>Champion Selector</title>
+	    <!-- Include Firebase SDK and configuration -->
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"></script>
+    <script>
+        // Firebase configuration (same as above)
+        const firebaseConfig = {
+            apiKey: "your_api_key",
+            authDomain: "your_project_id.firebaseapp.com",
+            databaseURL: "https://your_project_id.firebaseio.com",
+            projectId: "your_project_id",
+            storageBucket: "your_project_id.appspot.com",
+            messagingSenderId: "your_messaging_sender_id",
+            appId: "your_app_id",
+            measurementId: "your_measurement_id"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // Function to check if user is logged in and update UI
+        window.onload = async function() {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = database.ref('users/' + user.uid);
+                const snapshot = await userRef.once('value');
+                const userData = snapshot.val();
+                if (userData) {
+                    // Update UI with user info
+                    document.getElementById('username').textContent = userData.username || user.email.split('@')[0];
+                    document.getElementById('profile-image').src = `Icons/${userData.icon || 'Julia.png'}`;
+                    document.getElementById('profile-image').alt = 'Profile Icon';
+                    document.getElementById('user-info').style.display = 'flex'; // Show user info section
+                }
+            }
+        };
+    </script>
     <style>
         body {
             margin: 0;
