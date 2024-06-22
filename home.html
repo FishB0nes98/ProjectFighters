@@ -16,7 +16,7 @@
     <script type="module">
 		import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
 		import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
-		import { getDatabase, ref, update } from 'https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app/;
+		import { getDatabase, ref, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
 	
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
@@ -29,14 +29,15 @@
             measurementId: "G-LNEM6HR842"
         };
 
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
 		
 		// Function to update data in Firebase Realtime Database
-		function updateData(refPath, updates) {
-			return update(ref(database, refPath), updates);
-		}
+		function update(ref, updates) {
+			return firebase.database().ref(ref).update(updates); // Using update to update data
+		} 
         // Function to check if user is logged in and update UI
         window.onload = function() {
             onAuthStateChanged(auth, async (user) => {
@@ -106,25 +107,25 @@
         modal.style.display = 'none';
     };
 
-    // Function to select an icon
-    function selectIcon(icon) {
-        const user = auth.currentUser;
-        if (user) {
-            const userRef = 'users/' + user.uid;
-            const updates = { icon: icon };
-            updateData(userRef, updates)
-                .then(() => {
-                    document.getElementById('profile-image').src = `Icons/${icon}`;
-                    document.getElementById('profile-image').alt = 'Profile Icon';
-                    closeChangeIconModal();
-                })
-                .catch(error => {
-                    console.error('Error updating icon:', error);
-                });
-        } else {
-            console.error('User not authenticated');
-        }
-    };
+	// Function to select an icon
+	function selectIcon(icon) {
+		const user = firebase.auth().currentUser;
+		if (user) {
+			const userRef = 'users/' + user.uid;
+			const updates = { icon: icon };
+			update(userRef, updates)
+				.then(() => {
+					document.getElementById('profile-image').src = `Icons/${icon}`;
+					document.getElementById('profile-image').alt = 'Profile Icon';
+					closeChangeIconModal();
+				})
+				.catch(error => {
+					console.error('Error updating icon:', error);
+				});
+		} else {
+			console.error('User not authenticated');
+		}
+	}
 
         // Function to handle "Log Out"
 			window.logOut = function() {
