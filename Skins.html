@@ -47,6 +47,42 @@
             });
         };
 
+        window.openLightbox = function(src, name, price) {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.style.display = 'flex';
+            const img = document.getElementById('lightbox-image');
+            img.src = src;
+            const purchaseButton = document.getElementById('purchase-button');
+            purchaseButton.dataset.skinName = name;
+            purchaseButton.dataset.skinPrice = price;
+            purchaseButton.textContent = `Purchase for ${price} FM`;
+            purchaseButton.className = window.userFM >= price ? 'purchase-button enabled' : 'purchase-button disabled';
+        };
+
+        window.closeLightbox = function() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.style.display = 'none';
+        };
+
+        window.purchaseSkin = async function() {
+            const purchaseButton = document.getElementById('purchase-button');
+            const skinName = purchaseButton.dataset.skinName;
+            const skinPrice = parseInt(purchaseButton.dataset.skinPrice, 10);
+
+            if (window.userFM >= skinPrice) {
+                const newFM = window.userFM - skinPrice;
+                const updates = {};
+                updates['FM'] = newFM;
+                updates[`skins/${skinName}`] = 1;
+                await update(window.userRef, updates);
+                document.getElementById('currency-amount').textContent = newFM;
+                window.userFM = newFM;
+                closeLightbox();
+                alert(`You have successfully purchased ${skinName}!`);
+            } else {
+                alert("You don't have enough FM to purchase this skin.");
+            }
+        };
     </script>
     <style>
         body {
@@ -275,12 +311,12 @@
                 <div class="character">
             <h2>Julia</h2>
             <div class="skins">
-                <div class="skin" data-src="Skins/Disco Queen Julia.jpeg" onclick="openLightbox('Skins/Disco Queen Julia.jpeg', 'Disco Queen Julia', 100)">
+                <div class="skin" data-src="Skins/Disco Queen Julia.jpeg" onclick="openLightbox('Skins/Disco Queen Julia.jpeg', 'Disco Queen Julia', 2000)">
                     <img src="Skins/Disco Queen Julia.jpeg" alt="Disco Queen Julia">
                     <div class="skin-name">Disco Queen Julia</div>
                     <span class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</span>
                 </div>
-                <div class="skin" data-src="Skins/River Spirit Julia.jpeg" onclick="openLightbox('Skins/River Spirit Julia.jpeg', 'River Spirit Julia', 150)">
+                <div class="skin" data-src="Skins/River Spirit Julia.jpeg" onclick="openLightbox('Skins/River Spirit Julia.jpeg', 'River Spirit Julia', 1000)">
                     <img src="Skins/River Spirit Julia.jpeg" alt="River Spirit Julia">
                     <div class="skin-name">River Spirit Julia</div>
                     <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
@@ -428,10 +464,12 @@
                 <div class="skin" data-src="Skins/Spider Scorpion.png">
                     <img src="Skins/Spider Scorpion.png" alt="Spider Scorpion">
                     <div class="skin-name">Spider Scorpion</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
                 <div class="skin" data-src="Skins/Blossom Scorpion.png">
                     <img src="Skins/Blossom Scorpion.png" alt="Blossom Scorpion">
                     <div class="skin-name">Blossom Scorpion</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
             </div>
         </div>
@@ -441,6 +479,7 @@
                 <div class="skin" data-src="Skins/Cyber Bomber Peacock.jpeg">
                     <img src="Skins/Cyber Bomber Peacock.jpeg" alt="Cyber Bomber Peacock">
                     <div class="skin-name">Cyber Bomber Peacock</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
             </div>
         </div>
@@ -450,10 +489,12 @@
                 <div class="skin" data-src="Skins/Blossom Angel.png">
                     <img src="Skins/Blossom Angel.png" alt="Blossom Angel">
                     <div class="skin-name">Blossom Angel</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
                 </div>
                 <div class="skin" data-src="Skins/Voidborn Angel.png">
                     <img src="Skins/Voidborn Angel.png" alt="Voidborn Angel">
                     <div class="skin-name">Voidborn Angel</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
             </div>
         </div>
@@ -463,10 +504,12 @@
                 <div class="skin" data-src="Skins/Royal Guard Astaroth.png">
                     <img src="Skins/Royal Guard Astaroth.png" alt="Royal Guard Astaroth">
                     <div class="skin-name">Royal Guard Astaroth</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
                 <div class="skin" data-src="Skins/Sand Soldier Astaroth.png">
                     <img src="Skins/Sand Soldier Astaroth.png" alt="Sand Soldier Astaroth">
                     <div class="skin-name">Sand Soldier Astaroth</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
             </div>
         </div>
@@ -476,14 +519,17 @@
                 <div class="skin" data-src="Skins/DJ Ibuki.png">
                     <img src="Skins/DJ Ibuki.png" alt="DJ Ibuki">
                     <div class="skin-name">DJ Ibuki</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
                 </div>
                 <div class="skin" data-src="Skins/Demon Hunter Ibuki.png">
                     <img src="Skins/Demon Hunter Ibuki.png" alt="Demon Hunter Ibuki">
                     <div class="skin-name">Demon Hunter Ibuki</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
                 <div class="skin" data-src="Skins/Red Stone Ibuki.png">
                     <img src="Skins/Red Stone Ibuki.png" alt="Red Stone Ibuki">
                     <div class="skin-name">Red Stone Ibuki</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">500</div>
                 </div>
             </div>
         </div>
@@ -493,10 +539,12 @@
                 <div class="skin" data-src="Skins/Phoenix R.Mika.png">
                     <img src="Skins/Phoenix R.Mika.png" alt="Phoenix R.Mika">
                     <div class="skin-name">Phoenix R.Mika</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
                 <div class="skin" data-src="Skins/Pop Star R.Mika.png">
                     <img src="Skins/Pop Star R.Mika.png" alt="Pop Star R.Mika">
                     <div class="skin-name">Pop Star R.Mika</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
             </div>
         </div>
@@ -506,10 +554,12 @@
                 <div class="skin" data-src="Skins/Master of Monks Raiden.jpeg">
                     <img src="Skins/Master of Monks Raiden.jpeg" alt="Master of Monks Raiden">
                     <div class="skin-name">Master of Monks Raiden</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
 				<div class="skin" data-src="Skins/Dragon Tamer Raiden.png">
                     <img src="Skins/Dragon Tamer Raiden.png" alt="Dragon Tamer Raiden">
                     <div class="skin-name">Dragon Tamer Raiden</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
                 </div>
             </div>
         </div>
@@ -519,10 +569,12 @@
                 <div class="skin" data-src="Skins/Street Fighter Yugo.png">
                     <img src="Skins/Street Fighter Yugo.png" alt="Street Fighter Yugo">
                     <div class="skin-name">Street Fighter Yugo</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
                 <div class="skin" data-src="Skins/Cyber Predator Yugo.png">
                     <img src="Skins/Cyber Predator Yugo.png" alt="Cyber Predator Yugo">
                     <div class="skin-name">Cyber Predator Yugo</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
                 </div>
             </div>
         </div>
@@ -532,10 +584,12 @@
                 <div class="skin" data-src="Skins/Vampire Talim.png">
                     <img src="Skins/Vampire Talim.png" alt="Vampire Talim">
                     <div class="skin-name">Vampire Talim</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">500</div>
                 </div>
                 <div class="skin" data-src="Skins/Sand Soldier Talim.jpeg">
                     <img src="Skins/Sand Soldier Talim.jpeg" alt="Sand Soldier Talim">
                     <div class="skin-name">Sand Soldier Talim</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
                 </div>
             </div>
         </div>
@@ -545,6 +599,7 @@
                 <div class="skin" data-src="Skins/Officer Noel.jpeg">
                     <img src="Skins/Officer Noel.jpeg" alt="Officer Noel">
                     <div class="skin-name">Officer Noel</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
             </div>
         </div>
@@ -554,6 +609,7 @@
                 <div class="skin" data-src="Skins/Enraged Blanka.png">
                     <img src="Skins/Enraged Blanka.png" alt="Enraged Blanka">
                     <div class="skin-name">Enraged Blanka</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
             </div>
         </div>
@@ -567,106 +623,84 @@
         </div>
     </div>
 </div>
-	<div id="lightbox" class="lightbox" onclick="closeLightbox()">
-		<div class="lightbox-content" onclick="event.stopPropagation()">
-			<img id="lightbox-image" src="" alt="Selected Skin">
-			<button class="close-button" onclick="closeLightbox()">×</button>
-			<button id="purchase-button" class="purchase-button disabled" disabled>
-				<img src="res/img/fm.png" alt="Coin Icon">
-				<span id="skin-price"></span>
-			</button>
-		</div>
-	</div>
-
-    <!-- Script for Lightbox functionality -->
-    <script>
-            window.openLightbox = function(imgSrc, skinName, skinPrice) {
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImage = document.getElementById('lightbox-image');
-    const purchaseButton = document.getElementById('purchase-button');
-    const priceDisplay = document.getElementById('skin-price');
-
-    lightboxImage.src = imgSrc;
-    priceDisplay.textContent = skinPrice;
-
-    if (window.userFM >= skinPrice) {
-        purchaseButton.classList.remove('disabled');
-        purchaseButton.classList.add('enabled');
-        purchaseButton.disabled = false;
-        purchaseButton.onclick = async () => {
-            const newFM = window.userFM - skinPrice;
-            await updateUserFM(newFM);
-            await addPurchase(skinName);
-            document.getElementById('currency-amount').textContent = newFM;
-            window.userFM = newFM;
-            lightbox.style.display = 'none';
+	<div id="lightbox" class="lightbox">
+        <div class="lightbox-content">
+            <img id="lightbox-image" src="" alt="Skin Image">
+            <button id="purchase-button" class="purchase-button" onclick="purchaseSkin()"></button>
+            <button onclick="closeLightbox()">X</button>
+        </div>
+    </div>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
         };
-    } else {
-        purchaseButton.classList.remove('enabled');
-        purchaseButton.classList.add('disabled');
-        purchaseButton.disabled = true;
-        purchaseButton.onclick = null;
-    }
 
-    lightbox.style.display = 'flex';
-};
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
 
-window.closeLightbox = function() {
-    document.getElementById('lightbox').style.display = 'none';
-};
-
-async function updateUserFM(newFM) {
-    try {
-        await firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({ FM: newFM });
-    } catch (error) {
-        console.error("Error updating FM:", error);
-    }
-}
-
-async function addPurchase(skinName) {
-    try {
-        await firebase.database().ref('purchases/' + firebase.auth().currentUser.uid + '/' + skinName.replace(/\s+/g, '_')).set({
-            skin: skinName
-        });
-    } catch (error) {
-        console.error("Error adding purchase:", error);
-    }
-}
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') closeLightbox();
-            if (event.key === 'ArrowLeft') changeSlide(-1);
-            if (event.key === 'ArrowRight') changeSlide(1);
-        });
-		 // Search functionality
-        document.getElementById('characterSearch').addEventListener('input', function() {
-            let filter = this.value.toLowerCase();
-            let characters = document.querySelectorAll('.character');
-            characters.forEach(character => {
-                let characterName = character.querySelector('h2').innerText.toLowerCase();
-                if (characterName.includes(filter)) {
-                    character.style.display = '';
-                } else {
-                    character.style.display = 'none';
-                }
-            });
-        });
-
-        document.getElementById('skinSearch').addEventListener('input', function() {
-            let filter = this.value.toLowerCase();
-            let skins = document.querySelectorAll('.skin');
-            skins.forEach(skin => {
-                let skinName = skin.querySelector('.skin-name').innerText.toLowerCase();
-                if (skinName.includes(filter)) {
-                    skin.parentElement.parentElement.style.display = '';
-                    skin.style.display = '';
-                } else {
-                    skin.style.display = 'none';
-                    if (skin.parentElement.querySelectorAll('.skin:not([style*="display: none"])').length === 0) {
-                        skin.parentElement.parentElement.style.display = 'none';
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        document.getElementById('currency-amount').textContent = userData.FM || 0;
+                        window.userFM = userData.FM || 0;
+                        window.userRef = userRef;
                     }
                 }
             });
-        });
+        };
+
+        window.openLightbox = function(src, name, price) {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.style.display = 'flex';
+            const img = document.getElementById('lightbox-image');
+            img.src = src;
+            const purchaseButton = document.getElementById('purchase-button');
+            purchaseButton.dataset.skinName = name;
+            purchaseButton.dataset.skinPrice = price;
+            purchaseButton.textContent = `Purchase for ${price} FM`;
+            purchaseButton.className = window.userFM >= price ? 'purchase-button enabled' : 'purchase-button disabled';
+        };
+
+        window.closeLightbox = function() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.style.display = 'none';
+        };
+
+        window.purchaseSkin = async function() {
+            const purchaseButton = document.getElementById('purchase-button');
+            const skinName = purchaseButton.dataset.skinName;
+            const skinPrice = parseInt(purchaseButton.dataset.skinPrice, 10);
+
+            if (window.userFM >= skinPrice) {
+                const newFM = window.userFM - skinPrice;
+                const updates = {};
+                updates['FM'] = newFM;
+                updates[`skins/${skinName}`] = 1;
+                await update(window.userRef, updates);
+                document.getElementById('currency-amount').textContent = newFM;
+                window.userFM = newFM;
+                closeLightbox();
+                alert(`You have successfully purchased ${skinName}!`);
+            } else {
+                alert("You don't have enough FM to purchase this skin.");
+            }
+        };
     </script>
 </body>
 </html>
