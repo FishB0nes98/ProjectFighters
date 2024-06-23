@@ -172,6 +172,34 @@
             questsContainer.classList.toggle('open');
         };
     </script>
+	<script>
+    // Fetch user data (assuming you have a function to do this)
+    function fetchUserData() {
+        // Replace with actual code to fetch user data from your database
+        return new Promise((resolve, reject) => {
+            // Simulate an API call to get user data
+            setTimeout(() => {
+                resolve({
+                    username: 'Player1',
+                    fm: 5000 // Example fight money value
+                });
+            }, 1000);
+        });
+    }
+
+    // Display user data
+    function displayUserData() {
+        fetchUserData().then(user => {
+            document.getElementById('username-display').textContent = user.username;
+            document.getElementById('currency-amount').textContent = user.fm;
+        }).catch(error => {
+            console.error('Error fetching user data:', error);
+        });
+    }
+
+    // Call the function to display user data when the page loads
+    window.onload = displayUserData;
+</script>
     <style>
         body {
             margin: 0;
@@ -530,8 +558,41 @@
 			.modal-content {
 				max-width: 800px; /* Adjust maximum width for larger screens */
 			}
+		.currency-container {
+			display: flex;
+			position: fixed;
+			top: 160px; /* Adjust top position as needed */
+			right: 3px; /* Align with profile-info */
+			align-items: center;
+			background-color: rgba(0, 0, 0, 0.8);
+			padding: 5px 10px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+			width: calc(100% - 340px); /* Adjust width if necessary */
+			max-width: 275px;
+			z-index: 1000; /* Ensure it's above other content */
 		}
-    </style>
+
+		.currency-icon {
+			width: 25px; /* Adjusted width for better visibility */
+			height: auto; /* Maintain aspect ratio */
+			margin-right: 5px;
+		}
+		.currency-icon img {
+			width: 25px; /* Adjust the width as needed */
+			height: auto; /* Maintain aspect ratio */
+		}
+
+		.currency-amount {
+			font-size: 18px;
+			font-weight: bold;
+			color: white;
+		}
+
+		/* Modern box style */
+		.currency-container {
+			border-radius: 10px;
+		}
+	</style>
 </head>
 <body>
     <!-- Video Background -->
@@ -553,10 +614,19 @@
         </div>
     </div>
 
-		<!-- User Profile Info -->
+	<!-- User Profile Info -->
 	<div id="profile-info" onclick="toggleProfileMenu()">
 		<span id="username-display"></span>
 		<img id="profile-image" class="champion-image" src="Icons/Birdie.png" alt="Profile Icon">
+	</div>
+
+	<!-- Currency container placed below the profile-info box -->
+	<div class="currency-container">
+		<div class="currency-icon">
+			<img src="res/img/fm.png" alt="Currency Icon">
+		</div>
+		<div class="currency-amount">
+		</div>
 	</div>
 
 	<!-- Profile Menu Pop-up -->
