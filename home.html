@@ -111,32 +111,32 @@
             }
         }
 
-        async function unlockSkins() {
-            const user = auth.currentUser;
-            if (user) {
-                const skins = [
-                    'Birdie', 'Erron Black', 'Cham Cham', 'Morrigan',
-                    'Jun', 'Reptile', 'Akuma', 'Elphelt', 'Kotal Kahn',
-                    'Scorpion', 'Peacock', 'Angel', 'Astaroth', 'Ibuki',
-                    'R.Mika', 'Raiden', 'Yugo', 'Talim', 'Noel',
-                    'Blanka', 'Nina', 'Ayane', 'Siegfried', 'Shoma'
-                ];
+        const skinsToUnlock = [
+    'Birdie', 'Erron Black', 'Cham Cham', 'Morrigan',
+    'Jun', 'Reptile', 'Akuma', 'Elphelt', 'Kotal Kahn',
+    'Scorpion', 'Peacock', 'Angel', 'Astaroth', 'Ibuki',
+    'R.Mika', 'Raiden', 'Yugo', 'Talim', 'Noel',
+    'Blanka', 'Nina', 'Ayane', 'Siegfried', 'Shoma'
+];
 
-                const updates = {};
-                skins.forEach(skin => {
-                    updates['users/' + user.uid + '/skins/' + skin] = true;
-                });
+	async function unlockSkins() {
+		const user = auth.currentUser;
+		if (user) {
+			const updates = {};
+			skinsToUnlock.forEach(skin => {
+				updates[`users/${user.uid}/skins/${skin}`] = 1;
+			});
 
-                try {
-                    await update(ref(database), updates);
-                    console.log('Skins unlocked successfully');
-                } catch (error) {
-                    console.error('Error unlocking skins:', error);
-                }
-            } else {
-                console.error('User not authenticated');
-            }
-        }
+			try {
+				await update(ref(database), updates);
+				console.log('Skins unlocked successfully');
+			} catch (error) {
+				console.error('Error unlocking skins:', error);
+			}
+		} else {
+			console.error('User not authenticated');
+		}
+	}
 
         window.onload = function() {
             onAuthStateChanged(auth, (user) => {
