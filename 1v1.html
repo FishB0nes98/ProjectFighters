@@ -11,7 +11,7 @@
         document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
         document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
     </script>
-    <script type="module">
+<script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
         import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
@@ -31,63 +31,60 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 		
-        window.onload = function() {
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    console.log("User is logged in:", user.uid);
-                    const userRef = ref(database, 'users/' + user.uid);
-                    const snapshot = await get(userRef);
-                    const userData = snapshot.val();
-                    if (userData) {
-                        window.userRef = userRef;
+			window.onload = function() {
+		onAuthStateChanged(auth, async (user) => {
+			if (user) {
+				console.log("User is logged in:", user.uid);
+				const userRef = ref(database, 'users/' + user.uid);
+				const snapshot = await get(userRef);
+				const userData = snapshot.val();
+				if (userData) {
+					window.userRef = userRef;
 
-                        const skinsRef = ref(database, 'skins');
-                        const skinsSnapshot = await get(skinsRef);
-                        const skinsData = skinsSnapshot.val();
-                        if (skinsData) {
-                            populateSkinDropdowns(skinsData);
-                        } else {
-                            console.log("No skins available.");
-                        }
-                    }
-                } else {
-                    console.log("User is not logged in.");
-                }
-            });
-        };
+					if (userData.skins) {
+						populateSkinDropdowns(userData.skins);
+					} else {
+						console.log("No skins available.");
+					}
+				}
+			} else {
+				console.log("User is not logged in.");
+			}
+		});
+	};
 
-        function populateSkinDropdowns(skins) {
-            const dropdowns = document.querySelectorAll('.skin-dropdown');
-            dropdowns.forEach(dropdown => {
-                dropdown.innerHTML = '<option value="">Select a skin</option>'; // Clear any existing options and add a placeholder
-                for (const skin in skins) {
-                    if (skins[skin] === 1) {
-                        const option = document.createElement('option');
-                        option.value = skin + '.png';
-                        option.text = skin;
-                        dropdown.appendChild(option);
-                    }
-                }
+	function populateSkinDropdowns(skins) {
+		const dropdowns = document.querySelectorAll('.skin-dropdown');
+		dropdowns.forEach(dropdown => {
+			dropdown.innerHTML = '<option value="">Select a skin</option>'; // Clear any existing options and add a placeholder
+			for (const skin in skins) {
+				if (skins[skin] === 1) {
+					const option = document.createElement('option');
+					option.value = skin + '.png';
+					option.text = skin;
+					dropdown.appendChild(option);
+				}
+			}
 
-                dropdown.addEventListener('change', function() {
-                    const selectedSkin = this.value;
-                    const playerSlot = this.closest('.player-slot');
-                    const img = playerSlot.querySelector('img');
-                    const skinNameDiv = playerSlot.querySelector('.skin-name');
+			dropdown.addEventListener('change', function() {
+				const selectedSkin = this.value;
+				const playerSlot = this.closest('.player-slot');
+				const img = playerSlot.querySelector('img');
+				const skinNameDiv = playerSlot.querySelector('.skin-name');
 
-                    if (selectedSkin) {
-                        img.src = 'Skins/' + selectedSkin;
-                        skinNameDiv.textContent = this.options[this.selectedIndex].text;
-                        skinNameDiv.style.display = 'block';
-                    } else {
-                        img.src = '';
-                        skinNameDiv.textContent = '';
-                        skinNameDiv.style.display = 'none';
-                    }
-                });
-            });
-        }
-    </script>
+				if (selectedSkin) {
+					img.src = 'Skins/' + selectedSkin;
+					skinNameDiv.textContent = this.options[this.selectedIndex].text;
+					skinNameDiv.style.display = 'block';
+				} else {
+					img.src = '';
+					skinNameDiv.textContent = '';
+					skinNameDiv.style.display = 'none';
+				}
+			});
+		});
+	}
+ </script>
     <style>
         body {
             margin: 0;
