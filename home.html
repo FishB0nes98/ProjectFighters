@@ -17,8 +17,8 @@
         // Initialize Firebase
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
-        import { getDatabase, ref, get, set } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
-        
+        import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
             authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
@@ -34,92 +34,133 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-// Function to update icon data in Firebase Realtime Database
-		async function updateIcon(icon) {
-			const user = auth.currentUser;
-			if (user) {
-				const userRef = ref(database, 'users/' + user.uid);
-				try {
-					const snapshot = await get(userRef);
-					if (snapshot.exists()) {
-						const userData = snapshot.val();
-						userData.icon = icon; // Update the icon field
-						await set(userRef, userData); // Write back the updated data
-						console.log('Icon updated successfully');
-					} else {
-						console.error('No user data found');
-					}
-				} catch (error) {
-					console.error('Error updating icon:', error);
-				}
-			} else {
-				console.error('User not authenticated');
-			}
-		}
-
-
-        // Function to handle icon selection
-    function selectIcon(icon) {
-        const user = auth.currentUser;
-        if (user) {
-            updateIcon(icon)
-                .then(() => {
-                    document.getElementById('profile-image').src = `Icons/${icon}`;
-                    document.getElementById('profile-image').alt = 'Profile Icon';
-                    closeChangeIconModal(); // Assuming this function closes the modal
-                })
-                .catch(error => {
-                    console.error('Error updating icon:', error);
-                });
-        } else {
-            console.error('User not authenticated');
-        }
-    }
-
-	     // Function to check if user is logged in and update UI
-         window.onload = function() {
-        onAuthStateChanged(auth, async (user) => {
+        async function updateIcon(icon) {
+            const user = auth.currentUser;
             if (user) {
-                console.log("User is authenticated", user); // Debugging line
                 const userRef = ref(database, 'users/' + user.uid);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val();
-                if (userData) {
-                    console.log("User data retrieved", userData); // Debugging line
-                    // Update UI with user info
-                    document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
-                    document.getElementById('profile-image').src = `Icons/${userData.icon || 'Julia.png'}`;
-                    document.getElementById('profile-image').alt = 'Profile Icon';
-					// Display currency amount (FM)
-                    document.getElementById('currency-amount').textContent = userData.FM || 0; // Assuming 'fm' is the field containing fight money
-					document.getElementById('user-info').style.display = 'flex'; // Show user info section
-                } else {
-                    console.log("No user data found"); // Debugging line
+                try {
+                    const snapshot = await get(userRef);
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        userData.icon = icon;
+                        await set(userRef, userData);
+                        console.log('Icon updated successfully');
+                    } else {
+                        console.error('No user data found');
+                    }
+                } catch (error) {
+                    console.error('Error updating icon:', error);
                 }
             } else {
-                console.log("User is not authenticated"); // Debugging line
+                console.error('User not authenticated');
             }
-        });
-    };
+        }
 
+        function selectIcon(icon) {
+            const user = auth.currentUser;
+            if (user) {
+                updateIcon(icon)
+                    .then(() => {
+                        document.getElementById('profile-image').src = `Icons/${icon}`;
+                        document.getElementById('profile-image').alt = 'Profile Icon';
+                        closeChangeIconModal();
+                    })
+                    .catch(error => {
+                        console.error('Error updating icon:', error);
+                    });
+            } else {
+                console.error('User not authenticated');
+            }
+        }
 
-        // Function to toggle profile menu visibility
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    console.log("User is authenticated", user);
+                    const userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        console.log("User data retrieved", userData);
+                        document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
+                        document.getElementById('profile-image').src = `Icons/${userData.icon || 'Julia.png'}`;
+                        document.getElementById('profile-image').alt = 'Profile Icon';
+                        document.getElementById('currency-amount').textContent = userData.FM || 0;
+                        document.getElementById('user-info').style.display = 'flex';
+                    } else {
+                        console.log("No user data found");
+                    }
+                } else {
+                    console.log("User is not authenticated");
+                }
+            });
+        };
+
+        async function checkJuliaOwnership() {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = ref(database, 'users/' + user.uid + '/skins/Julia');
+                const snapshot = await get(userRef);
+                if (snapshot.exists()) {
+                    document.getElementById('unlock-skins-button').style.display = 'none';
+                } else {
+                    document.getElementById('unlock-skins-button').style.display = 'block';
+                }
+            } else {
+                console.error('User not authenticated');
+            }
+        }
+
+        const skinsToUnlock = [
+    'Birdie', 'Erron Black', 'Cham Cham', 'Morrigan',
+    'Jun', 'Reptile', 'Akuma', 'Elphelt', 'Kotal Kahn',
+    'Scorpion', 'Peacock', 'Angel', 'Astaroth', 'Ibuki',
+    'R.Mika', 'Raiden', 'Yugo', 'Talim', 'Noel',
+    'Blanka', 'Nina', 'Ayane', 'Siegfried', 'Shoma'
+];
+
+	async function unlockSkins() {
+		const user = auth.currentUser;
+		if (user) {
+			const updates = {};
+			skinsToUnlock.forEach(skin => {
+				updates[`users/${user.uid}/skins/${skin}`] = 1;
+			});
+
+			try {
+				await update(ref(database), updates);
+				console.log('Skins unlocked successfully');
+			} catch (error) {
+				console.error('Error unlocking skins:', error);
+			}
+		} else {
+			console.error('User not authenticated');
+		}
+	}
+
+        window.onload = function() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    checkJuliaOwnership();
+                } else {
+                    console.error('User not authenticated');
+                }
+            });
+        };
+
         window.toggleProfileMenu = function() {
             const profileMenu = document.getElementById('profile-menu');
             profileMenu.classList.toggle('show');
         };
 
-        // Function to handle "Collection"
         window.viewCollection = function() {
             alert('Collection clicked');
         };
 
-        // Function to open the modal for changing icon
         window.openChangeIconModal = function() {
             const modal = document.getElementById('change-icon-modal');
             modal.style.display = 'block';
 
-            // Load icons dynamically
             const iconList = document.getElementById('icon-list');
             iconList.innerHTML = '';
 
@@ -141,13 +182,11 @@
             });
         };
 
-        // Function to close the change icon modal
         window.closeChangeIconModal = function() {
             const modal = document.getElementById('change-icon-modal');
             modal.style.display = 'none';
         };
 
-        // Function to handle "Log Out"
         window.logOut = function() {
             signOut(auth).then(() => {
                 window.location.href = 'index.html';
@@ -156,7 +195,6 @@
             });
         };
 
-        // Function to search champions
         window.searchChampion = function() {
             const input = document.getElementById('search-bar').value.toLowerCase();
             const images = document.getElementsByClassName('champion-image');
@@ -170,7 +208,81 @@
             }
         };
 
-        // Toggle quests visibility
+        window.toggleQuests = function() {
+            const questsContainer = document.getElementById('quests-container');
+            questsContainer.classList.toggle('open');
+        };
+
+        window.onload = function() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    checkJuliaOwnership();
+                } else {
+                    console.error('User not authenticated');
+                }
+            });
+        };
+
+        window.toggleProfileMenu = function() {
+            const profileMenu = document.getElementById('profile-menu');
+            profileMenu.classList.toggle('show');
+        };
+
+        window.viewCollection = function() {
+            alert('Collection clicked');
+        };
+
+        window.openChangeIconModal = function() {
+            const modal = document.getElementById('change-icon-modal');
+            modal.style.display = 'block';
+
+            const iconList = document.getElementById('icon-list');
+            iconList.innerHTML = '';
+
+            const icons = [
+                'Julia.png', 'Birdie.png', 'Erron Black.png', 'Cham Cham.png', 'Morrigan.png',
+                'Jun.png', 'Reptile.png', 'Akuma.png', 'Elphelt.png', 'Kotal Kahn.png',
+                'Scorpion.png', 'Peacock.png', 'Angel.png', 'Astaroth.png', 'Ibuki.png',
+                'R.Mika.png', 'Raiden.png', 'Yugo.png', 'Talim.png', 'Noel.png',
+                'Blanka.png', 'Nina.png', 'Ayane.png', 'Siegfried.png', 'Shoma.png'
+            ];
+
+            icons.forEach(icon => {
+                const img = document.createElement('img');
+                img.src = `Icons/${icon}`;
+                img.alt = icon.replace('.png', '');
+                img.classList.add('champion-image');
+                img.onclick = () => selectIcon(icon);
+                iconList.appendChild(img);
+            });
+        };
+
+        window.closeChangeIconModal = function() {
+            const modal = document.getElementById('change-icon-modal');
+            modal.style.display = 'none';
+        };
+
+        window.logOut = function() {
+            signOut(auth).then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error('Sign out error:', error);
+            });
+        };
+
+        window.searchChampion = function() {
+            const input = document.getElementById('search-bar').value.toLowerCase();
+            const images = document.getElementsByClassName('champion-image');
+            for (let i = 0; i < images.length; i++) {
+                const altText = images[i].alt.toLowerCase();
+                if (altText.includes(input)) {
+                    images[i].style.display = '';
+                } else {
+                    images[i].style.display = 'none';
+                }
+            }
+        };
+
         window.toggleQuests = function() {
             const questsContainer = document.getElementById('quests-container');
             questsContainer.classList.toggle('open');
@@ -563,6 +675,45 @@
 			color: white;
 			margin-left: 5px; /* Add margin to separate from the icon */
 		}
+		#button-container {
+			position: fixed;
+			bottom: 40px; /* Adjusted to 40px to be slightly above the bottom edge */
+			right: 20px; /* Adjusted to the bottom right corner */
+			background-color: rgba(0, 0, 0, 0.8);
+			padding: 15px;
+			border-radius: 10px;
+			width: 300px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+			transition: transform 0.3s ease, opacity 0.3s ease;
+			transform: translateY(100%);
+			opacity: 0;
+			z-index: 1000; /* Ensure it's above other content */
+		}
+
+		#unlock-skins-button {
+			background-color: blue;
+			color: white;
+			border: none;
+			padding: 20px 40px;
+			text-align: center;
+			text-decoration: none;
+			font-size: 24px;
+			margin: 4px 2px;
+			cursor: pointer;
+			border-radius: 8px;
+			outline: none;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+			display: none;
+		}
+
+		#unlock-skins-button:hover {
+			background-color: darkblue; /* Adjusted hover color */
+		}
+
+		#unlock-skins-button:active {
+			background-color: #3e8e41; /* Active State */
+			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+		}
 	</style>
 </head>
 <body>
@@ -653,6 +804,11 @@
             <a href="Shoma Page.html"><img src="Icons/Shoma.png" alt="Shoma" class="champion-image gray"></a>
         </div>
     </div>
+	
+	<div class="button-container">
+        <button id="unlock-skins-button" onclick="unlockSkins()">Unlock Free Characters</button>
+    </div>
+</div>
 
     <!-- Quests Popup Container -->
     <div id="quests-container">
@@ -678,6 +834,8 @@
     <div id="quests-toggle" onclick="toggleQuests()">
         <span id="quest-count">6</span>
         Quests
-    </div>
+	</div>
+</div>
+</div>
 </body>
 </html>
