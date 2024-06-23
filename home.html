@@ -137,40 +137,31 @@
         }
     }
 
-	     window.onload = function() {
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            console.log("User is authenticated", user); // Debugging line
-            const userRef = ref(database, 'users/' + user.uid);
-            const snapshot = await get(userRef);
-            if (snapshot.exists()) {
+	     // Function to check if user is logged in and update UI
+         window.onload = function() {
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                console.log("User is authenticated", user); // Debugging line
+                const userRef = ref(database, 'users/' + user.uid);
+                const snapshot = await get(userRef);
                 const userData = snapshot.val();
-                console.log("User data retrieved", userData); // Debugging line
-                
-                // Update UI with user info
-                document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
-                document.getElementById('profile-image').src = `Icons/${userData.icon || 'Julia.png'}`;
-                document.getElementById('profile-image').alt = 'Profile Icon';
-                document.getElementById('user-info').style.display = 'flex'; // Show user info section
-
-                // Debug and conditionally display button
-                if (!userData.icon || userData.icon === 'Julia.png') {
-                    console.log("Button should be displayed");
-                    document.getElementById('some-button').style.display = 'block';
+                if (userData) {
+                    console.log("User data retrieved", userData); // Debugging line
+                    // Update UI with user info
+                    document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
+                    document.getElementById('profile-image').src = `Icons/${userData.icon || 'Julia.png'}`;
+                    document.getElementById('profile-image').alt = 'Profile Icon';
+					// Display currency amount (FM)
+                    document.getElementById('currency-amount').textContent = userData.FM || 0; // Assuming 'fm' is the field containing fight money
+					document.getElementById('user-info').style.display = 'flex'; // Show user info section
                 } else {
-                    console.log("Button should not be displayed");
-                    document.getElementById('some-button').style.display = 'none';
+                    console.log("No user data found"); // Debugging line
                 }
             } else {
-                console.log("No user data found"); // Debugging line
-                // Handle case where no user data is found
+                console.log("User is not authenticated"); // Debugging line
             }
-        } else {
-            console.log("User is not authenticated"); // Debugging line
-            // Handle case where user is not authenticated
-        }
-    });
-};
+        });
+    };
 
 
         // Function to toggle profile menu visibility
