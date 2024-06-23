@@ -4,21 +4,18 @@
     <meta charset="UTF-8">
     <title>Champion Skins</title>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-	<!-- Include Firebase SDK and configuration as module scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
     <script nomodule>
-        // Fallback for non-module browsers (if needed)
         document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
         document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
         document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
     </script>
     <script type="module">
-        // Initialize Firebase
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
-        import { getDatabase, ref, get, set } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
         
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
@@ -35,146 +32,60 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-// Function to update icon data in Firebase Realtime Database
-		async function updateIcon(icon) {
-			const user = auth.currentUser;
-			if (user) {
-				const userRef = ref(database, 'users/' + user.uid);
-				try {
-					const snapshot = await get(userRef);
-					if (snapshot.exists()) {
-						const userData = snapshot.val();
-						userData.icon = icon; // Update the icon field
-						await set(userRef, userData); // Write back the updated data
-						console.log('Icon updated successfully');
-					} else {
-						console.error('No user data found');
-					}
-				} catch (error) {
-					console.error('Error updating icon:', error);
-				}
-			} else {
-				console.error('User not authenticated');
-			}
-		}
-
-
-        // Function to handle icon selection
-    function selectIcon(icon) {
-        const user = auth.currentUser;
-        if (user) {
-            updateIcon(icon)
-                .then(() => {
-                    document.getElementById('profile-image').src = `Icons/${icon}`;
-                    document.getElementById('profile-image').alt = 'Profile Icon';
-                    closeChangeIconModal(); // Assuming this function closes the modal
-                })
-                .catch(error => {
-                    console.error('Error updating icon:', error);
-                });
-        } else {
-            console.error('User not authenticated');
-        }
-    }
-
-	     // Function to check if user is logged in and update UI
-         window.onload = function() {
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                console.log("User is authenticated", user); // Debugging line
-                const userRef = ref(database, 'users/' + user.uid);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val();
-                if (userData) {
-                    console.log("User data retrieved", userData); // Debugging line
-                    // Update UI with user info
-					// Display currency amount (FM)
-                    document.getElementById('currency-amount').textContent = userData.FM || 0; // Assuming 'fm' is the field containing fight money
-                } else {
-                    console.log("No user data found"); // Debugging line
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        document.getElementById('currency-amount').textContent = userData.FM || 0;
+                        window.userFM = userData.FM || 0;
+                        window.userRef = userRef;
+                    }
                 }
+            });
+        };
+
+        window.openLightbox = async function(imgSrc, skinName, skinPrice) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImage = document.getElementById('lightbox-image');
+            const purchaseButton = document.getElementById('purchase-button');
+            const priceDisplay = document.getElementById('price-display');
+
+            lightboxImage.src = imgSrc;
+            priceDisplay.textContent = skinPrice;
+
+            if (window.userFM >= skinPrice) {
+                purchaseButton.classList.remove('disabled');
+                purchaseButton.classList.add('enabled');
+                purchaseButton.disabled = false;
+                purchaseButton.onclick = async () => {
+                    const newFM = window.userFM - skinPrice;
+                    await update(window.userRef, { FM: newFM });
+                    await set(ref(database, 'purchases/' + auth.currentUser.uid + '/' + skinName.replace(/\s+/g, '_')), {
+                        skin: skinName
+                    });
+                    document.getElementById('currency-amount').textContent = newFM;
+                    window.userFM = newFM;
+                    lightbox.style.display = 'none';
+                };
             } else {
-                console.log("User is not authenticated"); // Debugging line
+                purchaseButton.classList.remove('enabled');
+                purchaseButton.classList.add('disabled');
+                purchaseButton.disabled = true;
+                purchaseButton.onclick = null;
             }
-        });
-    };
 
-
-        // Function to toggle profile menu visibility
-        window.toggleProfileMenu = function() {
-            const profileMenu = document.getElementById('profile-menu');
-            profileMenu.classList.toggle('show');
+            lightbox.style.display = 'flex';
         };
 
-        // Function to handle "Collection"
-        window.viewCollection = function() {
-            alert('Collection clicked');
+        window.closeLightbox = function() {
+            document.getElementById('lightbox').style.display = 'none';
         };
 
-        // Function to open the modal for changing icon
-        window.openChangeIconModal = function() {
-            const modal = document.getElementById('change-icon-modal');
-            modal.style.display = 'block';
-
-            // Load icons dynamically
-            const iconList = document.getElementById('icon-list');
-            iconList.innerHTML = '';
-
-            const icons = [
-                'Julia.png', 'Birdie.png', 'Erron Black.png', 'Cham Cham.png', 'Morrigan.png',
-                'Jun.png', 'Reptile.png', 'Akuma.png', 'Elphelt.png', 'Kotal Kahn.png',
-                'Scorpion.png', 'Peacock.png', 'Angel.png', 'Astaroth.png', 'Ibuki.png',
-                'R.Mika.png', 'Raiden.png', 'Yugo.png', 'Talim.png', 'Noel.png',
-                'Blanka.png', 'Nina.png', 'Ayane.png', 'Siegfried.png', 'Shoma.png'
-            ];
-
-            icons.forEach(icon => {
-                const img = document.createElement('img');
-                img.src = `Icons/${icon}`;
-                img.alt = icon.replace('.png', '');
-                img.classList.add('champion-image');
-                img.onclick = () => selectIcon(icon);
-                iconList.appendChild(img);
-            });
-        };
-
-        // Function to close the change icon modal
-        window.closeChangeIconModal = function() {
-            const modal = document.getElementById('change-icon-modal');
-            modal.style.display = 'none';
-        };
-
-        // Function to handle "Log Out"
-        window.logOut = function() {
-            signOut(auth).then(() => {
-                window.location.href = 'index.html';
-            }).catch((error) => {
-                console.error('Sign out error:', error);
-            });
-        };
-
-        // Function to search champions
-        window.searchChampion = function() {
-            const input = document.getElementById('search-bar').value.toLowerCase();
-            const images = document.getElementsByClassName('champion-image');
-            for (let i = 0; i < images.length; i++) {
-                const altText = images[i].alt.toLowerCase();
-                if (altText.includes(input)) {
-                    images[i].style.display = '';
-                } else {
-                    images[i].style.display = 'none';
-                }
-            }
-        };
-
-        // Toggle quests visibility
-        window.toggleQuests = function() {
-            const questsContainer = document.getElementById('quests-container');
-            questsContainer.classList.toggle('open');
-        };
     </script>
     <style>
-	
         body {
             margin: 0;
             padding: 0;
@@ -258,17 +169,23 @@
             color: #ffcc00;
         }
         .skins {
+			position: relative;
+			display: inline-block; /* Ensure the container doesn't collapse */
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
         }
         .skin {
+			position: relative;
+			display: inline-block; /* Ensure the container doesn't collapse */
             margin: 10px;
             text-align: center;
             position: relative;
             cursor: pointer;
         }
         .skin img {
+			position: relative;
+			display: inline-block; /* Ensure the container doesn't collapse */
             max-width: 100%;
             border: 2px solid #444;
             border-radius: 10px;
@@ -282,6 +199,22 @@
             margin-top: 15px;
             font-size: 1em;
             color: #eaeaea;
+        }
+        .skin-price {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #ffcc00;
+            padding: 5px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+        }
+        .skin-price img {
+            width: 16px;
+            height: 16px;
+            margin-right: 5px;
         }
         .lightbox {
             display: none;
@@ -309,363 +242,360 @@
             max-height: 100%;
             border-radius: 10px;
         }
-        .close {
+        .lightbox .close-button {
             position: absolute;
-            top: 20px;
-            right: 30px;
-            font-size: 40px;
-            color: #ffcc00;
+            top: 10px;
+            right: 10px;
+            background-color: #ffcc00;
+            color: black;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 1.5em;
             cursor: pointer;
-        }
-        .close:hover {
-            color: #eaeaea;
-        }
-        .prev, .next {
-            cursor: pointer;
-            position: absolute;
-            top: 50%;
-            width: auto;
-            margin-top: -22px;
-            padding: 16px;
-            color: #ffcc00;
-            font-weight: bold;
-            font-size: 20px;
-            transition: 0.3s;
-        }
-        .prev:hover, .next:hover {
-            color: #eaeaea;
-        }
-        .prev {
-            left: 0;
-        }
-        .next {
-            right: 0;
-        }
-		        .search-container {
             display: flex;
+            align-items: center;
             justify-content: center;
-            padding: 20px;
         }
-        .search-container input {
-            margin: 0 10px;
-            padding: 10px;
-            font-size: 16px;
-            border: 2px solid #444;
-            border-radius: 10px;
-            background-color: #2c2c2c;
-            color: #eaeaea;
+        .purchase-button {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: grey;
+            color: black;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
         }
-        .search-container input::placeholder {
-            color: #888;
+        .purchase-button img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
         }
-		.currency-displayer {
-			position: fixed;
-			top: 80px;
-			right: 10px;
-			background-color: #2c2c2c;
-			color: #eaeaea;
-			border-radius: 5px;
-			padding: 10px;
-			display: flex;
-			align-items: center;
-			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-			z-index: 1000; /* Ensure it is on top of other elements */
-		}
-
-		.currency-displayer .coin-icon {
-			width: 24px;
-			height: 24px;
-			margin-right: 8px;
-		}
-			.coin-icon img {
-			width: 25px; /* Adjust the width as needed */
-			height: auto; /* Maintain aspect ratio */
-		}
+        .purchase-button.enabled {
+            background-color: gold;
+        }
+        .purchase-button.disabled {
+            background-color: grey;
+        }
+		.currency-display {
+          background-color: gold;
+          padding: 5px 10px;
+          border-radius: 5px;
+        }
+        .character {
+            width: 300px;
+            margin: 20px;
+        }
+        .skin-price {
+            position: absolute;
+            bottom: 45px;
+            right: 2px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 2px 5px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            font-size: 0.8em;
+        }
+        .skin-price img {
+            width: 10px;
+            height: 10px;
+            margin-right: 3px;
+        }
     </style>
 </head>
 <body>
     <div class="menu">
         <div class="menu-items">
-            <a href="index.html">Home</a>
+            <a href="home.html">Home</a>
             <a href="Skins.html">Skins</a>
             <a href="event.html">Event</a>
             <a href="Team Builder.html">Team Builder</a>
         </div>
-        <a href="Game Modes.html" class="play-button">Play</a>
+        <a href="fight.html" class="play-button">Fight!</a>
+        <div id="currency-amount" class="currency-display">0</div>
     </div>
-    <div class="search-container">
-        <input type="text" id="characterSearch" placeholder="Search Characters">
-        <input type="text" id="skinSearch" placeholder="Search Skins">
-    </div>
-		<div id="currency-displayer" class="currency-displayer">
-		<img src="res/img/fm.png" alt="Coin Icon" class="coin-icon">
-		<div id="currency-amount"></div>
-	</div>
     <div class="container">
         <!-- Group by Characters -->
-        <div class="character">
+                <div class="character">
             <h2>Julia</h2>
             <div class="skins">
-                <div class="skin" data-src="Skins/Disco Queen Julia.jpeg">
+                <div class="skin" data-src="Skins/Disco Queen Julia.jpeg" onclick="openLightbox('Skins/Disco Queen Julia.jpeg', 'Disco Queen Julia', 100)">
                     <img src="Skins/Disco Queen Julia.jpeg" alt="Disco Queen Julia">
                     <div class="skin-name">Disco Queen Julia</div>
+                    <div class="skin-price"><img src="res/img/FM.png" alt="Coin Icon">100</div>
                 </div>
-                <div class="skin" data-src="Skins/River Spirit Julia.jpeg">
+                <div class="skin" data-src="Skins/River Spirit Julia.jpeg" onclick="openLightbox('Skins/River Spirit Julia.jpeg', 'River Spirit Julia', 150)">
                     <img src="Skins/River Spirit Julia.jpeg" alt="River Spirit Julia">
                     <div class="skin-name">River Spirit Julia</div>
+                    <div class="skin-price"><img src="res/img/FM.png" alt="Coin Icon">150</div>
                 </div>
             </div>
         </div>
         <div class="character">
             <h2>Birdie</h2>
             <div class="skins">
-                <div class="skin" data-src="Skins/Rockstar Birdie.png">
+                <div class="skin" data-src="Skins/Rockstar Birdie.png" onclick="openLightbox('Skins/Rockstar Birdie.png', 'Rockstar Birdie', 200)">
                     <img src="Skins/Rockstar Birdie.png" alt="Rockstar Birdie">
                     <div class="skin-name">Rockstar Birdie</div>
+                    <div class="skin-price"><img src="res/img/FM.png" alt="Coin Icon">200</div>
                 </div>
-                <div class="skin" data-src="Skins/Sand Soldier Birdie.jpeg">
+                <div class="skin" data-src="Skins/Sand Soldier Birdie.jpeg" onclick="openLightbox('Skins/Sand Soldier Birdie.jpeg', 'Sand Soldier Birdie', 250)">
                     <img src="Skins/Sand Soldier Birdie.jpeg" alt="Sand Soldier Birdie">
                     <div class="skin-name">Sand Soldier Birdie</div>
+                    <div class="skin-price"><img src="res/img/FM.png" alt="Coin Icon">250</div>
                 </div>
             </div>
         </div>
         <div class="character">
             <h2>Erron Black</h2>
             <div class="skins">
-                <div class="skin" data-src="Skins/Country Erron Black.png">
+                <div class="skin" data-src="Skins/Country Erron Black.png" onclick="openLightbox('Skins/Country Erron Black.png', 'Country Erron Black', 300)">
                     <img src="Skins/Country Erron Black.png" alt="Country Erron Black">
                     <div class="skin-name">Country Erron Black</div>
+                    <div class="skin-price"><img src="res/img/FM.png" alt="Coin Icon">300</div>
                 </div>
-                <div class="skin" data-src="Skins/Mafia Leader Erron Black.png">
+                <div class="skin" data-src="Skins/Mafia Leader Erron Black.png" onclick="openLightbox('Skins/Mafia Leader Erron Black.png', 'Mafia Leader Erron Black', 350)">
                     <img src="Skins/Mafia Leader Erron Black.png" alt="Mafia Leader Erron Black">
                     <div class="skin-name">Mafia Leader Erron Black</div>
+                    <div class="skin-price"><img src="res/img/FM.png" alt="Coin Icon">350</div>
                 </div>
             </div>
         </div>
         <div class="character">
             <h2>Morrigan</h2>
             <div class="skins">
-                <div class="skin" data-src="Skins/Neon Morrigan.jpeg">
+                <div class="skin" data-src="Skins/Neon Morrigan.jpeg" onclick="openLightbox('Skins/Neon Morrigan.jpeg', 'Neon Morrigan', 400)">
                     <img src="Skins/Neon Morrigan.jpeg" alt="Neon Morrigan">
                     <div class="skin-name">Neon Morrigan</div>
+                    <div class="skin-price"><img src="res/img/FM.png" alt="Coin Icon">400</div>
                 </div>
             </div>
         </div>
         <div class="character">
             <h2>Jun</h2>
             <div class="skins">
-                <div class="skin" data-src="Skins/Blossom Jun.png">
+                <div class="skin" data-src="Skins/Blossom Jun.png" onclick="openLightbox('Skins/Blossom Jun.png', 'Blossom Jun', 450)">
                     <img src="Skins/Blossom Jun.png" alt="Blossom Jun">
                     <div class="skin-name">Blossom Jun</div>
+                    <div class="skin-price"><img src="res/img/FM.png" alt="Coin Icon">450</div>
                 </div>
             </div>
         </div>
         <div class="character">
-            <h2>Cham Cham</h2>
-            <div class="skins">
-                <div class="skin" data-src="Skins/Blossom Cham Cham.png">
-                    <img src="Skins/Blossom Cham Cham.png" alt="Blossom Cham Cham">
-                    <div class="skin-name">Blossom Cham Cham</div>
-                </div>
-            </div>
-        </div>
-        <div class="character">
-            <h2>Reptile</h2>
-            <div class="skins">
-                <div class="skin" data-src="Skins/Blood Predator Reptile.png">
-                    <img src="Skins/Blood Predator Reptile.png" alt="Blood Predator Reptile">
-                    <div class="skin-name">Blood Predator Reptile</div>
-                </div>
-                <div class="skin" data-src="Skins/Cyber Ninja Reptile.png">
-                    <img src="Skins/Cyber Ninja Reptile.png" alt="Cyber Ninja Reptile">
-                    <div class="skin-name">Cyber Ninja Reptile</div>
-                </div>
-                <div class="skin" data-src="Skins/Sand Soldier Reptile.jpeg">
-                    <img src="Skins/Sand Soldier Reptile.jpeg" alt="Sand Soldier Reptile">
-                    <div class="skin-name">Sand Soldier Reptile</div>
-                </div>
-            </div>
-        </div>
-        <div class="character">
-            <h2>Akuma</h2>
-            <div class="skins">
-                <div class="skin" data-src="Skins/Rockstar Akuma.jpeg">
-                    <img src="Skins/Rockstar Akuma.jpeg" alt="Rockstar Akuma">
-                    <div class="skin-name">Rockstar Akuma</div>
-                </div>
-                <div class="skin" data-src="Skins/Thunder God Akuma.png">
-                    <img src="Skins/Thunder God Akuma.png" alt="Thunder God Akuma">
-                    <div class="skin-name">Thunder God Akuma</div>
-                </div>
-            </div>
-        </div>
-        <div class="character">
-            <h2>Elphelt</h2>
-            <div class="skins">
-                <div class="skin" data-src="Skins/Maid Elphelt.jpg">
-                    <img src="Skins/Maid Elphelt.png" alt="Maid Elphelt">
-                    <div class="skin-name">Maid Elphelt</div>
-                </div>
-                <div class="skin" data-src="Skins/Cyber Hunter Elphelt.png">
-                    <img src="Skins/Cyber Hunter Elphelt.png" alt="Cyber Hunter Elphelt">
-                    <div class="skin-name">Cyber Hunter Elphelt</div>
-                </div>
-            </div>
-        </div>
-        <div class="character">
-            <h2>Kotal Kahn</h2>
-            <div class="skins">
-                <div class="skin" data-src="Skins/Demon Lord Kotal Kahn.png">
-                    <img src="Skins/Demon Lord Kotal Kahn.png" alt="Demon Lord Kotal Kahn">
-                    <div class="skin-name">Demon Lord Kotal Kahn</div>
-                </div>
-                <div class="skin" data-src="Skins/Cyber Warrior Kotal Kahn.png">
-                    <img src="Skins/Cyber Warrior Kotal Kahn.png" alt="Cyber Warrior Kotal Kahn">
-                    <div class="skin-name">Cyber Warrior Kotal Kahn</div>
-                </div>
-            </div>
-        </div>
-        <div class="character">
-            <h2>Scorpion</h2>
-            <div class="skins">
-                <div class="skin" data-src="Skins/Spider Scorpion.png">
-                    <img src="Skins/Spider Scorpion.png" alt="Spider Scorpion">
-                    <div class="skin-name">Spider Scorpion</div>
-                </div>
-                <div class="skin" data-src="Skins/Blossom Scorpion.png">
-                    <img src="Skins/Blossom Scorpion.png" alt="Blossom Scorpion">
-                    <div class="skin-name">Blossom Scorpion</div>
-                </div>
-            </div>
-        </div>
-        <div class="character">
-            <h2>Peacock</h2>
-            <div class="skins">
-                <div class="skin" data-src="Skins/Cyber Bomber Peacock.jpeg">
-                    <img src="Skins/Cyber Bomber Peacock.jpeg" alt="Cyber Bomber Peacock">
-                    <div class="skin-name">Cyber Bomber Peacock</div>
-                </div>
-            </div>
-        </div>
-        <div class="character">
-            <h2>Angel</h2>
-            <div class="skins">
-                <div class="skin" data-src="Skins/Blossom Angel.png">
-                    <img src="Skins/Blossom Angel.png" alt="Blossom Angel">
-                    <div class="skin-name">Blossom Angel</div>
-                </div>
-                <div class="skin" data-src="Skins/Voidborn Angel.png">
-                    <img src="Skins/Voidborn Angel.png" alt="Voidborn Angel">
-                    <div class="skin-name">Voidborn Angel</div>
-                </div>
-            </div>
-        </div>
-        <div class="character">
-            <h2>Astaroth</h2>
-            <div class="skins">
-                <div class="skin" data-src="Skins/Royal Guard Astaroth.png">
-                    <img src="Skins/Royal Guard Astaroth.png" alt="Royal Guard Astaroth">
-                    <div class="skin-name">Royal Guard Astaroth</div>
-                </div>
-                <div class="skin" data-src="Skins/Sand Soldier Astaroth.png">
-                    <img src="Skins/Sand Soldier Astaroth.png" alt="Sand Soldier Astaroth">
-                    <div class="skin-name">Sand Soldier Astaroth</div>
-                </div>
-            </div>
-        </div>
-        <div class="character">
-            <h2>Ibuki</h2>
-            <div class="skins">
-                <div class="skin" data-src="Skins/DJ Ibuki.png">
-                    <img src="Skins/DJ Ibuki.png" alt="DJ Ibuki">
-                    <div class="skin-name">DJ Ibuki</div>
-                </div>
-                <div class="skin" data-src="Skins/Demon Hunter Ibuki.png">
-                    <img src="Skins/Demon Hunter Ibuki.png" alt="Demon Hunter Ibuki">
-                    <div class="skin-name">Demon Hunter Ibuki</div>
-                </div>
-                <div class="skin" data-src="Skins/Red Stone Ibuki.png">
-                    <img src="Skins/Red Stone Ibuki.png" alt="Red Stone Ibuki">
-                    <div class="skin-name">Red Stone Ibuki</div>
-                </div>
-            </div>
-        </div>
-        <div class="character">
-            <h2>R.Mika</h2>
-            <div class="skins">
-                <div class="skin" data-src="Skins/Phoenix R.Mika.png">
-                    <img src="Skins/Phoenix R.Mika.png" alt="Phoenix R.Mika">
-                    <div class="skin-name">Phoenix R.Mika</div>
-                </div>
-                <div class="skin" data-src="Skins/Pop Star R.Mika.png">
-                    <img src="Skins/Pop Star R.Mika.png" alt="Pop Star R.Mika">
-                    <div class="skin-name">Pop Star R.Mika</div>
-                </div>
-            </div>
-        </div>
-        <div class="character">
-            <h2>Raiden</h2>
-            <div class="skins">
-                <div class="skin" data-src="Skins/Master of Monks Raiden.jpeg">
-                    <img src="Skins/Master of Monks Raiden.jpeg" alt="Master of Monks Raiden">
-                    <div class="skin-name">Master of Monks Raiden</div>
-                </div>
-            </div>
-        </div>
-        <div class="character">
-            <h2>Yugo</h2>
-            <div class="skins">
-                <div class="skin" data-src="Skins/Street Fighter Yugo.png">
-                    <img src="Skins/Street Fighter Yugo.png" alt="Street Fighter Yugo">
-                    <div class="skin-name">Street Fighter Yugo</div>
-                </div>
-                <div class="skin" data-src="Skins/Cyber Predator Yugo.png">
-                    <img src="Skins/Cyber Predator Yugo.png" alt="Cyber Predator Yugo">
-                    <div class="skin-name">Cyber Predator Yugo</div>
-                </div>
-            </div>
-        </div>
-        <div class="character">
-            <h2>Talim</h2>
-            <div class="skins">
-                <div class="skin" data-src="Skins/Vampire Talim.png">
-                    <img src="Skins/Vampire Talim.png" alt="Vampire Talim">
-                    <div class="skin-name">Vampire Talim</div>
-                </div>
-                <div class="skin" data-src="Skins/Sand Soldier Talim.jpeg">
-                    <img src="Skins/Sand Soldier Talim.jpeg" alt="Sand Soldier Talim">
-                    <div class="skin-name">Sand Soldier Talim</div>
-                </div>
-            </div>
-        </div>
-        <div class="character">
-            <h2>Noel</h2>
-            <div class="skins">
-                <div class="skin" data-src="Skins/Officer Noel.jpeg">
-                    <img src="Skins/Officer Noel.jpeg" alt="Officer Noel">
-                    <div class="skin-name">Officer Noel</div>
-                </div>
-            </div>
-        </div>
-        <div class="character">
-            <h2>Blanka</h2>
-            <div class="skins">
-                <div class="skin" data-src="Skins/Enraged Blanka.png">
-                    <img src="Skins/Enraged Blanka.png" alt="Enraged Blanka">
-                    <div class="skin-name">Enraged Blanka</div>
-                </div>
-            </div>
+    <h2>Cham Cham</h2>
+    <div class="skins">
+        <div class="skin">
+            <img src="Skins/Blossom Cham Cham.png" alt="Blossom Cham Cham">
+            <div class="skin-name">Blossom Cham Cham</div>
         </div>
     </div>
-     <!-- The Lightbox -->
-    <div id="lightbox" class="lightbox">
-        <span class="close" onclick="closeLightbox()">&times;</span>
-        <div class="lightbox-content">
-            <span class="prev" onclick="changeSlide(-1)">&#10094;</span>
-            <img id="lightboxImg" src="" alt="">
-            <span class="next" onclick="changeSlide(1)">&#10095;</span>
+</div>
+<div class="character">
+    <h2>Reptile</h2>
+    <div class="skins">
+        <div class="skin">
+            <img src="Skins/Blood Predator Reptile.png" alt="Blood Predator Reptile">
+            <div class="skin-name">Blood Predator Reptile</div>
+        </div>
+        <div class="skin">
+            <img src="Skins/Cyber Ninja Reptile.png" alt="Cyber Ninja Reptile">
+            <div class="skin-name">Cyber Ninja Reptile</div>
+        </div>
+        <div class="skin">
+            <img src="Skins/Sand Soldier Reptile.jpeg" alt="Sand Soldier Reptile">
+            <div class="skin-name">Sand Soldier Reptile</div>
         </div>
     </div>
+</div>
+<div class="character">
+    <h2>Akuma</h2>
+    <div class="skins">
+        <div class="skin">
+            <img src="Skins/Rockstar Akuma.jpeg" alt="Rockstar Akuma">
+            <div class="skin-name">Rockstar Akuma</div>
+        </div>
+        <div class="skin">
+            <img src="Skins/Thunder God Akuma.png" alt="Thunder God Akuma">
+            <div class="skin-name">Thunder God Akuma</div>
+        </div>
+    </div>
+</div>
+<div class="character">
+    <h2>Elphelt</h2>
+    <div class="skins">
+        <div class="skin">
+            <img src="Skins/Maid Elphelt.png" alt="Maid Elphelt">
+            <div class="skin-name">Maid Elphelt</div>
+        </div>
+        <div class="skin">
+            <img src="Skins/Cyber Hunter Elphelt.png" alt="Cyber Hunter Elphelt">
+            <div class="skin-name">Cyber Hunter Elphelt</div>
+        </div>
+    </div>
+</div>
+<div class="character">
+    <h2>Kotal Kahn</h2>
+    <div class="skins">
+        <div class="skin">
+            <img src="Skins/Demon Lord Kotal Kahn.png" alt="Demon Lord Kotal Kahn">
+            <div class="skin-name">Demon Lord Kotal Kahn</div>
+        </div>
+        <div class="skin">
+            <img src="Skins/Cyber Warrior Kotal Kahn.png" alt="Cyber Warrior Kotal Kahn">
+            <div class="skin-name">Cyber Warrior Kotal Kahn</div>
+        </div>
+    </div>
+</div>
+<div class="character">
+    <h2>Scorpion</h2>
+    <div class="skins">
+        <div class="skin">
+            <img src="Skins/Spider Scorpion.png" alt="Spider Scorpion">
+            <div class="skin-name">Spider Scorpion</div>
+        </div>
+        <div class="skin">
+            <img src="Skins/Blossom Scorpion.png" alt="Blossom Scorpion">
+            <div class="skin-name">Blossom Scorpion</div>
+        </div>
+    </div>
+</div>
+<div class="character">
+    <h2>Peacock</h2>
+    <div class="skins">
+        <div class="skin">
+            <img src="Skins/Cyber Bomber Peacock.jpeg" alt="Cyber Bomber Peacock">
+            <div class="skin-name">Cyber Bomber Peacock</div>
+        </div>
+    </div>
+</div>
+<div class="character">
+    <h2>Angel</h2>
+    <div class="skins">
+        <div class="skin">
+            <img src="Skins/Blossom Angel.png" alt="Blossom Angel">
+            <div class="skin-name">Blossom Angel</div>
+        </div>
+        <div class="skin">
+            <img src="Skins/Voidborn Angel.png" alt="Voidborn Angel">
+            <div class="skin-name">Voidborn Angel</div>
+        </div>
+    </div>
+</div>
+<div class="character">
+    <h2>Astaroth</h2>
+    <div class="skins">
+        <div class="skin">
+            <img src="Skins/Royal Guard Astaroth.png" alt="Royal Guard Astaroth">
+            <div class="skin-name">Royal Guard Astaroth</div>
+        </div>
+        <div class="skin">
+            <img src="Skins/Sand Soldier Astaroth.png" alt="Sand Soldier Astaroth">
+            <div class="skin-name">Sand Soldier Astaroth</div>
+        </div>
+    </div>
+</div>
+<div class="character">
+    <h2>Ibuki</h2>
+    <div class="skins">
+        <div class="skin">
+            <img src="Skins/DJ Ibuki.png" alt="DJ Ibuki">
+            <div class="skin-name">DJ Ibuki</div>
+        </div>
+        <div class="skin">
+            <img src="Skins/Demon Hunter Ibuki.png" alt="Demon Hunter Ibuki">
+            <div class="skin-name">Demon Hunter Ibuki</div>
+        </div>
+        <div class="skin">
+            <img src="Skins/Red Stone Ibuki.png" alt="Red Stone Ibuki">
+            <div class="skin-name">Red Stone Ibuki</div>
+        </div>
+    </div>
+</div>
+<div class="character">
+    <h2>R.Mika</h2>
+    <div class="skins">
+        <div class="skin">
+            <img src="Skins/Phoenix R.Mika.png" alt="Phoenix R.Mika">
+            <div class="skin-name">Phoenix R.Mika</div>
+        </div>
+        <div class="skin">
+            <img src="Skins/Pop Star R.Mika.png" alt="Pop Star R.Mika">
+            <div class="skin-name">Pop Star R.Mika</div>
+        </div>
+    </div>
+</div>
+<div class="character">
+    <h2>Raiden</h2>
+    <div class="skins">
+        <div class="skin">
+            <img src="Skins/Master of Monks Raiden.jpeg" alt="Master of Monks Raiden">
+            <div class="skin-name">Master of Monks Raiden</div>
+        </div>
+    </div>
+</div>
+<div class="character">
+    <h2>Yugo</h2>
+    <div class="skins">
+        <div class="skin">
+            <img src="Skins/Street Fighter Yugo.png" alt="Street Fighter Yugo">
+            <div class="skin-name">Street Fighter Yugo</div>
+        </div>
+        <div class="skin">
+            <img src="Skins/Cyber Predator Yugo.png" alt="Cyber Predator Yugo">
+            <div class="skin-name">Cyber Predator Yugo</div>
+        </div>
+    </div>
+</div>
+<div class="character">
+    <h2>Talim</h2>
+    <div class="skins">
+        <div class="skin">
+            <img src="Skins/Vampire Talim.png" alt="Vampire Talim">
+            <div class="skin-name">Vampire Talim</div>
+        </div>
+        <div class="skin">
+            <img src="Skins/Sand Soldier Talim.jpeg" alt="Sand Soldier Talim">
+            <div class="skin-name">Sand Soldier Talim</div>
+        </div>
+    </div>
+</div>
+<div class="character">
+    <h2>Noel</h2>
+    <div class="skins">
+        <div class="skin">
+            <img src="Skins/Officer Noel.jpeg" alt="Officer Noel">
+            <div class="skin-name">Officer Noel</div>
+        </div>
+    </div>
+</div>
+<div class="character">
+    <h2>Blanka</h2>
+    <div class="skins">
+        <div class="skin">
+            <img src="Skins/Enraged Blanka.png" alt="Enraged Blanka">
+            <div class="skin-name">Enraged Blanka</div>
+        </div>
+    </div>
+</div>
+	<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+			<div class="lightbox-content" onclick="event.stopPropagation()">
+				<img id="lightbox-image" src="" alt="Selected Skin">
+				<button class="close-button" onclick="closeLightbox()">×</button>
+				<button id="purchase-button" class="purchase-button disabled" disabled>
+					<img src="res/img/FM.png" alt="Coin Icon">
+					<span id="price-display"></span>
+				</button>
+			</div>
+		</div>
 
     <!-- Script for Lightbox functionality -->
     <script>
