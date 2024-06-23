@@ -47,43 +47,6 @@
             });
         };
 
-        window.openLightbox = async function(imgSrc, skinName, skinPrice) {
-            const lightbox = document.getElementById('lightbox');
-            const lightboxImage = document.getElementById('lightbox-image');
-            const purchaseButton = document.getElementById('purchase-button');
-            const priceDisplay = document.getElementById('price-display');
-
-            lightboxImage.src = imgSrc;
-            priceDisplay.textContent = skinPrice;
-
-            if (window.userFM >= skinPrice) {
-                purchaseButton.classList.remove('disabled');
-                purchaseButton.classList.add('enabled');
-                purchaseButton.disabled = false;
-                purchaseButton.onclick = async () => {
-                    const newFM = window.userFM - skinPrice;
-                    await update(window.userRef, { FM: newFM });
-                    await set(ref(database, 'purchases/' + auth.currentUser.uid + '/' + skinName.replace(/\s+/g, '_')), {
-                        skin: skinName
-                    });
-                    document.getElementById('currency-amount').textContent = newFM;
-                    window.userFM = newFM;
-                    lightbox.style.display = 'none';
-                };
-            } else {
-                purchaseButton.classList.remove('enabled');
-                purchaseButton.classList.add('disabled');
-                purchaseButton.disabled = true;
-                purchaseButton.onclick = null;
-            }
-
-            lightbox.style.display = 'flex';
-        };
-
-        window.closeLightbox = function() {
-            document.getElementById('lightbox').style.display = 'none';
-        };
-
     </script>
     <style>
         body {
@@ -200,22 +163,6 @@
             font-size: 1em;
             color: #eaeaea;
         }
-        .skin-price {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: #ffcc00;
-            padding: 5px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-        }
-        .skin-price img {
-            width: 16px;
-            height: 16px;
-            margin-right: 5px;
-        }
         .lightbox {
             display: none;
             position: fixed;
@@ -293,23 +240,23 @@
             width: 300px;
             margin: 20px;
         }
-        .skin-price {
-            position: absolute;
-            bottom: 45px;
-            right: 2px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 2px 5px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            font-size: 0.8em;
-        }
-        .skin-price img {
-            width: 10px;
-            height: 10px;
-            margin-right: 3px;
-        }
+		.skin-price {
+			position: absolute;
+			bottom: 45px;
+			right: 2px;
+			background-color: rgba(0, 0, 0, 0.7);
+			color: white;
+			padding: 2px 5px;
+			border-radius: 5px;
+			display: flex;
+			align-items: center;
+			font-size: 0.8em;
+		}
+		.skin-price img {
+			width: 10px;
+			height: 10px;
+			margin-right: 3px;
+		}
     </style>
 </head>
 <body>
@@ -320,7 +267,7 @@
             <a href="event.html">Event</a>
             <a href="Team Builder.html">Team Builder</a>
         </div>
-        <a href="fight.html" class="play-button">Fight!</a>
+        <a href="fight.html" class="play-button">Play</a>
         <div id="currency-amount" class="currency-display">0</div>
     </div>
     <div class="container">
@@ -331,7 +278,7 @@
                 <div class="skin" data-src="Skins/Disco Queen Julia.jpeg" onclick="openLightbox('Skins/Disco Queen Julia.jpeg', 'Disco Queen Julia', 100)">
                     <img src="Skins/Disco Queen Julia.jpeg" alt="Disco Queen Julia">
                     <div class="skin-name">Disco Queen Julia</div>
-                    <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">100</div>
+                    <span class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">100</span>
                 </div>
                 <div class="skin" data-src="Skins/River Spirit Julia.jpeg" onclick="openLightbox('Skins/River Spirit Julia.jpeg', 'River Spirit Julia', 150)">
                     <img src="Skins/River Spirit Julia.jpeg" alt="River Spirit Julia">
@@ -587,51 +534,54 @@
     </div>
 </div>
 	<div id="lightbox" class="lightbox" onclick="closeLightbox()">
-			<div class="lightbox-content" onclick="event.stopPropagation()">
-				<img id="lightbox-image" src="" alt="Selected Skin">
-				<button class="close-button" onclick="closeLightbox()">×</button>
-				<button id="purchase-button" class="purchase-button disabled" disabled>
-					<img src="res/img/FM.png" alt="Coin Icon">
-					<span id="price-display"></span>
-				</button>
-			</div>
+		<div class="lightbox-content" onclick="event.stopPropagation()">
+			<img id="lightbox-image" src="" alt="Selected Skin">
+			<button class="close-button" onclick="closeLightbox()">×</button>
+			<button id="purchase-button" class="purchase-button disabled" disabled>
+				<img src="res/img/fm.png" alt="Coin Icon">
+				<span id="skin-price"></span>
+			</button>
 		</div>
+	</div>
 
     <!-- Script for Lightbox functionality -->
     <script>
-        var lightbox = document.getElementById('lightbox');
-        var lightboxImg = document.getElementById('lightboxImg');
-        var currentSkinIndex = 0;
-        var skins = document.querySelectorAll('.skin');
-        var body = document.querySelector('body');
+                window.openLightbox = function(imgSrc, skinName, skinPrice) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImage = document.getElementById('lightbox-image');
+            const purchaseButton = document.getElementById('purchase-button');
+            const priceDisplay = document.getElementById('skin-price');
 
-        skins.forEach(function(skin, index) {
-            skin.addEventListener('click', function() {
-                currentSkinIndex = index;
-                openLightbox(skin.getAttribute('data-src'), skin.querySelector('img').alt);
-            });
-        });
+            lightboxImage.src = imgSrc;
+            priceDisplay.textContent = skinPrice;
 
-        function openLightbox(imgSrc, imgAlt) {
+            if (window.userFM >= skinPrice) {
+                purchaseButton.classList.remove('disabled');
+                purchaseButton.classList.add('enabled');
+                purchaseButton.disabled = false;
+                purchaseButton.onclick = async () => {
+                    const newFM = window.userFM - skinPrice;
+                    await update(window.userRef, { FM: newFM });
+                    await set(ref(database, 'purchases/' + auth.currentUser.uid + '/' + skinName.replace(/\s+/g, '_')), {
+                        skin: skinName
+                    });
+                    document.getElementById('currency-amount').textContent = newFM;
+                    window.userFM = newFM;
+                    lightbox.style.display = 'none';
+                };
+            } else {
+                purchaseButton.classList.remove('enabled');
+                purchaseButton.classList.add('disabled');
+                purchaseButton.disabled = true;
+                purchaseButton.onclick = null;
+            }
+
             lightbox.style.display = 'flex';
-            lightboxImg.src = imgSrc;
-            lightboxImg.alt = imgAlt;
-            body.classList.add('no-hover');
-        }
+        };
 
-        function closeLightbox() {
-            lightbox.style.display = 'none';
-            body.classList.remove('no-hover');
-        }
-
-        function changeSlide(step) {
-            currentSkinIndex += step;
-            if (currentSkinIndex < 0) currentSkinIndex = skins.length - 1;
-            if (currentSkinIndex >= skins.length) currentSkinIndex = 0;
-            var newSkin = skins[currentSkinIndex];
-            lightboxImg.src = newSkin.getAttribute('data-src');
-            lightboxImg.alt = newSkin.querySelector('img').alt;
-        }
+        window.closeLightbox = function() {
+            document.getElementById('lightbox').style.display = 'none';
+        };
 
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') closeLightbox();
