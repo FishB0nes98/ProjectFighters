@@ -133,7 +133,7 @@
             font-weight: bold;
             text-decoration: none;
             transition: background-color 0.3s, transform 0.3s, color 0.3s;
-            margin-right: 300px;
+            margin-right: 920px;
         }
         .play-button:hover {
             background-color: darkgoldenrod;
@@ -267,11 +267,33 @@
         .purchase-button.disabled {
             background-color: grey;
         }
+		.currency-container {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			position: fixed; /* Fixes the position */
+			top: 75px; /* Adjust as necessary */
+			left: 97%; /* Center horizontally */
+			transform: translateX(-50%); /* Center alignment adjustment */
+			z-index: 1000;
+		}
+
 		.currency-display {
-          background-color: gold;
-          padding: 5px 10px;
-          border-radius: 5px;
-        }
+			display: flex;
+			align-items: center;
+			background-color: black;
+			padding: 5px 10px;
+			border-radius: 5px;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			font-size: 16px;
+			font-weight: bold;
+		}
+
+		.currency-display img.currency-icon {
+			width: 20px;
+			height: 20px;
+			margin-right: 5px;
+		}
         .character {
             width: 300px;
             margin: 20px;
@@ -323,7 +345,12 @@
             <a href="Team Builder.html">Team Builder</a>
         </div>
         <a href="fight.html" class="play-button">Play</a>
-        <div id="currency-amount" class="currency-display">0</div>
+    </div>
+	    <div class="currency-container">
+		<div id="currency-amount" class="currency-display">
+        <img src="res/img/fm.png" alt="currency icon" class="currency-icon">
+        <span>0</span>
+		</div>
     </div>
     <div class="container">
         <!-- Group by Characters -->
