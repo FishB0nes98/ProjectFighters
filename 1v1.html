@@ -3,51 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Loading Screen</title>
-	<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
-    <script nomodule>
-        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
-        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
-        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
-    </script>
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
-        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
-        import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
-        
-        const firebaseConfig = {
-            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
-            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
-            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "project-fighters-by-fishb0nes",
-            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
-            messagingSenderId: "867339299995",
-            appId: "1:867339299995:web:99c379940014b9c05cea3e",
-            measurementId: "G-LNEM6HR842"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const database = getDatabase(app);
-
-        window.onload = function() {
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    const userRef = ref(database, 'users/' + user.uid);
-                    const snapshot = await get(userRef);
-                    const userData = snapshot.val();
-                    if (userData) {
-                        document.getElementById('username').textContent = userData.username || "No username";
-                        window.userRef = userRef;
-
-                        populateSkinDropdowns(userData.skins || {});
-                    }
-                }
-            });
-        };
-</script>
- <style>
+    <style>
         body {
             margin: 0;
             padding: 0;
@@ -194,7 +150,55 @@
         </div>
     </div>
 
-<script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        document.getElementById('currency-amount').textContent = userData.FM || 0;
+                        document.getElementById('username').textContent = userData.username || "No username";
+                        window.userFM = userData.FM || 0;
+                        window.userRef = userRef;
+
+                        const skinsRef = ref(database, 'skins');
+                        const skinsSnapshot = await get(skinsRef);
+                        const skinsData = skinsSnapshot.val();
+                        populateSkinDropdowns(skinsData || {});
+                    }
+                }
+            });
+        };
+
         function populateSkinDropdowns(skins) {
             const dropdowns = document.querySelectorAll('.skin-dropdown');
             dropdowns.forEach(dropdown => {
