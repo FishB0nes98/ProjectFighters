@@ -129,9 +129,9 @@
     <div id="loading-screen-container">
         <div class="team-container" id="team1">
             <div class="player-slot" id="team1-player1">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-                <select class="skin-dropdown">
+                <img id="team1-player1-img" src="" alt="">
+                <div class="skin-name" id="team1-player1-skin-name"></div>
+                <select class="skin-dropdown" id="team1-player1-dropdown">
                     <option value="">Select a skin</option>
                 </select>
             </div>
@@ -141,9 +141,9 @@
         
         <div class="team-container" id="team2">
             <div class="player-slot" id="team2-player1">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-                <select class="skin-dropdown">
+                <img id="team2-player1-img" src="" alt="">
+                <div class="skin-name" id="team2-player1-skin-name"></div>
+                <select class="skin-dropdown" id="team2-player1-dropdown">
                     <option value="">Select a skin</option>
                 </select>
             </div>
@@ -190,43 +190,46 @@
                         const skinsRef = ref(database, 'skins');
                         const skinsSnapshot = await get(skinsRef);
                         const skinsData = skinsSnapshot.val();
-                        populateSkinDropdowns(skinsData || {});
+                        if (skinsData) {
+                            populateSkinDropdowns(skinsData);
+                        } else {
+                            console.log("No skins available.");
+                        }
                     }
                 }
             });
         };
-
-        function populateSkinDropdowns(skins) {
-            const dropdowns = document.querySelectorAll('.skin-dropdown');
-            dropdowns.forEach(dropdown => {
-                dropdown.innerHTML = '<option value="">Select a skin</option>'; // Clear any existing options and add a placeholder
-                for (const skin in skins) {
-                    if (skins[skin] === 1) {
-                        const option = document.createElement('option');
-                        option.value = skin + '.png';
-                        option.text = skin;
-                        dropdown.appendChild(option);
-                    }
-                }
-
-                dropdown.addEventListener('change', function() {
-                    const selectedSkin = this.value;
-                    const playerSlot = this.closest('.player-slot');
-                    const img = playerSlot.querySelector('img');
-                    const skinNameDiv = playerSlot.querySelector('.skin-name');
-                    
-                    if (selectedSkin) {
-                        img.src = 'Skins/' + selectedSkin;
-                        skinNameDiv.textContent = this.options[this.selectedIndex].text;
-                        skinNameDiv.style.display = 'block';
-                    } else {
-                        img.src = '';
-                        skinNameDiv.textContent = '';
-                        skinNameDiv.style.display = 'none';
-                    }
-                });
-            });
+	function populateSkinDropdowns(skins) {
+    const dropdowns = document.querySelectorAll('.skin-dropdown');
+    dropdowns.forEach(dropdown => {
+        dropdown.innerHTML = '<option value="">Select a skin</option>'; // Clear any existing options and add a placeholder
+        for (const skin in skins) {
+            if (skins[skin] === 1) {
+                const option = document.createElement('option');
+                option.value = skin + '.png';
+                option.text = skin;
+                dropdown.appendChild(option);
+            }
         }
-    </script>
+
+        dropdown.addEventListener('change', function() {
+            const selectedSkin = this.value;
+            const playerSlot = this.closest('.player-slot');
+            const img = playerSlot.querySelector('img');
+            const skinNameDiv = playerSlot.querySelector('.skin-name');
+
+            if (selectedSkin) {
+                img.src = 'Skins/' + selectedSkin;
+                skinNameDiv.textContent = this.options[this.selectedIndex].text;
+                skinNameDiv.style.display = 'block';
+            } else {
+                img.src = '';
+                skinNameDiv.textContent = '';
+                skinNameDiv.style.display = 'none';
+            }
+        });
+    });
+}
+</script>
 </body>
 </html>
