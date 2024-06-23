@@ -17,8 +17,8 @@
         // Initialize Firebase
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
-        import { getDatabase, ref, get, set } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
-        
+        import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
             authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
@@ -29,133 +29,131 @@
             appId: "1:867339299995:web:99c379940014b9c05cea3e",
             measurementId: "G-LNEM6HR842"
         };
-
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-// Function to update icon data in Firebase Realtime Database
-		async function updateIcon(icon) {
-			const user = auth.currentUser;
-			if (user) {
-				const userRef = ref(database, 'users/' + user.uid);
-				try {
-					const snapshot = await get(userRef);
-					if (snapshot.exists()) {
-						const userData = snapshot.val();
-						userData.icon = icon; // Update the icon field
-						await set(userRef, userData); // Write back the updated data
-						console.log('Icon updated successfully');
-					} else {
-						console.error('No user data found');
-					}
-				} catch (error) {
-					console.error('Error updating icon:', error);
-				}
-			} else {
-				console.error('User not authenticated');
-			}
-		}
-
-
-        // Function to handle icon selection
-    function selectIcon(icon) {
-        const user = auth.currentUser;
-        if (user) {
-            updateIcon(icon)
-                .then(() => {
-                    document.getElementById('profile-image').src = `Icons/${icon}`;
-                    document.getElementById('profile-image').alt = 'Profile Icon';
-                    closeChangeIconModal(); // Assuming this function closes the modal
-                })
-                .catch(error => {
-                    console.error('Error updating icon:', error);
-                });
-        } else {
-            console.error('User not authenticated');
-        }
-    }
-
-	     // Function to check if user is logged in and update UI
-         window.onload = function() {
-        onAuthStateChanged(auth, async (user) => {
+        // Function to update icon data in Firebase Realtime Database
+        async function updateIcon(icon) {
+            const user = auth.currentUser;
             if (user) {
-                console.log("User is authenticated", user); // Debugging line
                 const userRef = ref(database, 'users/' + user.uid);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val();
-                if (userData) {
-                    console.log("User data retrieved", userData); // Debugging line
-                    // Update UI with user info
-                    document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
-                    document.getElementById('profile-image').src = `Icons/${userData.icon || 'Julia.png'}`;
-                    document.getElementById('profile-image').alt = 'Profile Icon';
-					// Display currency amount (FM)
-                    document.getElementById('currency-amount').textContent = userData.FM || 0; // Assuming 'fm' is the field containing fight money
-					document.getElementById('user-info').style.display = 'flex'; // Show user info section
-                } else {
-                    console.log("No user data found"); // Debugging line
+                try {
+                    const snapshot = await get(userRef);
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        userData.icon = icon; // Update the icon field
+                        await set(userRef, userData); // Write back the updated data
+                        console.log('Icon updated successfully');
+                    } else {
+                        console.error('No user data found');
+                    }
+                } catch (error) {
+                    console.error('Error updating icon:', error);
                 }
-            } else {
-                console.log("User is not authenticated"); // Debugging line
-            }
-        });
-    };
-
-		// Function to check if the user owns Julia skin
-    async function checkJuliaOwnership() {
-        const user = auth.currentUser;
-        if (user) {
-            const userRef = ref(database, 'users/' + user.uid + '/skins/Julia');
-            const snapshot = await get(userRef);
-            if (snapshot.exists()) {
-                document.getElementById('unlock-skins-button').style.display = 'none';
-            } else {
-                document.getElementById('unlock-skins-button').style.display = 'block';
-            }
-        } else {
-            console.error('User not authenticated');
-        }
-    }
-
-    // Function to unlock skins
-    async function unlockSkins() {
-        const user = auth.currentUser;
-        if (user) {
-            const skins = [
-                'Birdie', 'Erron Black', 'Cham Cham', 'Morrigan',
-                'Jun', 'Reptile', 'Akuma', 'Elphelt', 'Kotal Kahn',
-                'Scorpion', 'Peacock', 'Angel', 'Astaroth', 'Ibuki',
-                'R.Mika', 'Raiden', 'Yugo', 'Talim', 'Noel',
-                'Blanka', 'Nina', 'Ayane', 'Siegfried', 'Shoma'
-            ];
-
-            const updates = {};
-            skins.forEach(skin => {
-                updates['users/' + user.uid + '/skins/' + skin] = true;
-            });
-
-            try {
-                await update(ref(database), updates);
-                console.log('Skins unlocked successfully');
-            } catch (error) {
-                console.error('Error unlocking skins:', error);
-            }
-        } else {
-            console.error('User not authenticated');
-        }
-    }
-
-    // Check Julia ownership on page load
-    window.onload = function() {
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                checkJuliaOwnership();
             } else {
                 console.error('User not authenticated');
             }
-        });
-    };
+        }
+
+        // Function to handle icon selection
+        function selectIcon(icon) {
+            const user = auth.currentUser;
+            if (user) {
+                updateIcon(icon)
+                    .then(() => {
+                        document.getElementById('profile-image').src = `Icons/${icon}`;
+                        document.getElementById('profile-image').alt = 'Profile Icon';
+                        closeChangeIconModal(); // Assuming this function closes the modal
+                    })
+                    .catch(error => {
+                        console.error('Error updating icon:', error);
+                    });
+            } else {
+                console.error('User not authenticated');
+            }
+        }
+
+        // Function to check if user is logged in and update UI
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    console.log("User is authenticated", user); // Debugging line
+                    const userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        console.log("User data retrieved", userData); // Debugging line
+                        // Update UI with user info
+                        document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
+                        document.getElementById('profile-image').src = `Icons/${userData.icon || 'Julia.png'}`;
+                        document.getElementById('profile-image').alt = 'Profile Icon';
+                        // Display currency amount (FM)
+                        document.getElementById('currency-amount').textContent = userData.FM || 0; // Assuming 'fm' is the field containing fight money
+                        document.getElementById('user-info').style.display = 'flex'; // Show user info section
+                    } else {
+                        console.log("No user data found"); // Debugging line
+                    }
+                } else {
+                    console.log("User is not authenticated"); // Debugging line
+                }
+            });
+        };
+
+        // Function to check if the user owns Julia skin
+        async function checkJuliaOwnership() {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = ref(database, 'users/' + user.uid + '/skins/Julia');
+                const snapshot = await get(userRef);
+                if (snapshot.exists()) {
+                    document.getElementById('unlock-skins-button').style.display = 'none';
+                } else {
+                    document.getElementById('unlock-skins-button').style.display = 'block';
+                }
+            } else {
+                console.error('User not authenticated');
+            }
+        }
+
+        // Function to unlock skins
+        async function unlockSkins() {
+            const user = auth.currentUser;
+            if (user) {
+                const skins = [
+                    'Birdie', 'Erron Black', 'Cham Cham', 'Morrigan',
+                    'Jun', 'Reptile', 'Akuma', 'Elphelt', 'Kotal Kahn',
+                    'Scorpion', 'Peacock', 'Angel', 'Astaroth', 'Ibuki',
+                    'R.Mika', 'Raiden', 'Yugo', 'Talim', 'Noel',
+                    'Blanka', 'Nina', 'Ayane', 'Siegfried', 'Shoma'
+                ];
+
+                const updates = {};
+                skins.forEach(skin => {
+                    updates['users/' + user.uid + '/skins/' + skin] = true;
+                });
+
+                try {
+                    await update(ref(database), updates);
+                    console.log('Skins unlocked successfully');
+                } catch (error) {
+                    console.error('Error unlocking skins:', error);
+                }
+            } else {
+                console.error('User not authenticated');
+            }
+        }
+
+        // Check Julia ownership on page load
+        window.onload = function() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    checkJuliaOwnership();
+                } else {
+                    console.error('User not authenticated');
+                }
+            });
+        };
 
         // Function to toggle profile menu visibility
         window.toggleProfileMenu = function() {
