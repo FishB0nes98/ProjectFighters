@@ -31,6 +31,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
+		const userRef = firebase.database().ref('users/' + auth.currentUser.uid);
 
         window.onload = function() {
             onAuthStateChanged(auth, async (user) => {
@@ -546,43 +547,58 @@
 
     <!-- Script for Lightbox functionality -->
     <script>
-                window.openLightbox = function(imgSrc, skinName, skinPrice) {
-            const lightbox = document.getElementById('lightbox');
-            const lightboxImage = document.getElementById('lightbox-image');
-            const purchaseButton = document.getElementById('purchase-button');
-            const priceDisplay = document.getElementById('skin-price');
+            window.openLightbox = function(imgSrc, skinName, skinPrice) {
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightbox-image');
+    const purchaseButton = document.getElementById('purchase-button');
+    const priceDisplay = document.getElementById('skin-price');
 
-            lightboxImage.src = imgSrc;
-            priceDisplay.textContent = skinPrice;
+    lightboxImage.src = imgSrc;
+    priceDisplay.textContent = skinPrice;
 
-            if (window.userFM >= skinPrice) {
-                purchaseButton.classList.remove('disabled');
-                purchaseButton.classList.add('enabled');
-                purchaseButton.disabled = false;
-                purchaseButton.onclick = async () => {
-                    const newFM = window.userFM - skinPrice;
-                    await update(window.userRef, { FM: newFM });
-                    await set(ref(database, 'purchases/' + auth.currentUser.uid + '/' + skinName.replace(/\s+/g, '_')), {
-                        skin: skinName
-                    });
-                    document.getElementById('currency-amount').textContent = newFM;
-                    window.userFM = newFM;
-                    lightbox.style.display = 'none';
-                };
-            } else {
-                purchaseButton.classList.remove('enabled');
-                purchaseButton.classList.add('disabled');
-                purchaseButton.disabled = true;
-                purchaseButton.onclick = null;
-            }
-
-            lightbox.style.display = 'flex';
+    if (window.userFM >= skinPrice) {
+        purchaseButton.classList.remove('disabled');
+        purchaseButton.classList.add('enabled');
+        purchaseButton.disabled = false;
+        purchaseButton.onclick = async () => {
+            const newFM = window.userFM - skinPrice;
+            await updateUserFM(newFM);
+            await addPurchase(skinName);
+            document.getElementById('currency-amount').textContent = newFM;
+            window.userFM = newFM;
+            lightbox.style.display = 'none';
         };
+    } else {
+        purchaseButton.classList.remove('enabled');
+        purchaseButton.classList.add('disabled');
+        purchaseButton.disabled = true;
+        purchaseButton.onclick = null;
+    }
 
-        window.closeLightbox = function() {
-            document.getElementById('lightbox').style.display = 'none';
-        };
+    lightbox.style.display = 'flex';
+};
 
+window.closeLightbox = function() {
+    document.getElementById('lightbox').style.display = 'none';
+};
+
+async function updateUserFM(newFM) {
+    try {
+        await firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({ FM: newFM });
+    } catch (error) {
+        console.error("Error updating FM:", error);
+    }
+}
+
+async function addPurchase(skinName) {
+    try {
+        await firebase.database().ref('purchases/' + firebase.auth().currentUser.uid + '/' + skinName.replace(/\s+/g, '_')).set({
+            skin: skinName
+        });
+    } catch (error) {
+        console.error("Error adding purchase:", error);
+    }
+}
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') closeLightbox();
             if (event.key === 'ArrowLeft') changeSlide(-1);
