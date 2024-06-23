@@ -4,6 +4,50 @@
     <meta charset="UTF-8">
     <title>Champion Skins</title>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        document.getElementById('currency-amount').textContent = userData.FM || 0;
+                        window.userFM = userData.FM || 0;
+                        window.userRef = userRef;
+                    }
+                }
+            });
+        };
+
+    </script>
     <style>
         body {
             margin: 0;
@@ -88,17 +132,23 @@
             color: #ffcc00;
         }
         .skins {
+			position: relative;
+			display: inline-block; /* Ensure the container doesn't collapse */
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
         }
         .skin {
+			position: relative;
+			display: inline-block; /* Ensure the container doesn't collapse */
             margin: 10px;
             text-align: center;
             position: relative;
             cursor: pointer;
         }
         .skin img {
+			position: relative;
+			display: inline-block; /* Ensure the container doesn't collapse */
             max-width: 100%;
             border: 2px solid #444;
             border-radius: 10px;
@@ -139,55 +189,74 @@
             max-height: 100%;
             border-radius: 10px;
         }
-        .close {
+        .lightbox .close-button {
             position: absolute;
-            top: 20px;
-            right: 30px;
-            font-size: 40px;
-            color: #ffcc00;
+            top: 10px;
+            right: 10px;
+            background-color: #ffcc00;
+            color: black;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 1.5em;
             cursor: pointer;
-        }
-        .close:hover {
-            color: #eaeaea;
-        }
-        .prev, .next {
-            cursor: pointer;
-            position: absolute;
-            top: 50%;
-            width: auto;
-            margin-top: -22px;
-            padding: 16px;
-            color: #ffcc00;
-            font-weight: bold;
-            font-size: 20px;
-            transition: 0.3s;
-        }
-        .prev:hover, .next:hover {
-            color: #eaeaea;
-        }
-        .prev {
-            left: 0;
-        }
-        .next {
-            right: 0;
-        }
-		        .search-container {
             display: flex;
+            align-items: center;
             justify-content: center;
-            padding: 20px;
         }
-        .search-container input {
-            margin: 0 10px;
-            padding: 10px;
-            font-size: 16px;
-            border: 2px solid #444;
-            border-radius: 10px;
-            background-color: #2c2c2c;
-            color: #eaeaea;
+        .purchase-button {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: grey;
+            color: black;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
         }
-        .search-container input::placeholder {
-            color: #888;
+        .purchase-button img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
         }
+        .purchase-button.enabled {
+            background-color: gold;
+        }
+        .purchase-button.disabled {
+            background-color: grey;
+        }
+		.currency-display {
+          background-color: gold;
+          padding: 5px 10px;
+          border-radius: 5px;
+        }
+        .character {
+            width: 300px;
+            margin: 20px;
+        }
+		.skin-price {
+			position: absolute;
+			bottom: 45px;
+			right: 2px;
+			background-color: rgba(0, 0, 0, 0.7);
+			color: white;
+			padding: 2px 5px;
+			border-radius: 5px;
+			display: flex;
+			align-items: center;
+			font-size: 0.8em;
+		}
+		.skin-price img {
+			width: 10px;
+			height: 10px;
+			margin-right: 3px;
+		}
     </style>
 </head>
 <body>
@@ -198,28 +267,23 @@
             <a href="event.html">Event</a>
             <a href="Team Builder.html">Team Builder</a>
         </div>
-        <a href="Game Modes.html" class="play-button">Play</a>
-    </div>
-    <div class="search-container">
-        <input type="text" id="characterSearch" placeholder="Search Characters">
-        <input type="text" id="skinSearch" placeholder="Search Skins">
+        <a href="fight.html" class="play-button">Play</a>
+        <div id="currency-amount" class="currency-display">0</div>
     </div>
     <div class="container">
         <!-- Group by Characters -->
-        <div class="character">
+                <div class="character">
             <h2>Julia</h2>
             <div class="skins">
-                <div class="skin" data-src="Skins/Disco Queen Julia.jpeg">
+                <div class="skin" data-src="Skins/Disco Queen Julia.jpeg" onclick="openLightbox('Skins/Disco Queen Julia.jpeg', 'Disco Queen Julia', 100)">
                     <img src="Skins/Disco Queen Julia.jpeg" alt="Disco Queen Julia">
                     <div class="skin-name">Disco Queen Julia</div>
+                    <span class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</span>
                 </div>
-                <div class="skin" data-src="Skins/River Spirit Julia.jpeg">
+                <div class="skin" data-src="Skins/River Spirit Julia.jpeg" onclick="openLightbox('Skins/River Spirit Julia.jpeg', 'River Spirit Julia', 150)">
                     <img src="Skins/River Spirit Julia.jpeg" alt="River Spirit Julia">
                     <div class="skin-name">River Spirit Julia</div>
-                </div>
-				<div class="skin" data-src="Skins/Dragon Tamer Julia.jpeg">
-                    <img src="Skins/Dragon Tamer Julia.jpeg" alt="Dragon Tamer Julia">
-                    <div class="skin-name">Dragon Tamer Julia</div>
+                    <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
             </div>
         </div>
@@ -229,10 +293,12 @@
                 <div class="skin" data-src="Skins/Rockstar Birdie.png">
                     <img src="Skins/Rockstar Birdie.png" alt="Rockstar Birdie">
                     <div class="skin-name">Rockstar Birdie</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
                 <div class="skin" data-src="Skins/Sand Soldier Birdie.jpeg">
                     <img src="Skins/Sand Soldier Birdie.jpeg" alt="Sand Soldier Birdie">
                     <div class="skin-name">Sand Soldier Birdie</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
             </div>
         </div>
@@ -242,10 +308,12 @@
                 <div class="skin" data-src="Skins/Country Erron Black.png">
                     <img src="Skins/Country Erron Black.png" alt="Country Erron Black">
                     <div class="skin-name">Country Erron Black</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
                 <div class="skin" data-src="Skins/Mafia Leader Erron Black.png">
                     <img src="Skins/Mafia Leader Erron Black.png" alt="Mafia Leader Erron Black">
                     <div class="skin-name">Mafia Leader Erron Black</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
             </div>
         </div>
@@ -255,10 +323,12 @@
                 <div class="skin" data-src="Skins/Neon Morrigan.jpeg">
                     <img src="Skins/Neon Morrigan.jpeg" alt="Neon Morrigan">
                     <div class="skin-name">Neon Morrigan</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
 				<div class="skin" data-src="Skins/Dragon Tamer Morrigan.jpeg">
                     <img src="Skins/Dragon Tamer Morrigan.jpeg" alt="Dragon Tamer Morrigan">
                     <div class="skin-name">Dragon Tamer Morrigan</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
                 </div>
             </div>
         </div>
@@ -268,10 +338,12 @@
                 <div class="skin" data-src="Skins/Blossom Jun.png">
                     <img src="Skins/Blossom Jun.png" alt="Blossom Jun">
                     <div class="skin-name">Blossom Jun</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
 				<div class="skin" data-src="Skins/Dragon Tamer Jun.png">
                     <img src="Skins/Dragon Tamer Jun.png" alt="Dragon Tamer Jun">
                     <div class="skin-name">Dragon Tamer Jun</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
                 </div>
             </div>
         </div>
@@ -281,6 +353,7 @@
                 <div class="skin" data-src="Skins/Blossom Cham Cham.png">
                     <img src="Skins/Blossom Cham Cham.png" alt="Blossom Cham Cham">
                     <div class="skin-name">Blossom Cham Cham</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
                 </div>
             </div>
         </div>
@@ -290,14 +363,17 @@
                 <div class="skin" data-src="Skins/Blood Predator Reptile.png">
                     <img src="Skins/Blood Predator Reptile.png" alt="Blood Predator Reptile">
                     <div class="skin-name">Blood Predator Reptile</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
                 </div>
                 <div class="skin" data-src="Skins/Cyber Ninja Reptile.png">
                     <img src="Skins/Cyber Ninja Reptile.png" alt="Cyber Ninja Reptile">
                     <div class="skin-name">Cyber Ninja Reptile</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
                 </div>
                 <div class="skin" data-src="Skins/Sand Soldier Reptile.jpeg">
                     <img src="Skins/Sand Soldier Reptile.jpeg" alt="Sand Soldier Reptile">
                     <div class="skin-name">Sand Soldier Reptile</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
                 </div>
             </div>
         </div>
@@ -307,10 +383,12 @@
                 <div class="skin" data-src="Skins/Rockstar Akuma.jpeg">
                     <img src="Skins/Rockstar Akuma.jpeg" alt="Rockstar Akuma">
                     <div class="skin-name">Rockstar Akuma</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
                 <div class="skin" data-src="Skins/Thunder God Akuma.png">
                     <img src="Skins/Thunder God Akuma.png" alt="Thunder God Akuma">
                     <div class="skin-name">Thunder God Akuma</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
             </div>
         </div>
@@ -320,10 +398,12 @@
                 <div class="skin" data-src="Skins/Maid Elphelt.jpg">
                     <img src="Skins/Maid Elphelt.png" alt="Maid Elphelt">
                     <div class="skin-name">Maid Elphelt</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
                 <div class="skin" data-src="Skins/Cyber Hunter Elphelt.png">
                     <img src="Skins/Cyber Hunter Elphelt.png" alt="Cyber Hunter Elphelt">
                     <div class="skin-name">Cyber Hunter Elphelt</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
                 </div>
             </div>
         </div>
@@ -333,10 +413,12 @@
                 <div class="skin" data-src="Skins/Demon Lord Kotal Kahn.png">
                     <img src="Skins/Demon Lord Kotal Kahn.png" alt="Demon Lord Kotal Kahn">
                     <div class="skin-name">Demon Lord Kotal Kahn</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
                 </div>
                 <div class="skin" data-src="Skins/Cyber Warrior Kotal Kahn.png">
                     <img src="Skins/Cyber Warrior Kotal Kahn.png" alt="Cyber Warrior Kotal Kahn">
                     <div class="skin-name">Cyber Warrior Kotal Kahn</div>
+					<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
                 </div>
             </div>
         </div>
@@ -484,52 +566,72 @@
                 </div>
         </div>
     </div>
-     <!-- The Lightbox -->
-    <div id="lightbox" class="lightbox">
-        <span class="close" onclick="closeLightbox()">&times;</span>
-        <div class="lightbox-content">
-            <span class="prev" onclick="changeSlide(-1)">&#10094;</span>
-            <img id="lightboxImg" src="" alt="">
-            <span class="next" onclick="changeSlide(1)">&#10095;</span>
-        </div>
-    </div>
+</div>
+	<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+		<div class="lightbox-content" onclick="event.stopPropagation()">
+			<img id="lightbox-image" src="" alt="Selected Skin">
+			<button class="close-button" onclick="closeLightbox()">×</button>
+			<button id="purchase-button" class="purchase-button disabled" disabled>
+				<img src="res/img/fm.png" alt="Coin Icon">
+				<span id="skin-price"></span>
+			</button>
+		</div>
+	</div>
 
     <!-- Script for Lightbox functionality -->
     <script>
-        var lightbox = document.getElementById('lightbox');
-        var lightboxImg = document.getElementById('lightboxImg');
-        var currentSkinIndex = 0;
-        var skins = document.querySelectorAll('.skin');
-        var body = document.querySelector('body');
+            window.openLightbox = function(imgSrc, skinName, skinPrice) {
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightbox-image');
+    const purchaseButton = document.getElementById('purchase-button');
+    const priceDisplay = document.getElementById('skin-price');
 
-        skins.forEach(function(skin, index) {
-            skin.addEventListener('click', function() {
-                currentSkinIndex = index;
-                openLightbox(skin.getAttribute('data-src'), skin.querySelector('img').alt);
-            });
-        });
+    lightboxImage.src = imgSrc;
+    priceDisplay.textContent = skinPrice;
 
-        function openLightbox(imgSrc, imgAlt) {
-            lightbox.style.display = 'flex';
-            lightboxImg.src = imgSrc;
-            lightboxImg.alt = imgAlt;
-            body.classList.add('no-hover');
-        }
-
-        function closeLightbox() {
+    if (window.userFM >= skinPrice) {
+        purchaseButton.classList.remove('disabled');
+        purchaseButton.classList.add('enabled');
+        purchaseButton.disabled = false;
+        purchaseButton.onclick = async () => {
+            const newFM = window.userFM - skinPrice;
+            await updateUserFM(newFM);
+            await addPurchase(skinName);
+            document.getElementById('currency-amount').textContent = newFM;
+            window.userFM = newFM;
             lightbox.style.display = 'none';
-            body.classList.remove('no-hover');
-        }
+        };
+    } else {
+        purchaseButton.classList.remove('enabled');
+        purchaseButton.classList.add('disabled');
+        purchaseButton.disabled = true;
+        purchaseButton.onclick = null;
+    }
 
-        function changeSlide(step) {
-            currentSkinIndex += step;
-            if (currentSkinIndex < 0) currentSkinIndex = skins.length - 1;
-            if (currentSkinIndex >= skins.length) currentSkinIndex = 0;
-            var newSkin = skins[currentSkinIndex];
-            lightboxImg.src = newSkin.getAttribute('data-src');
-            lightboxImg.alt = newSkin.querySelector('img').alt;
-        }
+    lightbox.style.display = 'flex';
+};
 
+window.closeLightbox = function() {
+    document.getElementById('lightbox').style.display = 'none';
+};
+
+async function updateUserFM(newFM) {
+    try {
+        await firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({ FM: newFM });
+    } catch (error) {
+        console.error("Error updating FM:", error);
+    }
+}
+
+async function addPurchase(skinName) {
+    try {
+        await firebase.database().ref('purchases/' + firebase.auth().currentUser.uid + '/' + skinName.replace(/\s+/g, '_')).set({
+            skin: skinName
+        });
+    } catch (error) {
+        console.error("Error adding purchase:", error);
+    }
+}
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') closeLightbox();
             if (event.key === 'ArrowLeft') changeSlide(-1);
