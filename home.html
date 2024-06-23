@@ -102,60 +102,6 @@
         });
     };
 
-		// Function to check if the user owns Julia skin
-    async function checkJuliaOwnership() {
-        const user = auth.currentUser;
-        if (user) {
-            const userRef = ref(database, 'users/' + user.uid + '/skins/Julia.png');
-            const snapshot = await get(userRef);
-            if (snapshot.exists()) {
-                document.getElementById('unlock-skins-button').style.display = 'none';
-            } else {
-                document.getElementById('unlock-skins-button').style.display = 'block';
-            }
-        } else {
-            console.error('User not authenticated');
-        }
-    }
-
-    // Function to unlock skins
-    async function unlockSkins() {
-        const user = auth.currentUser;
-        if (user) {
-            const skins = [
-                'Birdie.png', 'Erron Black.png', 'Cham Cham.png', 'Morrigan.png',
-                'Jun.png', 'Reptile.png', 'Akuma.png', 'Elphelt.png', 'Kotal Kahn.png',
-                'Scorpion.png', 'Peacock.png', 'Angel.png', 'Astaroth.png', 'Ibuki.png',
-                'R.Mika.png', 'Raiden.png', 'Yugo.png', 'Talim.png', 'Noel.png',
-                'Blanka.png', 'Nina.png', 'Ayane.png', 'Siegfried.png', 'Shoma.png'
-            ];
-
-            const updates = {};
-            skins.forEach(skin => {
-                updates['users/' + user.uid + '/skins/' + skin] = true;
-            });
-
-            try {
-                await update(ref(database), updates);
-                console.log('Skins unlocked successfully');
-            } catch (error) {
-                console.error('Error unlocking skins:', error);
-            }
-        } else {
-            console.error('User not authenticated');
-        }
-    }
-
-    // Check Julia ownership on page load
-    window.onload = function() {
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                checkJuliaOwnership();
-            } else {
-                console.error('User not authenticated');
-            }
-        });
-    };
 
         // Function to toggle profile menu visibility
         window.toggleProfileMenu = function() {
@@ -230,36 +176,6 @@
             questsContainer.classList.toggle('open');
         };
 		
-
-		const skinsToUnlock = [
-			'Akuma', 'Angel', 'Astaroth', 'Birdie', 'Blanka', 'Cham Cham', 
-			'Elphelt', 'Erron Black', 'Ibuki', 'Julia', 'Jun', 'Kotal Kahn', 
-			'Morrigan', 'Nina', 'Noel', 'Peacock', 'R.Mika', 'Raiden', 
-			'Reptile', 'Scorpion', 'Siegfried', 'Talim', 'Yugo'
-		];
-
-		async function sendSkinsToDatabase() {
-			const updates = {};
-
-			skinsToUnlock.forEach(skin => {
-				updates[`skins/${skin}`] = 1;
-			});
-
-			await update(window.userRef, updates);
-			alert(`Skins have been successfully unlocked and sent to the database!`);
-		}
-
-		document.getElementById('unlock-skins-button').addEventListener('click', sendSkinsToDatabase);
-
-		async function update(ref, updates) {
-			// Replace this with your actual database update logic
-			console.log("Simulating database update...");
-			console.log("Reference:", ref);
-			console.log("Updates:", updates);
-			// Example: Firebase Realtime Database update
-			// await firebase.database().ref().update(updates);
-		}
-</script>
     </script>
     <style>
         body {
@@ -648,45 +564,6 @@
 			color: white;
 			margin-left: 5px; /* Add margin to separate from the icon */
 		}
-		#button-container {
-			position: fixed;
-			bottom: 40px; /* Adjusted to 40px to be slightly above the bottom edge */
-			right: 20px; /* Adjusted to the bottom right corner */
-			background-color: rgba(0, 0, 0, 0.8);
-			padding: 15px;
-			border-radius: 10px;
-			width: 300px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-			transition: transform 0.3s ease, opacity 0.3s ease;
-			transform: translateY(100%);
-			opacity: 0;
-			z-index: 1000; /* Ensure it's above other content */
-		}
-
-		#unlock-skins-button {
-			background-color: blue;
-			color: white;
-			border: none;
-			padding: 20px 40px;
-			text-align: center;
-			text-decoration: none;
-			font-size: 24px;
-			margin: 4px 2px;
-			cursor: pointer;
-			border-radius: 8px;
-			outline: none;
-			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-			display: none;
-		}
-
-		#unlock-skins-button:hover {
-			background-color: darkblue; /* Adjusted hover color */
-		}
-
-		#unlock-skins-button:active {
-			background-color: #3e8e41; /* Active State */
-			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-		}
 	</style>
 </head>
 <body>
@@ -777,11 +654,6 @@
             <a href="Shoma Page.html"><img src="Icons/Shoma.png" alt="Shoma" class="champion-image gray"></a>
         </div>
     </div>
-	
-	<div class="button-container">
-        <button id="unlock-skins-button" onclick="unlockSkins()">Unlock Free Characters</button>
-    </div>
-</div>
 
     <!-- Quests Popup Container -->
     <div id="quests-container">
@@ -807,8 +679,6 @@
     <div id="quests-toggle" onclick="toggleQuests()">
         <span id="quest-count">6</span>
         Quests
-	</div>
-</div>
-</div>
+    </div>
 </body>
 </html>
