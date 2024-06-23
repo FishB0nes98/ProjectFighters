@@ -213,33 +213,6 @@
             questsContainer.classList.toggle('open');
         };
 
-        const skinsToUnlock = [
-            'Akuma', 'Angel', 'Astaroth', 'Birdie', 'Blanka', 'Cham Cham', 
-            'Elphelt', 'Erron Black', 'Ibuki
-                    'Jun', 'Kotal Kahn', 'Morrigan',
-            'Nina', 'Noel', 'Peacock', 'R.Mika', 'Raiden', 'Reptile', 'Scorpion',
-            'Siegfried', 'Shoma', 'Talim', 'Yugo'
-        ];
-
-        async function unlockSkins() {
-            const user = auth.currentUser;
-            if (user) {
-                const updates = {};
-                skinsToUnlock.forEach(skin => {
-                    updates[`users/${user.uid}/skins/${skin}`] = true;
-                });
-
-                try {
-                    await update(ref(database), updates);
-                    console.log('Skins unlocked successfully');
-                } catch (error) {
-                    console.error('Error unlocking skins:', error);
-                }
-            } else {
-                console.error('User not authenticated');
-            }
-        }
-
         window.onload = function() {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
