@@ -100,7 +100,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database-compat.js"></script>
     <script>
-        /// Firebase configuration
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
             authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
@@ -144,63 +144,70 @@
         }
 
         // Function to handle user registration
-function registerUser(username, email, password) {
-    firebase.auth().createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
+        function register() {
+            const email = document.getElementById('register-email').value;
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+            registerUser(username, email, password);
+        }
 
-            // Update user display name (username)
-            user.updateProfile({
-                displayName: username
-            }).then(() => {
-                // Default user data to be stored in the database
-                const userData = {
-                    username: username,
-                    email: email,
-                    icon: 'Julia.png', // Default icon
-                    skins: {
-                        Akuma: 1,
-                        Angel: 1,
-                        Astaroth: 1,
-                        Birdie: 1,
-                        Blanka: 1,
-                        ChamCham: 1,
-                        Elphelt: 1,
-                        ErronBlack: 1,
-                        Ibuki: 1,
-                        Julia: 1,
-                        Jun: 1,
-                        KotalKahn: 1,
-                        Morrigan: 1,
-                        Nina: 1,
-                        Noel: 1,
-                        Peacock: 1,
-                        RMika: 1,
-                        Raiden: 1,
-                        Reptile: 1,
-                        Scorpion: 1,
-                        Talim: 1,
-                        Yugo: 1
-                    }
-                };
+        function registerUser(username, email, password) {
+            firebase.auth().createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
 
-                // Update Firebase Realtime Database with user details
-                firebase.database().ref('users/' + user.uid).set(userData).then(() => {
-                    // Registration successful
-                    alert('Registration successful');
-                    window.location.href = 'home.html'; // Redirect to home page
-                }).catch((error) => {
+                    // Update user display name (username)
+                    user.updateProfile({
+                        displayName: username
+                    }).then(() => {
+                        // Default user data to be stored in the database
+                        const userData = {
+                            username: username,
+                            email: email,
+                            icon: 'Julia.png', // Default icon
+                            skins: {
+                                Akuma: 1,
+                                Angel: 1,
+                                Astaroth: 1,
+                                Birdie: 1,
+                                Blanka: 1,
+                                ChamCham: 1,
+                                Elphelt: 1,
+                                ErronBlack: 1,
+                                Ibuki: 1,
+                                Julia: 1,
+                                Jun: 1,
+                                KotalKahn: 1,
+                                Morrigan: 1,
+                                Nina: 1,
+                                Noel: 1,
+                                Peacock: 1,
+                                RMika: 1,
+                                Raiden: 1,
+                                Reptile: 1,
+                                Scorpion: 1,
+                                Talim: 1,
+                                Yugo: 1
+                            }
+                        };
+
+                        // Update Firebase Realtime Database with user details
+                        firebase.database().ref('users/' + user.uid).set(userData).then(() => {
+                            // Registration successful
+                            alert('Registration successful');
+                            window.location.href = 'home.html'; // Redirect to home page
+                        }).catch((error) => {
+                            alert(error.message);
+                        });
+                    }).catch((error) => {
+                        alert(error.message);
+                    });
+
+                })
+                .catch((error) => {
                     alert(error.message);
                 });
-            }).catch((error) => {
-                alert(error.message);
-            });
-
-        })
-        .catch((error) => {
-            alert(error.message);
-        });
-}
+        }
 
         // Function to show login form
         function showLogin() {
