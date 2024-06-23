@@ -362,6 +362,29 @@
         .search-container input::placeholder {
             color: #888;
         }
+		.currency-displayer {
+			position: fixed;
+			top: 80px;
+			right: 10px;
+			background-color: #2c2c2c;
+			color: #eaeaea;
+			border-radius: 5px;
+			padding: 10px;
+			display: flex;
+			align-items: center;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+			z-index: 1000; /* Ensure it is on top of other elements */
+		}
+
+		.currency-displayer .coin-icon {
+			width: 24px;
+			height: 24px;
+			margin-right: 8px;
+		}
+			.coin-icon img {
+			width: 25px; /* Adjust the width as needed */
+			height: auto; /* Maintain aspect ratio */
+		}
     </style>
 </head>
 <body>
@@ -378,6 +401,10 @@
         <input type="text" id="characterSearch" placeholder="Search Characters">
         <input type="text" id="skinSearch" placeholder="Search Skins">
     </div>
+		<div id="currency-displayer" class="currency-displayer">
+		<img src="res/img/fm.png" alt="Coin Icon" class="coin-icon">
+		<span id="currency-amount">0</span>
+	</div>
     <div class="container">
         <!-- Group by Characters -->
         <div class="character">
