@@ -47,21 +47,21 @@
             });
         };
 
-        window.openLightbox = async function(imgSrc, skinName, skin-price) {
+        window.openLightbox = async function(imgSrc, skinName, skinPrice) {
             const lightbox = document.getElementById('lightbox');
             const lightboxImage = document.getElementById('lightbox-image');
             const purchaseButton = document.getElementById('purchase-button');
             const priceDisplay = document.getElementById('price-display');
 
             lightboxImage.src = imgSrc;
-            priceDisplay.textContent = skin-price;
+            priceDisplay.textContent = skinPrice;
 
-            if (window.userFM >= skin-price) {
+            if (window.userFM >= skinPrice) {
                 purchaseButton.classList.remove('disabled');
                 purchaseButton.classList.add('enabled');
                 purchaseButton.disabled = false;
                 purchaseButton.onclick = async () => {
-                    const newFM = window.userFM - skin-price;
+                    const newFM = window.userFM - skinPrice;
                     await update(window.userRef, { FM: newFM });
                     await set(ref(database, 'purchases/' + auth.currentUser.uid + '/' + skinName.replace(/\s+/g, '_')), {
                         skin: skinName
