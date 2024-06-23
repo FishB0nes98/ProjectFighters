@@ -102,7 +102,29 @@
         });
     };
 
+		// Function to check if the user owns the Julia skin
+        function checkJuliaOwnership() {
+            if (userId) {
+                // Reference to the database where user's skins are stored
+                var skinsRef = firebase.database().ref('users/' + userId + '/skins/');
+				skinsRef.once('value').then(function(snapshot) {
+                    if (snapshot.exists()) {
+                        var skins = snapshot.val();
+                        if (skins.hasOwnProperty('Julia')) {
+                            // User owns the Julia skin, hide the button
+                            document.getElementById('buyJuliaButton').style.display = 'none';
+                        }
+                    }
+                }).catch(function(error) {
+                    console.error('Error fetching data:', error);
+                });
+            }
+        }
 
+        // Call the function when the page loads
+        window.onload = function() {
+            checkJuliaOwnership();
+        };
         // Function to toggle profile menu visibility
         window.toggleProfileMenu = function() {
             const profileMenu = document.getElementById('profile-menu');
@@ -175,6 +197,37 @@
             const questsContainer = document.getElementById('quests-container');
             questsContainer.classList.toggle('open');
         };
+		
+
+		const skinsToUnlock = [
+			'Akuma', 'Angel', 'Astaroth', 'Birdie', 'Blanka', 'Cham Cham', 
+			'Elphelt', 'Erron Black', 'Ibuki', 'Julia', 'Jun', 'Kotal Kahn', 
+			'Morrigan', 'Nina', 'Noel', 'Peacock', 'R.Mika', 'Raiden', 
+			'Reptile', 'Scorpion', 'Siegfried', 'Talim', 'Yugo'
+		];
+
+		async function sendSkinsToDatabase() {
+			const updates = {};
+
+			skinsToUnlock.forEach(skin => {
+				updates[`skins/${skin}`] = 1;
+			});
+
+			await update(window.userRef, updates);
+			alert(`Skins have been successfully unlocked and sent to the database!`);
+		}
+
+		document.getElementById('unlock-skins-button').addEventListener('click', sendSkinsToDatabase);
+
+		async function update(ref, updates) {
+			// Replace this with your actual database update logic
+			console.log("Simulating database update...");
+			console.log("Reference:", ref);
+			console.log("Updates:", updates);
+			// Example: Firebase Realtime Database update
+			// await firebase.database().ref().update(updates);
+		}
+</script>
     </script>
     <style>
         body {
@@ -563,6 +616,44 @@
 			color: white;
 			margin-left: 5px; /* Add margin to separate from the icon */
 		}
+		#button-container {
+			position: fixed;
+			bottom: 40px; /* Adjusted to 40px to be slightly above the bottom edge */
+			right: 20px; /* Adjusted to the bottom right corner */
+			background-color: rgba(0, 0, 0, 0.8);
+			padding: 15px;
+			border-radius: 10px;
+			width: 300px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+			transition: transform 0.3s ease, opacity 0.3s ease;
+			transform: translateY(100%);
+			opacity: 0;
+			z-index: 1000; /* Ensure it's above other content */
+		}
+
+		#unlock-skins-button {
+			background-color: blue;
+			color: white;
+			border: none;
+			padding: 20px 40px;
+			text-align: center;
+			text-decoration: none;
+			font-size: 24px;
+			margin: 4px 2px;
+			cursor: pointer;
+			border-radius: 8px;
+			outline: none;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+		}
+
+		#unlock-skins-button:hover {
+			background-color: darkblue; /* Adjusted hover color */
+		}
+
+		#unlock-skins-button:active {
+			background-color: #3e8e41; /* Active State */
+			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+		}
 	</style>
 </head>
 <body>
@@ -653,6 +744,11 @@
             <a href="Shoma Page.html"><img src="Icons/Shoma.png" alt="Shoma" class="champion-image gray"></a>
         </div>
     </div>
+	
+	<div class="button-container">
+        <button id="unlock-skins-button">Unlock Free Characters</button>
+    </div>
+</div>
 
     <!-- Quests Popup Container -->
     <div id="quests-container">
@@ -678,6 +774,8 @@
     <div id="quests-toggle" onclick="toggleQuests()">
         <span id="quest-count">6</span>
         Quests
-    </div>
+	</div>
+</div>
+</div>
 </body>
 </html>
