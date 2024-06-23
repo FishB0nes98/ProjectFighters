@@ -3,6 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <title>Loading Screen</title>
+	<head>
+    <meta charset="UTF-8">
+    <title>Loading Screen</title>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    console.log("User is logged in:", user.uid);
+                    const userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        window.userRef = userRef;
+
+                        if (userData.skins) {
+                            populateSkinDropdowns(userData.skins);
+                        } else {
+                            console.log("No skins available.");
+                        }
+                    }
+                } else {
+                    console.log("User is not logged in.");
+                }
+            });
+        };
+
+        function populateSkinDropdowns(skins) {
+            const dropdowns = document.querySelectorAll('.skin-dropdown');
+            dropdowns.forEach(dropdown => {
+                dropdown.innerHTML = '<option value="">Select a skin</option>'; // Clear any existing options and add a placeholder
+                for (const skin in skins) {
+                    if (skins[skin] === 1) {
+                        const option = document.createElement('option');
+                        option.value = skin;
+                        option.text = skin;
+                        dropdown.appendChild(option);
+                    }
+                }
+
+                dropdown.addEventListener('change', function() {
+                    const selectedSkin = this.value;
+                    const playerSlot = this.closest('.player-slot');
+                    const img = playerSlot.querySelector('img');
+                    const skinNameDiv = playerSlot.querySelector('.skin-name');
+
+                    if (selectedSkin) {
+                        loadImage(img, 'Loading Screen/' + selectedSkin);
+                        skinNameDiv.textContent = this.options[this.selectedIndex].text;
+                        skinNameDiv.style.display = 'block';
+                        this.style.display = 'none'; // Hide the dropdown
+                    } else {
+                        img.src = '';
+                        skinNameDiv.textContent = '';
+                        skinNameDiv.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        function loadImage(imgElement, basePath) {
+            const extensions = ['.png', '.jpeg', '.jpg'];
+            let found = false;
+            for (const ext of extensions) {
+                const img = new Image();
+                img.src = basePath + ext;
+                img.onload = () => {
+                    if (!found) {
+                        imgElement.src = img.src;
+                        found = true;
+                    }
+                };
+                img.onerror = () => {
+                    if (!found) {
+                        imgElement.src = ''; // Clear src if not found
+                    }
+                };
+            }
+        }
+ </script>
     <style>
         body {
             margin: 0;
@@ -123,150 +229,84 @@
         </div>
         <a href="Game Modes.html" class="play-button">Play</a>
     </div>
-    <div id="loading-screen-container">
-        <div class="team-container" id="team1">
-            <div class="player-slot" id="team1-player1">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
-            <div class="player-slot" id="team1-player2">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
-            <div class="player-slot" id="team1-player3">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
-            <div class="player-slot" id="team1-player4">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
-            <div class="player-slot" id="team1-player5">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
+<div id="loading-screen-container">
+    <div class="team-container" id="team1">
+        <div class="player-slot" id="team1-player1">
+            <img id="team1-player1-img" src="" alt="">
+            <div class="skin-name" id="team1-player1-skin-name"></div>
+            <select class="skin-dropdown" id="team1-player1-dropdown">
+                <option value="">Select a skin</option>
+            </select>
         </div>
-		
-		 <div id="vs-text">VS</div>
-		
-        <div class="team-container" id="team2">
-            <div class="player-slot" id="team2-player1">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
-            <div class="player-slot" id="team2-player2">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
-            <div class="player-slot" id="team2-player3">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
-            <div class="player-slot" id="team2-player4">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
-            <div class="player-slot" id="team2-player5">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
+        <div class="player-slot" id="team1-player2">
+            <img id="team1-player2-img" src="" alt="">
+            <div class="skin-name" id="team1-player2-skin-name"></div>
+            <select class="skin-dropdown" id="team1-player2-dropdown">
+                <option value="">Select a skin</option>
+            </select>
+        </div>
+        <div class="player-slot" id="team1-player3">
+            <img id="team1-player3-img" src="" alt="">
+            <div class="skin-name" id="team1-player3-skin-name"></div>
+            <select class="skin-dropdown" id="team1-player3-dropdown">
+                <option value="">Select a skin</option>
+            </select>
+        </div>
+        <div class="player-slot" id="team1-player4">
+            <img id="team1-player4-img" src="" alt="">
+            <div class="skin-name" id="team1-player4-skin-name"></div>
+            <select class="skin-dropdown" id="team1-player4-dropdown">
+                <option value="">Select a skin</option>
+            </select>
+        </div>
+        <div class="player-slot" id="team1-player5">
+            <img id="team1-player5-img" src="" alt="">
+            <div class="skin-name" id="team1-player5-skin-name"></div>
+            <select class="skin-dropdown" id="team1-player5-dropdown">
+                <option value="">Select a skin</option>
+            </select>
         </div>
     </div>
 
-    <!-- Hidden dropdown template -->
-    <select id="skin-dropdown-template" class="skin-dropdown" style="display:none;">
-        <option value="">Select Skin</option>
-		<option value="Akuma.png">Akuma</option>
-		<option value="Angel.png">Angel</option>
-		<option value="Astaroth.png">Astaroth</option>
-		<option value="Birdie.png">Birdie</option>
-		<option value="Blanka.png">Blanka</option>
-		<option value="Blood Predator Reptile.png">Blood Predator Reptile</option>
-		<option value="Blossom Angel.png">Blossom Angel</option>
-		<option value="Blossom Cham Cham.png">Blossom Cham Cham</option>
-		<option value="Blossom Jun.png">Blossom Jun</option>
-		<option value="Blossom Scorpion.png">Blossom Scorpion</option>
-		<option value="Cham Cham.png">Cham Cham</option>
-		<option value="Country Erron Black.png">Country Erron Black</option>
-		<option value="Cyber Bomber Peacock.png">Cyber Bomber Peacock</option>
-		<option value="Cyber Hunter Elphelt.png">Cyber Hunter Elphelt</option>
-		<option value="Cyber Ninja Reptile.png">Cyber Ninja Reptile</option>
-		<option value="Cyber Predator Yugo.png">Cyber Predator Yugo</option>
-		<option value="Cyber Warrior Kotal Kahn.png">Cyber Warrior Kotal Kahn</option>
-		<option value="Demon Hunter Ibuki.png">Demon Hunter Ibuki</option>
-		<option value="Demon Lord Kotal Kahn.png">Demon Lord Kotal Kahn</option>
-		<option value="Disco Queen Julia.png">Disco Queen Julia</option>
-		<option value="DJ Ibuki.png">DJ Ibuki</option>
-		<option value="Elphelt.png">Elphelt</option>
-		<option value="Enraged Blanka.png">Enraged Blanka</option>
-		<option value="Erron Black.png">Erron Black</option>
-		<option value="Ibuki.png">Ibuki</option>
-		<option value="Julia.png">Julia</option>
-		<option value="Jun.png">Jun</option>
-		<option value="Kotal Kahn.png">Kotal Kahn</option>
-		<option value="Mafia Leader Erron Black.png">Mafia Leader Erron Black</option>
-		<option value="Maid Elphelt.png">Maid Elphelt</option>
-		<option value="Master of Monks Raiden.png">Master of Monks Raiden</option>
-		<option value="Morrigan.png">Morrigan</option>
-		<option value="Neon Morrigan.png">Neon Morrigan</option>
-		<option value="Noel.png">Noel</option>
-		<option value="Officer Noel.png">Officer Noel</option>
-		<option value="Peacock.png">Peacock</option>
-		<option value="Phoenix R.Mika.png">Phoenix R.Mika</option>
-		<option value="Pop Star R.Mika.png">Pop Star R.Mika</option>
-		<option value="R.Mika.png">R.Mika</option>
-		<option value="Raiden.png">Raiden</option>
-		<option value="Red Stone Ibuki.png">Red Stone Ibuki</option>
-		<option value="Reptile.png">Reptile</option>
-		<option value="River Spirit Julia.png">River Spirit Julia</option>
-		<option value="Rockstar Akuma.png">Rockstar Akuma</option>
-		<option value="Rockstar Birdie.png">Rockstar Birdie</option>
-		<option value="Royal Guard Astaroth.png">Royal Guard Astaroth</option>
-		<option value="Sand Soldier Astaroth.png">Sand Soldier Astaroth</option>
-		<option value="Sand Soldier Birdie.png">Sand Soldier Birdie</option>
-		<option value="Sand Soldier Reptile.png">Sand Soldier Reptile</option>
-		<option value="Sand Soldier Talim.png">Sand Soldier Talim</option>
-		<option value="Scorpion.png">Scorpion</option>
-		<option value="Spider Scorpion.png">Spider Scorpion</option>
-		<option value="Street Fighter Yugo.png">Street Fighter Yugo</option>
-		<option value="Talim.png">Talim</option>
-		<option value="Thunder God Akuma.png">Thunder God Akuma</option>
-		<option value="Vampire Talim.png">Vampire Talim</option>
-		<option value="Voidborn Angel.png">Voidborn Angel</option>
-		<option value="Yugo.png">Yugo</option>
+    <div id="vs-text">VS</div>
 
-    </select>
-
-    <script>
-        function updateSkin(dropdown, playerImg, skinNameDiv) {
-            const selectedSkin = dropdown.value;
-            if (selectedSkin) {
-                playerImg.src = `Loading Screen/${selectedSkin}`;
-                skinNameDiv.innerText = dropdown.options[dropdown.selectedIndex].text;
-                skinNameDiv.style.display = 'block';
-                dropdown.style.display = 'none';
-            } else {
-                playerImg.src = '';
-                skinNameDiv.style.display = 'none';
-                dropdown.style.display = 'block';
-            }
-        }
-
-        window.onload = function() {
-            const dropdownTemplate = document.getElementById('skin-dropdown-template');
-            const teams = [document.getElementById('team1'), document.getElementById('team2')];
-
-            teams.forEach(team => {
-                Array.from(team.children).forEach(playerSlot => {
-                    const playerImg = playerSlot.querySelector('img');
-                    const skinNameDiv = playerSlot.querySelector('.skin-name');
-                    const dropdownClone = dropdownTemplate.cloneNode(true);
-                    dropdownClone.style.display = 'block';
-                    dropdownClone.onchange = () => updateSkin(dropdownClone, playerImg, skinNameDiv);
-                    playerSlot.appendChild(dropdownClone);
-                });
-            });
-        };
-    </script>
+    <div class="team-container" id="team2">
+        <div class="player-slot" id="team2-player1">
+            <img id="team2-player1-img" src="" alt="">
+            <div class="skin-name" id="team2-player1-skin-name"></div>
+            <select class="skin-dropdown" id="team2-player1-dropdown">
+                <option value="">Select a skin</option>
+            </select>
+        </div>
+        <div class="player-slot" id="team2-player2">
+            <img id="team2-player2-img" src="" alt="">
+            <div class="skin-name" id="team2-player2-skin-name"></div>
+            <select class="skin-dropdown" id="team2-player2-dropdown">
+                <option value="">Select a skin</option>
+            </select>
+        </div>
+        <div class="player-slot" id="team2-player3">
+            <img id="team2-player3-img" src="" alt="">
+            <div class="skin-name" id="team2-player3-skin-name"></div>
+            <select class="skin-dropdown" id="team2-player3-dropdown">
+                <option value="">Select a skin</option>
+            </select>
+        </div>
+        <div class="player-slot" id="team2-player4">
+            <img id="team2-player4-img" src="" alt="">
+            <div class="skin-name" id="team2-player4-skin-name"></div>
+            <select class="skin-dropdown" id="team2-player4-dropdown">
+                <option value="">Select a skin</option>
+            </select>
+        </div>
+        <div class="player-slot" id="team2-player5">
+            <img id="team2-player5-img" src="" alt="">
+            <div class="skin-name" id="team2-player5-skin-name"></div>
+            <select class="skin-dropdown" id="team2-player5-dropdown">
+                <option value="">Select a skin</option>
+            </select>
+        </div>
+    </div>
+</div>
 </body>
 </html>
