@@ -5,135 +5,169 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MOBA Profile Page</title>
     <style>
-        /* Add your CSS styling here */
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            font-family: Montserrat, sans-serif;
+            background-color: #333333;
+            color: #FFFFFF;
         }
-        .profile-header {
+        h2, h3 {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        /* Header Section */
+        header {
+            background-color: #03A9F4;
+            padding: 20px;
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
+            justify-content: space-between;
         }
-        .profile-icon {
-            width: 100px;
-            height: 100px;
+       .profile-icon {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            background-size: cover;
+            overflow: hidden;
             margin-right: 20px;
         }
-        .skins, .background-selector {
-            margin: 10px 0;
+       .profile-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
-        .dropdown {
-            margin: 5px 0;
+        #username {
+            font-size: 24px;
+            color: #FFFFFF;
+        }
+        /* Skin Selection Area */
+       .skins-container {
+            padding: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        #skin-select {
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            background-color: #FFFFFF;
+            color: #333333;
+            cursor: pointer;
+        }
+        /* Background Selection Area */
+       .background-container {
+            padding: 40px;
+            background-color: #FF8C00;
+            border-radius: 10px;
+            margin: 20px;
+        }
+        #background-select {
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            background-color: #FFFFFF;
+            color: #333333;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div class="profile-header">
-        <div class="profile-icon" id="profileIcon"></div>
-        <div class="username" id="username"></div>
-    </div>
-    <div class="skins">
-        <div class="dropdown">
-            <label for="skin1">Select Skin 1:</label>
-            <select id="skin1"></select>
+    <!-- Header Section -->
+    <header>
+        <div class="profile-icon">
+            <img src="" alt="Profile Icon" id="profile-icon">
         </div>
-        <div class="dropdown">
-            <label for="skin2">Select Skin 2:</label>
-            <select id="skin2"></select>
-        </div>
-        <div class="dropdown">
-            <label for="skin3">Select Skin 3:</label>
-            <select id="skin3"></select>
-        </div>
-    </div>
-    <div class="background-selector">
-        <label for="background">Select Background:</label>
-        <select id="background"></select>
-    </div>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script>
+        <h2 id="username"></h2>
+    </header>
+
+    <!-- Skin Selection Area -->
+    <section class="skins-container">
+        <h3>Skins</h3>
+        <select id="skin-select">
+            <option value="">Select Skin</option>
+            <!-- skins will be populated dynamically from Firebase database -->
+        </select>
+    </section>
+
+    <!-- Background Selection Area -->
+    <section class="background-container">
+        <h3>Background</h3>
+        <select id="background-select">
+            <option value="">Select Background</option>
+            <!-- backgrounds will be populated dynamically from Firebase database -->
+        </select>
+    </section>
+
     <script>
-        // Firebase config and initialization
-        var firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            databaseURL: "YOUR_DATABASE_URL",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
         };
-        firebase.initializeApp(firebaseConfig);
+        var app = firebase.initializeApp(config);
 
-        // Fetch logged in user's data
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                const userId = user.uid;
-                const userRef = firebase.database().ref('users/' + userId);
-                userRef.once('value').then((snapshot) => {
-                    const userData = snapshot.val();
-                    document.getElementById('username').innerText = userData.username;
-                    document.getElementById('profileIcon').style.backgroundImage = `url(${userData.profileIcon})`;
+        // Get logged in user's data from Firebase Realtime Database
+        var userId = firebase.auth().currentUser.uid;
+        var database = firebase.database();
+        var userDataRef = database.ref('users/' + userId);
 
-                    // Fetch skins from database
-                    const skinsRef = firebase.database().ref('Skins');
-                    skinsRef.once('value').then((snapshot) => {
-                        const skins = snapshot.val();
-                        const skin1Dropdown = document.getElementById('skin1');
-                        const skin2Dropdown = document.getElementById('skin2');
-                        const skin3Dropdown = document.getElementById('skin3');
-                        const backgroundDropdown = document.getElementById('background');
-                        
-                        for (let skin in skins) {
-                            const option1 = document.createElement('option');
-                            option1.value = skin;
-                            option1.innerText = skin;
-                            skin1Dropdown.appendChild(option1);
+        // Get profile icon and username
+        userDataRef.child('profile/icon').once('value', function(data) {
+            document.getElementById('profile-icon').src = data.val();
+        });
+        userDataRef.child('profile/username').once('value', function(data) {
+            document.getElementById('username').innerText = data.val();
+        });
 
-                            const option2 = document.createElement('option');
-                            option2.value = skin;
-                            option2.innerText = skin;
-                            skin2Dropdown.appendChild(option2);
+        // Get skins from Firebase Storage
+        var skinsRef = firebase.storage().ref('skins');
+        skinsRef.listAll().then(function(result) {
+            result.items.forEach(function(item) {
+                var skinName = item.name;
+                var skinOption = document.createElement('option');
+                skinOption.value = skinName;
+                skinOption.text = skinName;
+                document.getElementById('skin-select').appendChild(skinOption);
+            });
+        });
 
-                            const option3 = document.createElement('option');
-                            option3.value = skin;
-                            option3.innerText = skin;
-                            skin3Dropdown.appendChild(option3);
+        // Get backgrounds from Firebase Storage
+        var backgroundsRef = firebase.storage().ref('Default Splash');
+        backgroundsRef.listAll().then(function(result) {
+            result.items.forEach(function(item) {
+                var backgroundName = item.name;
+                var backgroundOption = document.createElement('option');
+                backgroundOption.value = backgroundName;
+                backgroundOption.text = backgroundName;
+                document.getElementById('background-select').appendChild(backgroundOption);
+            });
+        });
 
-                            const backgroundOption = document.createElement('option');
-                            backgroundOption.value = skin;
-                            backgroundOption.innerText = skin;
-                            backgroundDropdown.appendChild(backgroundOption);
-                        }
+        // Save selected skin to Firebase Realtime Database
+        document.getElementById('skin-select').addEventListener('change', function() {
+            var selectedSkin = this.value;
+            userDataRef.child('profile/skin1').set(selectedSkin);
+        });
 
-                        // Add event listeners to dropdowns to save selections
-                        skin1Dropdown.addEventListener('change', function() {
-                            userRef.update({ profileSkin1: this.value });
-                        });
-                        skin2Dropdown.addEventListener('change', function() {
-                            userRef.update({ profileSkin2: this.value });
-                        });
-                        skin3Dropdown.addEventListener('change', function() {
-                            userRef.update({ profileSkin3: this.value });
-                        });
-                        backgroundDropdown.addEventListener('change', function() {
-                            userRef.update({ profileBackground: this.value });
-                        });
-                    });
-                });
-            } else {
-                // No user is signed in
-                window.location.href = 'index.html'; // Redirect to login page
-            }
+        // Save selected background to Firebase Realtime Database
+        document.getElementById('background-select').addEventListener('change', function() {
+            var selectedBackground = this.value;
+            userDataRef.child('profile/background').set(selectedBackground);
         });
     </script>
 </body>
