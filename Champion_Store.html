@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Champion Buyer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        document.getElementById('currency-amount').textContent = userData.CM || 0;
+                        window.userCM = userData.CM || 0;
+                        window.userRef = userRef;
+                        updateChampionButtons(userData.skins || {});
+                    }
+                }
+            });
+        };
+
+        window.purchaseChampion = async function(button) {
+            const championItem = button.closest('.champion-item');
+            const championName = championItem.dataset.championName;
+            const championPrice = parseInt(championItem.dataset.championPrice, 10);
+
+            if (window.userCM >= championPrice) {
+                const newCM = window.userCM - championPrice;
+                const updates = {};
+                updates['CM'] = newCM;
+                updates[`skins/${championName}`] = 1; // Adding the champion to the skins folder with a value of 1
+                await update(window.userRef, updates);
+                document.getElementById('currency-amount').textContent = newCM;
+                window.userCM = newCM;
+                button.disabled = true;
+                button.textContent = 'Owned';
+                alert(`You have successfully purchased ${championName}!`);
+            } else {
+                alert("You don't have enough CM to purchase this champion.");
+            }
+        };
+
+        function updateChampionButtons(skins) {
+            const championItems = document.querySelectorAll('.champion-item');
+            championItems.forEach(item => {
+                const championName = item.dataset.championName;
+                const button = item.querySelector('button');
+                if (skins[championName]) {
+                    button.disabled = true;
+                    button.textContent = 'Owned';
+                }
+            });
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+        }
+        .menu {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background-color: #444;
+            overflow: hidden;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        .menu .menu-items {
+            display: flex;
+        }
+        .menu a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+        .menu .play-button {
+            background-color: #ff416c;
+            padding: 10px 20px;
+            border-radius: 4px;
+        }
+        .menu .play-button:hover {
+            background-color: #ff4b2b;
+        }
+        .currency {
+            text-align: right;
+            padding: 10px 20px;
+            background-color: #1f1f1f;
+            border-bottom: 1px solid #333;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            color: #e0e0e0;
+        }
+        .champion-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+        .champion-item {
+            background: #1f1f1f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            margin: 10px;
+            padding: 15px;
+            width: 500px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s;
+        }
+        .champion-item:hover {
+            transform: translateY(-5px);
+        }
+        .champion-item img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .champion-item p {
+            margin: 10px 0;
+            font-size: 1.1em;
+            color: #b0b0b0;
+        }
+        .champion-item .price {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .champion-item .price img {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+        .champion-item .price span {
+            font-size: 0.9em;
+        }
+        .champion-item button {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .champion-item button:disabled {
+            background: #444;
+            cursor: not-allowed;
+        }
+        .champion-item button:not(:disabled):hover {
+            background: linear-gradient(45deg, #ff4b2b, #ff416c);
+        }
+		.gray {
+            filter: grayscale(100%);
+        }
+		.currency img {
+			width: 20px;
+            height: 20px;
+            margin-right: 5px;
+		}
+    </style>
+</head>
+<body>
+    <div class="menu">
+        <div class="menu-items">
+            <a href="home.html">Home</a>
+            <a href="Store.html">Store</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+        </div>
+        <a href="Game Modes.html" class="play-button">Play</a>
+    </div>
+    <div class="currency">
+		<img src="res/img/cm.png" alt="CM">
+        <span id="currency-amount">0</span>
+    </div>
+    <div class="champion-list">
+        <div class="champion-item" data-champion-name="Ayane" data-champion-price="4500">
+            <img src="Default Splash/Ayane.png" alt="Ayane">
+            <div class="price">
+                <img src="res/img/cm.png" alt="CM">
+                <span>4500</span>
+            </div>
+            <button onclick="purchaseChampion(this)">Buy</button>
+        </div>
+		<div class="champion-item" data-champion-name="Siegfried" data-champion-price="4500">
+            <img src="Default Splash/Siegfried.png" alt="Siegfried" class="champion-image gray">
+            <div class="price">
+                <img src="res/img/cm.png" alt="CM">
+                <span>4500</span>
+            </div>
+            <button  class= "gray">Unavailable</button>
+        </div>
+        <div class="champion-item" data-champion-name="Shoma" data-champion-price="4500">
+            <img src="Default Splash/Shoma.png" alt="Shoma" class="champion-image gray">
+            <div class="price">
+                <img src="res/img/cm.png" alt="CM">
+                <span>4500</span>
+            </div>
+            <button  class= "gray">Unavailable</button>
+        </div>
+        <!-- Repeat for other champions -->
+    </div>
+</body>
+</html>

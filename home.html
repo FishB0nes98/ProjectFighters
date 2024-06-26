@@ -137,31 +137,28 @@
         }
     }
 
-	     // Function to check if user is logged in and update UI
-         window.onload = function() {
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                console.log("User is authenticated", user); // Debugging line
-                const userRef = ref(database, 'users/' + user.uid);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val();
-                if (userData) {
-                    console.log("User data retrieved", userData); // Debugging line
-                    // Update UI with user info
-                    document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
-                    document.getElementById('profile-image').src = `Icons/${userData.icon || 'Julia.png'}`;
-                    document.getElementById('profile-image').alt = 'Profile Icon';
-					// Display currency amount (FM)
-                    document.getElementById('currency-amount').textContent = userData.FM || 0; // Assuming 'fm' is the field containing fight money
-					document.getElementById('user-info').style.display = 'flex'; // Show user info section
-                } else {
-                    console.log("No user data found"); // Debugging line
-                }
+	     window.onload = function() {
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            console.log("User is authenticated", user);
+            const userRef = ref(database, 'users/' + user.uid);
+            const snapshot = await get(userRef);
+            const userData = snapshot.val();
+            if (userData) {
+                console.log("User data retrieved", userData);
+                document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
+                document.getElementById('profile-image').src = `Icons/${userData.icon || 'Julia.png'}`;
+                document.getElementById('profile-image').alt = 'Profile Icon';
+                document.getElementById('currency-amount').textContent = userData.FM || 0;
+                document.getElementById('cm-amount').textContent = userData.CM || 0;
             } else {
-                console.log("User is not authenticated"); // Debugging line
+                console.log("No user data found");
             }
-        });
-    };
+        } else {
+            console.log("User is not authenticated");
+        }
+    });
+};
 
 
         // Function to toggle profile menu visibility
@@ -268,7 +265,6 @@
             flex-wrap: wrap;
             justify-content: flex-start;
             align-items: center;
-            padding: 10px;
             width: 100%;
             max-width: 1000px;
             margin-top: 20px;
@@ -435,7 +431,7 @@
             min-width: 100%;
             min-height: 100%;
             z-index: -1;
-            filter: brightness(50%);
+            filter: brightness(60%) contrast(120%);
         }
 
         /* Profile Menu */
@@ -640,12 +636,73 @@
             cursor: pointer;
             display: none; /* Initially hidden */
         }
+		.cm-container {
+			position: fixed; /* Fixed position */
+			top: 215px; /* Adjust top position */
+			right: 77px; /* Align with profile-info */
+			align-items: center; /* Align items vertically */
+			padding: 5px 10px; /* Padding around the container */
+			width: 200px; /* Adjust width as necessary */
+			max-width: 275px; /* Maximum width */
+			z-index: 1000; /* Ensure it's above other content */
+			display: flex; /* Use flexbox to align items */
+		}
+
+		.cm-icon {
+			width: 25px; /* Adjusted width for the icon */
+			height: auto; /* Maintain aspect ratio */
+			margin-right: 5px; /* Margin between icon and amount */
+		}
+
+		.cm-icon img {
+			width: 25px; /* Adjusted width for the icon image */
+			height: auto; /* Maintain aspect ratio */
+		}
+
+		#cm-amount {
+			font-size: 18px; /* Font size for the amount */
+			color: white; /* Text color */
+			margin-left: 5px; /* Add margin to separate from the icon */
+		}
+		#news-feed {
+			position: fixed;
+			top: 180px; /* Adjust based on your layout */
+			left: 0;
+			width: 300px; /* Adjust width as needed */
+			background-color: rgba(0, 0, 0, 0.8);
+			color: white;
+			margin-left: 20px;
+			padding: 10px;
+			box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+			z-index: 2000; /* Ensure it's above other content */
+			overflow-y: auto;
+			max-height: 90vh;
+		}
+
+		.news-item {
+			margin-bottom: 20px;
+		}
+
+		.news-image {
+			width: 20%;
+			height: auto;
+			border-radius: 5px;
+		}
+
+		.news-title {
+			font-size: 18px;
+			margin: 10px 0 5px;
+		}
+
+		.news-text {
+			font-size: 14px;
+		}
 	</style>
 </head>
 <body>
     <!-- Video Background -->
     <video id="video-background" autoplay muted loop>
-        <source src="Event/Dragonlands Event.mp4" type="video/mp4">
+        <source src="Event/Eventvideo.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 
@@ -653,13 +710,11 @@
     <div class="menu">
         <div class="menu-items">
             <a href="home.html">Home</a>
-            <a href="Skins.html">Skins</a>
+            <a href="Store.html">Store</a>
             <a href="event.html">Event</a>
             <a href="Team Builder.html">Team Builder</a>
         </div>
-        <div>
-            <a href="Game Modes.html" class="play-button">Play</a>
-        </div>
+        <a href="Game Modes.html" class="play-button">Play</a>
     </div>
 
 	<!-- User Profile Info -->
@@ -673,6 +728,12 @@
 			<img src="res/img/fm.png" alt="Currency Icon">
 		</div>
 		<div id="currency-amount"></div>
+	</div>
+	<div class="cm-container">
+		<div class="cm-icon">
+			<img src="res/img/cm.png" alt="CM">
+		</div>
+		<div id="cm-amount"></div>
 	</div>
 
 	<!-- Profile Menu Pop-up -->
@@ -701,33 +762,51 @@
         <div id="search-container">
             <input type="text" id="search-bar" placeholder="Search for a champion..." onkeyup="searchChampion()">
         </div>
+		<div id="news-feed">
+    <div class="news-item">
+        <h3 class="news-title">No more free characters</h3>
+		<img src="res/img/CM.png" alt="News Image 1" class="news-image">
+        <p class="news-text">You can now buy characters with the new currency called Character Money (CM). Head to the new store page to check it out.</p>
+    </div>
+    <div class="news-item">
+        <h3 class="news-title">Ayane is now available!</h3>
+		<img src="Icons/Ayane.png" alt="News Image 2" class="news-image">
+        <p class="news-text">Ayane the new assassin champion from Dead or Alive joins the fight.</p>
+    </div>
+	<div class="news-item">
+        <h3 class="news-title">It's Arctic Hunting Season!</h3>
+		<img src="Loading Screen/Arctic Huntress Nina.png" alt="News Image 2" class="news-image">
+        <p class="news-text">Hunt beats or take down hunters as monsters with the new Arctic Hunting Season skins. New skins for: Nina, Astaroth, Peacock and more... </p>
+    </div>
+    <!-- Add more news items as needed -->
+</div>
 
         <div id="champion-selector">
-            <a href="Julia Page.html"><img src="Icons/Julia.png" alt="Julia" class="champion-image"></a>
-            <a href="Birdie Page.html"><img src="Icons/Birdie.png" alt="Birdie" class="champion-image"></a>
-            <a href="Erronblack Page.html"><img src="Icons/Erron Black.png" alt="Erron Black" class="champion-image"></a>
-            <a href="ChamCham Page.html"><img src="Icons/Cham Cham.png" alt="Cham Cham" class="champion-image"></a>
-            <a href="Morrigan Page.html"><img src="Icons/Morrigan.png" alt="Morrigan" class="champion-image"></a>
-            <a href="Jun Page.html"><img src="Icons/Jun.png" alt="Jun" class="champion-image"></a>
-            <a href="Reptile Page.html"><img src="Icons/Reptile.png" alt="Reptile" class="champion-image"></a>
-            <a href="Akuma Page.html"><img src="Icons/Akuma.png" alt="Akuma" class="champion-image"></a>
-            <a href="Elphelt Page.html"><img src="Icons/Elphelt.png" alt="Elphelt" class="champion-image"></a>
-            <a href="Kotal Kahn Page.html"><img src="Icons/Kotal Kahn.png" alt="Kotal Kahn" class="champion-image"></a>
-            <a href="Scorpion Page.html"><img src="Icons/Scorpion.png" alt="Scorpion" class="champion-image"></a>
-            <a href="Peacock Page.html"><img src="Icons/Peacock.png" alt="Peacock" class="champion-image"></a>
-            <a href="Angel Page.html"><img src="Icons/Angel.png" alt="Angel" class="champion-image"></a>
-            <a href="Astaroth Page.html"><img src="Icons/Astaroth.png" alt="Astaroth" class="champion-image"></a>
-            <a href="Ibuki Page.html"><img src="Icons/Ibuki.png" alt="Ibuki" class="champion-image"></a>
-            <a href="R.Mika Page.html"><img src="Icons/R.Mika.png" alt="R.Mika" class="champion-image"></a>
-            <a href="Raiden Page.html"><img src="Icons/Raiden.png" alt="Raiden" class="champion-image"></a>
-            <a href="Yugo Page.html"><img src="Icons/Yugo.png" alt="Yugo" class="champion-image"></a>
-            <a href="Talim Page.html"><img src="Icons/Talim.png" alt="Talim" class="champion-image"></a>
-            <a href="Noel Page.html"><img src="Icons/Noel.png" alt="Noel" class="champion-image"></a>
-            <a href="Blanka Page.html"><img src="Icons/Blanka.png" alt="Blanka" class="champion-image"></a>
-            <a href="Nina Page.html"><img src="Icons/Nina.png" alt="Nina" class="champion-image"></a>
-            <a href="Ayane Page.html"><img src="Icons/Ayane.png" alt="Ayane" class="champion-image gray"></a>
-            <a href="Siegfried Page.html"><img src="Icons/Siegfried.png" alt="Siegfried" class="champion-image gray"></a>
-            <a href="Shoma Page.html"><img src="Icons/Shoma.png" alt="Shoma" class="champion-image gray"></a>
+            <a href="characters/Julia Page.html"><img src="Icons/Julia.png" alt="Julia" class="champion-image"></a>
+            <a href="characters/Birdie Page.html"><img src="Icons/Birdie.png" alt="Birdie" class="champion-image"></a>
+            <a href="characters/Erronblack Page.html"><img src="Icons/Erron Black.png" alt="Erron Black" class="champion-image"></a>
+            <a href="characters/ChamCham Page.html"><img src="Icons/Cham Cham.png" alt="Cham Cham" class="champion-image"></a>
+            <a href="characters/Morrigan Page.html"><img src="Icons/Morrigan.png" alt="Morrigan" class="champion-image"></a>
+            <a href="characters/Jun Page.html"><img src="Icons/Jun.png" alt="Jun" class="champion-image"></a>
+            <a href="characters/Reptile Page.html"><img src="Icons/Reptile.png" alt="Reptile" class="champion-image"></a>
+            <a href="characters/Akuma Page.html"><img src="Icons/Akuma.png" alt="Akuma" class="champion-image"></a>
+            <a href="characters/Elphelt Page.html"><img src="Icons/Elphelt.png" alt="Elphelt" class="champion-image"></a>
+            <a href="characters/Kotal Kahn Page.html"><img src="Icons/Kotal Kahn.png" alt="Kotal Kahn" class="champion-image"></a>
+            <a href="characters/Scorpion Page.html"><img src="Icons/Scorpion.png" alt="Scorpion" class="champion-image"></a>
+            <a href="characters/Peacock Page.html"><img src="Icons/Peacock.png" alt="Peacock" class="champion-image"></a>
+            <a href="characters/Angel Page.html"><img src="Icons/Angel.png" alt="Angel" class="champion-image"></a>
+            <a href="characters/Astaroth Page.html"><img src="Icons/Astaroth.png" alt="Astaroth" class="champion-image"></a>
+            <a href="characters/Ibuki Page.html"><img src="Icons/Ibuki.png" alt="Ibuki" class="champion-image"></a>
+            <a href="characters/R.Mika Page.html"><img src="Icons/R.Mika.png" alt="R.Mika" class="champion-image"></a>
+            <a href="characters/Raiden Page.html"><img src="Icons/Raiden.png" alt="Raiden" class="champion-image"></a>
+            <a href="characters/Yugo Page.html"><img src="Icons/Yugo.png" alt="Yugo" class="champion-image"></a>
+            <a href="characters/Talim Page.html"><img src="Icons/Talim.png" alt="Talim" class="champion-image"></a>
+            <a href="characters/Noel Page.html"><img src="Icons/Noel.png" alt="Noel" class="champion-image"></a>
+            <a href="characters/Blanka Page.html"><img src="Icons/Blanka.png" alt="Blanka" class="champion-image"></a>
+            <a href="characters/Nina Page.html"><img src="Icons/Nina.png" alt="Nina" class="champion-image"></a>
+            <a href="characters/Ayane Page.html"><img src="Icons/Ayane.png" alt="Ayane" class="champion-image"></a>
+            <a href="characters/Siegfried Page.html"><img src="Icons/Siegfried.png" alt="Siegfried" class="champion-image gray"></a>
+            <a href="characters/Shoma Page.html"><img src="Icons/Shoma.png" alt="Shoma" class="champion-image gray"></a>
         </div>
     </div>
 
@@ -761,12 +840,15 @@
         Quests
     </div>
 <script>
- document.addEventListener('DOMContentLoaded', function () {
-        var video = document.getElementById('video-background');
-        if (video) {
-            video.playbackRate = 0.75; // Set playback speed to 50%
-            video.play(); // Start playing the video
+    function profile() {
+         window.location.href = 'Profile.html';
         }
+	document.addEventListener('DOMContentLoaded', function () {
+			var video = document.getElementById('video-background');
+			if (video) {
+				video.playbackRate = 0.75; // Set playback speed to 50%
+				video.play(); // Start playing the video
+			}
     });
 </script>
 </body>

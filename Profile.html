@@ -2,113 +2,260 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOBA Profile Page</title>
+    <title>Profile Page</title>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
     <style>
-        /* Global Styles */
-        * {
-            box-sizing: border-box;
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #121212;
             margin: 0;
             padding: 0;
-        }
-        body {
-            font-family: Montserrat, sans-serif;
-            background-color: #333333;
-            color: #FFFFFF;
-        }
-        h2, h3 {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        /* Header Section */
-        header {
-            background-color: #03A9F4;
-            padding: 20px;
             display: flex;
+            justify-content: center;
             align-items: center;
-            justify-content: space-between;
-        }
-       .profile-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            height: 100vh;
+            color: #e0e0e0;
             overflow: hidden;
-            margin-right: 20px;
         }
-       .profile-icon img {
+
+        #background-video {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
+            z-index: -1;
         }
-        #username {
-            font-size: 24px;
-            color: #FFFFFF;
-        }
-        /* Skin Selection Area */
-       .skins-container {
-            padding: 40px;
+
+        #profile-page {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        #skin-select {
-            width: 100%;
-            padding: 10px;
-            font-size: 18px;
-            border: none;
+            align-items: center;
+            width: 80%;
+            max-width: 1600px;
+            background-color: rgba(0, 0, 0, 0.8);
             border-radius: 10px;
-            background-color: #FFFFFF;
-            color: #333333;
-            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            flex-direction: column;
         }
-        /* Background Selection Area */
-       .background-container {
-            padding: 40px;
-            background-color: #FF8C00;
+
+        #main-content {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 50px;
+            justify-content: space-between;
+            flex-grow: 1;
+        }
+
+        #left-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 250px;
+            text-align: center;
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px;
             border-radius: 10px;
             margin: 20px;
         }
-        #background-select {
-            width: 100%;
-            padding: 10px;
-            font-size: 18px;
-            border: none;
+
+        #left-container img {
+            border-radius: 50%;
+            border: 5px solid #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 100px;
+            height: 100px;
+        }
+
+        #bottom-mid-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+			margin-right: 20px;
+        }
+
+        .skin-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 1080px;
+        }
+
+        .skin-slot {
+            width: 200px;
+            height: 280px;
+            border: 2px solid #444;
             border-radius: 10px;
-            background-color: #FFFFFF;
-            color: #333333;
+            background-color: #3e3e3e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
+            margin: 10px;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .skin-slot img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+        }
+
+        .skin-slot:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .skin-options {
+            display: none;
+            position: absolute;
+            top: 160px;
+            left: 0;
+            right: 0;
+            background-color: #3e3e3e;
+            border: 1px solid #444;
+            border-radius: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .skin-options img {
+            width: 100%;
+            cursor: pointer;
+            padding: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .background-selection {
+            margin: 20px;
+        }
+        .color-selection {
+            margin: 20px;
+        }
+		.menu {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+
+        .menu:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .menu .menu-items {
+            display: flex;
+        }
+
+        .menu a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+
+        .play-button {
+            margin-right: 20px; /* Adjust as needed */
+            background-color: orange;
+            color: black;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s, color 0.3s;
+            padding: 10px 20px;
+        }
+
+        .play-button:hover {
+            background-color: darkgoldenrod;
+            color: white;
+            transform: scale(1.2);
         }
     </style>
 </head>
 <body>
-    <!-- Header Section -->
-    <header>
-        <div class="profile-icon">
-            <img src="" alt="Profile Icon" id="profile-icon">
+<!-- Menu -->
+    <div class="menu">
+        <div class="menu-items">
+            <a href="home.html">Home</a>
+            <a href="Store.html">Store</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
         </div>
-        <h2 id="username"></h2>
-    </header>
+        <a href="Game Modes.html" class="play-button">Play</a>
+    </div>
+    <video id="background-video" autoplay loop muted></video>
+    <div id="profile-page">
+        <div id="main-content">
+            <div id="left-container">
+                <img id="profile-image" src="" alt="Profile Icon">
+                <h2 id="username-display">Username</h2>
+                <div class="background-selection">
+                    <select id="background-select">
+                        <option value="">Select Background</option>
+                        <option value="Arctic Hunting Event">Arctic Hunting Event</option>
+                        <option value="Blossom Event">Blossom Event</option>
+                        <option value="Cyber City Event">Cyber City Event</option>
+                        <option value="Desert Wars Event">Desert Wars Event</option>
+                        <option value="Dragonlands Event">Dragonlands Event</option>
+                    </select>
+					<div class="color-selection">
+                    <label for="color-picker"></label>
+                    <input type="color" id="color-picker" value="#007bff">
+                </div>
+                </div>
+            </div>
+            <div id="bottom-mid-container">
+                <div class="skin-container">
+                    <div class="skin-slot" data-slot="1">
+                        <img src="" alt="Skin 1">
+                        <div class="skin-options"></div>
+                    </div>
+                    <div class="skin-slot" data-slot="2">
+                        <img src="" alt="Skin 2">
+                        <div class="skin-options"></div>
+                    </div>
+                    <div class="skin-slot" data-slot="3">
+                        <img src="" alt="Skin 3">
+                        <div class="skin-options"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Skin Selection Area -->
-    <section class="skins-container">
-        <h3>Skins</h3>
-        <select id="skin-select">
-            <option value="">Select Skin</option>
-            <!-- skins will be populated dynamically from Firebase database -->
-        </select>
-    </section>
-
-    <!-- Background Selection Area -->
-    <section class="background-container">
-        <h3>Background</h3>
-        <select id="background-select">
-            <option value="">Select Background</option>
-            <!-- backgrounds will be populated dynamically from Firebase database -->
-        </select>
-    </section>
-
-    <script>
+    <script type="module">
         // Initialize Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, set } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
             authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
@@ -119,56 +266,146 @@
             appId: "1:867339299995:web:99c379940014b9c05cea3e",
             measurementId: "G-LNEM6HR842"
         };
-        var app = firebase.initializeApp(config);
 
-        // Get logged in user's data from Firebase Realtime Database
-        var userId = firebase.auth().currentUser.uid;
-        var database = firebase.database();
-        var userDataRef = database.ref('users/' + userId);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
 
-        // Get profile icon and username
-        userDataRef.child('profile/icon').once('value', function(data) {
-            document.getElementById('profile-icon').src = data.val();
+        const userProfile = {
+            username: '',
+            icon: '',
+            skins: {},
+            selectedSkins: {},
+            background: ''
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userRef = ref(database, 'users/' + user.uid);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+                if (userData) {
+                    userProfile.username = userData.username || user.email.split('@')[0];
+                    userProfile.icon = userData.icon || 'default-icon.png';
+                    userProfile.skins = typeof userData.skins === 'object' ? userData.skins : {};
+                    userProfile.selectedSkins = userData.selectedSkins || {};
+                    userProfile.background = userData.background || '';
+					userProfile.profileColor = userData.profileColor || '#007bff';
+
+                    document.getElementById('username-display').textContent = userProfile.username;
+                    document.getElementById('profile-image').src = `Icons/${userProfile.icon}`;
+                    document.getElementById('profile-image').alt = 'Profile Icon';
+
+                    updateSkinSlots();
+                    updateBackgroundSelection();
+					updateProfileColor();
+                } else {
+                    console.log("No user data found");
+                }
+            } else {
+                console.log("User is not authenticated");
+            }
         });
-        userDataRef.child('profile/username').once('value', function(data) {
-            document.getElementById('username').innerText = data.val();
-        });
 
-        // Get skins from Firebase Storage
-        var skinsRef = firebase.storage().ref('skins');
-        skinsRef.listAll().then(function(result) {
-            result.items.forEach(function(item) {
-                var skinName = item.name;
-                var skinOption = document.createElement('option');
-                skinOption.value = skinName;
-                skinOption.text = skinName;
-                document.getElementById('skin-select').appendChild(skinOption);
+        const skinSlots = document.querySelectorAll('.skin-slot');
+        skinSlots.forEach(slot => {
+            slot.addEventListener('click', () => {
+                const options = slot.querySelector('.skin-options');
+                if (options.style.display === 'none' || !options.style.display) {
+                    options.style.display = 'block';
+                    showSkinOptions(slot);
+                } else {
+                    options.style.display = 'none';
+                }
             });
         });
 
-        // Get backgrounds from Firebase Storage
-        var backgroundsRef = firebase.storage().ref('Default Splash');
-        backgroundsRef.listAll().then(function(result) {
-            result.items.forEach(function(item) {
-                var backgroundName = item.name;
-                var backgroundOption = document.createElement('option');
-                backgroundOption.value = backgroundName;
-                backgroundOption.text = backgroundName;
-                document.getElementById('background-select').appendChild(backgroundOption);
+        function showSkinOptions(slot) {
+            const options = slot.querySelector('.skin-options');
+            options.innerHTML = '';
+            Object.keys(userProfile.skins).forEach(skin => {
+                if (userProfile.skins[skin] === 1) { // Check if skin is unlocked
+                    const img = document.createElement('img');
+                    img.src = `Loading Screen/${skin}.png`;
+                    img.alt = skin;
+                    img.addEventListener('click', () => {
+                        setSkin(slot.dataset.slot, skin);
+                        options.style.display = 'none';
+                    });
+                    options.appendChild(img);
+                }
             });
-        });
+        }
 
-        // Save selected skin to Firebase Realtime Database
-        document.getElementById('skin-select').addEventListener('change', function() {
-            var selectedSkin = this.value;
-            userDataRef.child('profile/skin1').set(selectedSkin);
-        });
+        function setSkin(slot, skinName) {
+            userProfile.selectedSkins[slot] = skinName;
+            const skinImage = document.querySelector(`.skin-slot[data-slot="${slot}"] img`);
+            skinImage.src = `Loading Screen/${skinName}.png`;
+            skinImage.alt = skinName;
 
-        // Save selected background to Firebase Realtime Database
-        document.getElementById('background-select').addEventListener('change', function() {
-            var selectedBackground = this.value;
-            userDataRef.child('profile/background').set(selectedBackground);
-        });
+            const userRef = ref(database, 'users/' + auth.currentUser.uid + '/selectedSkins');
+            set(userRef, userProfile.selectedSkins).then(() => {
+                console.log('Skin updated in database');
+            }).catch(error => {
+                console.error('Error updating skin:', error);
+            });
+        }
+
+        function updateSkinSlots() {
+            Object.keys(userProfile.selectedSkins).forEach(slot => {
+                const skinName = userProfile.selectedSkins[slot];
+                const skinImage = document.querySelector(`.skin-slot[data-slot="${slot}"] img`);
+                skinImage.src = `Loading Screen/${skinName}.png`;
+                skinImage.alt = skinName;
+            });
+        }
+
+        function updateBackgroundSelection() {
+            if (userProfile.background) {
+                const video = document.getElementById('background-video');
+                video.src = `Event/${userProfile.background}.mp4`;
+            }
+
+            const backgroundSelect = document.getElementById('background-select');
+            backgroundSelect.addEventListener('change', () => {
+                const selectedBackground = backgroundSelect.value;
+                if (selectedBackground) {
+                    const video = document.getElementById('background-video');
+                    video.src = `Event/${selectedBackground}.mp4`;
+                    userProfile.background = selectedBackground;
+
+                    const userRef = ref(database, 'users/' + auth.currentUser.uid + '/background');
+                    set(userRef, selectedBackground).then(() => {
+                        console.log('Background updated in database');
+                    }).catch(error => {
+                        console.error('Error updating background:', error);
+                    });
+                }
+            });
+
+            if (userProfile.background) {
+                backgroundSelect.value = userProfile.background;
+            }
+        }
+		function updateProfileColor() {
+            const leftContainer = document.getElementById('left-container');
+            leftContainer.style.backgroundColor = userProfile.profileColor;
+
+            const colorPicker = document.getElementById('color-picker');
+            colorPicker.value = userProfile.profileColor;
+            colorPicker.addEventListener('input', () => {
+                const selectedColor = colorPicker.value;
+                leftContainer.style.backgroundColor = selectedColor;
+                userProfile.profileColor = selectedColor;
+
+                const userRef = ref(database, 'users/' + auth.currentUser.uid + '/profileColor');
+                set(userRef, selectedColor).then(() => {
+                    console.log('Profile color updated in database');
+                }).catch(error => {
+                    console.error('Error updating profile color:', error);
+                });
+            });
+        }
     </script>
 </body>
 </html>
