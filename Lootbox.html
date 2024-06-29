@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lootbox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        let userSkins = {};
+        let userFM = 0;
+        let userRef = null;
+
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        userFM = userData.FM || 0;
+                        document.getElementById('fm-amount').textContent = userFM;
+                        document.getElementById('cm-amount').textContent = userData.CM || 0;
+                        userSkins = userData.skins || {};
+                    }
+                } else {
+                    // Redirect to login page
+                    window.location.href = 'index.html';
+                }
+            });
+        };
+
+        function getRandomSkin(skins) {
+            const totalWeight = Object.values(skins).reduce((acc, val) => acc + val, 0);
+            const rand = Math.random() * totalWeight;
+            let sum = 0;
+            for (const [skin, weight] of Object.entries(skins)) {
+                sum += weight;
+                if (rand <= sum) {
+                    return skin;
+                }
+            }
+        }
+
+        window.openLootbox = async function openLootbox() {
+		if (userFM < 1000) {
+			alert("You don't have enough FM to open the lootbox.");
+			return;
+		}
+
+		// Deduct FM
+		userFM -= 1000;
+		await update(userRef, { FM: userFM });
+		document.getElementById('fm-amount').textContent = userFM;
+
+		// Get all possible skins from the lootbox
+		const lootboxRef = ref(database, 'lootbox/basicbox');
+		const lootboxSnapshot = await get(lootboxRef);
+		const lootboxSkins = lootboxSnapshot.val();
+
+		if (!lootboxSkins) {
+			alert("No skins available in the lootbox.");
+			return;
+		}
+
+		// Filter out skins that the user already owns
+		const availableSkins = {};
+		for (const [skin, weight] of Object.entries(lootboxSkins)) {
+			if (!userSkins[skin]) {
+				availableSkins[skin] = weight;
+			}
+		}
+
+		if (Object.keys(availableSkins).length === 0) {
+			alert("You already own all skins available in this lootbox.");
+			return;
+		}
+
+		// Randomly select a skin based on weight
+		const randomSkin = getRandomSkin(availableSkins);
+		userSkins[randomSkin] = 1;
+
+		// Update user's skins in the database
+		await update(userRef, { skins: userSkins });
+
+		// Function to load image from supported formats
+		const loadImage = async (skinName) => {
+			for (let fileType of ['.png', '.jpg', '.jpeg']) {
+				const imageUrl = `Skins/${skinName}${fileType}`;
+				try {
+					const response = await fetch(imageUrl);
+					if (response.ok) {
+						document.getElementById('lootbox-result').src = imageUrl;
+						document.getElementById('lootbox-result').style.display = 'block';
+						return;
+					}
+				} catch (error) {
+					console.error(`Failed to fetch ${imageUrl}: ${error}`);
+				}
+			}
+			console.error(`No valid image found for skin ${skinName}`);
+		};
+
+		// Show animation and reveal the skin
+		document.getElementById('lootbox-animation').style.display = 'block';
+		setTimeout(() => {
+			document.getElementById('lootbox-animation').style.display = 'none';
+			loadImage(randomSkin);
+		}, 400);
+	};
+    </script>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #1b1b1b;
+            color: #eaeaea;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .currency {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .currency span {
+            font-size: 1.2em;
+        }
+        #open-button {
+            padding: 10px 20px;
+            background-color: #ffcc00;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+        #open-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #lootbox-animation {
+            display: none;
+            width: 795px;
+            height: 447px;
+            background: url('res/gif/boom.gif') no-repeat center center;
+            background-size: contain;
+        }
+        #lootbox-result-container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 795px;
+		height: 447px;
+		background-color: black; /* Example background color */
+		border-radius: 10px;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Example box shadow */
+		overflow: hidden; /* Ensures the box doesn't overflow with images */
+	}
+
+	#lootbox-result {
+		width: 100%;
+		height: 100%;
+		object-fit: cover; /* Ensures the image fills the container */
+	}
+		/* Transparent Menu */
+        .menu {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+
+        .menu:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .menu .menu-items {
+            display: flex;
+        }
+
+        .menu a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+	    <!-- Menu -->
+    <div class="menu">
+        <div class="menu-items">
+            <a href="home.html">Home</a>
+            <a href="Store.html">Store</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+        </div>
+        <a href="Game Modes.html" class="play-button">Play</a>
+    </div>
+
+<!-- Image above the button -->
+    <img src="res/img/basicbox.png" alt="Basic Lootbox" style="width: 200px; height: 200px; margin-bottom: 20px;">
+    <div class="currency">
+        <div><img src="res/img/fm.png" alt="FM" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;"><span id="fm-amount">0</span></div>
+        <div><img src="res/img/cm.png" alt="CM" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;"><span id="cm-amount">0</span></div>
+    </div>
+    <button id="open-button" onclick="openLootbox()">Open Lootbox for 1000 FM</button>
+    <div id="lootbox-animation"></div>
+    <div id="lootbox-result-container">
+    <img id="lootbox-result" src="" alt="Lootbox Result">
+</div>
+</body>
+</html>
