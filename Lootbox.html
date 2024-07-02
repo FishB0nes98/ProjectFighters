@@ -29,110 +29,128 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const database = getDatabase(app);
+const auth = getAuth(app);
+const database = getDatabase(app);
 
-        let userSkins = {};
-        let userFM = 0;
-        let userRef = null;
+let userSkins = {};
+let userFM = 0;
+let userBasicbox = 0;
+let userRef = null;
 
-        window.onload = function() {
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    userRef = ref(database, 'users/' + user.uid);
-                    const snapshot = await get(userRef);
-                    const userData = snapshot.val();
-                    if (userData) {
-                        userFM = userData.FM || 0;
-                        document.getElementById('fm-amount').textContent = userFM;
-                        document.getElementById('cm-amount').textContent = userData.CM || 0;
-                        userSkins = userData.skins || {};
-                    }
-                } else {
-                    // Redirect to login page
-                    window.location.href = 'index.html';
+window.onload = function() {
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            userRef = ref(database, 'users/' + user.uid);
+            const snapshot = await get(userRef);
+            const userData = snapshot.val();
+            if (userData) {
+                userFM = userData.FM || 0;
+                userBasicbox = (userData.freelootbox && userData.freelootbox.basicbox) || 0;
+                document.getElementById('fm-amount').textContent = userFM;
+                document.getElementById('cm-amount').textContent = userData.CM || 0;
+                document.getElementById('free-lootbox-count').textContent = userBasicbox;
+                userSkins = userData.skins || {};
+                updateLootboxButton();
+            }
+        } else {
+            window.location.href = 'index.html';
+        }
+    });
+};
+
+function updateLootboxButton() {
+    const openButton = document.getElementById('open-button');
+    if (userBasicbox > 0) {
+        openButton.textContent = 'Open Lootbox for FREE';
+    } else {
+        openButton.textContent = 'Open Lootbox for 1000 FM';
+    }
+}
+
+function getRandomSkin(skins) {
+    const totalWeight = Object.values(skins).reduce((acc, val) => acc + val, 0);
+    const rand = Math.random() * totalWeight;
+    let sum = 0;
+    for (const [skin, weight] of Object.entries(skins)) {
+        sum += weight;
+        if (rand <= sum) {
+            return skin;
+        }
+    }
+}
+
+window.openLootbox = async function openLootbox() {
+    if (userBasicbox > 0) {
+        // Open for free
+        userBasicbox -= 1;
+        await update(userRef, { 'freelootbox/basicbox': userBasicbox });
+        document.getElementById('free-lootbox-count').textContent = userBasicbox;
+    } else {
+        if (userFM < 1000) {
+            alert("You don't have enough FM to open the lootbox.");
+            return;
+        }
+        // Deduct FM
+        userFM -= 1000;
+        await update(userRef, { FM: userFM });
+        document.getElementById('fm-amount').textContent = userFM;
+    }
+
+    // Get all possible skins from the lootbox
+    const lootboxRef = ref(database, 'lootbox/basicbox');
+    const lootboxSnapshot = await get(lootboxRef);
+    const lootboxSkins = lootboxSnapshot.val();
+
+    if (!lootboxSkins) {
+        alert("No skins available in the lootbox.");
+        return;
+    }
+
+    // Filter out skins that the user already owns
+    const availableSkins = {};
+    for (const [skin, weight] of Object.entries(lootboxSkins)) {
+        if (!userSkins[skin]) {
+            availableSkins[skin] = weight;
+        }
+    }
+
+    if (Object.keys(availableSkins).length === 0) {
+        alert("You already own all skins available in this lootbox.");
+        return;
+    }
+
+    // Randomly select a skin based on weight
+    const randomSkin = getRandomSkin(availableSkins);
+    userSkins[randomSkin] = 1;
+
+    // Update user's skins in the database
+    await update(userRef, { skins: userSkins });
+
+    // Function to load image from supported formats
+    const loadImage = async (skinName) => {
+        for (let fileType of ['.png', '.jpg', '.jpeg']) {
+            const imageUrl = `Skins/${skinName}${fileType}`;
+            try {
+                const response = await fetch(imageUrl);
+                if (response.ok) {
+                    document.getElementById('lootbox-result').src = imageUrl;
+                    document.getElementById('lootbox-result').style.display = 'block';
+                    return;
                 }
-            });
-        };
-
-        function getRandomSkin(skins) {
-            const totalWeight = Object.values(skins).reduce((acc, val) => acc + val, 0);
-            const rand = Math.random() * totalWeight;
-            let sum = 0;
-            for (const [skin, weight] of Object.entries(skins)) {
-                sum += weight;
-                if (rand <= sum) {
-                    return skin;
-                }
+            } catch (error) {
+                console.error(`Failed to fetch ${imageUrl}: ${error}`);
             }
         }
+        console.error(`No valid image found for skin ${skinName}`);
+    };
 
-        window.openLootbox = async function openLootbox() {
-		if (userFM < 1000) {
-			alert("You don't have enough FM to open the lootbox.");
-			return;
-		}
-
-		// Deduct FM
-		userFM -= 1000;
-		await update(userRef, { FM: userFM });
-		document.getElementById('fm-amount').textContent = userFM;
-
-		// Get all possible skins from the lootbox
-		const lootboxRef = ref(database, 'lootbox/basicbox');
-		const lootboxSnapshot = await get(lootboxRef);
-		const lootboxSkins = lootboxSnapshot.val();
-
-		if (!lootboxSkins) {
-			alert("No skins available in the lootbox.");
-			return;
-		}
-
-		// Filter out skins that the user already owns
-		const availableSkins = {};
-		for (const [skin, weight] of Object.entries(lootboxSkins)) {
-			if (!userSkins[skin]) {
-				availableSkins[skin] = weight;
-			}
-		}
-
-		if (Object.keys(availableSkins).length === 0) {
-			alert("You already own all skins available in this lootbox.");
-			return;
-		}
-
-		// Randomly select a skin based on weight
-		const randomSkin = getRandomSkin(availableSkins);
-		userSkins[randomSkin] = 1;
-
-		// Update user's skins in the database
-		await update(userRef, { skins: userSkins });
-
-		// Function to load image from supported formats
-		const loadImage = async (skinName) => {
-			for (let fileType of ['.png', '.jpg', '.jpeg']) {
-				const imageUrl = `Skins/${skinName}${fileType}`;
-				try {
-					const response = await fetch(imageUrl);
-					if (response.ok) {
-						document.getElementById('lootbox-result').src = imageUrl;
-						document.getElementById('lootbox-result').style.display = 'block';
-						return;
-					}
-				} catch (error) {
-					console.error(`Failed to fetch ${imageUrl}: ${error}`);
-				}
-			}
-			console.error(`No valid image found for skin ${skinName}`);
-		};
-
-		// Show animation and reveal the skin
-		document.getElementById('lootbox-animation').style.display = 'block';
-		setTimeout(() => {
-			document.getElementById('lootbox-animation').style.display = 'none';
-			loadImage(randomSkin);
-		}, 400);
-	};
+    // Show animation and reveal the skin
+    document.getElementById('lootbox-animation').style.display = 'block';
+    setTimeout(() => {
+        document.getElementById('lootbox-animation').style.display = 'none';
+        loadImage(randomSkin);
+    }, 400);
+};
     </script>
     <style>
         body {
@@ -228,26 +246,52 @@
             background-color: #111;
             transform: scale(1.1);
         }
+		.battlepass-button {
+			background-color: #1E90FF; /* Gold background */
+			color: #000; /* Black text */
+			border-radius: 25px; /* Rounded corners */
+			font-size: 12px;
+			text-transform: uppercase; /* Uppercase text */
+			margin-right: 300px;
+		}
+
+		.battlepass-button::before {
+			content: "☀️ "; /* Sun emoji */
+			margin-right: 5px;
+		}
     </style>
 </head>
 <body>
-	    <!-- Menu -->
+    <!-- Menu -->
     <div class="menu">
         <div class="menu-items">
             <a href="home.html">Home</a>
             <a href="Store.html">Store</a>
             <a href="event.html">Event</a>
             <a href="Team Builder.html">Team Builder</a>
-        </div>
+			</div>
+			<div>
+			<a href="battlepass.html" class="battlepass-button">Battlepass</a>
+			</div>
+		<div>
         <a href="Game Modes.html" class="play-button">Play</a>
     </div>
-
+</div>
 <!-- Image above the button -->
-    <img src="res/img/basicbox.png" alt="Basic Lootbox" style="width: 200px; height: 200px; margin-bottom: 20px;">
-    <div class="currency">
-        <div><img src="res/img/fm.png" alt="FM" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;"><span id="fm-amount">0</span></div>
-        <div><img src="res/img/cm.png" alt="CM" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;"><span id="cm-amount">0</span></div>
-    </div>
+		<img src="res/img/basicbox.png" alt="Basic Lootbox" style="width: 200px; height: 200px; margin-bottom: 20px;">
+		<div class="currency">
+		<div>
+			<img src="res/img/fm.png" alt="FM" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">
+			<span id="fm-amount">0</span>
+		</div>
+		<div>
+			<img src="res/img/cm.png" alt="CM" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">
+			<span id="cm-amount">0</span>
+		</div>
+		<div>
+			<span id="free-lootbox-count">0</span> Free Lootbox(es)
+		</div>
+	</div>
     <button id="open-button" onclick="openLootbox()">Open Lootbox for 1000 FM</button>
     <div id="lootbox-animation"></div>
     <div id="lootbox-result-container">

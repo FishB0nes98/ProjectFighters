@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shoma - The Baseballer Boy</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@400;700&family=Raleway:wght@400;600&display=swap');
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            background: linear-gradient(135deg, #1e1e1e 30%, #282828 100%);
+            color: #e1e1e1;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: rgba(34, 34, 34, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
+
+        .champion-image {
+            display: block;
+            margin: 0 auto 20px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid #444;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3em;
+            color: #ff6347;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2em;
+            color: #ffa07a;
+            margin-top: 40px;
+        }
+
+        h3, h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5em;
+            color: #ffa07a;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+
+        ul li {
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+
+        .stat, .mana, .cd {
+            font-weight: bold;
+        }
+
+        .stat span, .mana span, .cd span {
+            font-size: 1.2em;
+        }
+
+        .red { color: #ff4500; }
+        .blue { color: #00bfff; }
+        .green { color: #32cd32; }
+        .light-blue { color: #87cefa; }
+        .grey { color: #a9a9a9; }
+        .orange { color: #ffa500; }
+        .purple { color: #800080; }
+
+        p, ul {
+            margin: 10px 20px;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .abilities, .talents, .changes {
+            margin-top: 40px;
+        }
+
+        audio {
+            display: none;
+        }
+    </style>
+    <script>
+        window.onload = function() {
+            var audio = new Audio('Voices/ShomaPick.mp3');
+            audio.volume = 0.3;
+            audio.play();
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <img src="Icons/Shoma.png" alt="Shoma" class="champion-image">
+        <h1>Shoma - The Baseballer Boy</h1>
+        <h2>Stats</h2>
+        <ul>
+            <li class="stat"><span class="red">Attack Damage (AD):</span> 62 (+5.45/lvl) <span class="green">-></span> 193</li>
+            <li class="stat"><span class="green">Health (HP):</span> 611 (+210/lvl) <span class="green">-></span> 5651</li>
+            <li class="stat"><span class="light-blue">Mana:</span> 379 (+61/lvl) <span class="green">-></span> 1843</li>
+            <li class="stat"><span class="grey">Movement Speed (MS):</span> 336 (+4/lvl) <span class="green">-></span> 432</li>
+            <li class="stat"><span class="orange">Attack Speed (AS):</span> 0.67 (+0.029/lvl) <span class="green">-></span> 1.37</li>
+        </ul>
+        <div class="abilities">
+            <h2>Abilities</h2>
+            <h3>Passive: Home Run Points</h3>
+            <p>Shoma can purchase different balls at the base, which he receives as items. Balls are bought with "Home Run" points. Hitting an enemy or ally grants (1) Home Run point. A kill grants (5) Home Run points. Each ball costs 10 Home Run points.</p>
+            <h4>Basic Ball:</h4>
+            <p>Always present in Shoma's inventory.</p>
+            <p>Hitting an ally: +[200/355/500/720/890] shield for [2s]</p>
+            <p>Hitting an enemy: [1s] stun</p>
+            <p>Ball Holder: [+20%] MS</p>
+            <h4>Fire Ball:</h4>
+            <p>Hitting an ally: The next [3] basic attacks deal +[75%AD] damage over [1.5s]</p>
+            <p>Hitting an enemy: Bonus [105/200/320/440/510] magic damage</p>
+            <p>Ball Holder: Increases basic attack damage by [20%]</p>
+            <h4>Grass Ball:</h4>
+            <p>Hitting an ally: Instantly heals [20%] MAXHP</p>
+            <p>Hitting an enemy: [2s] root</p>
+            <p>Ball Holder: [7%] Lifesteal</p>
+            <h4>Heavy Ball:</h4>
+            <p>Hitting an ally: [9%] damage reduction from all sources for [3s]</p>
+            <p>Hitting an enemy: [75%] slow for [2s]</p>
+            <p>Ball Holder: All CC duration is reduced by half</p>
+            <h4>Cloud Ball:</h4>
+            <p>Hitting an ally: [+80%] MS for [1s]</p>
+            <p>Hitting an enemy: AOE magic damage to the hit enemy and surrounding area [100/200/300/400/500]</p>
+            <p>Ball Holder: Gain [+80%] movement speed on basic attack for [1s] [10s cd]</p>
+            <h3>Q: Boink!</h3>
+            <p class="mana"><span class="light-blue">[50 Mana]</span> <span class="cd purple">[8/8/7/7/6s cooldown]</span></p>
+            <p>Autoattack reset. The next basic attack stuns the enemy for [1.5s].</p>
+            <h3>W: Catch!</h3>
+            <p class="mana"><span class="light-blue">[85 Mana]</span> <span class="cd purple">[11s cooldown]</span></p>
+            <p>Upon activation, Shoma can block incoming skillshots and ranged basic attacks for [3s].</p>
+            <h3>E: Swing</h3>
+            <p class="mana"><span class="light-blue">[20 Mana]</span> <span class="cd purple">[10/9/8/7/6s cooldown]</span></p>
+            <p>Shoma swings his bat in front of him, dealing [200% AD] damage to nearby enemies. If he hits a ball, it gets launched in the cursor's direction, dealing an additional [90/170/255/400/495] damage along with its effect. Hitting a teammate with a ball reduces the cooldown of this ability to [2s].</p>
+            <h3>R: Home Run</h3>
+            <p class="mana"><span class="light-blue">[100 Mana]</span> <span class="cd purple">[100s cooldown/charge] [3s cooldown between activations] [5 charges]</span></p>
+            <p>Shoma gains [+100%] bonus movement speed for [1.25s]. During this time, he cannot be slowed. He also gains bonus [40/50/80] AD while the ability is active.</p>
+        </div>
+        <div class="talents">
+            <h2>Talents</h2>
+            <h3>Level 1</h3>
+            <ul>
+                <li>a. MVP: Each Home Run point now also increases Shoma's damage by 1% and his health by 2% per point.</li>
+                <li>b. Perfect Pitch: Shoma's basic attacks and abilities deal 30% more damage to stunned or rooted enemies.</li>
+                <li>c. Base Runner: Shoma gains [20]% increased mana and hp regeneration, which increases to [35%] at level 10.</li>
+            </ul>
+            <h3>Level 5</h3>
+            <ul>
+                <li>a. Team Captain: When Shoma hits an ally with a ball, the ally gains [0.4] bonus attack speed and [10%] movement speed for [2] seconds.</li>
+                <li>b. Cheering Squad: Whenever Shoma Catches a skillshot, all teammates who own any ball heals [5%] of their MAXHP back if Shoma is close to them.</li>
+                <li>c. Healing Balls: Shoma’s balls grant [3%] MAXHP regen/1s for each ball they own [max 5] out of fight.</li>
+            </ul>
+            <h3>Level 10</h3>
+            <ul>
+                <li>a. R ability cooldown reduced to [50s]/charge</li>
+                <li>b. Safe Base: Shoma's "Home Run" ability grants [30%] damage reduction while active.</li>
+            </ul>
+            <h3>Level 15</h3>
+            <ul>
+                <li>a. Field Support: Hitting an ally with a ball reduces the cooldown of all Shoma’s abilities by [1] seconds.</li>
+                <li>b. Crowd Favorite: Each time Shoma gains a Home Run point, he also gains [0.3] increased attack speed for [5] seconds, stacking up to maximum of 5 times.</li>
+                <li>c. Ultimate Swing: Shoma now gains double the balls’ holder effects.</li>
+            </ul>
+            <h3>Level 20</h3>
+            <ul>
+                <li>a. All-Star Performance: Using "Home Run" reduces the cooldown of all of Shoma's abilities by [1s] seconds.</li>
+                <li>b. Unbreakable Will: Shoma is immune to CC while using W or R for the duration</li>
+                <li>c. Home Run Hero: Hitting an enemy with a ball grants Shoma 35% of his max HP as a shield for [3] seconds. Can stack</li>
+                <li>d. The Winning Team: Every teammate near Shoma gains [8%] damage reduction. Every enemy near Shoma takes [8%] more damage.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

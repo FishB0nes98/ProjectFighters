@@ -197,6 +197,19 @@
             color: white;
             transform: scale(1.2);
         }
+		.battlepass-button {
+			background-color: #1E90FF; /* Gold background */
+			color: #000; /* Black text */
+			border-radius: 25px; /* Rounded corners */
+			font-size: 12px;
+			text-transform: uppercase; /* Uppercase text */
+			margin-right: 300px;
+		}
+
+		.battlepass-button::before {
+			content: "☀️ "; /* Sun emoji */
+			margin-right: 5px;
+		}
     </style>
 </head>
 <body>
@@ -207,9 +220,14 @@
             <a href="Store.html">Store</a>
             <a href="event.html">Event</a>
             <a href="Team Builder.html">Team Builder</a>
-        </div>
+			</div>
+			<div>
+			<a href="battlepass.html" class="battlepass-button">Battlepass</a>
+			</div>
+		<div>
         <a href="Game Modes.html" class="play-button">Play</a>
     </div>
+</div>
     <video id="background-video" autoplay loop muted></video>
     <div id="profile-page">
         <div id="main-content">
@@ -225,6 +243,7 @@
                         <option value="Desert Wars Event">Desert Wars Event</option>
                         <option value="Dragonlands Event">Dragonlands Event</option>
 						<option value="MOVE Event">MOVE Event</option>
+						<option value="MOVE Event">Summer Event</option>
                     </select>
 					<div class="color-selection">
                     <label for="color-picker"></label>
@@ -294,7 +313,14 @@
 					userProfile.profileColor = userData.profileColor || '#007bff';
 
                     document.getElementById('username-display').textContent = userProfile.username;
-                    document.getElementById('profile-image').src = `Icons/${userProfile.icon}`;
+                    // Check if userProfile.icon exists
+					if (userProfile.icon) {
+						// Use Icons/Profile/ folder
+						document.getElementById('profile-image').src = `Icons/Profile/${userProfile.icon}`;
+					} else {
+						// Use Icons/ folder
+						document.getElementById('profile-image').src = `Icons/${userProfile.icon}`;
+					}
                     document.getElementById('profile-image').alt = 'Profile Icon';
 
                     updateSkinSlots();

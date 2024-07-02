@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Loading Screen</title>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+	    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    console.log("User is logged in:", user.uid);
+                    const userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        window.userRef = userRef;
+
+                        if (userData.skins) {
+                            populateSkinDropdowns(userData.skins);
+                        } else {
+                            console.log("No skins available.");
+                        }
+                    }
+                } else {
+                    console.log("User is not logged in.");
+                }
+            });
+        };
+
+        function populateSkinDropdowns(skins) {
+            const dropdowns = document.querySelectorAll('.skin-dropdown');
+            dropdowns.forEach(dropdown => {
+                dropdown.innerHTML = '<option value="">Select a skin</option>'; // Clear any existing options and add a placeholder
+                for (const skin in skins) {
+                    if (skins[skin] === 1) {
+                        const option = document.createElement('option');
+                        option.value = skin;
+                        option.text = skin;
+                        dropdown.appendChild(option);
+                    }
+                }
+
+                dropdown.addEventListener('change', function() {
+                    const selectedSkin = this.value;
+                    const playerSlot = this.closest('.player-slot');
+                    const img = playerSlot.querySelector('img');
+                    const skinNameDiv = playerSlot.querySelector('.skin-name');
+
+                    if (selectedSkin) {
+                        loadImage(img, 'Loading Screen/' + selectedSkin);
+                        skinNameDiv.textContent = this.options[this.selectedIndex].text;
+                        skinNameDiv.style.display = 'block';
+                        this.style.display = 'none'; // Hide the dropdown
+                    } else {
+                        img.src = '';
+                        skinNameDiv.textContent = '';
+                        skinNameDiv.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        function loadImage(imgElement, basePath) {
+            const extensions = ['.png', '.jpeg', '.jpg'];
+            let found = false;
+            for (const ext of extensions) {
+                const img = new Image();
+                img.src = basePath + ext;
+                img.onload = () => {
+                    if (!found) {
+                        imgElement.src = img.src;
+                        found = true;
+                    }
+                };
+                img.onerror = () => {
+                    if (!found) {
+                        imgElement.src = ''; // Clear src if not found
+                    }
+                };
+            }
+        }
+    </script>
+	<script src="chatbot.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .menu {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #444;
+            overflow: hidden;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .menu .menu-items {
+            display: flex;
+        }
+        .menu a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+        .play-button {
+            background-color: orange;
+            color: black;
+            border-radius: 20px;
+            padding: 14px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s, color 0.3s;
+            margin-right: 20px;
+        }
+        .play-button:hover {
+            background-color: darkgoldenrod;
+            color: white;
+            transform: scale(1.2);
+        }
+        #loading-screen-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 1600px;
+        }
+        .team-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 50%;
+            margin: 10px 0;
+        }
+        .player-slot {
+            width: 250px;
+            height: 375px;
+            margin: 10px;
+            background-color: #222;
+            border: 2px solid #444;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .player-slot img {
+            width: 100%;
+            height: auto;
+        }
+        .skin-dropdown {
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+        }
+        .skin-name {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px black;
+            padding: 5px 0;
+            display: none;
+        }
+        #vs-text {
+            color: red;
+            font-size: 25px;
+            font-weight: bold;
+            margin: 0 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: rgba(34, 34, 34, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3em;
+            color: #ff6347;
+            margin-bottom: 20px;
+        }
+        .chatbox {
+            border: 2px solid #444;
+            border-radius: 10px;
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+            background: rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+        .input-group {
+            display: flex;
+            justify-content: center;
+        }
+        #userInput {
+            width: 70%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #444;
+            margin-right: 10px;
+        }
+        #sendButton {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 1px solid #444;
+            background-color: #ff6347;
+            color: white;
+            cursor: pointer;
+        }
+        #sendButton:hover {
+            background-color: #ff4500;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu">
+        <div class="menu-items">
+            <a href="home.html">Home</a>
+            <a href="Store.html">Store</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+        </div>
+        <a href="Game Modes.html" class="play-button">Play</a>
+    </div>
+    <div id="loading-screen-container">
+        <div class="team-container" id="team1">
+            <div class="player-slot" id="team1-player1">
+                <img id="team1-player1-img" src="" alt="">
+                <div class="skin-name" id="team1-player1-skin-name"></div>
+                <select class="skin-dropdown" id="team1-player1-dropdown">
+                    <option value="">Select a skin</option>
+                </select>
+            </div>
+        </div>
+        <div id="vs-text">VS</div>
+        <div class="team-container" id="team2">
+            <div class="player-slot" id="team2-player1">
+                <img id="team2-player1-img" src="" alt="">
+                <div class="skin-name" id="team2-player1-skin-name"></div>
+                <select class="skin-dropdown" id="team2-player1-dropdown">
+                    <option value="">Select a skin</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>Champion Match Simulation</h1>
+        <div id="chatbox" class="chatbox"></div>
+        <div class="input-group">
+            <input type="text" id="userInput" placeholder="Type your message here">
+            <button id="sendButton" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+</body>
+</html>

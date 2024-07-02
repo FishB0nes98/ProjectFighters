@@ -1,9 +1,6 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Loading Screen</title>
-	<head>
     <meta charset="UTF-8">
     <title>Loading Screen</title>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
@@ -17,7 +14,7 @@
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
-        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { getDatabase, ref, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
@@ -34,6 +31,89 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
+        const skinToBaseCharacterMap = {
+            'Akuma': 'Akuma',
+            'Angel': 'Angel',
+            'Arctic Beast Yugo': 'Yugo',
+            'Arctic Hunter Erron Black': 'Erron Black',
+            'Arctic Huntress Nina': 'Nina',
+            'Arctic Huntress Noel': 'Noel',
+            'Arctic Huntress Peacock': 'Peacock',
+            'Arctic Monster Astaroth': 'Astaroth',
+            'Astaroth': 'Astaroth',
+            'Ayane': 'Ayane',
+            'Birdie': 'Birdie',
+            'Blanka': 'Blanka',
+            'Blood Predator Reptile': 'Reptile',
+            'Blossom Angel': 'Angel',
+            'Blossom Cham Cham': 'Cham Cham',
+            'Blossom Jun': 'Jun',
+            'Blossom Scorpion': 'Scorpion',
+            'Cham Cham': 'Cham Cham',
+            'Country Erron Black': 'Erron Black',
+            'Cyber Bomber Peacock': 'Peacock',
+            'Cyber Hunter Elphelt': 'Elphelt',
+            'Cyber Ninja Reptile': 'Reptile',
+            'Cyber Ninja Ibuki': 'Ibuki',
+            'Cyber Predator Yugo': 'Yugo',
+            'Cyber Predator Reptile': 'Reptile',
+            'Cyber Warrior Kotal Kahn': 'Kotal Kahn',
+            'Demon Hunter Ibuki': 'Ibuki',
+            'Demon Lord Kotal Kahn': 'Kotal Kahn',
+            'Disco Queen Julia': 'Julia',
+            'DJ Ibuki': 'Ibuki',
+            'Dragon Tamer Julia': 'Julia',
+            'Dragon Tamer Jun': 'Jun',
+            'Dragon Tamer Morrigan': 'Morrigan',
+            'Dragon Tamer Raiden': 'Raiden',
+            'Elphelt': 'Elphelt',
+            'Enraged Blanka': 'Blanka',
+            'Erron Black': 'Erron Black',
+            'Farmer Nina': 'Nina',
+            'Ibuki': 'Ibuki',
+            'Julia': 'Julia',
+            'Jun': 'Jun',
+            'Kotal Kahn': 'Kotal Kahn',
+            'Mafia Leader Erron Black': 'Erron Black',
+            'Maid Elphelt': 'Elphelt',
+            'Master of Monks Raiden': 'Raiden',
+            'Morrigan': 'Morrigan',
+            'Neon Morrigan': 'Morrigan',
+            'Nina': 'Nina',
+            'Noel': 'Noel',
+            'Obsidian Wraith Ayane': 'Ayane',
+            'Officer Noel': 'Noel',
+            'Peacock': 'Peacock',
+            'Phoenix R Mika': 'R Mika',
+            'Pop Star R Mika': 'R Mika',
+            'Professional Athlete Ibuki': 'Ibuki',
+            'Professional Weightlifter Birdie': 'Birdie',
+            'Professional Baller Blanka': 'Blanka',
+            'Professional Footballer Siegfried': 'Siegfried',
+            'Professional Tennis Player R Mika': 'R Mika',
+            'R Mika': 'R Mika',
+            'Raiden': 'Raiden',
+            'Red Stone Ibuki': 'Ibuki',
+            'Reptile': 'Reptile',
+            'River Spirit Julia': 'Julia',
+            'Rockstar Akuma': 'Akuma',
+            'Rockstar Birdie': 'Birdie',
+            'Royal Guard Astaroth': 'Astaroth',
+            'Sand Soldier Astaroth': 'Astaroth',
+            'Sand Soldier Birdie': 'Birdie',
+            'Sand Soldier Reptile': 'Reptile',
+            'Sand Soldier Talim': 'Talim',
+            'Scorpion': 'Scorpion',
+            'Siegfried': 'Siegfried',
+            'Spider Scorpion': 'Scorpion',
+            'Street Fighter Hugo': 'Hugo',
+            'Talim': 'Talim',
+            'Thunder God Akuma': 'Akuma',
+            'Vampire Talim': 'Talim',
+            'Voidborn Angel': 'Angel',
+            'Yugo': 'Yugo'
+        };
+
         window.onload = function() {
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
@@ -49,6 +129,8 @@
                         } else {
                             console.log("No skins available.");
                         }
+                    } else {
+                        console.log("User data not found in database.");
                     }
                 } else {
                     console.log("User is not logged in.");
@@ -85,6 +167,8 @@
                         skinNameDiv.textContent = '';
                         skinNameDiv.style.display = 'none';
                     }
+
+                    checkAllSkinsSelected();
                 });
             });
         }
@@ -108,7 +192,120 @@
                 };
             }
         }
- </script>
+
+        function checkAllSkinsSelected() {
+            const dropdowns = document.querySelectorAll('.skin-dropdown');
+            let allSelected = true;
+            dropdowns.forEach(dropdown => {
+                if (dropdown.value === "") {
+                    allSelected = false;
+                }
+            });
+
+            if (allSelected) {
+                document.getElementById('decide-game-container').style.display = 'block';
+            } else {
+                document.getElementById('decide-game-container').style.display = 'none';
+            }
+        }
+
+        document.getElementById('decide-game-button').addEventListener('click', async function() {
+            this.disabled = true; // Disable the button after it's clicked
+            const team1 = [];
+            const team2 = [];
+
+            for (let i = 1; i <= 5; i++) {
+                const team1Skin = document.getElementById(`team1-player${i}-dropdown`).value;
+                const team2Skin = document.getElementById(`team2-player${i}-dropdown`).value;
+                if (team1Skin) team1.push(team1Skin);
+                if (team2Skin) team2.push(team2Skin);
+            }
+
+            // Determine the winning team (for example, randomly)
+            const winner = Math.random() < 0.5 ? 'team1' : 'team2';
+            const loser = winner === 'team1' ? 'team2' : 'team1';
+
+            await updateDatabase(team1, team2, winner);
+            await rewardPlayer(); // Call the rewardPlayer function here
+            displayResult(winner, loser);
+        });
+
+        function displayResult(winner, loser) {
+            const resultContainer = document.getElementById('result-container');
+            resultContainer.textContent = `The winning team is ${winner.toUpperCase()} and the losing team is ${loser.toUpperCase()}`;
+            resultContainer.style.display = 'block';
+        }
+
+        async function updateDatabase(team1, team2, winner) {
+            const updates = {};
+            const userId = auth.currentUser.uid;
+
+            for (const skin of team1) {
+                const baseCharacter = skinToBaseCharacterMap[skin] || skin;
+                const characterRef = ref(database, `characters/${baseCharacter}`);
+                const userCharacterRef = ref(database, `users/${userId}/characters/${baseCharacter}`);
+
+                const charSnapshot = await get(characterRef);
+                const userCharSnapshot = await get(userCharacterRef);
+
+                const charData = charSnapshot.val() || { win: 0, lose: 0 };
+                const userCharData = userCharSnapshot.val() || { win: 0, lose: 0 };
+
+                if (winner === 'team1') {
+                    charData.win += 1;
+                    userCharData.win += 1;
+                } else {
+                    charData.lose += 1;
+                    userCharData.lose += 1;
+                }
+
+                updates[`characters/${baseCharacter}`] = charData;
+                updates[`users/${userId}/characters/${baseCharacter}`] = userCharData;
+            }
+
+            for (const skin of team2) {
+                const baseCharacter = skinToBaseCharacterMap[skin] || skin;
+                const characterRef = ref(database, `characters/${baseCharacter}`);
+                const userCharacterRef = ref(database, `users/${userId}/characters/${baseCharacter}`);
+
+                const charSnapshot = await get(characterRef);
+
+                const charData = charSnapshot.val() || { win: 0, lose: 0 };
+
+                if (winner === 'team2') {
+                    charData.win += 1;
+                } else {
+                    charData.lose += 1;
+                }
+
+                updates[`characters/${baseCharacter}`] = charData;
+            }
+
+            await update(ref(database), updates);
+        }
+
+        async function rewardPlayer() {
+            const userId = auth.currentUser.uid;
+            const userRef = ref(database, `users/${userId}`);
+            const snapshot = await get(userRef);
+            const userData = snapshot.val();
+            
+            if (userData) {
+                const exp = userData.BattlePassExp || 0;
+                const reward = Math.floor(Math.random() * 16) + 30; // Random number between 30 and 45
+                const newExp = exp + reward;
+
+                console.log('Current Exp:', exp);
+                console.log('Reward:', reward);
+                console.log('New Exp:', newExp);
+
+                await update(userRef, { BattlePassExp: newExp });
+                console.log('BattlePassExp updated successfully.');
+            } else {
+                console.log('User data not found.');
+            }
+        }
+    </script>
     <style>
         body {
             margin: 0;
@@ -217,18 +414,44 @@
             font-weight: bold;
             margin: 20px 0;
         }
+		#decide-game-container {
+            margin-top: 20px;
+        }
+        #result-container {
+            margin-top: 20px;
+            display: none;
+        }
+		.battlepass-button {
+			background-color: #1E90FF; /* Gold background */
+			color: #000; /* Black text */
+			border-radius: 25px; /* Rounded corners */
+			font-size: 12px;
+			text-transform: uppercase; /* Uppercase text */
+			margin-right: 300px;
+		}
+
+		.battlepass-button::before {
+			content: "☀️ "; /* Sun emoji */
+			margin-right: 5px;
+		}
     </style>
 </head>
 <body>
+    <!-- Menu -->
     <div class="menu">
         <div class="menu-items">
             <a href="home.html">Home</a>
             <a href="Store.html">Store</a>
             <a href="event.html">Event</a>
             <a href="Team Builder.html">Team Builder</a>
-        </div>
+			</div>
+			<div>
+			<a href="battlepass.html" class="battlepass-button">Battlepass</a>
+			</div>
+		<div>
         <a href="Game Modes.html" class="play-button">Play</a>
     </div>
+</div>
 <div id="loading-screen-container">
     <div class="team-container" id="team1">
         <div class="player-slot" id="team1-player1">
@@ -308,5 +531,9 @@
         </div>
     </div>
 </div>
+<div id="decide-game-container" style="display: none;">
+    <button id="decide-game-button">Decide Game</button>
+</div>
+<div id="result-container"></div>
 </body>
 </html>

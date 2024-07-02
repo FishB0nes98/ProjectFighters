@@ -43,7 +43,7 @@
         // Initialize Firebase
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
-        import { getDatabase, ref, get, set } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+		import { getDatabase, ref, push, set, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
@@ -59,117 +59,8 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
-		
-		window.onload = function() {
-            const userId = "user-id"; // Replace with actual user id
-            const userRef = database.ref('users/' + userId);
 
-            userRef.once('value').then((snapshot) => {
-                const userData = snapshot.val();
-                if (!userData || !userData.skins || !userData.skins.includes('Julia')) {
-                    document.getElementById('unlockButton').style.display = 'block';
-                }
-            });
-        };
-
-        function unlockSkins() {
-            const userId = "user-id"; // Replace with actual user id
-            const userRef = database.ref('users/' + userId + '/skins');
-            const newSkins = [
-                "Akuma", "Angel", "Astaroth", "Birdie", "Blanka", "Cham Cham", 
-                "Elphelt", "Erron Black", "Ibuki", "Julia", "Jun", "Kotal Kahn", 
-                "Morrigan", "Nina", "Noel", "Peacock", "R.Mika", "Raiden", 
-                "Reptile", "Scorpion", "Talim", "Yugo"
-            ];
-
-            userRef.once('value').then((snapshot) => {
-                let skins = snapshot.val() || [];
-                newSkins.forEach(skin => {
-                    if (!skins.includes(skin)) {
-                        skins.push(skin);
-                    }
-                });
-                userRef.set(skins);
-            });
-
-            document.getElementById('unlockButton').style.display = 'none';
-        }
-
-// Function to update icon data in Firebase Realtime Database
-		async function updateIcon(icon) {
-			const user = auth.currentUser;
-			if (user) {
-				const userRef = ref(database, 'users/' + user.uid);
-				try {
-					const snapshot = await get(userRef);
-					if (snapshot.exists()) {
-						const userData = snapshot.val();
-						userData.icon = icon; // Update the icon field
-						await set(userRef, userData); // Write back the updated data
-						console.log('Icon updated successfully');
-					} else {
-						console.error('No user data found');
-					}
-				} catch (error) {
-					console.error('Error updating icon:', error);
-				}
-			} else {
-				console.error('User not authenticated');
-			}
-		}
-
-
-        // Function to handle icon selection
-    function selectIcon(icon) {
-        const user = auth.currentUser;
-        if (user) {
-            updateIcon(icon)
-                .then(() => {
-                    document.getElementById('profile-image').src = `Icons/${icon}`;
-                    document.getElementById('profile-image').alt = 'Profile Icon';
-                    closeChangeIconModal(); // Assuming this function closes the modal
-                })
-                .catch(error => {
-                    console.error('Error updating icon:', error);
-                });
-        } else {
-            console.error('User not authenticated');
-        }
-    }
-
-	     window.onload = function() {
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            console.log("User is authenticated", user);
-            const userRef = ref(database, 'users/' + user.uid);
-            const snapshot = await get(userRef);
-            const userData = snapshot.val();
-            if (userData) {
-                console.log("User data retrieved", userData);
-                document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
-                document.getElementById('profile-image').src = `Icons/${userData.icon || 'Julia.png'}`;
-                document.getElementById('profile-image').alt = 'Profile Icon';
-                document.getElementById('currency-amount').textContent = userData.FM || 0;
-                document.getElementById('cm-amount').textContent = userData.CM || 0;
-            } else {
-                console.log("No user data found");
-            }
-        } else {
-            console.log("User is not authenticated");
-        }
-    });
-};
-
-
-        // Function to toggle profile menu visibility
-        window.toggleProfileMenu = function() {
-            const profileMenu = document.getElementById('profile-menu');
-            profileMenu.classList.toggle('show');
-        };
-
-
-        // Function to open the modal for changing icon
-        window.openChangeIconModal = function() {
+        window.openChangeIconModal = async function() {
             const modal = document.getElementById('change-icon-modal');
             modal.style.display = 'block';
 
@@ -193,24 +84,107 @@
                 img.onclick = () => selectIcon(icon);
                 iconList.appendChild(img);
             });
+
+            // Fetch user-specific icons from the database
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = ref(database, 'users/' + user.uid + '/Icons');
+                const snapshot = await get(userRef);
+                if (snapshot.exists()) {
+                    const userIcons = snapshot.val();
+                    for (const iconName in userIcons) {
+                        if (userIcons[iconName] === 1) { // Check if the value is 1
+                            const img = document.createElement('img');
+                            img.src = `Icons/Profile/${iconName}.png`;
+                            img.alt = iconName.replace('.png', '');
+                            img.classList.add('champion-image');
+                            img.onclick = () => selectIcon(iconName + '.png');
+                            iconList.appendChild(img);
+                        }
+                    }
+                }
+            }
         };
 
-        // Function to close the change icon modal
+        function selectIcon(icon) {
+            const user = auth.currentUser;
+            if (user) {
+                updateIcon(icon)
+                    .then(() => {
+                        setProfileImage(`Icons/${icon}`, `Icons/Profile/${icon}`);
+                        closeChangeIconModal();
+                    })
+                    .catch(error => {
+                        console.error('Error updating icon:', error);
+                    });
+            } else {
+                console.error('User not authenticated');
+            }
+        }
+
+        async function updateIcon(icon) {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = ref(database, 'users/' + user.uid);
+                try {
+                    const snapshot = await get(userRef);
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        userData.icon = icon; // Update the icon field
+                        await set(userRef, userData); // Write back the updated data
+                        console.log('Icon updated successfully');
+                    } else {
+                        console.error('No user data found');
+                    }
+                } catch (error) {
+                    console.error('Error updating icon:', error);
+                }
+            } else {
+                console.error('User not authenticated');
+            }
+        }
+
+        function setProfileImage(primaryPath, fallbackPath) {
+            const img = document.getElementById('profile-image');
+            img.onerror = () => {
+                img.onerror = null; // Remove error handler to avoid infinite loop
+                img.src = fallbackPath;
+            };
+            img.src = primaryPath;
+        }
+
         window.closeChangeIconModal = function() {
             const modal = document.getElementById('change-icon-modal');
             modal.style.display = 'none';
         };
 
-        // Function to handle "Log Out"
-        window.logOut = function() {
-            signOut(auth).then(() => {
-                window.location.href = 'index.html';
-            }).catch((error) => {
-                console.error('Sign out error:', error);
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    console.log("User is authenticated", user);
+                    const userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        console.log("User data retrieved", userData);
+                        document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
+                        setProfileImage(`Icons/${userData.icon || 'Julia.png'}`, `Icons/Profile/${userData.icon || 'Julia.png'}`);
+                        document.getElementById('currency-amount').textContent = userData.FM || 0;
+                        document.getElementById('cm-amount').textContent = userData.CM || 0;
+                    } else {
+                        console.log("No user data found");
+                    }
+                } else {
+                    console.log("User is not authenticated");
+                }
             });
         };
 
-        // Function to search champions
+        window.toggleProfileMenu = function() {
+            const profileMenu = document.getElementById('profile-menu');
+            profileMenu.classList.toggle('show');
+        };
+
         window.searchChampion = function() {
             const input = document.getElementById('search-bar').value.toLowerCase();
             const images = document.getElementsByClassName('champion-image');
@@ -224,11 +198,90 @@
             }
         };
 
-        // Toggle quests visibility
         window.toggleQuests = function() {
             const questsContainer = document.getElementById('quests-container');
             questsContainer.classList.toggle('open');
         };
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const toggleFriendListButton = document.getElementById("toggle-friend-list");
+            const friendList = document.getElementById("friend-list");
+            const addFriendButton = document.getElementById("add-friend-button");
+            const friendNameInput = document.getElementById("friend-name-input");
+            const friendListUL = document.getElementById("friend-list-ul");
+
+            toggleFriendListButton.addEventListener("click", function() {
+                friendList.style.display = friendList.style.display === "none" ? "block" : "none";
+            });
+
+            addFriendButton.addEventListener("click", function() {
+                const friendName = friendNameInput.value;
+                if (friendName) {
+                    const userId = auth.currentUser.uid;
+                    const friendRef = ref(database, 'users/' + userId + '/friends');
+                    const newFriendRef = push(friendRef);
+                    set(newFriendRef, {
+                        name: friendName,
+                        icon: 'default-icon.jpg' // Or allow user to select an icon
+                    }).then(() => {
+                        friendNameInput.value = '';
+                        loadFriendList(userId);
+                    }).catch((error) => {
+                        console.error('Error adding friend:', error);
+                    });
+                }
+            });
+
+            function loadFriendList(userId) {
+                const friendRef = ref(database, 'users/' + userId + '/friends');
+                get(friendRef).then(snapshot => {
+                    friendListUL.innerHTML = '';
+                    snapshot.forEach(childSnapshot => {
+                        const friendData = childSnapshot.val();
+                        const friendId = childSnapshot.key; // Assuming friendId is stored as the key
+                        loadFriendIcon(friendId, friendData.name);
+                    });
+                }).catch(error => {
+                    console.error('Error loading friend list:', error);
+                });
+            }
+
+            function loadFriendIcon(friendId, friendName) {
+                const friendIconRef = ref(database, 'users/' + friendId + '/icon');
+                get(friendIconRef).then(iconSnapshot => {
+                    const iconFilename = iconSnapshot.exists() ? iconSnapshot.val() : 'default-icon.jpg';
+                    const iconUrl = `Icons/${iconFilename}`;
+                    displayFriend(friendName, iconUrl);
+                }).catch(error => {
+                    console.error('Error loading friend icon:', error);
+                });
+            }
+
+            function displayFriend(friendName, iconUrl) {
+                const li = document.createElement('li');
+
+                // Create an img element for the icon
+                const img = document.createElement('img');
+                img.src = iconUrl;
+                img.alt = 'Friend Icon';
+                img.style.width = '30px';  // Adjust size as needed
+                img.style.height = '30px'; // Adjust size as needed
+                img.style.marginRight = '10px'; // Adjust margin as needed
+
+                // Append the icon and name to the list item
+                li.appendChild(img);
+                li.appendChild(document.createTextNode(friendName));
+
+                friendListUL.appendChild(li);
+            }
+
+            onAuthStateChanged(auth, user => {
+                if (user) {
+                    loadFriendList(user.uid);
+                }
+            });
+        });
+    </script>
     </script>
     <style>
         body {
@@ -471,7 +524,7 @@
         /* Quests Container */
         #quests-container {
             position: fixed;
-            bottom: 20px;
+            bottom: 40px;
             right: 20px;
             background-color: rgba(0, 0, 0, 0.8);
             padding: 15px;
@@ -515,7 +568,7 @@
             color: gold;
             display: inline-block;
             width: 1em;
-            margin-left: -1em;
+            margin-left: 5px;
         }
 
         /* Quests Toggle Button */
@@ -523,7 +576,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background-color: #444;
+            background-color: rgba(0, 0, 0, 0.8);
             padding: 15px;
             border-radius: 10px;
             color: white;
@@ -692,6 +745,63 @@
 		.news-text {
 			font-size: 14px;
 		}
+		#friend-list-container {
+            position: fixed;
+            bottom: 45px;
+            left: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        #friend-list {
+            display: none;
+        }
+
+        #friend-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #friend-list li {
+            padding: 5px 0;
+        }
+
+        #friend-name-input {
+            width: calc(100% - 22px);
+            margin-top: 10px;
+            padding: 5px;
+        }
+
+        #add-friend-button {
+            margin-top: 10px;
+            padding: 5px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #add-friend-button:hover {
+            background-color: #0056b3;
+        }
+		.battlepass-button {
+			background-color: #1E90FF; /* Gold background */
+			color: #000; /* Black text */
+			border-radius: 25px; /* Rounded corners */
+			font-size: 12px;
+			text-transform: uppercase; /* Uppercase text */
+			margin-right: 300px;
+		}
+
+		.battlepass-button::before {
+			content: "☀️ "; /* Sun emoji */
+			margin-right: 5px;
+		}
+
 	</style>
 </head>
 <body>
@@ -708,10 +818,14 @@
             <a href="Store.html">Store</a>
             <a href="event.html">Event</a>
             <a href="Team Builder.html">Team Builder</a>
-        </div>
+			</div>
+			<div>
+			<a href="battlepass.html" class="battlepass-button">Battlepass</a>
+			</div>
+		<div>
         <a href="Game Modes.html" class="play-button">Play</a>
     </div>
-
+</div>
 	<!-- User Profile Info -->
 	<div id="profile-info" onclick="toggleProfileMenu()">
 		<span id="username-display"></span>
@@ -759,19 +873,19 @@
         </div>
 		<div id="news-feed">
     <div class="news-item">
-        <h3 class="news-title">No more free characters</h3>
-		<img src="res/img/cm.png" alt="News Image 1" class="news-image">
-        <p class="news-text">You can now buy characters with the new currency called Character Money (CM). Head to the new store page to check it out.</p>
+        <h3 class="news-title">Grab the brand new Summer BATTLEPASS</h3>
+		<img src="res/img/basicbox.png" alt="News Image 1" class="news-image">
+        <p class="news-text">Unlock event skins, exclusive icons and free lootboxes with the very first Project Fighters Battlepass</p>
     </div>
     <div class="news-item">
-        <h3 class="news-title">Siegfried is now available!</h3>
-		<img src="Icons/Siegfried.png" alt="News Image 2" class="news-image">
-        <p class="news-text">Siegfried, the new bruiser top-laner from Soul Calibur, is ready to join the fight. Head to the Champion-store tab to unlock him.</p>
+        <h3 class="news-title">Shoma is now available!</h3>
+		<img src="Icons/Shoma.png" alt="News Image 2" class="news-image">
+        <p class="news-text">Shoma, the mischievous boy joins the fight as a tank support with his unique kit and redesign.</p>
     </div>
 	<div class="news-item">
-        <h3 class="news-title">MOVE!</h3>
-		<img src="Loading Screen/Professional Athlete Ibuki.png" alt="News Image 2" class="news-image">
-        <p class="news-text">Take up a sport and get ready to play in the MOVE! event. New skins for R.Mika, Blanka and more... </p>
+        <h3 class="news-title">It's SUMMER TIME!</h3>
+		<img src="Loading Screen/Summertime Elphelt.png" alt="News Image 2" class="news-image">
+        <p class="news-text">Summer Event is out! New skins are available for Nina, Elphelt, Kotal Kahn and more.... </p>
     </div>
     <!-- Add more news items as needed -->
 </div>
@@ -802,15 +916,14 @@
             <a href="characters/Ayane Page.html"><img src="Icons/Ayane.png" alt="Ayane" class="champion-image"></a>
             <a href="characters/Siegfried Page.html"><img src="Icons/Siegfried.png" alt="Siegfried" class="champion-image"></a>
             <a href="characters/Shoma Page.html"><img src="Icons/Shoma.png" alt="Shoma" class="champion-image gray"></a>
-			<a href="characters/q.html"><img src="Icons/q.jpg" alt="q" class="champion-image gray"></a>
-			<a href="characters/q.html"><img src="Icons/q.jpg" alt="q" class="champion-image gray"></a>
-			<a href="characters/q.html"><img src="Icons/q.jpg" alt="q" class="champion-image gray"></a>
-			<a href="characters/q.html"><img src="Icons/q.jpg" alt="q" class="champion-image gray"></a>
-			<a href="characters/q.html"><img src="Icons/q.jpg" alt="q" class="champion-image gray"></a>
+			<a href="characters/Juri.html"><img src="Icons/Juri.png" alt="Juri" class="champion-image gray"></a>
+			<a href="characters/Sub Zero.html"><img src="Icons/Sub Zero.png" alt="Sub Zero" class="champion-image gray"></a>
+			<a href="characters/Christie.html"><img src="Icons/Christie.png" alt="Christie" class="champion-image gray"></a>
+			<a href="characters/Kokoro.html"><img src="Icons/Kokoro.png" alt="Kokoro" class="champion-image gray"></a>
+			<a href="characters/Eagle.html"><img src="Icons/Eagle.png" alt="Eagle" class="champion-image gray"></a>
         </div>
     </div>
 
-	
 	<div id="unlockContainer">
         <button id="unlockButton" onclick="unlockSkins()">Unlock FREE characters</button>
     </div>
@@ -839,6 +952,14 @@
         <span id="quest-count">6</span>
         Quests
     </div>
+	
+	 <div id="friend-list-container">
+        <button id="toggle-friend-list">Toggle Friend List</button>
+        <div id="friend-list">
+            <ul id="friend-list-ul"></ul>
+            <input type="text" id="friend-name-input" placeholder="Enter friend's name">
+            <button id="add-friend-button">Add Friend</button>
+     </div>
 <script>
     function profile() {
          window.location.href = 'Profile.html';

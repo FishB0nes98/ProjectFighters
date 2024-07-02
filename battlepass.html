@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MOBA Game Battle Pass</title>
+    <style>
+        body {
+            background-color: #333;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Prevent scroll bars */
+        }
+
+        #video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Cover the whole screen */
+            z-index: -1; /* Behind other content */
+        }
+
+        #battle-pass-container {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			width: 300px;
+			height: 90vh;
+			overflow-y: auto;
+			background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black */
+			border-radius: 10px;
+			box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+			padding: 20px;
+			position: relative;
+			margin-top: 65px; /* Start 65px lower from top */
+		}
+
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            width: 10px;
+            background: linear-gradient(to bottom, #0f0, #0f0);
+            transition: height 0.5s ease;
+            z-index: 0;
+        }
+
+        .battle-pass-item {
+            display: flex;
+            align-items: center;
+			width: 100%; /* Ensure items are the same width */
+            margin: 20px 0;
+			background-color: black;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .battle-pass-item:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .battle-pass-item img {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #444;
+            border-radius: 10px;
+        }
+
+        .item-name {
+            margin-left: 20px;
+            font-size: 1.2em;
+            color: #fff;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .locked {
+            filter: grayscale(100%);
+        }
+		        .menu {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+
+        .menu:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .menu .menu-items {
+            display: flex;
+        }
+
+        .menu a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+		        .play-button {
+            margin-right: 20px; /* Adjust as needed */
+            background-color: orange;
+            color: black;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s, color 0.3s;
+            padding: 10px 20px;
+        }
+
+        .play-button:hover {
+            background-color: darkgoldenrod;
+            color: white;
+            transform: scale(1.2);
+        }
+		.battlepass-button {
+			background-color: #1E90FF; /* Gold background */
+			color: #000; /* Black text */
+			border-radius: 25px; /* Rounded corners */
+			font-size: 12px;
+			text-transform: uppercase; /* Uppercase text */
+			margin-right: 300px;
+		}
+
+		.battlepass-button::before {
+			content: "☀️ "; /* Sun emoji */
+			margin-right: 5px;
+		}
+    </style>
+    <!-- Include Firebase SDK and configuration as module scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        // Fallback for non-module browsers (if needed)
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+</head>
+<body>
+    <video id="video-background" autoplay muted loop>
+        <source src="Event/Eventvideo.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div id="battle-pass-container">
+        <div id="progress-line" class="progress-line"></div>
+    </div>
+	
+    <!-- Menu -->
+    <div class="menu">
+        <div class="menu-items">
+            <a href="home.html">Home</a>
+            <a href="Store.html">Store</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+			</div>
+			<div>
+			<a href="battlepass.html" class="battlepass-button">Battlepass</a>
+			</div>
+		<div>
+        <a href="Game Modes.html" class="play-button">Play</a>
+    </div>
+</div>
+
+    <script type="module">
+        // Initialize Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        const battlePassItems = [
+            { id: 'Item1', exp: 100, img: 'Icons/Shoma.png', skinName: 'Shoma', name: 'Shoma Champion' },
+            { id: 'Item2', exp: 250, img: 'Icons/Profile/Summertime_Shoma.png', folder: 'Icons', name: 'Summertime Shoma Icon' },
+            { id: 'Item3', exp: 320, img: 'res/img/cm.png', name: '1000 CM', type: 'CM' },
+            { id: 'Item4', exp: 500, img: 'Loading Screen/Summertime Jun.png', skinName: 'Summertime Jun', name: 'Summertime Jun Skin' },
+			{ id: 'Item5', exp: 600, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
+			{ id: 'Item6', exp: 700, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free LootBox' },
+			{ id: 'Item7', exp: 800, img: 'Icons/Profile/Summertime_Nina.png', folder: 'Icons', name: 'Summertime Nina Icon' },
+			{ id: 'Item8', exp: 850, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
+			{ id: 'Item9', exp: 925, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free LootBox' },
+			{ id: 'Item10', exp: 1000, img: 'Loading Screen/Summertime Shoma.png', skinName: 'Summertime Shoma', name: 'Summertime Shoma Skin' },
+        ];
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const userId = user.uid;
+                const userRef = ref(database, 'users/' + userId);
+
+                get(userRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        const userExp = userData.BattlePassExp || 0;
+                        const claimedItems = userData.BPprogress || {};
+                        displayBattlePass(userExp, claimedItems);
+                        updateProgressLine(userExp);
+                    }
+                }).catch((error) => {
+                    console.error(error);
+                });
+            } else {
+                console.log("User is not authenticated");
+            }
+        });
+
+        function displayBattlePass(userExp, claimedItems) {
+            const container = document.getElementById('battle-pass-container');
+            container.innerHTML = '<div id="progress-line" class="progress-line"></div>'; // Reset and include progress line
+
+            battlePassItems.forEach((item) => {
+                const itemContainer = document.createElement('div');
+                itemContainer.classList.add('battle-pass-item');
+
+                const imgElement = document.createElement('img');
+                imgElement.src = `${item.img}`;
+                imgElement.alt = `Item ${item.exp}`;
+
+                const nameElement = document.createElement('div');
+                nameElement.classList.add('item-name');
+                nameElement.textContent = item.name || 'Unknown Item';
+
+                itemContainer.appendChild(imgElement);
+                itemContainer.appendChild(nameElement);
+
+                if (userExp < item.exp) {
+                    imgElement.classList.add('locked');
+                } else if (claimedItems[item.id]) {
+                    imgElement.classList.add('claimed');
+                } else {
+                    itemContainer.onclick = () => claimItem(item.id, item.img, item.exp, item.folder, item.skinName, item.type);
+                }
+
+                container.appendChild(itemContainer);
+            });
+        }
+
+        function claimItem(itemId, img, exp, folder, skinName, itemType) {
+            const user = auth.currentUser;
+            if (user) {
+                const userId = user.uid;
+                const userRef = ref(database, 'users/' + userId);
+
+                get(userRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        if (userData.BattlePassExp >= exp) {
+                            const updates = {};
+                            updates[`users/${userId}/BPprogress/${itemId}`] = 1;
+                            if (folder) {
+                                const fileName = img.split('/').pop().split('.')[0]; // Get the file name without the extension
+                                updates[`users/${userId}/${folder}/${fileName}`] = 1;
+                            }
+                            if (skinName) {
+                                updates[`users/${userId}/skins/${skinName}`] = 1;
+                            }
+                            if (itemType === 'CM') {
+                                updates[`users/${userId}/CM`] = (userData.CM || 0) + 1000; // Add 1000 CM to the user's existing CM
+                            }
+							if (itemType === 'FM') {
+                                updates[`users/${userId}/FM`] = (userData.FM || 0) + 500; // Add 500 FM to the user's existing FM
+                            }
+
+                            update(ref(database), updates).then(() => {
+                                alert(`Claimed item: ${itemId}`);
+                                location.reload(); // Refresh the page
+                            }).catch((error) => {
+                                console.error(error);
+                            });
+                        }
+                    }
+                }).catch((error) => {
+                    console.error(error);
+                });
+            }
+        }
+
+        function updateProgressLine(userExp) {
+			const maxExp = 1000; // Set max experience to 1000
+			const progressLine = document.getElementById('progress-line');
+			const progressHeight = Math.min((userExp / maxExp) * 100, 100);
+			progressLine.style.height = `${progressHeight}%`;
+		}
+    </script>
+</body>
+</html>
