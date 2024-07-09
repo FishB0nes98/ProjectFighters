@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Skin Recolors</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+	<script>
+		function toggleSection(id) {
+			const section = document.getElementById(id);
+			if (section.style.display === "none" || section.style.display === "") {
+				section.style.display = "flex";
+			} else {
+				section.style.display = "none";
+			}
+		}
+	</script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1b1b1b;
+            color: #eaeaea;
+            font-family: 'Open Sans', sans-serif;
+        }
+        h1 {
+            text-align: left;
+            font-size: 20px;
+            margin-top: 50px;
+            color: #ffcc00;
+        }
+        .menu {
+            top: 0;
+            width: 100%;
+            background-color: #444;
+            overflow: hidden;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .menu .menu-items {
+            display: flex;
+        }
+        .menu a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+        .play-button {
+            background-color: orange;
+            color: black;
+            border-radius: 20px;
+            padding: 14px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s, color 0.3s;
+            margin-right: 920px;
+        }
+        .play-button:hover {
+            background-color: darkgoldenrod;
+            color: white;
+            transform: scale(1.2);
+        }
+		.container {
+			display: flex;
+			flex-wrap: wrap;
+			padding: 45px;
+			max-width: 1800px;
+			margin: 0 auto;
+		}
+
+		.skin {
+			margin: 25px;
+			text-align: center;
+			cursor: pointer;
+			position: relative;
+			width: 15%;
+		}
+
+		.skin img {
+			width: 100%;
+			border: 2px solid #444;
+			border-radius: 10px;
+			transition: transform 0.2s;
+		}
+
+		.skin img:hover {
+			transform: scale(1.1);
+			border-color: #ffcc00;
+		}
+
+		.skin-name {
+			margin-top: 15px;
+			font-size: 1em;
+			color: #eaeaea;
+		}
+
+		.skin-price {
+			position: absolute;
+			bottom: 45px;
+			right: 2px;
+			background-color: rgba(0, 0, 0, 0.7);
+			color: white;
+			padding: 2px 5px;
+			border-radius: 5px;
+			display: flex;
+			align-items: center;
+			font-size: 0.8em;
+		}
+
+		.skin-price img {
+			width: 10px;
+			height: 10px;
+			margin-right: 3px;
+		}
+
+		.lightbox {
+			display: none;
+			position: fixed;
+			z-index: 1000;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.9);
+			justify-content: center;
+			align-items: center;
+			transition: opacity 0.3s ease;
+		}
+
+		.lightbox-content {
+			position: relative;
+			max-width: 80%;
+			max-height: 80%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.lightbox-content img {
+			max-width: 100%;
+			max-height: 100%;
+			border-radius: 10px;
+		}
+
+		.lightbox .close-button {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			background-color: #ffcc00;
+			color: black;
+			border: none;
+			border-radius: 50%;
+			width: 30px;
+			height: 30px;
+			font-size: 1.5em;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.purchase-button {
+			position: absolute;
+			bottom: 10px;
+			left: 10px;
+			background-color: grey;
+			color: black;
+			border: none;
+			border-radius: 20px;
+			padding: 10px 20px;
+			font-size: 1em;
+			font-weight: bold;
+			display: flex;
+			align-items: center;
+			cursor: pointer;
+		}
+
+		.purchase-button img {
+			width: 20px;
+			height: 20px;
+			margin-right: 10px;
+		}
+
+		.purchase-button.enabled {
+			background-color: gold;
+		}
+
+		.purchase-button.disabled {
+			background-color: grey;
+		}
+
+		.currency-container {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			position: fixed;
+			top: 75px;
+			left: 97%;
+			transform: translateX(-50%);
+			z-index: 1000;
+		}
+
+		.currency-display {
+			display: flex;
+			align-items: center;
+			background-color: black;
+			padding: 5px 10px;
+			border-radius: 5px;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			font-size: 16px;
+			font-weight: bold;
+		}
+
+		.currency-display img.currency-icon {
+			width: 20px;
+			height: 20px;
+			margin-right: 5px;
+		}
+
+		.search-bar-container {
+			display: flex;
+			justify-content: center;
+			margin: 20px 0;
+		}
+
+		.search-bar {
+			width: 80%;
+			padding: 10px;
+			font-size: 1em;
+			border-radius: 20px;
+			border: 2px solid #444;
+			background-color: #2c2c2c;
+			color: #eaeaea;
+			transition: border-color 0.3s;
+		}
+
+		.search-bar:focus {
+			border-color: #ffcc00;
+			outline: none;
+		}
+
+		.skin-section {
+			display: none;
+			flex-wrap: wrap;
+			width: 100%;
+		}
+
+		.container h1 {
+			cursor: pointer;
+			color: #007BFF;
+		}
+
+		.container h1:hover {
+			text-decoration: underline;
+		}
+    </style>
+</head>
+<body>
+    <div class="menu">
+        <div class="menu-items">
+            <a href="home.html">Home</a>
+            <a href="Store.html">Store</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+			<a href="championstats.html">Statistics</a>
+        </div>
+        <div>
+            <a href="battlepass.html" class="play-button">Battlepass</a>
+        </div>
+        <div>
+            <a href="Game Modes.html" class="play-button">Play</a>
+        </div>
+    </div>
+    <div class="search-bar-container">
+        <input type="text" class="search-bar" placeholder="Search skins..." oninput="filterSkins()">
+    </div>
+    <div class="currency-container">
+        <div id="currency-amount" class="currency-display">
+            <img src="res/img/fm.png" alt="currency icon" class="currency-icon">
+            <span>0</span>
+        </div>
+    </div>
+	<div class="container">
+		<h1 onclick="toggleSection('infernal-ibuki')">Infernal Ibuki Recolors</h1>
+		<div id="infernal-ibuki" class="skin-section">
+		<div class="skin" data-src="Skins/Infernal Ibuki Greenfire.png" onclick="openLightbox('Skins/Infernal Ibuki Greenfire.png', 'Infernal Ibuki Greenfire', 500)">
+			<img src="Skins/Infernal Ibuki Greenfire.png" alt="Infernal Ibuki Greenfire">
+			<div class="skin-name">Infernal Ibuki: Greenfire</div>
+			<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">500</div>
+            </div>
+        </div>
+    </div>
+	<div class="container">
+		<h1 onclick="toggleSection('basic-skin')">Basic Skin Recolors</h1>
+		<div id="basic-skin" class="skin-section">
+		<div class="skin" data-src="Skins/Raiden Red.png" onclick="openLightbox('Skins/Raiden Red.png', 'Raiden Red', 500)">
+			<img src="Skins/Raiden Red.png" alt="Raiden Red">
+			<div class="skin-name">Raiden: Red</div>
+			<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">500</div>
+		</div>
+		<div class="skin" data-src="Skins/Cham Cham Monochrome.png" onclick="openLightbox('Skins/Cham Cham Monochrome.png', 'Cham Cham Monochrome', 500)">
+			<img src="Skins/Cham Cham Monochrome.png" alt="Cham Cham Monochrome">
+			<div class="skin-name">Cham Cham: Monochrome</div>
+			<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">500</div>
+		</div>
+		<div class="skin" data-src="Skins/Reptile Sand.jpeg" onclick="openLightbox('Skins/Reptile Sand.jpeg', 'Reptile Sand', 500)">
+            <img src="Skins/Reptile Sand.jpeg" alt="Reptile Sand">
+            <div class="skin-name">Reptile: Sand</div>
+            <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">500</div>
+        </div>
+	    <div class="skin" data-src="Skins/Birdie Red.png" onclick="openLightbox('Skins/Birdie Red.png', 'Birdie Red', 500)">
+            <img src="Skins/Birdie Red.png" alt="Birdie Red">
+            <div class="skin-name">Birdie: Red</div>
+            <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">500</div>
+        </div>
+        <div class="skin" data-src="Skins/Ibuki Red.png" onclick="openLightbox('Skins/Ibuki Red.png', 'Ibuki Red', 500)">
+            <img src="Skins/Ibuki Red.png" alt="Ibuki Red">
+            <div class="skin-name">Ibuki: Red</div>
+            <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">500</div>
+        </div>
+        <div class="skin" data-src="Skins/Scorpion Spider.png" onclick="openLightbox('Skins/Scorpion Spider.png', 'Scorpion Spider', 500)">
+            <img src="Skins/Scorpion Spider.png" alt="Scorpion Spider">
+            <div class="skin-name">Scorpion: Spider</div>
+            <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">500</div>
+        </div>
+        <div class="skin" data-src="Skins/Scorpion Blossom.png" onclick="openLightbox('Skins/Scorpion Blossom.png', 'Scorpion Blossom', 500)">
+            <img src="Skins/Scorpion Blossom.png" alt="Scorpion Blossom">
+            <div class="skin-name">Scorpion: Blossom</div>
+            <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">500</div>
+        </div>
+		<div class="skin" data-src="Skins/Talim Bloody.png" onclick="openLightbox('Skins/Talim Bloody.png', 'Talim Bloody', 500)">
+            <img src="Skins/Talim Bloody.png" alt="Talim Bloody">
+            <div class="skin-name">Talim: Bloody</div>
+            <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">500</div>
+            </div>
+        </div>
+    </div>
+    <div id="lightbox" class="lightbox">
+        <div class="lightbox-content">
+            <img id="lightbox-image" src="" alt="Skin Image">
+            <button id="purchase-button" class="purchase-button" onclick="purchaseSkin()"></button>
+            <button class="close-button" onclick="closeLightbox()">×</button>
+        </div>
+    </div>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        document.getElementById('currency-amount').textContent = userData.FM || 0;
+                        window.userFM = userData.FM || 0;
+                        window.userRef = userRef;
+                        window.userSkins = userData.skins || {};
+                        updateSkinsUI();
+                    }
+                }
+            });
+        };
+
+        window.updateSkinsUI = function() {
+            const skins = document.querySelectorAll('.skin');
+            const infernalIbukiOwned = window.userSkins['Infernal Ibuki'];
+            skins.forEach(skin => {
+                const skinName = skin.querySelector('.skin-name').textContent.trim();
+                const purchaseButton = skin.querySelector('.purchase-button');
+                if (window.userSkins[skinName]) {
+                    purchaseButton.classList.add('disabled');
+                    purchaseButton.textContent = 'Owned';
+                }
+                if (skinName === 'Infernal Ibuki Greenfire' && !infernalIbukiOwned) {
+                    purchaseButton.classList.add('disabled');
+                    purchaseButton.textContent = 'Requires Infernal Ibuki';
+                }
+            });
+        };
+		
+        window.openLightbox = function(src, name, price) {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.style.display = 'flex';
+            const img = document.getElementById('lightbox-image');
+            img.src = src;
+            const purchaseButton = document.getElementById('purchase-button');
+            purchaseButton.dataset.skinName = name;
+            purchaseButton.dataset.skinPrice = price;
+            purchaseButton.textContent = `Purchase for ${price} FM`;
+            purchaseButton.className = window.userFM >= price ? 'purchase-button enabled' : 'purchase-button disabled';
+            if (window.userSkins[name]) {
+                purchaseButton.classList.add('disabled');
+                purchaseButton.textContent = 'Owned';
+            }
+            if (name === 'Infernal Ibuki Greenfire' && !window.userSkins['Infernal Ibuki']) {
+                purchaseButton.classList.add('disabled');
+                purchaseButton.textContent = 'Requires Infernal Ibuki';
+            }
+        };
+
+        window.closeLightbox = function() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.style.display = 'none';
+        };
+
+        window.purchaseSkin = async function() {
+            const purchaseButton = document.getElementById('purchase-button');
+            const skinName = purchaseButton.dataset.skinName;
+            const skinPrice = parseInt(purchaseButton.dataset.skinPrice, 10);
+
+            if (window.userFM >= skinPrice) {
+                const newFM = window.userFM - skinPrice;
+                const updates = {};
+                updates['FM'] = newFM;
+                updates[`skins/${skinName}`] = 1;
+                await update(window.userRef, updates);
+                document.getElementById('currency-amount').textContent = newFM;
+                window.userFM = newFM;
+                window.userSkins[skinName] = 1;
+                closeLightbox();
+                alert(`You have successfully purchased ${skinName}!`);
+                updateSkinsUI();
+            } else {
+                alert("You don't have enough FM to purchase this skin.");
+            }
+        };
+			window.filterSkins = function() {
+            const searchQuery = document.querySelector('.search-bar').value.toLowerCase();
+            const skins = document.querySelectorAll('.skin');
+            skins.forEach(skin => {
+                const skinName = skin.querySelector('.skin-name').textContent.toLowerCase();
+                if (skinName.includes(searchQuery)) {
+                    skin.style.display = 'block';
+                } else {
+                    skin.style.display = 'none';
+                }
+            });
+        };
+    </script>
+</body>
+</html>

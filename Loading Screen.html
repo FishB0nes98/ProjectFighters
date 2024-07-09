@@ -111,7 +111,14 @@
             'Thunder God Akuma': 'Akuma',
             'Vampire Talim': 'Talim',
             'Voidborn Angel': 'Angel',
-            'Yugo': 'Yugo'
+            'Yugo': 'Yugo',
+			'Summertime Elphelt': 'Elphelt',
+			'Summertime Jun': 'Jun',
+			'Summertime Kotal Kahn': 'Kotal Kahn',
+			'Summertime Nina': 'Nina',
+			'Summertime Reptile': 'Reptile',
+			'Summertime Shoma': 'Shoma',
+			'Shoma': 'Shoma',
         };
 
         window.onload = function() {
@@ -227,6 +234,7 @@
 
             await updateDatabase(team1, team2, winner);
             await rewardPlayer(); // Call the rewardPlayer function here
+			await incrementQuestID(); // Call the function to increment questid1
             displayResult(winner, loser);
         });
 
@@ -283,6 +291,14 @@
 
             await update(ref(database), updates);
         }
+		
+		async function incrementQuestID() {
+        const userId = auth.currentUser.uid;
+        const questRef = ref(database, `users/${userId}/questid1`);
+        const snapshot = await get(questRef);
+        const questid1 = snapshot.val() || 0;
+        await update(questRef, { questid1: questid1 + 1 });
+		}
 
         async function rewardPlayer() {
             const userId = auth.currentUser.uid;
@@ -422,7 +438,7 @@
             display: none;
         }
 		.battlepass-button {
-			background-color: #1E90FF; /* Gold background */
+			background-color: red; /* Gold background */
 			color: #000; /* Black text */
 			border-radius: 25px; /* Rounded corners */
 			font-size: 12px;
@@ -431,7 +447,7 @@
 		}
 
 		.battlepass-button::before {
-			content: "☀️ "; /* Sun emoji */
+			content: "🔥"; /* Sun emoji */
 			margin-right: 5px;
 		}
     </style>
@@ -444,6 +460,7 @@
             <a href="Store.html">Store</a>
             <a href="event.html">Event</a>
             <a href="Team Builder.html">Team Builder</a>
+			<a href="championstats.html">Statistics</a>
 			</div>
 			<div>
 			<a href="battlepass.html" class="battlepass-button">Battlepass</a>

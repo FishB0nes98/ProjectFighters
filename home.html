@@ -282,7 +282,7 @@
             });
         });
     </script>
-    </script>
+	<script src="quests.js"></script>
     <style>
         body {
             margin: 0;
@@ -412,13 +412,12 @@
 		#profile-info {
 			display: flex;
 			position: fixed;
-			top: 68px;
-			right: 3px;
+			top: 69px;
+			right: 0px;
 			align-items: center;
 			justify-content: flex-end; /* Align content to the right */
 			background-color: rgba(0, 0, 0, 0.8);
 			padding: 5px 10px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 			width: calc(100% - 340px);
 			max-width: 275px;
 		}
@@ -440,7 +439,7 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.8);
             padding: 10px 0;
             display: flex;
             justify-content: space-between;
@@ -719,7 +718,7 @@
 			width: 300px; /* Adjust width as needed */
 			background-color: rgba(0, 0, 0, 0.8);
 			color: white;
-			margin-left: 20px;
+			margin-left: 10px;
 			padding: 10px;
 			box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
 			z-index: 2000; /* Ensure it's above other content */
@@ -748,7 +747,7 @@
 		#friend-list-container {
             position: fixed;
             bottom: 45px;
-            left: 20px;
+            left: 10px;
             background-color: rgba(0, 0, 0, 0.8);
             color: white;
             padding: 10px;
@@ -789,7 +788,7 @@
             background-color: #0056b3;
         }
 		.battlepass-button {
-			background-color: #1E90FF; /* Gold background */
+			background-color: red; /* Gold background */
 			color: #000; /* Black text */
 			border-radius: 25px; /* Rounded corners */
 			font-size: 12px;
@@ -798,9 +797,65 @@
 		}
 
 		.battlepass-button::before {
-			content: "☀️ "; /* Sun emoji */
+			content: "🔥"; /* Sun emoji */
 			margin-right: 5px;
 		}
+		        /* New Quest Box Styles */
+        #new-quests-box {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        #new-quests-box .header {
+            background-color: orange;
+            padding: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #new-quests-box .content {
+            padding: 10px;
+        }
+
+        #new-quests-box .quest {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+
+        #new-quests-box .quest h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        #new-quests-box .quest p {
+            margin: 5px 0 0;
+            font-size: 14px;
+        }
+
+        #new-quests-box .quest-progress {
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        #new-quests-box .quest-progress div {
+            height: 100%;
+            background-color: gold;
+            width: 50%; /* Example progress, should be dynamically set */
+        }
 
 	</style>
 </head>
@@ -818,6 +873,7 @@
             <a href="Store.html">Store</a>
             <a href="event.html">Event</a>
             <a href="Team Builder.html">Team Builder</a>
+			<a href="championstats.html">Statistics</a>
 			</div>
 			<div>
 			<a href="battlepass.html" class="battlepass-button">Battlepass</a>
@@ -873,22 +929,36 @@
         </div>
 		<div id="news-feed">
     <div class="news-item">
-        <h3 class="news-title">Grab the brand new Summer BATTLEPASS</h3>
-		<img src="res/img/basicbox.png" alt="News Image 1" class="news-image">
-        <p class="news-text">Unlock event skins, exclusive icons and free lootboxes with the very first Project Fighters Battlepass</p>
+        <h3 class="news-title">Feel the BURN!</h3>
+		<img src="icons/Profile/Infernal_Raiden.jfif" alt="News Image 1" class="news-image">
+        <p class="news-text">The Infernal Event is here along with the new battlepass. New skins for Astaroth, Scorpion, Ibuki and more...</p>
     </div>
     <div class="news-item">
-        <h3 class="news-title">Shoma is now available!</h3>
-		<img src="Icons/Shoma.png" alt="News Image 2" class="news-image">
-        <p class="news-text">Shoma, the mischievous boy joins the fight as a tank support with his unique kit and redesign.</p>
+        <h3 class="news-title">Juri is now available!</h3>
+		<img src="Icons/Juri.png" alt="News Image 2" class="news-image">
+        <p class="news-text">Juri from Street Fighter is avaliable. The new hybrid jungler is ready to take revenge on their enemies.</p>
     </div>
 	<div class="news-item">
-        <h3 class="news-title">It's SUMMER TIME!</h3>
-		<img src="Loading Screen/Summertime Elphelt.png" alt="News Image 2" class="news-image">
-        <p class="news-text">Summer Event is out! New skins are available for Nina, Elphelt, Kotal Kahn and more.... </p>
+        <h3 class="news-title">Introducing "Recolors"</h3>
+		<img src="res/img/recolor.png" alt="News Image 2" class="news-image">
+        <p class="news-text">A new way to costumize your character. Recolors are skin variants. Check your quests for a surprise! </p>
     </div>
     <!-- Add more news items as needed -->
 </div>
+ <!-- New Quests Box -->
+    <div id="new-quests-box">
+        <div class="header">Quests</div>
+        <div class="content">
+            <div class="quest" data-id="1">
+                <h3>Play 1 Game</h3>
+                <p>Play 1 game</p>
+                <div class="quest-progress">
+                    <div></div>
+                </div>
+            </div>
+            <!-- Additional quests can be added here -->
+        </div>
+    </div>
 
         <div id="champion-selector">
             <a href="characters/Julia Page.html"><img src="Icons/Julia.png" alt="Julia" class="champion-image"></a>
@@ -915,8 +985,8 @@
             <a href="characters/Nina Page.html"><img src="Icons/Nina.png" alt="Nina" class="champion-image"></a>
             <a href="characters/Ayane Page.html"><img src="Icons/Ayane.png" alt="Ayane" class="champion-image"></a>
             <a href="characters/Siegfried Page.html"><img src="Icons/Siegfried.png" alt="Siegfried" class="champion-image"></a>
-            <a href="characters/Shoma Page.html"><img src="Icons/Shoma.png" alt="Shoma" class="champion-image gray"></a>
-			<a href="characters/Juri.html"><img src="Icons/Juri.png" alt="Juri" class="champion-image gray"></a>
+            <a href="characters/Shoma Page.html"><img src="Icons/Shoma.png" alt="Shoma" class="champion-image"></a>
+			<a href="characters/Juri.html"><img src="Icons/Juri.png" alt="Juri" class="champion-image"></a>
 			<a href="characters/Sub Zero.html"><img src="Icons/Sub Zero.png" alt="Sub Zero" class="champion-image gray"></a>
 			<a href="characters/Christie.html"><img src="Icons/Christie.png" alt="Christie" class="champion-image gray"></a>
 			<a href="characters/Kokoro.html"><img src="Icons/Kokoro.png" alt="Kokoro" class="champion-image gray"></a>
@@ -927,31 +997,7 @@
 	<div id="unlockContainer">
         <button id="unlockButton" onclick="unlockSkins()">Unlock FREE characters</button>
     </div>
-    <!-- Quests Popup Container -->
-    <div id="quests-container">
-        <div class="quest-section">
-            <h2>Daily Quests</h2>
-            <ul>
-                <li>Play [1] match</li>
-                <li>Win [2] matches with Mortal Kombat characters</li>
-                <li>Heal [16,000] in games</li>
-            </ul>
-        </div>
-        <div class="quest-section">
-            <h2>Weekly Quests</h2>
-            <ul>
-                <li>Play [7] games</li>
-                <li>Get [125] kills or assists</li>
-                <li>Mitigate [100,000] damage</li>
-            </ul>
-        </div>
-    </div>
 
-    <!-- Quests Toggle Button -->
-    <div id="quests-toggle" onclick="toggleQuests()">
-        <span id="quest-count">6</span>
-        Quests
-    </div>
 	
 	 <div id="friend-list-container">
         <button id="toggle-friend-list">Toggle Friend List</button>
@@ -975,5 +1021,13 @@
 			}
     });
 </script>
+    <script>
+        // JavaScript to handle quest updates (basic version)
+        function updateQuestProgress(questId, progressPercentage) {
+            const quest = document.getElementById(questId);
+            const progressBar = quest.querySelector('.quest-progress div');
+            progressBar.style.width = progressPercentage + '%';
+        }
+    </script>
 </body>
 </html>

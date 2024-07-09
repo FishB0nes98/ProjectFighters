@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Stats</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            padding: 0;
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 80px; /* Ensures table starts below the menu */
+        }
+
+        thead {
+            background-color: #333333;
+        }
+
+        th, td {
+            border: 1px solid #444444;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #ff9800;
+            color: white;
+            cursor: pointer;
+        }
+
+        img {
+            margin-right: 10px;
+            vertical-align: middle;
+            width: 50px;
+            height: 50px;
+        }
+
+        .menu {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+
+        .menu:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .menu .menu-items {
+            display: flex;
+        }
+
+        .menu a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+
+        .battlepass-button {
+            background-color: red; /* Gold background */
+            color: #000; /* Black text */
+            border-radius: 25px; /* Rounded corners */
+            font-size: 12px;
+            text-transform: uppercase; /* Uppercase text */
+            margin-right: 300px;
+        }
+
+        .battlepass-button::before {
+            content: "🔥 "; /* emoji */
+            margin-right: 5px;
+        }
+
+        .play-button {
+            margin-right: 20px; /* Adjust as needed */
+            background-color: orange;
+            color: black;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s, color 0.3s;
+            padding: 10px 20px;
+        }
+
+        .play-button:hover {
+            background-color: darkgoldenrod;
+            color: white;
+            transform: scale(1.2);
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body>
+    <!-- Menu -->
+    <div class="menu">
+        <div class="menu-items">
+            <a href="home.html">Home</a>
+            <a href="Store.html">Store</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+			<a href="championstats.html">Statistics</a>
+        </div>
+        <div>
+            <a href="battlepass.html" class="battlepass-button">Battlepass</a>
+        </div>
+        <div>
+            <a href="Game Modes.html" class="play-button">Play</a>
+        </div>
+    </div>
+    <table id="characterTable">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)">Character</th>
+                <th onclick="sortTable(1)">Win Rate</th>
+                <th onclick="sortTable(2)">Wins</th>
+                <th onclick="sortTable(3)">Losses</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be added here by JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        // Your Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        var database = firebase.database();
+
+        function fetchCharacterData() {
+            database.ref('characters').once('value', function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    var character = childSnapshot.key;
+                    var data = childSnapshot.val();
+                    var wins = data.win || 0;
+                    var losses = data.lose || 0;
+                    var winRate = (wins + losses) > 0 ? ((wins / (wins + losses)) * 100).toFixed(2) + '%' : '0%';
+
+                    addTableRow(character, wins, losses, winRate);
+                });
+            });
+        }
+
+        function addTableRow(character, wins, losses, winRate) {
+            var tableBody = document.querySelector('#characterTable tbody');
+            var row = document.createElement('tr');
+            
+            var cellCharacter = document.createElement('td');
+            var img = document.createElement('img');
+            img.src = `Icons/${character}.png`;
+            img.alt = character;
+            var anchor = document.createElement('a');
+            anchor.href = `characters/${character} Page.html`;
+            anchor.textContent = character;
+            anchor.style.color = 'white'; // Adjust link color as needed
+
+            cellCharacter.appendChild(img);
+            cellCharacter.appendChild(anchor);
+
+            var cellWinRate = document.createElement('td');
+            cellWinRate.textContent = winRate;
+
+            var cellWins = document.createElement('td');
+            cellWins.textContent = wins;
+
+            var cellLosses = document.createElement('td');
+            cellLosses.textContent = losses;
+
+            row.appendChild(cellCharacter);
+            row.appendChild(cellWinRate);
+            row.appendChild(cellWins);
+            row.appendChild(cellLosses);
+            tableBody.appendChild(row);
+        }
+
+        window.onload = function() {
+            fetchCharacterData();
+        };
+
+        function sortTable(columnIndex) {
+            var table = document.getElementById("characterTable");
+            var rows = Array.from(table.rows).slice(1);
+            var isNumericColumn = columnIndex > 0; // Win Rate, Wins, and Losses are numeric
+
+            rows.sort(function(a, b) {
+                var cellA = a.cells[columnIndex].innerText;
+                var cellB = b.cells[columnIndex].innerText;
+
+                if (isNumericColumn) {
+                    var numA = parseFloat(cellA.replace('%', ''));
+                    var numB = parseFloat(cellB.replace('%', ''));
+                    return numB - numA; // Sort numerically, highest to lowest
+                } else {
+                    return cellA.localeCompare(cellB); // Sort alphabetically
+                }
+            });
+
+            rows.forEach(function(row) {
+                table.tBodies[0].appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>
