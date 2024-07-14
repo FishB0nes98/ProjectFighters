@@ -1,8 +1,461 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Loading Screen</title>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+		
+		const characters = {
+			'Akuma': ['Akuma', 'Rockstar Akuma', 'Thunder God Akuma', 'Captain Akuma'],
+			'Angel': ['Angel', 'Blossom Angel', 'Voidborn Angel'],
+			'Astaroth': ['Astaroth', 'Arctic Monster Astaroth', 'Royal Guard Astaroth', 'Sand Soldier Astaroth', 'Infernal Astaroth'],
+			'Ayane': ['Ayane', 'Obsidian Wraith Ayane'],
+			'Birdie': ['Birdie', 'Professional Weightlifter Birdie', 'Rockstar Birdie', 'Sand Soldier Birdie', 'Infernal Birdie'],
+			'Blanka': ['Blanka', 'Blanka Red', 'Professional Baller Blanka'],
+			'Cham Cham': ['Cham Cham', 'Blossom Cham Cham', 'Cham Cham Monochrome'],
+			'Elphelt': ['Elphelt', 'Cyber Hunter Elphelt', 'Maid Elphelt', 'Summertime Elphelt'],
+			'Erron Black': ['Erron Black', 'Arctic Hunter Erron Black', 'Country Erron Black', 'Mafia Leader Erron Black'],
+			'Ibuki': ['Ibuki', 'Cyber Ninja Ibuki', 'Demon Hunter Ibuki', 'DJ Ibuki', 'Professional Athlete Ibuki', 'Infernal Ibuki', 'Infernal Ibuki Greenfire', 'Infernal Ibuki Silver Flame', 'Infernal Ibuki Golden Flame', 'Infernal Ibuki Blue Flame'],
+			'Juri': ['Juri', 'Casual Wear Juri'],
+			'Julia': ['Julia', 'Disco Queen Julia', 'Dragon Tamer Julia', 'River Spirit Julia'],
+			'Jun': ['Jun', 'Blossom Jun', 'Dragon Tamer Jun', 'Summertime Jun'],
+			'Kotal Kahn': ['Kotal Kahn', 'Cyber Warrior Kotal Kahn', 'Demon Lord Kotal Kahn', 'Summertime Kotal Kahn'],
+			'Morrigan': ['Morrigan', 'Dragon Tamer Morrigan', 'Neon Morrigan'],
+			'Nina': ['Nina', 'Arctic Huntress Nina', 'Farmer Nina', 'Summertime Nina'],
+			'Noel': ['Noel', 'Arctic Huntress Noel', 'Officer Noel', 'Captain Noel'],
+			'Peacock': ['Peacock', 'Arctic Huntress Peacock', 'Cyber Bomber Peacock', 'Captain Peacock'],
+			'R Mika': ['R Mika', 'Phoenix R Mika', 'Pop Star R Mika', 'Professional Tennis Player R Mika'],
+			'Raiden': ['Raiden', 'Dragon Tamer Raiden', 'Master of Monks Raiden', 'Infernal Raiden', 'Raiden Red'],
+			'Reptile': ['Reptile', 'Blood Predator Reptile', 'Cyber Ninja Reptile', 'Cyber Predator Reptile', 'Summertime Reptile', 'Reptile Sand'],
+			'Scorpion': ['Scorpion', 'Scorpion Blossom', 'Scorpion Spider', 'Infernal Scorpion'],
+			'Siegfried': ['Siegfried', 'Professional Footballer Siegfried'],
+			'Talim': ['Talim', 'Sand Soldier Talim', 'Talim Bloody', 'Captain Talim'],
+			'Yugo': ['Yugo', 'Arctic Beast Yugo', 'Cyber Predator Yugo'],
+			'Shoma': ['Shoma', 'Summertime Shoma', 'Pirate Shoma', 'Pirate Shoma Blue', 'Pirate Shoma Jade', 'Pirate Shoma Monochrome', 'Pirate Shoma Violet'],
+			'Sub Zero': ['Sub Zero', 'Arcane Sorcerer Sub Zero']
+		};
+
+        const skinToBaseCharacterMap = {
+            'Akuma': 'Akuma',
+            'Angel': 'Angel',
+            'Arctic Beast Yugo': 'Yugo',
+            'Arctic Hunter Erron Black': 'Erron Black',
+            'Arctic Huntress Nina': 'Nina',
+            'Arctic Huntress Noel': 'Noel',
+            'Arctic Huntress Peacock': 'Peacock',
+            'Arctic Monster Astaroth': 'Astaroth',
+            'Astaroth': 'Astaroth',
+            'Ayane': 'Ayane',
+            'Birdie': 'Birdie',
+            'Blanka': 'Blanka',
+            'Blood Predator Reptile': 'Reptile',
+            'Blossom Angel': 'Angel',
+            'Blossom Cham Cham': 'Cham Cham',
+            'Blossom Jun': 'Jun',
+            'Scorpion Blossom': 'Scorpion',
+            'Cham Cham': 'Cham Cham',
+            'Country Erron Black': 'Erron Black',
+            'Cyber Bomber Peacock': 'Peacock',
+            'Cyber Hunter Elphelt': 'Elphelt',
+            'Cyber Ninja Reptile': 'Reptile',
+            'Cyber Ninja Ibuki': 'Ibuki',
+            'Cyber Predator Yugo': 'Yugo',
+            'Cyber Predator Reptile': 'Reptile',
+            'Cyber Warrior Kotal Kahn': 'Kotal Kahn',
+            'Demon Hunter Ibuki': 'Ibuki',
+            'Demon Lord Kotal Kahn': 'Kotal Kahn',
+            'Disco Queen Julia': 'Julia',
+            'DJ Ibuki': 'Ibuki',
+            'Dragon Tamer Julia': 'Julia',
+            'Dragon Tamer Jun': 'Jun',
+            'Dragon Tamer Morrigan': 'Morrigan',
+            'Dragon Tamer Raiden': 'Raiden',
+            'Elphelt': 'Elphelt',
+            'Blanka Red': 'Blanka',
+            'Erron Black': 'Erron Black',
+            'Farmer Nina': 'Nina',
+            'Ibuki': 'Ibuki',
+            'Julia': 'Julia',
+            'Jun': 'Jun',
+            'Kotal Kahn': 'Kotal Kahn',
+            'Mafia Leader Erron Black': 'Erron Black',
+            'Maid Elphelt': 'Elphelt',
+            'Master of Monks Raiden': 'Raiden',
+            'Morrigan': 'Morrigan',
+            'Neon Morrigan': 'Morrigan',
+            'Nina': 'Nina',
+            'Noel': 'Noel',
+            'Obsidian Wraith Ayane': 'Ayane',
+            'Officer Noel': 'Noel',
+            'Peacock': 'Peacock',
+            'Phoenix R Mika': 'R Mika',
+            'Pop Star R Mika': 'R Mika',
+            'Professional Athlete Ibuki': 'Ibuki',
+            'Professional Weightlifter Birdie': 'Birdie',
+            'Professional Baller Blanka': 'Blanka',
+            'Professional Footballer Siegfried': 'Siegfried',
+            'Professional Tennis Player R Mika': 'R Mika',
+            'R Mika': 'R Mika',
+            'Raiden': 'Raiden',
+            'Ibuki Red': 'Ibuki',
+            'Reptile': 'Reptile',
+            'River Spirit Julia': 'Julia',
+            'Rockstar Akuma': 'Akuma',
+            'Rockstar Birdie': 'Birdie',
+            'Royal Guard Astaroth': 'Astaroth',
+            'Sand Soldier Astaroth': 'Astaroth',
+            'Sand Soldier Birdie': 'Birdie',
+            'Reptile Sand': 'Reptile',
+            'Sand Soldier Talim': 'Talim',
+            'Scorpion': 'Scorpion',
+            'Siegfried': 'Siegfried',
+            'Scorpion Spider': 'Scorpion',
+            'Street Fighter Hugo': 'Hugo',
+            'Talim': 'Talim',
+            'Thunder God Akuma': 'Akuma',
+            'Talim Bloody': 'Talim',
+            'Voidborn Angel': 'Angel',
+            'Yugo': 'Yugo',
+			'Summertime Elphelt': 'Elphelt',
+			'Summertime Jun': 'Jun',
+			'Summertime Kotal Kahn': 'Kotal Kahn',
+			'Summertime Nina': 'Nina',
+			'Summertime Reptile': 'Reptile',
+			'Summertime Shoma': 'Shoma',
+			'Shoma': 'Shoma',
+			'Juri': 'Juri',
+			'Casual Wear Juri': 'Juri',
+			'Infernal Raiden': 'Raiden',
+			'Infernal Birdie': 'Birdie',
+			'Infernal Ibuki': 'Ibuki',
+			'Infernal Ibuki Greenfire': 'Ibuki',
+			'Infernal Astaroth': 'Astaroth',
+			'Infernal Scorpion': 'Scorpion',
+			'Cham Cham Monochrome': 'Cham Cham',
+			'Raiden Red': 'Raiden',
+			'Infernal Ibuki Silver Flame': 'Ibuki',
+			'Infernal Ibuki Golden Flame': 'Ibuki',
+			'Infernal Ibuki Blue Flame': 'Ibuki',
+        };
+
+		window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    console.log("User is logged in:", user.uid);
+                    const userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        window.userRef = userRef;
+						
+					// Assign random character to each player slot
+                        assignRandomCharacters();
+
+						if (userData.skins) {
+							populateSkinButtons(userData.skins);
+						} else {
+							console.log("No skins available.");
+						}
+					} else {
+						console.log("User data not found in database.");
+					}
+				} else {
+					console.log("User is not logged in.");
+				}
+			});
+
+                document.getElementById('decide-game-button').addEventListener('click', async function() {
+                this.disabled = true; // Disable the button after it's clicked
+                const team1 = [];
+                const team2 = [];
+
+                for (let i = 1; i <= 5; i++) {
+                    const team1Player = document.getElementById(`team1-player${i}`);
+                    const team2Player = document.getElementById(`team2-player${i}`);
+
+                    // Check if the player slots exist
+                    if (team1Player) {
+                        const team1Skin = team1Player.querySelector('.skin-name').textContent;
+                        if (team1Skin) team1.push(team1Skin);
+                    } else {
+                        console.error(`Element with id team1-player${i} not found.`);
+                    }
+
+                    if (team2Player) {
+                        const team2Skin = team2Player.querySelector('.skin-name').textContent;
+                        if (team2Skin) team2.push(team2Skin);
+                    } else {
+                        console.error(`Element with id team2-player${i} not found.`);
+                    }
+                }
+
+                // Determine the winning team (for example, randomly)
+                const winner = Math.random() < 0.5 ? 'team1' : 'team2';
+                const loser = winner === 'team1' ? 'team2' : 'team1';
+
+                await updateDatabase(team1, team2, winner);
+                await rewardPlayer(); // Call the rewardPlayer function here
+                await rewardCharacterMoney(); // Call the rewardCharacterMoney function here
+                await incrementQuestID(); // Call the function to increment questid1
+                displayResult(winner, loser);
+            });
+        };
+
+        function assignRandomCharacters() {
+            const playerSlots = document.querySelectorAll('.player-slot');
+            playerSlots.forEach(slot => {
+                const character = getRandomCharacter();
+                slot.dataset.character = character;
+                slot.querySelector('.skin-name').textContent = character;
+            });
+        }
+
+        function getRandomCharacter() {
+            const keys = Object.keys(characters);
+            return keys[Math.floor(Math.random() * keys.length)];
+        }
+
+        function populateSkinButtons(skins) {
+            const playerSlots = document.querySelectorAll('.player-slot');
+            playerSlots.forEach(slot => {
+                const button = slot.querySelector('.choose-fighter-button');
+                if (button) {
+                    button.addEventListener('click', () => openSkinSelectionWindow(skins, slot));
+                } else {
+                    console.error('Button not found in player slot:', slot);
+                }
+            });
+        }
+
+        function openSkinSelectionWindow(skins, playerSlot) {
+            const modal = document.getElementById('skin-selection-modal');
+            const skinContainer = document.getElementById('skin-container');
+            const searchInput = document.getElementById('skin-search');
+            const character = playerSlot.dataset.character;
+
+            skinContainer.innerHTML = ''; // Clear previous skins
+            searchInput.value = ''; // Clear search input
+
+            if (character && characters[character]) {
+                characters[character].forEach(skin => {
+                    if (skins[skin] === 1) {
+                        const img = document.createElement('img');
+                        img.src = `Loading Screen/${skin}.png`; // Assuming all skins are .png
+                        img.alt = skin;
+                        img.classList.add('skin-image');
+                        img.addEventListener('click', () => selectSkin(playerSlot, skin));
+                        skinContainer.appendChild(img);
+                    }
+                });
+            }
+
+            searchInput.addEventListener('input', (e) => {
+                const filter = e.target.value.toLowerCase();
+                const skinImages = skinContainer.getElementsByTagName('img');
+                Array.from(skinImages).forEach(img => {
+                    const skinName = img.alt.toLowerCase();
+                    img.style.display = skinName.includes(filter) ? '' : 'none';
+                });
+            });
+
+            modal.style.display = 'block';
+        }
+
+        function closeSkinSelectionWindow() {
+            document.getElementById('skin-selection-modal').style.display = 'none';
+        }
+
+        function selectSkin(playerSlot, skin) {
+            const img = playerSlot.querySelector('img');
+            const skinNameDiv = playerSlot.querySelector('.skin-name');
+
+            loadImage(img, `Loading Screen/${skin}`);
+            skinNameDiv.textContent = skin;
+            skinNameDiv.style.display = 'block';
+
+            playerSlot.querySelector('.choose-fighter-button').style.display = 'none'; // Hide the button
+            closeSkinSelectionWindow();
+            checkAllSkinsSelected();
+        }
+
+        function loadImage(imgElement, basePath) {
+            const extensions = ['.png'];
+            let found = false;
+            for (const ext of extensions) {
+                const img = new Image();
+                img.src = basePath + ext;
+                img.onload = () => {
+                    if (!found) {
+                        imgElement.src = img.src;
+                        found = true;
+                    }
+                };
+                img.onerror = () => {
+                    if (!found) {
+                        imgElement.src = ''; // Clear src if not found
+                    }
+                };
+            }
+        }
+
+        function checkAllSkinsSelected() {
+            const buttons = document.querySelectorAll('.choose-fighter-button');
+            let allSelected = true;
+            buttons.forEach(button => {
+                if (button.style.display !== 'none') {
+                    allSelected = false;
+                }
+            });
+
+            document.getElementById('decide-game-container').style.display = allSelected ? 'block' : 'none';
+        }
+
+        async function updateDatabase(team1, team2, winner) {
+            const updates = {};
+            const userId = auth.currentUser.uid;
+
+            for (const skin of team1) {
+                const baseCharacter = skinToBaseCharacterMap[skin] || skin;
+                const characterRef = ref(database, `characters/${baseCharacter}`);
+                const userCharacterRef = ref(database, `users/${userId}/characters/${baseCharacter}`);
+
+                const charSnapshot = await get(characterRef);
+                const userCharSnapshot = await get(userCharacterRef);
+
+                const charData = charSnapshot.val() || { win: 0, lose: 0 };
+                const userCharData = userCharSnapshot.val() || { win: 0, lose: 0 };
+
+                if (winner === 'team1') {
+                    charData.win += 1;
+                    userCharData.win += 1;
+                } else {
+                    charData.lose += 1;
+                    userCharData.lose += 1;
+                }
+
+                updates[`characters/${baseCharacter}`] = charData;
+                updates[`users/${userId}/characters/${baseCharacter}`] = userCharData;
+            }
+
+            for (const skin of team2) {
+                const baseCharacter = skinToBaseCharacterMap[skin] || skin;
+                const characterRef = ref(database, `characters/${baseCharacter}`);
+                const userCharacterRef = ref(database, `users/${userId}/characters/${baseCharacter}`);
+
+                const charSnapshot = await get(characterRef);
+
+                const charData = charSnapshot.val() || { win: 0, lose: 0 };
+                const userCharData = (await get(userCharacterRef)).val() || { win: 0, lose: 0 };
+
+                if (winner === 'team2') {
+                    charData.win += 1;
+                    userCharData.win += 1;
+                } else {
+                    charData.lose += 1;
+                    userCharData.lose += 1;
+                }
+
+                updates[`characters/${baseCharacter}`] = charData;
+                updates[`users/${userId}/characters/${baseCharacter}`] = userCharData;
+            }
+
+            await update(ref(database), updates);
+        }
+
+        async function rewardPlayer() {
+            const userId = auth.currentUser.uid;
+            const userRef = ref(database, `users/${userId}`);
+            const snapshot = await get(userRef);
+            const userData = snapshot.val();
+
+            if (userData) {
+                const exp = userData.BattlePassExp || 0;
+                const reward = Math.floor(Math.random() * 16) + 30; // Random number between 30 and 45
+                const newExp = exp + reward;
+
+                console.log('Current Exp:', exp);
+                console.log('Reward:', reward);
+                console.log('New Exp:', newExp);
+
+                await update(userRef, { BattlePassExp: newExp });
+                console.log('BattlePassExp updated successfully.');
+            }
+        }
+
+        async function rewardCharacterMoney() {
+            try {
+                const userId = auth.currentUser.uid;
+                const userRef = ref(database, `users/${userId}`);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+
+                if (userData) {
+                    const currentCM = userData.CM || 0;
+                    const reward = Math.floor(Math.random() * 181) + 300; // Random number between 300 and 480
+                    const newCM = currentCM + reward;
+
+                    console.log('Current CM:', currentCM);
+                    console.log('Reward:', reward);
+                    console.log('New CM:', newCM);
+
+                    await update(userRef, { CM: newCM });
+                    console.log('CM updated successfully.');
+                }
+            } catch (error) {
+                console.error('Error updating CM:', error);
+            }
+        }
+
+        async function incrementQuestID() {
+            const userId = auth.currentUser.uid;
+            const userRef = ref(database, `users/${userId}`);
+            const snapshot = await get(userRef);
+            const userData = snapshot.val();
+
+            if (userData && userData.questid1 !== undefined) {
+                const currentQuestID = userData.questid1;
+                const newQuestID = currentQuestID + 1;
+
+                console.log('Current QuestID:', currentQuestID);
+                console.log('New QuestID:', newQuestID);
+
+                await update(userRef, { questid1: newQuestID });
+                console.log('QuestID updated successfully.');
+            }
+        }
+
+        function displayResult(winner, loser) {
+            const resultContainer = document.getElementById('game-result');
+            resultContainer.innerHTML = `Winner: ${winner}<br>Loser: ${loser}`;
+            resultContainer.style.display = 'block';
+        }
+    </script>
     <style>
         body {
             margin: 0;
@@ -15,63 +468,66 @@
             align-items: center;
         }
         .menu {
-            position: top;
             top: 0;
             width: 100%;
-            background-color: #444;
-            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.8);
             padding: 10px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
         }
+
+        .menu:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
         .menu .menu-items {
             display: flex;
         }
+
         .menu a {
             display: block;
             color: white;
             text-align: center;
             padding: 14px 16px;
             text-decoration: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
             transition: background-color 0.3s, transform 0.3s;
         }
+
         .menu a:hover {
             background-color: #111;
             transform: scale(1.1);
         }
-        .play-button {
+
+		.play-button {
+            margin-right: 20px; /* Adjust as needed */
             background-color: orange;
             color: black;
             border-radius: 20px;
-            padding: 14px 30px;
             font-size: 18px;
             font-weight: bold;
             text-decoration: none;
             transition: background-color 0.3s, transform 0.3s, color 0.3s;
-            margin-right: 960px;
+            padding: 10px 20px;
         }
+
         .play-button:hover {
             background-color: darkgoldenrod;
             color: white;
             transform: scale(1.2);
         }
-        .play-button {
-            background-color: orange;
-            color: black;
-            border-radius: 20px;
-            padding: 14px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            text-decoration: none;
-            transition: background-color 0.3s, transform 0.3s, color 0.3s;
-            margin-right: 960px;
-        }
-        .play-button:hover {
-            background-color: darkgoldenrod;
-            color: white;
-            transform: scale(1.2);
-        }
+		.battlepass-button {
+			background-color: red; /* Gold background */
+			color: #000; /* Black text */
+			border-radius: 25px; /* Rounded corners */
+			font-size: 12px;
+			text-transform: uppercase; /* Uppercase text */
+			margin-right: 300px;
+		}
         #loading-screen-container {
             display: flex;
             flex-direction: column;
@@ -85,15 +541,21 @@
             justify-content: center;
             align-items: center;
             width: 100%;
-            margin: 10px 0;
+			margin-top: 90px;
+        }
+		.team-container2 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
         }
         .player-slot {
             width: 250px;
             height: 375px;
             margin: 0 10px;
-            background-color: #222;
+            background-color: black;
             border: 2px solid #444;
-            border-radius: 10px;
+            border-radius: 20px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -101,13 +563,18 @@
             position: relative;
         }
         .player-slot img {
-            width: 100%;
-            height: auto;
+            width: 100%; /* Adjust the width as needed */
+            height: auto; /* Maintain aspect ratio */
         }
-        .skin-dropdown {
-            width: 100%;
+        .choose-fighter-button {
             position: absolute;
             bottom: 0;
+            width: 100%;
+            background-color: #444;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
         }
         .skin-name {
             position: absolute;
@@ -127,154 +594,191 @@
             font-weight: bold;
             margin: 20px 0;
         }
+        #decide-game-container {
+            margin-top: 20px;
+        }
+        #result-container {
+            margin-top: 20px;
+            display: none;
+        }
+        #skin-selection-modal {
+            display: none; /* Initially hidden */
+            position: fixed; /* Fixed positioning to stay in viewport */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #skin-selection-content {
+            width: 60%;
+            height: 80%;
+            max-width: 800px;
+            max-height: 600px;
+            background-color: #2c2f33; /* Modal background color */
+            border-radius: 15px; /* Rounded corners */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Shadow for modern look */
+            overflow: hidden; /* Prevent content overflow */
+            padding: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            border: 2px solid #444; /* Border for modern look */
+            transition: transform 0.3s ease-in-out;
+            transform: translateY(0); /* Center the modal */
+        }
+
+        #skin-search {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .skin-image {
+            width: 150px; /* Adjusted size to be smaller while maintaining aspect ratio */
+            height: auto; /* Maintain aspect ratio */
+            margin: 10px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-radius: 10px; /* Rounded corners for a modern look */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .skin-image:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        #close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            outline: none;
+            transition: color 0.3s;
+        }
+
+        #close-modal:hover {
+            color: #ff4444;
+        }
+
+        #skin-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-height: calc(100% - 80px); /* Ensures container fits within modal */
+            overflow-y: auto; /* Makes the container scrollable */
+        }
+        #team-selection-container {
+            width: 90vw; /* Almost fullscreen width */
+            height: 90vh; /* Almost fullscreen height */
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+        }
     </style>
-</head>
+<head>	
 <body>
+    <!-- Menu -->
     <div class="menu">
         <div class="menu-items">
             <a href="home.html">Home</a>
             <a href="Store.html">Store</a>
             <a href="event.html">Event</a>
             <a href="Team Builder.html">Team Builder</a>
+            <a href="championstats.html">Statistics</a>
         </div>
-        <a href="Game Modes.html" class="play-button">Play</a>
+        <div>
+            <a href="battlepass.html" class="battlepass-button">Battlepass</a>
+        </div>
+        <div>
+            <a href="Game Modes.html" class="play-button">Play</a>
+        </div>
     </div>
-    <div id="loading-screen-container">
-        <div class="team-container" id="team1">
-            <div class="player-slot" id="team1-player1">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
-            <div class="player-slot" id="team1-player2">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
-            <div class="player-slot" id="team1-player3">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
-            <div class="player-slot" id="team1-player4">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
-            <div class="player-slot" id="team1-player5">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
+    <div class="team-container" id="team1">
+        <div class="player-slot" id="team1-player1">
+            <div class="choose-fighter-button">Choose Your Fighter</div>
+            <img src="" alt="Player 1 Skin">
+            <div class="skin-name"></div>
         </div>
-
-        <div id="vs-text">VS</div>
-
-        <div class="team-container" id="team2">
-            <div class="player-slot" id="team2-player1">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
-            <div class="player-slot" id="team2-player2">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
-            <div class="player-slot" id="team2-player3">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
-            <div class="player-slot" id="team2-player4">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
-            <div class="player-slot" id="team2-player5">
-                <img src="" alt="">
-                <div class="skin-name"></div>
-            </div>
+        <div class="player-slot" id="team1-player2">
+            <div class="choose-fighter-button">Choose Your Fighter</div>
+            <img src="" alt="Player 2 Skin">
+            <div class="skin-name"></div>
+        </div>
+        <div class="player-slot" id="team1-player3">
+            <div class="choose-fighter-button">Choose Your Fighter</div>
+            <img src="" alt="Player 3 Skin">
+            <div class="skin-name"></div>
+        </div>
+        <div class="player-slot" id="team1-player4">
+            <div class="choose-fighter-button">Choose Your Fighter</div>
+            <img src="" alt="Player 4 Skin">
+            <div class="skin-name"></div>
+        </div>
+        <div class="player-slot" id="team1-player5">
+            <div class="choose-fighter-button">Choose Your Fighter</div>
+            <img src="" alt="Player 5 Skin">
+            <div class="skin-name"></div>
         </div>
     </div>
 
-    <!-- Hidden dropdown template -->
-    <select id="skin-dropdown-template" class="skin-dropdown" style="display:none;">
-        <option value="">Select Skin</option>
-    </select>
+    <div id="vs-text">VS</div>
 
-    <script>
-        const characters = [
-            { name: 'Akuma', skins: ['Akuma.png', 'Rockstar Akuma.png', 'Thunder God Akuma.png'] },
-            { name: 'Angel', skins: ['Angel.png', 'Voidborn Angel.png', 'Blossom Angel.png'] },
-            { name: 'Astaroth', skins: ['Astaroth.png', 'Royal Guard Astaroth.png', 'Sand Soldier Astaroth.png'] },
-            { name: 'Birdie', skins: ['Birdie.png', 'Rockstar Birdie.png', 'Sand Soldier Birdie.png'] },
-            { name: 'Blanka', skins: ['Blanka.png', 'Enraged Blanka.png'] },
-            { name: 'Cham Cham', skins: ['Cham Cham.png', 'Blossom Cham Cham.png'] },
-            { name: 'Elphelt', skins: ['Elphelt.png', 'Cyber Hunter Elphelt.png', 'Maid Elphelt.png'] },
-            { name: 'Erron Black', skins: ['Erron Black.png', 'Country Erron Black.png', 'Mafia Leader Erron Black.png'] },
-            { name: 'Ibuki', skins: ['Ibuki.png', 'Demon Hunter Ibuki.png', 'DJ Ibuki.png', 'Red Stone Ibuki.png'] },
-            { name: 'Julia', skins: ['Julia.png', 'Disco Queen Julia.png', 'River Spirit Julia.png'] },
-            { name: 'Jun', skins: ['Jun.png', 'Blossom Jun.png'] },
-            { name: 'Kotal Kahn', skins: ['Kotal Kahn.png', 'Cyber Warrior Kotal Kahn.png', 'Demon Lord Kotal Kahn.png'] },
-            { name: 'Morrigan', skins: ['Morrigan.png', 'Neon Morrigan.png'] },
-            { name: 'Noel', skins: ['Noel.png', 'Officer Noel.png'] },
-            { name: 'Peacock', skins: ['Peacock.png', 'Cyber Bomber Peacock.png'] },
-            { name: 'R.Mika', skins: ['R.Mika.png', 'Phoenix R.Mika.png', 'Pop Star R.Mika.png'] },
-            { name: 'Raiden', skins: ['Raiden.png', 'Master of Monks Raiden.png'] },
-            { name: 'Reptile', skins: ['Reptile.png', 'Blood Predator Reptile.png', 'Cyber Ninja Reptile.png', 'Sand Soldier Reptile.png'] },
-            { name: 'Scorpion', skins: ['Scorpion.png', 'Blossom Scorpion.png', 'Spider Scorpion.png'] },
-            { name: 'Talim', skins: ['Talim.png', 'Sand Soldier Talim.png', 'Vampire Talim.png'] },
-            { name: 'Yugo', skins: ['Yugo.png', 'Cyber Predator Yugo.png', 'Street Fighter Yugo.png'] },
-            // Add more characters and skins as necessary
-        ];
+    <div class="team-container2" id="team2">
+        <div class="player-slot" id="team2-player1">
+            <div class="choose-fighter-button">Choose Your Fighter</div>
+            <img src="" alt="Player 6 Skin">
+            <div class="skin-name"></div>
+        </div>
+        <div class="player-slot" id="team2-player2">
+            <div class="choose-fighter-button">Choose Your Fighter</div>
+            <img src="" alt="Player 7 Skin">
+            <div class="skin-name"></div>
+        </div>
+        <div class="player-slot" id="team2-player3">
+            <div class="choose-fighter-button">Choose Your Fighter</div>
+            <img src="" alt="Player 8 Skin">
+            <div class="skin-name"></div>
+        </div>
+        <div class="player-slot" id="team2-player4">
+            <div class="choose-fighter-button">Choose Your Fighter</div>
+            <img src="" alt="Player 9 Skin">
+            <div class="skin-name"></div>
+        </div>
+        <div class="player-slot" id="team2-player5">
+            <div class="choose-fighter-button">Choose Your Fighter</div>
+            <img src="" alt="Player 10 Skin">
+            <div class="skin-name"></div>
+        </div>
+    </div>
+    <div id="decide-game-container">
+        <button id="decide-game-button">Decide Game</button>
+    </div>
 
-        function getRandomCharacter(characters, assignedCharacters) {
-            let character;
-            do {
-                character = characters[Math.floor(Math.random() * characters.length)];
-            } while (assignedCharacters.includes(character.name));
-            assignedCharacters.push(character.name);
-            return character;
-        }
+    <div id="game-result" style="display:none;"></div>
 
-        function createSkinOptions(skins) {
-            const fragment = document.createDocumentFragment();
-            skins.forEach(skin => {
-                const option = document.createElement('option');
-                option.value = skin;
-                option.textContent = skin.split('.png')[0];
-                fragment.appendChild(option);
-            });
-            return fragment;
-        }
-
-        function updateSkin(dropdown, playerImg, skinNameDiv) {
-            const selectedSkin = dropdown.value;
-            if (selectedSkin) {
-                playerImg.src = `Loading Screen/${selectedSkin}`;
-                skinNameDiv.innerText = dropdown.options[dropdown.selectedIndex].text;
-                skinNameDiv.style.display = 'block';
-                dropdown.style.display = 'none';
-            } else {
-                playerImg.src = '';
-                skinNameDiv.style.display = 'none';
-                dropdown.style.display = 'block';
-            }
-        }
-
-        window.onload = function() {
-            const dropdownTemplate = document.getElementById('skin-dropdown-template');
-            const teams = [document.getElementById('team1'), document.getElementById('team2')];
-            let assignedCharacters = [];
-
-            teams.forEach(team => {
-                Array.from(team.children).forEach(playerSlot => {
-                    const playerImg = playerSlot.querySelector('img');
-                    const skinNameDiv = playerSlot.querySelector('.skin-name');
-                    const dropdownClone = dropdownTemplate.cloneNode(true);
-                    dropdownClone.style.display = 'block';
-
-                    // Assign a unique character to each player slot
-                    const character = getRandomCharacter(characters, assignedCharacters);
-                    dropdownClone.appendChild(createSkinOptions(character.skins));
-
-                    dropdownClone.onchange = () => updateSkin(dropdownClone, playerImg, skinNameDiv);
-                    playerSlot.appendChild(dropdownClone);
-                });
-            });
-        };
-    </script>
+    <div id="skin-selection-modal">
+        <div id="skin-selection-content">
+            <input type="text" id="skin-search" placeholder="Search skins">
+            <div id="skin-container"></div>
+            <button id="close-modal">&times;</button>
+        </div>
+    </div>
 </body>
 </html>

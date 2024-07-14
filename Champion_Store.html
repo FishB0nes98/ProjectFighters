@@ -90,46 +90,72 @@
             padding: 0;
         }
         .menu {
-            position: sticky;
+            position: fixed;
             top: 0;
             width: 100%;
-            background-color: #444;
-            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.8);
             padding: 10px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             z-index: 1000;
+            transition: background-color 0.3s ease;
         }
+
+        .menu:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
         .menu .menu-items {
             display: flex;
         }
+
         .menu a {
             display: block;
             color: white;
             text-align: center;
             padding: 14px 16px;
             text-decoration: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
             transition: background-color 0.3s, transform 0.3s;
         }
+
         .menu a:hover {
             background-color: #111;
             transform: scale(1.1);
         }
-        .menu .play-button {
-            background-color: #ff416c;
+
+		.play-button {
+            margin-right: 20px; /* Adjust as needed */
+            background-color: orange;
+            color: black;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s, color 0.3s;
             padding: 10px 20px;
-            border-radius: 4px;
         }
-        .menu .play-button:hover {
-            background-color: #ff4b2b;
+
+        .play-button:hover {
+            background-color: darkgoldenrod;
+            color: white;
+            transform: scale(1.2);
         }
+		.battlepass-button {
+			background-color: red; /* Gold background */
+			color: #000; /* Black text */
+			border-radius: 25px; /* Rounded corners */
+			font-size: 12px;
+			text-transform: uppercase; /* Uppercase text */
+			margin-right: 300px;
+		}
         .currency {
+			position: fixed;
             text-align: right;
             padding: 10px 20px;
-            background-color: #1f1f1f;
-            border-bottom: 1px solid #333;
+            background-color: rgba(0, 0, 0, 0.8);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             color: #e0e0e0;
         }
@@ -138,6 +164,7 @@
             flex-wrap: wrap;
             justify-content: center;
             padding: 20px;
+			margin-top: 70px;
         }
         .champion-item {
             background: #1f1f1f;
@@ -200,19 +227,6 @@
             height: 20px;
             margin-right: 5px;
 		}
-		.battlepass-button {
-			background-color: red; /* Gold background */
-			color: #000; /* Black text */
-			border-radius: 25px; /* Rounded corners */
-			font-size: 12px;
-			text-transform: uppercase; /* Uppercase text */
-			margin-right: 300px;
-		}
-
-		.battlepass-button::before {
-			content: "🔥️ "; /* Sun emoji */
-			margin-right: 5px;
-		}
     </style>
 </head>
 <body>
@@ -270,12 +284,12 @@
             <button onclick="purchaseChampion(this)">Buy</button>
         </div>
 		<div class="champion-item" data-champion-name="Sub Zero" data-champion-price="4500">
-            <img src="Default Splash/Sub Zero.png" alt="Sub Zero" class="champion-image gray">
+            <img src="Default Splash/Sub Zero.png" alt="Sub Zero"">
             <div class="price">
                 <img src="res/img/cm.png" alt="CM">
                 <span>4500</span>
             </div>
-            <button  class= "gray">Unavailable</button>
+             <button onclick="purchaseChampion(this)">Buy</button>
         </div>
 		<div class="champion-item" data-champion-name="Chrstie" data-champion-price="4500">
             <img src="Default Splash/Christie.png" alt="Chrstie" class="champion-image gray">

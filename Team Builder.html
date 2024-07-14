@@ -17,7 +17,7 @@
         h1 {
             text-align: center;
             font-size: 36px;
-            margin-top: 20px;
+            margin-top: 90px;
         }
         #team-builder-container {
             display: flex;
@@ -67,47 +67,67 @@
             border-color: red;
         }
         .menu {
-            position: absolute;
+            position: fixed;
             top: 0;
             width: 100%;
-            background-color: #444;
-            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.8);
             padding: 10px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
         }
+
+        .menu:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
         .menu .menu-items {
             display: flex;
         }
+
         .menu a {
             display: block;
             color: white;
             text-align: center;
             padding: 14px 16px;
             text-decoration: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
             transition: background-color 0.3s, transform 0.3s;
         }
+
         .menu a:hover {
             background-color: #111;
             transform: scale(1.1);
         }
-        .play-button {
+
+		.play-button {
+            margin-right: 20px; /* Adjust as needed */
             background-color: orange;
             color: black;
             border-radius: 20px;
-            padding: 14px 30px;
             font-size: 18px;
             font-weight: bold;
             text-decoration: none;
             transition: background-color 0.3s, transform 0.3s, color 0.3s;
-            margin-right: 960px;
+            padding: 10px 20px;
         }
+
         .play-button:hover {
             background-color: darkgoldenrod;
             color: white;
             transform: scale(1.2);
         }
+		.battlepass-button {
+			background-color: red; /* Gold background */
+			color: #000; /* Black text */
+			border-radius: 25px; /* Rounded corners */
+			font-size: 12px;
+			text-transform: uppercase; /* Uppercase text */
+			margin-right: 300px;
+		}
         .team, .ban {
             margin: 20px 0;
             display: flex;
@@ -139,19 +159,6 @@
             max-width: 50px;
             max-height: 50px;
         }
-		.battlepass-button {
-			background-color: red; /* Gold background */
-			color: #000; /* Black text */
-			border-radius: 25px; /* Rounded corners */
-			font-size: 12px;
-			text-transform: uppercase; /* Uppercase text */
-			margin-right: 300px;
-		}
-
-		.battlepass-button::before {
-			content: "🔥 "; /* Sun emoji */
-			margin-right: 5px;
-		}
     </style>
 </head>
 <body>
@@ -230,6 +237,7 @@
 		<img src="Icons/Siegfried.png" alt="Siegfried" class="champion-image" onclick="selectChampion('Siegfried')">
 		<img src="Icons/Shoma.png" alt="Shoma" class="champion-image" onclick="selectChampion('Shoma')">
 		<img src="Icons/Juri.png" alt="Juri" class="champion-image" onclick="selectChampion('Juri')">
+		<img src="Icons/Sub Zero.png" alt="Sub Zero" class="champion-image" onclick="selectChampion('Sub Zero')">
     </div>
 
     <script>

@@ -126,53 +126,82 @@
             margin-top: 50px;
             color: #ffcc00;
         }
+                /* Transparent Menu */
         .menu {
+            position: fixed;
             top: 0;
             width: 100%;
-            background-color: #444;
-            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.8);
             padding: 10px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
         }
+
+        .menu:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
         .menu .menu-items {
             display: flex;
         }
+
         .menu a {
             display: block;
             color: white;
             text-align: center;
             padding: 14px 16px;
             text-decoration: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
             transition: background-color 0.3s, transform 0.3s;
         }
+
         .menu a:hover {
             background-color: #111;
             transform: scale(1.1);
         }
-        .play-button {
+
+		.play-button {
+            margin-right: 20px; /* Adjust as needed */
             background-color: orange;
             color: black;
             border-radius: 20px;
-            padding: 14px 30px;
             font-size: 18px;
             font-weight: bold;
             text-decoration: none;
             transition: background-color 0.3s, transform 0.3s, color 0.3s;
-            margin-right: 920px;
+            padding: 10px 20px;
         }
+
         .play-button:hover {
             background-color: darkgoldenrod;
             color: white;
             transform: scale(1.2);
         }
+		.battlepass-button {
+			background-color: red; /* Gold background */
+			color: #000; /* Black text */
+			border-radius: 25px; /* Rounded corners */
+			font-size: 12px;
+			text-transform: uppercase; /* Uppercase text */
+			margin-right: 300px;
+		}
         .container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            padding: 20px;
-            max-width: 1800px;
+            padding: 65px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+		.containerskins {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1600px;
             margin: 0 auto;
         }
         .character-icon {
@@ -231,12 +260,12 @@
 			width: 100%;
 			border: 2px solid #444;
 			border-radius: 10px;
-			transition: transform 0.2s;
+			transition: transform 0.2s, box-shadow 0.2s; /* Add box-shadow to the transition */
 		}
 
 		.skin img:hover {
-			transform: scale(1.1);
-			border-color: #ffcc00;
+			transform: scale(1.1); /* Example transform effect on hover */
+			box-shadow: 0 0 12px rgba(255, 255, 0, 0.8); /* Brighter yellow shadow on hover */
 		}
 
 		.skin-name {
@@ -334,40 +363,24 @@
         .currency-container {
             display: flex;
             align-items: center;
-            gap: 10px;
             position: fixed;
             top: 75px;
             left: 97%;
             transform: translateX(-50%);
             z-index: 1000;
+			background-color: black;
         }
-        .currency-display {
-            display: flex;
-            align-items: center;
-            background-color: black;
-            padding: 5px 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .currency-display img.currency-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 5px;
-        }
-		.battlepass-button {
-			background-color: red; /* Gold background */
-			color: #000; /* Black text */
-			border-radius: 25px; /* Rounded corners */
-			font-size: 12px;
-			text-transform: uppercase; /* Uppercase text */
-			margin-right: 300px;
-		}
-
-		.battlepass-button::before {
-				content: "🔥"; /* Sun emoji */
-				margin-right: 5px;
+		.currency-display {
+			display: flex;
+			align-items: center;
+			background-color: black;
+			padding: 5px 8px;
+			border-radius: 5px;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			font-size: 16px;
+			font-weight: bold;
+			justify-content: center;
+			width: 50px; /* Adjust width as needed */
 		}
     </style>
 </head>
@@ -388,9 +401,8 @@
         </div>
     </div>
     <div class="currency-container">
-        <div id="currency-amount" class="currency-display">
-            <img src="res/img/fm.png" alt="currency icon" class="currency-icon">
-            <span>0</span>
+		<img src="res/img/fm.png" alt="FM" style="width: 20px; height: 20px;">
+		<span id="currency-amount" class="currency-display">0</span>
         </div>
     </div>
     <div class="container" id="character-icons">
@@ -420,8 +432,9 @@
         <img src="Icons/Siegfried.png" alt="Siegfried" class="character-icon" data-character="Siegfried">
         <img src="Icons/Shoma.png" alt="Shoma" class="character-icon" data-character="Shoma">
         <img src="Icons/Juri.png" alt="Juri" class="character-icon" data-character="Juri">
+		<img src="Icons/Sub Zero.png" alt="Sub Zero" class="character-icon" data-character="SubZero">
     </div>
-<div class="container">
+<div class="containerskins">
     <!-- Group by Characters -->
     <div class="character" id="Julia">
         <h2>Julia</h2>
@@ -431,8 +444,8 @@
                 <div class="skin-name">Disco Queen Julia</div>
                 <span class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</span>
             </div>
-            <div class="skin" data-src="Skins/River Spirit Julia.jpeg" onclick="openLightbox('Skins/River Spirit Julia.jpeg', 'River Spirit Julia', 1000)">
-                <img src="Skins/River Spirit Julia.jpeg" alt="River Spirit Julia" class="scaled-image">
+            <div class="skin" data-src="Skins/River Spirit Julia.jpg" onclick="openLightbox('Skins/River Spirit Julia.jpg', 'River Spirit Julia', 1000)">
+                <img src="Skins/River Spirit Julia.jpg" alt="River Spirit Julia" class="scaled-image">
                 <div class="skin-name">River Spirit Julia</div>
                 <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
             </div>
@@ -451,8 +464,8 @@
                 <div class="skin-name">Rockstar Birdie</div>
                 <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
             </div>
-            <div class="skin" data-src="Skins/Sand Soldier Birdie.jpeg" onclick="openLightbox('Skins/Sand Soldier Birdie.jpeg', 'Sand Soldier Birdie', 1000)">
-                <img src="Skins/Sand Soldier Birdie.jpeg" alt="Sand Soldier Birdie" class="scaled-image">
+            <div class="skin" data-src="Skins/Sand Soldier Birdie.jpg" onclick="openLightbox('Skins/Sand Soldier Birdie.jpg', 'Sand Soldier Birdie', 1000)">
+                <img src="Skins/Sand Soldier Birdie.jpg" alt="Sand Soldier Birdie" class="scaled-image">
                 <div class="skin-name">Sand Soldier Birdie</div>
                 <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
             </div>
@@ -556,16 +569,21 @@
     <div class="character" id="Akuma">
         <h2>Akuma</h2>
         <div class="skins">
-            <div class="skin" data-src="Skins/Rockstar Akuma.jpeg" onclick="openLightbox('Skins/Rockstar Akuma.jpeg', 'Rockstar Akuma', 1000)">
-                <img src="Skins/Rockstar Akuma.jpeg" alt="Rockstar Akuma" class="scaled-image">
+            <div class="skin" data-src="Skins/Rockstar Akuma.jpg" onclick="openLightbox('Skins/Rockstar Akuma.jpg', 'Rockstar Akuma', 1000)">
+                <img src="Skins/Rockstar Akuma.jpg" alt="Rockstar Akuma" class="scaled-image">
                 <div class="skin-name">Rockstar Akuma</div>
                 <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
             </div>
             <div class="skin" data-src="Skins/Thunder God Akuma.png" onclick="openLightbox('Skins/Thunder God Akuma.png', 'Thunder God Akuma', 1000)">
               <img src="Skins/Thunder God Akuma.png" alt="Thunder God Akuma" class="scaled-image">
-    <div class="skin-name">Thunder God Akuma</div>
-    <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-</div>
+			<div class="skin-name">Thunder God Akuma</div>
+			<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
+		</div>
+		<div class="skin" data-src="Skins/Captain Akuma.png" onclick="openLightbox('Skins/Captain Akuma.png', 'Captain Akuma', 1000)">
+              <img src="Skins/Captain Akuma.png" alt="Captain Akuma" class="scaled-image">
+			<div class="skin-name">Captain Akuma</div>
+			<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
+		</div>
 	</div>
 	</div>
 	<div class="character" id="Elphelt">
@@ -630,6 +648,11 @@
 				<img src="Skins/Arctic Huntress Peacock.png" alt="Arctic Huntress Peacock" class="scaled-image">
 				<div class="skin-name">Arctic Huntress Peacock</div>
 				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
+			</div>
+			<div class="skin" data-src="Skins/Captain Peacock.png" onclick="openLightbox('Skins/Captain Peacock.png', 'Captain Peacock', 3000)">
+				<img src="Skins/Captain Peacock.png" alt="Captain Peacock" class="scaled-image">
+				<div class="skin-name">Arctic Huntress Peacock</div>
+				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
 			</div>
 		</div>
 	</div>
@@ -761,9 +784,14 @@
         <div class="character" id="Talim">
 		<h2>Talim</h2>
 		<div class="skins">
-			<div class="skin" data-src="Skins/Sand Soldier Talim.jpeg" onclick="openLightbox('Skins/Sand Soldier Talim.jpeg', 'Sand Soldier Talim', 2000)">
-				<img src="Skins/Sand Soldier Talim.jpeg" alt="Sand Soldier Talim" class="scaled-image">
+			<div class="skin" data-src="Skins/Sand Soldier Talim.jpg" onclick="openLightbox('Skins/Sand Soldier Talim.jpg', 'Sand Soldier Talim', 2000)">
+				<img src="Skins/Sand Soldier Talim.jpg" alt="Sand Soldier Talim" class="scaled-image">
 				<div class="skin-name">Sand Soldier Talim</div>
+				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
+			</div>
+		<div class="skin" data-src="Skins/Captain Talim.png" onclick="openLightbox('Skins/Captain Talim.png', 'Captain Talim', 2000)">
+				<img src="Skins/Captain Talim.png">
+				<div class="skin-name">Captain Talim</div>
 				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
 			</div>
 		</div>
@@ -781,13 +809,18 @@
 				<div class="skin-name">Arctic Huntress Noel</div>
 				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
 			</div>
+			<div class="skin" data-src="Skins/Captain Noel.png" onclick="openLightbox('Skins/Captain Noel.png', 'Captain Noel', 1000)">
+				<img src="Skins/Captain Noel.png" alt="Captain Noel" class="scaled-image">
+				<div class="skin-name">Captain Noel</div>
+				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
+			</div>
 		</div>
 	</div>
 	<div class="character" id="Blanka">
 		<h2>Blanka</h2>
 		<div class="skins">
-			<div class="skin" data-src="Skins/Professional Baller Blanka.jpeg" onclick="openLightbox('Skins/Professional Baller Blanka.jpeg', 'Professional Baller Blanka', 1000)">
-				<img src="Skins/Professional Baller Blanka.jpeg" alt="Professional Baller Blanka" class="scaled-image">
+			<div class="skin" data-src="Skins/Professional Baller Blanka.jpg" onclick="openLightbox('Skins/Professional Baller Blanka.jpg', 'Professional Baller Blanka', 1000)">
+				<img src="Skins/Professional Baller Blanka.jpg" alt="Professional Baller Blanka" class="scaled-image">
 				<div class="skin-name">Professional Baller Blanka</div>
 				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
 			</div>
@@ -841,6 +874,11 @@
 				<div class="skin-name small">Summertime Shoma</div>
 				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
 			</div>
+			<div class="skin" data-src="Skins/Pirate Shoma.png" onclick="openLightbox('Skins/Pirate Shoma.png', 'Pirate Shoma', 1000)">
+				<img src="Skins/Pirate Shoma.png" alt="Pirate Shoma" class="scaled-image">
+				<div class="skin-name small">Pirate Shoma</div>
+				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
+			</div>
 		</div>
 	</div>
 		<div class="character" id="Juri">
@@ -850,6 +888,16 @@
 				<img src="Skins/Casual Wear Juri.png" alt="Casual Wear Juri" class="scaled-image">
 				<div class="skin-name small">Casual Wear Juri</div>
 				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
+			</div>
+		</div>
+	</div>
+	<div class="character" id="SubZero">
+		<h2>Subzero</h2>
+		<div class="skins">
+			<div class="skin" data-src="Skins/Arcane Sorcerer Sub Zero.png" onclick="openLightbox('Skins/Arcane Sorcerer Sub Zero.png', 'Arcane Sorcerer Sub Zero', 2000)">
+				<img src="Skins/Arcane Sorcerer Sub Zero.png" alt="Arcane Sorcerer Sub Zero" class="scaled-image">
+				<div class="skin-name small">Arcane Sorcerer Sub Zero</div>
+				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
 			</div>
 		</div>
 	</div>

@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turn-based Game Prototype</title>
+    <style>
+        /* Existing styles */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image: url("res/img/raid/background.png");
+            background-size: cover; /* Cover the entire background */
+        }
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+		.enemy {
+			margin-bottom: 115px;
+			position: relative; /* Change to relative to position the buff container correctly */
+		}
+        .characters {
+            display: flex;
+            justify-content: space-around;
+            gap: 100px;
+            width: 100%;
+        }
+        .character {
+            position: relative;
+            display: inline-block;
+            flex-direction: column;
+            align-items: center;
+        }
+        .character img {
+            width: 250px;
+            height: 350px;
+            object-fit: cover;
+        }
+        .abilities, .hp-bar-container {
+            margin-top: 10px;
+        }
+        .ability {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background-color: #ccc;
+            margin: 0 5px;
+            text-align: center;
+            line-height: 50px;
+            cursor: pointer;
+        }
+        .hp-bar-container {
+            width: 250px;
+            height: 30px;
+            background-color: #ccc;
+            display: flex;
+            align-items: center;
+        }
+        .hp-bar {
+            height: 100%;
+            background-color: #ff0000;
+            transition: width 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hp-text {
+            position: absolute;
+            z-index: 1;
+            color: #fff;
+            font-weight: bold;
+        }
+        .highlight {
+            border: 2px solid red;
+            transition: border 0.1s ease;
+        }
+        .defeated {
+            filter: grayscale(100%);
+            pointer-events: none;
+        }
+        .flash-red {
+            animation: flash-red 0.5s;
+        }
+        @keyframes flash-red {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(0) sepia(1) hue-rotate(-50deg) saturate(10); }
+            100% { filter: brightness(1); }
+        }
+        .healing-icons-container {
+            display: flex;
+            justify-content: space-around;
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+        }
+        .character .healing-icon {
+            width: 35px !important;
+            height: 35px !important;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        @keyframes green-flash {
+            0% {
+                filter: brightness(1);
+            }
+            50% {
+                filter: brightness(0.5) saturate(3) hue-rotate(120deg);
+            }
+            100% {
+                filter: brightness(1);
+            }
+        }
+        .green-flash {
+            animation: green-flash 0.5s ease-in-out;
+        }
+        .buff-container {
+            position: absolute;
+            top: 5px;
+            left: 1px;
+        }
+
+        .buff-icon {
+            width: 50px !important;
+            height: 50px !important;
+            margin: 0 1px; /* Add some margin between icons */
+        }
+        .ability.on-cooldown {
+            position: relative;
+            background-color: grey; /* Adjust as needed */
+        }
+
+        .ability.on-cooldown::after {
+            content: attr(data-cooldown);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="enemy" id="boss">
+            <img src="Loading Screen/Infernal Astaroth.png" alt="Boss Enemy" style="width: 250px; height: 350px;">
+            <div class="hp-bar-container" style="top: 0; left: 42.5%;">
+                <div class="hp-bar" id="boss-hp-bar"></div>
+                <div class="hp-text" id="boss-hp-text"></div>
+            </div>
+			<div class="buff-container" id="buff-container-boss"></div>
+        </div>
+        <div class="characters">
+            <div class="character" id="character1">
+                <img src="Loading Screen/Schoolgirl Ayane.png" alt="Ayane">
+                <div class="abilities">
+                    <div class="ability" id="ayane-a1" title="Deals 420 damage and has a 50% chance to grant immunity"><img src="res/img/raid/ayanea1.jfif" alt="A1" style="width: 50px; height: 50px;"></div>
+                    <div class="ability"><img src="res/img/raid/ayanea2.jfif" alt="A2" style="width: 50px; height: 50px;"></div>
+                    <div class="ability"><img src="res/img/raid/ayanea3.jfif" alt="A3" style="width: 50px; height: 50px;"></div>
+                    <div class="ability"><img src="res/img/raid/ayanea4.jfif" alt="A4" style="width: 50px; height: 50px;"></div>
+                </div>
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="hp1"></div>
+                    <div class="hp-text" id="hp-text1"></div>
+                </div>
+                <div class="buff-container" id="buff-container1"></div>
+            </div>
+            <div class="character" id="character2">
+                <img src="Loading Screen/Schoolboy Shoma.png" alt="Shoma">
+                <div class="abilities">
+                    <div class="ability"><img src="res/img/raid/shomaa1.jfif" alt="A1" style="width: 50px; height: 50px;"></div>
+                    <div class="ability"><img src="res/img/raid/shomaa2.jfif" alt="A2" style="width: 50px; height: 50px;"></div>
+                    <div class="ability"><img src="res/img/raid/shomaa3.jfif" alt="A3" style="width: 50px; height: 50px;"></div>
+                    <div class="ability"><img src="res/img/raid/shomaa4.jfif" alt="A4" style="width: 50px; height: 50px;"></div>
+                </div>
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="hp2"></div>
+                    <div class="hp-text" id="hp-text2"></div>
+                </div>
+                <div class="buff-container" id="buff-container2"></div>
+            </div>
+            <div class="character" id="character3">
+                <img src="Loading Screen/Schoolgirl Elphelt.png" alt="Elphelt">
+                <div class="abilities">
+                    <div class="ability"><img src="res/img/raid/elphelta1.jfif" alt="A1" style="width: 50px; height: 50px;"></div>
+                    <div class="ability"><img src="res/img/raid/elphelta2.jfif" alt="A2" style="width: 50px; height: 50px;"></div>
+                    <div class="ability"><img src="res/img/raid/elphelta3.jfif" alt="A3" style="width: 50px; height: 50px;"></div>
+                    <div class="ability"><img src="res/img/raid/elphelta4.jfif" alt="A4" style="width: 50px; height: 50px;"></div>
+                </div>
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="hp3"></div>
+                    <div class="hp-text" id="hp-text3"></div>
+                </div>
+                <div class="buff-container" id="buff-container3"></div>
+            </div>
+            <div class="character" id="character4">
+                <img src="Loading Screen/Schoolboy Siegfried.png" alt="Siegfried">
+                <div class="abilities">
+                    <div class="ability" title="Deals 500 damage"><img src="res/img/raid/siegfrieda1.jfif" alt="A1" style="width: 50px; height: 50px;"></div>
+                    <div class="ability" id="siegfried-a2" title="Heals 25% of missing HP and takes 20% less damage for 3 boss turns"><img src="res/img/raid/siegfrieda2.jfif" alt="A2" style="width: 50px; height: 50px;"></div>
+                    <div class="ability"><img src="res/img/raid/siegfrieda3.jfif" alt="A4" style="width: 50px; height: 50px;"></div>
+                    <div class="ability" title="Deals 3x damage for 3 turns and heals 30% of the damage dealt"><img src="res/img/raid/siegfrieda4.jfif" alt="A4" style="width: 50px; height: 50px;"></div>
+                </div>
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="hp4"></div>
+                    <div class="hp-text" id="hp-text4"></div>
+                </div>
+                <div class="buff-container" id="buff-container4"></div>
+            </div>
+			<div class="character" id="character5">
+				<div style="position: relative; width: 250px; height: 350px;">
+					<img src="Loading Screen/Schoolgirl Kokoro.png" alt="Kokoro" style="width: 100%; height: 100%;">
+					<div class="healing-icons-container hidden" id="healing-icons-container">
+						<img src="Icons/Ayane.png" alt="Ayane" class="healing-icon" data-target="1">
+						<img src="Icons/Shoma.png" alt="Shoma" class="healing-icon" data-target="2">
+						<img src="Icons/Elphelt.png" alt="Elphelt" class="healing-icon" data-target="3">
+						<img src="Icons/Siegfried.png" alt="Siegfried" class="healing-icon" data-target="4">
+						<img src="Icons/Kokoro.png" alt="Kokoro" class="healing-icon" data-target="5">
+					</div>
+				</div>
+				<div class="abilities">
+					<div class="ability" id="kokoro-a1" title="Heals a selected ally for 2050 HP"><img src="res/img/raid/kokoroa1.jfif" alt="A1" style="width: 50px; height: 50px;"></div>
+					<div class="ability" id="kokoro-a2" title="Reduces boss damage by 50% for 3 attacks"><img src="res/img/raid/kokoroa2.jfif" alt="A2" style="width: 50px; height: 50px;"></div>
+					<div class="ability" id="kokoro-a3" title="Heals all allies for 920 HP"><img src="res/img/raid/kokoroa3.jfif" alt="A3" style="width: 50px; height: 50px;"></div>
+					<div class="ability" id="kokoro-a4" title="Reduces damage taken by allies by 35% for 7 boss turns"><img src="res/img/raid/kokoroa4.jfif" alt="A4" style="width: 50px; height: 50px;"></div>
+				</div>
+				<div class="hp-bar-container">
+					<div class="hp-bar" id="hp5"></div>
+					<div class="hp-text" id="hp-text5"></div>
+				</div>
+				<div class="buff-container" id="buff-container5"></div>
+			</div>
+        </div>
+    </div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const characters = [
+            { id: 1, hp: 4550, maxHp: 4550, abilities: [0, 20, 15, 30] },
+            { id: 2, hp: 6200, maxHp: 6200, abilities: [10, 20, 15, 30] },
+            { id: 3, hp: 4115, maxHp: 4115, abilities: [755, 20, 15, 30] },
+            { id: 4, hp: 5620, maxHp: 5620, abilities: [500, 0, 0, 0], buffs: [], siegfriedA4Active: false, siegfriedA4Turns: 0 },
+            { id: 5, hp: 4445, maxHp: 4445, abilities: [0, 0, 0, 0], kokoroA2Cooldown: 0, kokoroA3Cooldown: 0, kokoroA4Cooldown: 0, kokoroA4Active: false, kokoroA4Turns: 0 }
+        ];
+
+        const boss = {
+            hp: 50000, maxHp: 50000,
+            attackCount: 0,
+            spellDamage: 550, spellTargets: 3,
+            massiveDamage: 1350,
+            allTargetsDamage: 320,
+            revengeMultiplier: 2,
+            damageReduction: 1 // To store damage reduction state
+        };
+
+        let lastAttacker = null;
+        let lastDamageDealt = 0;
+        let bossCanAct = true;
+        let ayaneImmune = false;
+        let siegfriedA4Cooldown = 0;
+        let kokoroA4BuffActive = false;
+        let kokoroA4BuffCounter = 0;
+        let kokoroA4CooldownCounter = 0;
+        let kokoroA2BuffActive = false;
+        let kokoroA2BuffCounter = 0;
+        let kokoroA2CooldownCounter = 0;
+
+        function logCombat(message) {
+            console.log(message);
+        }
+
+        function updateHpBars() {
+            characters.forEach(character => {
+                const hpBar = document.getElementById(`hp${character.id}`);
+                const hpText = document.getElementById(`hp-text${character.id}`);
+                if (hpBar && hpText) {
+                    const hpPercentage = (character.hp / character.maxHp) * 100;
+                    hpBar.style.width = `${hpPercentage}%`;
+                    hpText.innerText = `${character.hp}/${character.maxHp}`;
+                }
+            });
+
+            const bossHpBar = document.getElementById('boss-hp-bar');
+            const bossHpText = document.getElementById('boss-hp-text');
+            if (bossHpBar && bossHpText) {
+                const bossHpPercentage = (boss.hp / boss.maxHp) * 100;
+                bossHpBar.style.width = `${bossHpPercentage}%`;
+                bossHpText.innerText = `${boss.hp}/${boss.maxHp}`;
+            }
+        }
+
+        function updateAbilityButtons() {
+            const siegfriedA4Button = document.querySelector('#character4 .abilities .ability:nth-child(4)');
+            const kokoroA2Button = document.querySelector('#character5 .abilities .ability:nth-child(2)');
+            const kokoroA3Button = document.querySelector('#character5 .abilities .ability:nth-child(3)');
+            const kokoroA4Button = document.querySelector('#character5 .abilities .ability:nth-child(4)');
+
+            if (siegfriedA4Cooldown > 0) {
+                siegfriedA4Button.style.filter = 'grayscale(100%)';
+                siegfriedA4Button.style.pointerEvents = 'none';
+            } else {
+                siegfriedA4Button.style.filter = '';
+                siegfriedA4Button.style.pointerEvents = '';
+            }
+
+            if (characters[4].kokoroA2Cooldown > 0) {
+                kokoroA2Button.style.filter = 'grayscale(100%)';
+                kokoroA2Button.style.pointerEvents = 'none';
+            } else {
+                kokoroA2Button.style.filter = '';
+                kokoroA2Button.style.pointerEvents = '';
+            }
+
+            if (characters[4].kokoroA3Cooldown > 0) {
+                kokoroA3Button.style.filter = 'grayscale(100%)';
+                kokoroA3Button.style.pointerEvents = 'none';
+            } else {
+                kokoroA3Button.style.filter = '';
+                kokoroA3Button.style.pointerEvents = '';
+            }
+
+            if (characters[4].kokoroA4Cooldown > 0) {
+                kokoroA4Button.style.filter = 'grayscale(100%)';
+                kokoroA4Button.style.pointerEvents = 'none';
+            } else {
+                kokoroA4Button.style.filter = '';
+                kokoroA4Button.style.pointerEvents = '';
+            }
+        }
+
+        function highlightCharacter(characterId) {
+            document.querySelectorAll('.character').forEach(character => {
+                character.classList.remove('highlight');
+            });
+            const activeCharacter = document.getElementById(`character${characterId}`);
+            if (activeCharacter) {
+                activeCharacter.classList.add('highlight');
+            }
+        }
+
+        function checkDefeatedCharacters() {
+            characters.forEach(character => {
+                const characterElement = document.getElementById(`character${character.id}`);
+                if (character.hp <= 0) {
+                    characterElement.classList.add('defeated');
+                    character.hp = 0;
+                } else {
+                    characterElement.classList.remove('defeated');
+                }
+            });
+        }
+
+        function getRandomTargetCharacter() {
+            const aliveCharacters = characters.filter(character => character.hp > 0);
+            if (aliveCharacters.length > 0) {
+                return aliveCharacters[Math.floor(Math.random() * aliveCharacters.length)];
+            }
+            return null;
+        }
+
+        function getRandomTargetCharacters(number) {
+            const aliveCharacters = characters.filter(character => character.hp > 0);
+            const targets = [];
+            while (targets.length < number && aliveCharacters.length > 0) {
+                const randomIndex = Math.floor(Math.random() * aliveCharacters.length);
+                const target = aliveCharacters.splice(randomIndex, 1)[0];
+                targets.push(target);
+            }
+            return targets;
+        }
+
+        function bossSpellAttack() {
+            const targets = getRandomTargetCharacters(boss.spellTargets);
+            targets.forEach(target => {
+                let damage = boss.spellDamage * boss.damageReduction;
+				
+				if (kokoroA4BuffActive) { // Check if the buff is active
+				damage *= 0.65; // Reduce damage by 35%
+			}
+
+                target.hp -= damage;
+                flashRed(target.id);
+                logCombat(`Boss casts spell attack on Character ${target.id}, dealing ${damage} damage.`);
+                if (target.hp <= 0) {
+                    alert(`Character ${target.id} defeated by boss spell!`);
+                    target.hp = 0;
+                }
+            });
+            updateHpBars();
+            checkDefeatedCharacters();
+
+            // Manage the buffs and cooldowns
+            if (kokoroA2BuffActive) {
+                kokoroA2BuffCounter--;
+                if (kokoroA2BuffCounter <= 0) {
+                    removeKokoroA2Buff();
+                }
+            }
+
+            if (kokoroA4BuffActive) {
+                kokoroA4BuffCounter--;
+                if (kokoroA4BuffCounter <= 0) {
+                    removeKokoroA4Buff();
+                }
+            }
+
+            if (kokoroA2CooldownCounter > 0) {
+                kokoroA2CooldownCounter--;
+            }
+
+            if (kokoroA4CooldownCounter > 0) {
+                kokoroA4CooldownCounter--;
+            }
+        }
+
+        function bossMassiveDamageAttack() {
+            const target = getRandomTargetCharacter();
+            if (target && (target.id !== 1 || !ayaneImmune)) {
+                let damage = boss.massiveDamage * boss.damageReduction;
+				
+				if (kokoroA4BuffActive) { // Check if the buff is active
+				damage *= 0.65; // Reduce damage by 35%
+			}
+
+                target.hp -= damage;
+                flashRed(target.id);
+                logCombat(`Boss casts massive damage attack on Character ${target.id}, dealing ${damage} damage.`);
+
+                if (target.hp <= 0) {
+                    alert(`Character ${target.id} defeated by boss massive damage!`);
+                    target.hp = 0;
+                }
+            }
+
+            updateHpBars();
+            checkDefeatedCharacters();
+
+            // Manage the buffs and cooldowns
+            if (kokoroA2BuffActive) {
+                kokoroA2BuffCounter--;
+                if (kokoroA2BuffCounter <= 0) {
+                    removeKokoroA2Buff();
+                }
+            }
+
+            if (kokoroA4BuffActive) {
+                kokoroA4BuffCounter--;
+                if (kokoroA4BuffCounter <= 0) {
+                    removeKokoroA4Buff();
+                }
+            }
+
+            if (kokoroA2CooldownCounter > 0) {
+                kokoroA2CooldownCounter--;
+            }
+
+            if (kokoroA4CooldownCounter > 0) {
+                kokoroA4CooldownCounter--;
+            }
+        }
+
+
+        function bossAllTargetsAttack() {
+            characters.forEach(character => {
+                let damage = boss.allTargetsDamage * boss.damageReduction;
+				
+				if (kokoroA4BuffActive) { // Check if the buff is active
+				damage *= 0.65; // Reduce damage by 35%
+			}
+
+                if (character.id !== 1 || !ayaneImmune) {
+                    character.hp -= damage;
+                    flashRed(character.id);
+                    logCombat(`Boss casts all-targets attack, dealing ${damage} damage to Character ${character.id}.`);
+                    if (character.hp <= 0) {
+                        alert(`Character ${character.id} defeated by boss's all-targets attack!`);
+                        character.hp = 0;
+                    }
+                }
+            });
+            updateHpBars();
+            checkDefeatedCharacters();
+
+            // Manage the buffs and cooldowns
+            if (kokoroA2BuffActive) {
+                kokoroA2BuffCounter--;
+                if (kokoroA2BuffCounter <= 0) {
+                    removeKokoroA2Buff();
+                }
+            }
+
+            if (kokoroA4BuffActive) {
+                kokoroA4BuffCounter--;
+                if (kokoroA4BuffCounter <= 0) {
+                    removeKokoroA4Buff();
+                }
+            }
+
+            if (kokoroA2CooldownCounter > 0) {
+                kokoroA2CooldownCounter--;
+            }
+
+            if (kokoroA4CooldownCounter > 0) {
+                kokoroA4CooldownCounter--;
+            }
+        }
+
+        function bossRevengeAttack() {
+            if (lastAttacker !== null && lastDamageDealt > 0) {
+                const target = characters.find(character => character.id === lastAttacker);
+                if (target && target.hp > 0 && (target.id !== 1 || !ayaneImmune)) {
+                    let damage = lastDamageDealt * boss.revengeMultiplier * boss.damageReduction;
+					
+					if (kokoroA4BuffActive) { // Check if the buff is active
+				damage *= 0.65; // Reduce damage by 35%
+			}
+
+                    target.hp -= damage;
+                    flashRed(target.id);
+                    logCombat(`Boss casts revenge attack on Character ${target.id}, dealing ${damage} damage.`);
+                    if (target.hp <= 0) {
+                        alert(`Character ${target.id} defeated by boss's revenge attack!`);
+                        target.hp = 0;
+                    }
+                    updateHpBars();
+                    checkDefeatedCharacters();
+                }
+            }
+
+            // Manage the buffs and cooldowns
+            if (kokoroA2BuffActive) {
+                kokoroA2BuffCounter--;
+                if (kokoroA2BuffCounter <= 0) {
+                    removeKokoroA2Buff();
+                }
+            }
+
+            if (kokoroA4BuffActive) {
+                kokoroA4BuffCounter--;
+                if (kokoroA4BuffCounter <= 0) {
+                    removeKokoroA4Buff();
+                }
+            }
+
+            if (kokoroA2CooldownCounter > 0) {
+                kokoroA2CooldownCounter--;
+            }
+
+            if (kokoroA4CooldownCounter > 0) {
+                kokoroA4CooldownCounter--;
+            }
+        }
+
+        function bossTurn() {
+            if (bossCanAct) {
+                const spellChoice = Math.floor(Math.random() * 4);
+                if (spellChoice === 0) {
+                    bossSpellAttack();
+                } else if (spellChoice === 1) {
+                    bossMassiveDamageAttack();
+                } else if (spellChoice === 2) {
+                    bossAllTargetsAttack();
+                } else {
+                    bossRevengeAttack();
+                }
+
+                boss.attackCount++;
+                if (siegfriedA4Cooldown > 0) {
+                    siegfriedA4Cooldown--;
+                }
+
+                characters[4].kokoroA2Cooldown = Math.max(0, characters[4].kokoroA2Cooldown - 1);
+                characters[4].kokoroA3Cooldown = Math.max(0, characters[4].kokoroA3Cooldown - 1);
+                characters[4].kokoroA4Cooldown = Math.max(0, characters[4].kokoroA4Cooldown - 1);
+
+                logCombat(`Boss turn. Boss attack count: ${boss.attackCount}, Siegfried A4 cooldown: ${siegfriedA4Cooldown}, Kokoro A2 cooldown: ${characters[4].kokoroA2Cooldown}, Kokoro A3 cooldown: ${characters[4].kokoroA3Cooldown}, Kokoro A4 cooldown: ${characters[4].kokoroA4Cooldown}`);
+                updateAbilityButtons();
+            }
+        }
+
+        function flashRed(characterId) {
+            const characterImage = document.querySelector(`#character${characterId} img`);
+            if (characterImage) {
+                characterImage.classList.add('flash-red');
+                setTimeout(() => {
+                    characterImage.classList.remove('flash-red');
+                }, 500);
+            }
+        }
+
+		function addBuffIcon(characterId, buffSrc, buffId, buffDescription) {
+			const buffContainer = characterId === 'boss' ? document.getElementById('buff-container-boss') : document.getElementById(`buff-container${characterId}`);
+			if (buffContainer) {
+				const buffIcon = document.createElement('img');
+				buffIcon.src = buffSrc;
+				buffIcon.classList.add('buff-icon');
+				buffIcon.id = buffId;
+				buffIcon.title = buffDescription; // Set the unique tooltip text
+				buffContainer.appendChild(buffIcon);
+			}
+		}
+
+		function removeBuffIcon(buffId) {
+			const buffIcon = document.getElementById(buffId);
+			if (buffIcon) {
+				buffIcon.remove();
+			}
+		}
+
+		function kokoroA2Spell() {
+			const kokoro = characters.find(character => character.id === 5);
+			if (kokoro.hp > 0 && kokoro.kokoroA2Cooldown <= 0) { // Ensure Kokoro is not defeated and cooldown is 0
+				kokoroA2BuffActive = true;
+				kokoroA2BuffCounter = 3; // Buff lasts for 3 boss attacks
+				boss.damageReduction = 0.5; // Reduce boss damage by 50%
+				logCombat('Kokoro casts A2, reducing boss damage by 50% for 3 boss attacks.');
+				highlightCharacter(5);
+				kokoro.kokoroA2Cooldown = 7; // Set cooldown to 7 boss attacks
+				kokoroA2CooldownCounter = 7;
+				addBuffIcon('boss', 'res/img/raid/kokoroa2.jfif', `kokoro-a2-buff-boss`, 'Deals 50% less damage for 3 attacks');
+				bossTurn();
+				updateHpBars();
+				checkDefeatedCharacters();
+			}
+		}
+
+		function removeKokoroA2Buff() {
+			kokoroA2BuffActive = false;
+			boss.damageReduction = 1; // Reset damage reduction
+			removeBuffIcon('kokoro-a2-buff-boss');
+			logCombat('Kokoro\'s A2 buff has expired.');
+		}
+
+        function kokoroA4Spell() {
+            const kokoro = characters.find(character => character.id === 5);
+            if (kokoro.hp > 0 && kokoro.kokoroA4Cooldown <= 0) { // Ensure Kokoro is not defeated and cooldown is 0
+                kokoroA4BuffActive = true;
+                kokoroA4BuffCounter = 7; // Buff lasts for 7 boss turns
+                logCombat('Kokoro casts A4, reducing damage taken by allies by 35% for 7 boss turns.');
+                highlightCharacter(5);
+                kokoro.kokoroA4Cooldown = 16; // Set cooldown to 16 boss attacks
+                kokoroA4CooldownCounter = 16;
+                characters.forEach(character => {
+                    addBuffIcon(character.id, 'res/img/raid/kokoroa4.jfif', `kokoro-a4-buff-${character.id}`, 'Takes 35% less damage from boss attacks');
+                });
+                bossTurn();
+                updateHpBars();
+                checkDefeatedCharacters();
+            }
+        }
+
+        function removeKokoroA4Buff() {
+            kokoroA4BuffActive = false;
+            characters.forEach(character => {
+                removeBuffIcon(`kokoro-a4-buff-${character.id}`);
+            });
+            logCombat('Kokoro\'s A4 buff has expired.');
+        }
+
+	// Event listener for abilities
+	document.querySelectorAll('.ability').forEach(ability => {
+		ability.addEventListener('click', () => {
+			const characterId = parseInt(ability.parentElement.parentElement.id.replace('character', ''));
+			const abilityIndex = Array.from(ability.parentElement.children).indexOf(ability);
+
+			if (characterId === 1 && abilityIndex === 0) { // Ayane's A1 ability
+				ayaneA1();
+			} else if (characterId === 4 && abilityIndex === 3) { // Siegfried's A4 ability
+				siegfriedA4Spell();
+			} else if (characterId === 4 && abilityIndex === 2) { // Siegfried's A2 ability
+				siegfriedA2Spell();
+			} else if (characterId === 5 && abilityIndex === 1) { // Kokoro's A2 ability
+				kokoroA2Spell();
+			} else if (characterId === 5 && abilityIndex === 2) { // Kokoro's A3 ability
+				if (characters[4].kokoroA3Cooldown <= 0) {
+					kokoroA3Spell();
+					characters[4].kokoroA3Cooldown = 3; // Set cooldown to 3 turns
+					updateAbilityButtons(); // Update ability buttons state
+				}
+			} else if (characterId === 5 && abilityIndex === 3) { // Kokoro's A4 ability
+				kokoroA4Spell();
+			} else {
+				const damage = characters[characterId - 1].abilities[abilityIndex];
+				if (characters[characterId - 1].hp > 0) {
+					highlightCharacter(characterId);
+					if (characterId === 4 && characters[characterId - 1].siegfriedA4Active) {
+						const enhancedDamage = damage * 3; // Apply 3x damage
+						boss.hp -= enhancedDamage;
+						characters[characterId - 1].hp += Math.floor(enhancedDamage * 0.3); // Heal Siegfried
+						if (characters[characterId - 1].hp > characters[characterId - 1].maxHp) {
+							characters[characterId - 1].hp = characters[characterId - 1].maxHp; // Cap HP to max
+						}
+						logCombat(`Siegfried casts enhanced attack, dealing ${enhancedDamage} damage and healing ${Math.floor(enhancedDamage * 0.3)} HP.`);
+					} else {
+						boss.hp -= damage;
+						logCombat(`Character ${characterId} casts attack, dealing ${damage} damage.`);
+					}
+					if (boss.hp <= 0) {
+						alert('Boss defeated!');
+						boss.hp = 0; // Ensure the boss HP doesn't go negative
+					} else {
+						lastAttacker = characterId;
+						lastDamageDealt = damage;
+						if (characters[characterId - 1].siegfriedA4Active) {
+							characters[characterId - 1].siegfriedA4Turns--;
+							if (characters[characterId - 1].siegfriedA4Turns <= 0) {
+								characters[characterId - 1].siegfriedA4Active = false; // Deactivate A4 after 3 turns
+								removeBuffIcon('siegfried-a4-buff'); // Remove buff icon
+							}
+						}
+						bossTurn();
+					}
+
+					updateHpBars();
+					checkDefeatedCharacters();
+				}
+			}
+		});
+	});
+		
+	function applyBuff(character, buffIcon, buffDuration, buffEffect) {
+    character.buffs.push({ icon: buffIcon, duration: buffDuration, effect: buffEffect });
+    buffEffect(); // Call the buff effect function immediately
+
+    // Additional logic to handle specific effects based on the buff
+    if (buffEffect === siegfriedA2BuffEffect) {
+        character.damageReduction = 0.8; // Apply 20% less damage taken
+    }
+
+
+}
+		
+function siegfriedA2BuffEffect() {
+    const siegfried = characters.find(c => c.id === 4);
+    siegfried.damageReduction = 0.8; // apply damage reduction effect
+    logCombat('Siegfried now takes 20% less damage');
+}
+
+function removeSiegfriedA2BuffEffect() {
+    const siegfried = characters.find(c => c.id === 4);
+    siegfried.damageReduction = 1; // remove damage reduction effect
+    logCombat('Siegfried no longer takes 20% less damage');
+}
+
+function applyBuff(character, buffIcon, buffDuration, buffEffect) {
+    character.buffs.push({ icon: buffIcon, duration: buffDuration, effect: buffEffect });
+    buffEffect(); // call the buff effect function immediately
+}
+
+function activateSiegfriedA2() {
+    const siegfried = characters.find(c => c.id === 4);
+    const missingHp = siegfried.maxHp - siegfried.hp;
+    const healAmount = Math.floor(missingHp * 0.25);
+    siegfried.hp += healAmount;
+
+    // Ensure HP does not exceed maxHp
+    if (siegfried.hp > siegfried.maxHp) {
+        siegfried.hp = siegfried.maxHp;
+    }
+
+    // Apply buff to Siegfried
+    applyBuff(siegfried, 'res/img/raid/siegfrieda2.jfif', 3, siegfriedA2BuffEffect);
+
+    // Update HP bars and buffs
+    updateHpBars();
+
+    logCombat('Siegfried activates A2: Heals for ' + healAmount + ' HP and takes 20% less damage for 3 boss turns.');
+
+    // Trigger boss action
+    bossTurn();
+}
+
+        document.getElementById('siegfried-a2').addEventListener('click', activateSiegfriedA2);
+
+
+const kokoroA1 = document.getElementById('kokoro-a1');
+const healingIconsContainer = document.getElementById('healing-icons-container');
+const healingIcons = document.querySelectorAll('.healing-icon');
+
+if (kokoroA1 && healingIconsContainer) {
+    kokoroA1.addEventListener('click', () => {
+        healingIconsContainer.classList.remove('hidden');
+    });
+
+    healingIcons.forEach(icon => {
+        icon.addEventListener('click', () => {
+            const targetId = parseInt(icon.getAttribute('data-target'));
+            const targetCharacter = characters.find(character => character.id === targetId);
+
+            if (targetCharacter && targetCharacter.hp > 0) { // Check if target character is not defeated
+                bossCanAct = false; // Prevent the boss from acting during the heal
+                targetCharacter.hp += 2050;
+                if (targetCharacter.hp > targetCharacter.maxHp) {
+                    targetCharacter.hp = targetCharacter.maxHp;
+                }
+                updateHpBars();
+                checkDefeatedCharacters();
+                healingIconsContainer.classList.add('hidden');
+                bossCanAct = true; // Allow the boss to act after the heal
+                bossTurn(); // Call bossTurn function to trigger the boss attack after healing is complete
+
+                // Flash the character image green
+                const characterElement = document.getElementById(`character${targetId}`);
+                const characterImage = characterElement.querySelector('img');
+                characterImage.classList.add('green-flash');
+
+                // Remove the class after the animation completes
+                setTimeout(() => {
+                    characterImage.classList.remove('green-flash');
+                }, 500);
+            }
+        });
+    });
+}
+
+        function kokoroA3Spell() {
+			bossCanAct = false; // Prevent the boss from acting during the heal
+			characters.forEach(character => {
+				if (character.hp > 0) { // Check if character is not defeated
+					character.hp += 920;
+					if (character.hp > character.maxHp) {
+						character.hp = character.maxHp;
+					}
+
+					// Flash the character image green
+					const characterElement = document.getElementById(`character${character.id}`);
+					const characterImage = characterElement.querySelector('img');
+					characterImage.classList.add('green-flash');
+
+					// Remove the class after the animation completes
+					setTimeout(() => {
+						characterImage.classList.remove('green-flash');
+					}, 500);
+				}
+			});
+			updateHpBars();
+			checkDefeatedCharacters();
+			bossCanAct = true; // Allow the boss to act after the heal
+			bossTurn(); // Call bossTurn function to trigger the boss attack after healing is complete
+		}
+
+        // Function to remove Siegfried's A4 buff icon
+        function removeSiegfriedA4Buff() {
+            const buffIcon = document.getElementById('siegfried-a2-buff');
+            if (buffIcon) {
+                buffIcon.remove();
+            }
+        }
+		
+		// Function for Siegfried's A4 ability
+        function siegfriedA4Spell() {
+            const siegfried = characters.find(character => character.id === 4);
+            if (siegfried.hp > 0 && siegfriedA4Cooldown <= 0) { // Ensure Siegfried is not defeated and cooldown is 0
+                siegfried.siegfriedA4Active = true;
+                siegfried.siegfriedA4Turns = 4; // Lasts for 4 turns
+                logCombat('Siegfried casts A4, dealing 3x damage for 4 turns and healing 30% of the damage dealt.');
+                highlightCharacter(4);
+                siegfriedA4Cooldown = 10; // Set cooldown to 10 boss attacks
+                bossTurn();
+                updateHpBars();
+                checkDefeatedCharacters();
+
+                // Display Siegfried's A4 buff icon
+                addBuffIcon(4, 'res/img/raid/siegfrieda4.jfif', 'siegfried-a4-buff', 'Deals 3x damage and heals 30% of damage dealt');
+            }
+        }
+
+        // Function to remove Siegfried's A4 buff icon
+        function removeSiegfriedA4Buff() {
+            const buffIcon = document.getElementById('siegfried-a4-buff');
+            if (buffIcon) {
+                buffIcon.remove();
+            }
+        }
+
+        // Ayane A1
+        function ayaneA1() {
+            const damage = 420;
+            const isImmune = Math.random() < 0.5; // 50% chance
+
+            // Apply damage to the boss
+            boss.hp -= damage;
+            logCombat(`Ayane's A1 deals ${damage} damage to the boss.`);
+            updateHpBars();
+
+            // Check for boss defeat
+            if (boss.hp <= 0) {
+                alert('Boss defeated by Ayane!');
+                boss.hp = 0;
+                updateHpBars();
+            }
+
+            // Apply immunity to Ayane if the random chance succeeds
+            if (isImmune) {
+                ayaneImmune = true;
+                logCombat('Ayane is immune to the next attack.');
+                // Optionally, you can set a visual indicator for the immunity
+            } else {
+                ayaneImmune = false;
+            }
+
+            // Update HP bars and check defeated characters
+            checkDefeatedCharacters();
+
+            // Call the boss's turn
+            bossTurn();
+        }
+
+        updateHpBars();
+        updateAbilityButtons();
+    });
+</script>
+</body>
+</html>

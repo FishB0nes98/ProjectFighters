@@ -67,47 +67,67 @@
             font-size: 18px;
         }
         .menu {
-            position: absolute;
+            position: fixed;
             top: 0;
             width: 100%;
-            background-color: #444;
-            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.8);
             padding: 10px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
         }
+
+        .menu:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
         .menu .menu-items {
             display: flex;
         }
+
         .menu a {
             display: block;
             color: white;
             text-align: center;
             padding: 14px 16px;
             text-decoration: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
             transition: background-color 0.3s, transform 0.3s;
         }
+
         .menu a:hover {
             background-color: #111;
             transform: scale(1.1);
         }
-        .play-button {
+
+		.play-button {
+            margin-right: 20px; /* Adjust as needed */
             background-color: orange;
             color: black;
             border-radius: 20px;
-            padding: 14px 30px;
             font-size: 18px;
             font-weight: bold;
             text-decoration: none;
             transition: background-color 0.3s, transform 0.3s, color 0.3s;
-            margin-right: 960px;
+            padding: 10px 20px;
         }
+
         .play-button:hover {
             background-color: darkgoldenrod;
             color: white;
             transform: scale(1.2);
         }
+		.battlepass-button {
+			background-color: red; /* Gold background */
+			color: #000; /* Black text */
+			border-radius: 25px; /* Rounded corners */
+			font-size: 12px;
+			text-transform: uppercase; /* Uppercase text */
+			margin-right: 300px;
+		}
         #video-background {
             position: fixed;
             right: 0;
@@ -125,22 +145,14 @@
                 opacity: 0;
             }
         }
-		.battlepass-button {
-			background-color: red; /* Gold background */
-			color: #000; /* Black text */
-			border-radius: 25px; /* Rounded corners */
-			font-size: 12px;
-			text-transform: uppercase; /* Uppercase text */
-			margin-right: 300px;
-		}
-
-		.battlepass-button::before {
-			content: "🔥 "; /* Sun emoji */
-			margin-right: 5px;
-		}
     </style>
 </head>
 <body>
+    <!-- Video Background -->
+    <video id="video-background" autoplay muted loop>
+        <source src="Event/Eventvideo.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
     <!-- Menu -->
     <div class="menu">
         <div class="menu-items">
@@ -162,6 +174,10 @@
         <div class="game-mode" onclick="location.href='Loading Screen.html'">
             <img src="res/img/Draft Mode.png" alt="Draft Mode">
             <span>Draft Mode</span>
+        </div>
+		<div class="game-mode" onclick="location.href='ARAM.html'">
+            <img src="res/img/ARAM.png" alt="1v1">
+            <span>ARAM</span>
         </div>
         <div class="game-mode" onclick="location.href='1v1.html'">
             <img src="res/img/1v1.png" alt="1v1">
