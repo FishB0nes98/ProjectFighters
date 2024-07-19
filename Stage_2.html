@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turn-Based Raid Game</title>
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: url('res/img/raid/background2.png') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+}
+
+.character {
+    display: inline-block;
+    position: fixed;
+}
+
+.shoma {
+    display: inline-block;
+    position: absolute;
+	left:0;
+	margin-top: 485px;
+	margin-left: 435px;
+}
+
+.enemy {
+    display: inline-block;
+    margin: 30px;
+    gap: 50px; /* Ensure there's space between each enemy */
+}
+
+.fire-elemental {
+    display: inline-block;
+    text-align: center;
+    position: relative; /* Ensure positioning is relative for child elements */
+}
+
+.fire-elemental img {
+    width: 250px;
+    height: 350px;
+    padding-right: 20px;
+}
+
+.character img {
+    width: 250px;
+    height: 350px;
+}
+
+.status {
+    font-size: 18px;
+    margin-top: 10px;
+    width: 250px; /* Adjust width as needed */
+    z-index: 1000;
+    position: absolute;
+}
+
+.ability-icons {
+    position: relative;
+}
+
+.ability-container {
+    position: relative;
+    display: inline-block;
+}
+.ability-icons img.disabled {
+    opacity: 0.5;
+}
+
+.ability {
+    width: 50px !important;
+    height: 50px !important;
+    margin: 5px;
+    cursor: pointer;
+    padding-top: 30px;
+}
+
+.chat-bubble {
+    position: absolute;
+    top: 5%;
+    right: 60%;
+    transform: translateY(-50%);
+    width: 200px;
+    height: 350px;
+    background: url('res/img/raid/chat.png') no-repeat center center;
+    background-size: contain;
+    color: black;
+    padding: 20px;
+    padding-top: 300px;
+    display: none;
+    z-index: 100; /* Ensure this is above the hp-bar-container */
+    display: flex;
+    align-items: flex-start;
+    word-wrap: break-word;
+    justify-content: center;
+    text-align: center;
+}
+
+#Ibuki {
+    display: none;
+}
+
+#Ibuki img {
+    width: 250px;
+    height: 350px;
+}
+
+#allies {
+    position: absolute;
+    bottom: 25px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.log {
+    border: 1px solid #555;
+    padding: 10px;
+    height: 300px;
+    width: 500px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    bottom: 0;
+    right: 35px;
+    z-index: 10;
+}
+
+h1 {
+    position: absolute;
+    top: 0;
+    right: 20px;
+    margin: 20px;
+    z-index: 1000;
+}
+
+.turn-counter {
+    position: absolute;
+    top: 5px;
+    right: 925px;
+    z-index: 10;
+    font-size: 18px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+@keyframes flash-red {
+    0% {
+        filter: brightness(1);
+    }
+    50% {
+        filter: brightness(0) sepia(1) hue-rotate(-50deg) saturate(10);
+    }
+    100% {
+        filter: brightness(1);
+    }
+}
+
+.flash-red {
+    animation: flash-red 0.5s;
+}
+
+@keyframes flash-green {
+    0% {
+        filter: brightness(1);
+    }
+    50% {
+        filter: brightness(0.5) saturate(3) hue-rotate(120deg);
+    }
+    100% {
+        filter: brightness(1);
+    }
+}
+
+.flash-green {
+    animation: flash-green 0.5s ease-in-out;
+}
+
+.buff-container {
+    position: absolute;
+    top: 5px;
+    left: 5px; /* Adjust positioning to fit within the elemental container */
+}
+
+.buff-icon {
+    width: 50px !important;
+    height: 50px !important;
+    margin: 0 1px;
+    display: none;
+}
+
+.cooldown {
+    filter: grayscale(100%);
+    pointer-events: none;
+}
+
+#Julia .heal-icons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.heal-icons img {
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+#start-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+#stage2-button {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.hp-bar-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Place it behind the text */
+    background-color: #555; /* Dark background for missing HP */
+    border-radius: 5px;
+    overflow: hidden; /* Contain the HP bar within the container */
+}
+
+.hp-bar {
+    height: 100%;
+    background-color: #4CAF50; /* Green color for remaining HP */
+    width: 100%;
+    transition: width 0.5s ease; /* Smooth transition for width changes */
+    border-radius: 5px;
+}
+
+
+.grayscale {
+    filter: grayscale(100%);
+}
+#volume-control {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    color: white;
+    display: flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+#volume-slider {
+    margin-left: 10px;
+}
+
+#Julia {
+    position: absolute;
+    bottom: 45px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.objective {
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    z-index: 1000;
+    font-size: 18px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+.shoma img {
+    width: 250px;
+    height: 350px;
+}
+
+.stage-button {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+.cooldown-text {
+    position: absolute;
+    top: 65%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: blue;
+    font-size: 35px;
+    font-weight: bold;
+    pointer-events: none; /* Ensure it doesn't block clicks */
+    z-index: 1; /* Ensure it is above the image */
+}
+    </style>
+<body>
+    <h1>Stage 2</h1>
+    <div class="turn-counter" id="turn-counter">Turn: 0</div>
+    <button id="start-button" onclick="startGame()">Start Stage 2</button>
+	<div class="objective" id="objective">Objective: Survive until Turn 70</div>
+    
+	
+<div id="characters" style="display: none;">
+	<!-- Shoma Character -->
+	<div class="shoma" id="Shoma" style="display: none;">
+		<img src="Loading Screen/Schoolboy Shoma.png" alt="Shoma">
+		<div class="status" id="Shoma-status">
+			<!-- Shoma status content -->
+		</div>
+		<div class="buff-container" id="Shoma-buff-container"></div>
+		<div class="chat-bubble" id="Shoma-chat"></div>
+	</div>
+    <!-- Enemies -->
+    <div class="enemy" id="fire-elementals">
+        <div class="fire-elemental" id="Elemental1">
+            <img src="res/img/raid/fire-elemental.png" alt="Fire Elemental 1" class="elemental-img">
+            <div class="status">
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="Elemental1-hp-bar"></div>
+                </div>
+                <div id="Elemental1-status">HP: 6500/6500</div>
+            </div>
+			<div class="buff-container" id="Elemental1-buff-container"></div>
+        </div>
+        <div class="fire-elemental" id="Elemental2">
+            <img src="res/img/raid/fire-elemental.png" alt="Fire Elemental 2" class="elemental-img">
+            <div class="status">
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="Elemental2-hp-bar"></div>
+                </div>
+                <div id="Elemental2-status">HP: 6500/6500</div>
+            </div>
+			<div class="buff-container" id="Elemental2-buff-container"></div>
+        </div>
+        <div class="fire-elemental" id="Elemental3">
+            <img src="res/img/raid/fire-elemental.png" alt="Fire Elemental 3" class="elemental-img">
+            <div class="status">
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="Elemental3-hp-bar"></div>
+                </div>
+                <div id="Elemental3-status">HP: 6500/6500</div>
+            </div>
+			<div class="buff-container" id="Elemental3-buff-container"></div>
+        </div>
+        <div class="fire-elemental" id="Elemental4">
+            <img src="res/img/raid/fire-elemental.png" alt="Fire Elemental 4" class="elemental-img">
+            <div class="status">
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="Elemental4-hp-bar"></div>
+                </div>
+                <div id="Elemental4-status">HP: 6500/6500</div>
+            </div>
+			<div class="buff-container" id="Elemental4-buff-container"></div>
+        </div>
+        <div class="fire-elemental" id="Elemental5">
+            <img src="res/img/raid/fire-elemental.png" alt="Fire Elemental 5" class="elemental-img">
+            <div class="status">
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="Elemental5-hp-bar"></div>
+                </div>
+                <div id="Elemental5-status">HP: 6500/6500</div>
+            </div>
+			<div class="buff-container" id="Elemental5-buff-container"></div>
+        </div>
+    </div>
+</div>
+
+    <!-- Julia Character -->
+    <div class="character" id="Julia" style="display: none;">
+        <img src="Loading Screen/Schoolgirl Julia.png" alt="Julia">
+        <div class="status">
+            <div class="hp-bar-container">
+                <div class="hp-bar" id="Julia-hp-bar"></div>
+            </div>
+            <div id="Julia-status">HP: 4680/4680</div>
+        </div>
+<div class="ability-icons">
+    <div class="ability-container">
+        <img id="JuliaAbility1" src="res/img/raid/juliaa1.jfif" class="ability" alt="Ability 1" title="Julia deals 400 damage to all enemies. She heals back 45% of the total damage for herself and her allies.">
+        <span id="JuliaAbility1Cooldown" class="cooldown-text"></span>
+    </div>
+    <div class="ability-container">
+        <img id="JuliaAbility2" src="res/img/raid/juliaa2.jfif" class="ability" alt="Ability 2" title="Julia places a buff on an ally. On the 2nd turn, the buffed ally receives 3580 HP">
+        <span id="JuliaAbility2Cooldown" class="cooldown-text">9</span>
+    </div>
+    <div class="ability-container">
+        <img id="JuliaAbility3" src="res/img/raid/juliaa3.jfif" class="ability" alt="Ability 3" title="Julia can select an enemy that she can stun for 5 turns. This enemy also takes 1000 damage from Julia. Stunned targets deal 0 damage.">
+        <span id="JuliaAbility3Cooldown" class="cooldown-text"></span>
+    </div>
+    <div class="ability-container">
+        <img id="JuliaAbility4" src="res/img/raid/juliaa4.jfif" class="ability" alt="Ability 4" title="Julia restores all allies' health to full. This doesn't count as a 1 turn ability.">
+        <span id="JuliaAbility4Cooldown" class="cooldown-text"></span>
+    </div>
+</div>
+        <div class="buff-container" id="Julia-buff-container"></div>
+        <div class="chat-bubble" id="Julia-chat"></div>
+        <div class="heal-icons" id="heal-icons" style="display:none;">
+            <img src="Icons/Julia.png" class="ability" onclick="healCharacter('Julia')" alt="Heal Julia">
+        </div>
+    </div>
+
+    <button id="stage2-button" onclick="location.href='stage2.html'">Go to Stage 2</button>
+    <div class="log" id="log">
+        <p>Battle log:</p>
+    </div>
+    <div id="volume-control">
+        <label for="volume-slider">Volume:</label>
+        <input type="range" id="volume-slider" min="0" max="100" value="5">
+    </div>
+	<button id="stage3-button" onclick="location.href='Stage_3.html'" style="display: none; position: absolute; top: 47%; left: 50%; transform: translate(-50%, -50%); padding: 10px 20px; font-size: 20px; cursor: pointer; background-color: rgb(47 55 47); color: white; border: none; border-radius: 5px;">Go to Stage 3</button>
+</body>
+	
+<script>
+    let userInteracted = false;
+    let bgAudio; // Define bgAudio as a global variable
+
+    function startGame() {
+        userInteracted = true;
+        document.getElementById('start-button').style.display = 'none';
+        document.getElementById('characters').style.display = 'block';
+		document.getElementById('Julia').style.display = 'block';
+
+        // Start background audio
+        bgAudio = new Audio('res/img/raid/sounds/bgaudio3.mp3');
+        console.log('bgAudio initialized:', bgAudio);
+        bgAudio.volume = 0.20; // Set volume to 5%
+        bgAudio.loop = true; // Loop the background audio
+        bgAudio.play();
+
+        preFightConversation();
+    }
+
+    document.addEventListener("DOMContentLoaded", function(){
+        document.getElementById('volume-slider').addEventListener('input', function(event) {
+            console.log('Volume slider input event triggered:', event);
+            const volume = event.target.value / 100; // Convert to range 0.0 - 1.0
+            if (bgAudio && bgAudio.volume !== volume) {
+                console.log('Updating bgAudio volume to:', volume);
+                bgAudio.volume = volume;
+            }
+        });
+    });
+
+    function preFightConversation() {
+        const juliaChat = document.getElementById('Julia-chat'); // Added Julia chat bubble
+        const abilityIcons = document.querySelectorAll('.ability-icons img');
+
+        // Disable all ability icons
+        abilityIcons.forEach(icon => {
+            icon.classList.add('disabled');
+        });
+
+        const conversation = [
+            { character: 'Julia', text: 'Wha---What is going on here?', audio: 'res/img/raid/sounds/julia_what.mp3' },
+            { character: 'Julia', text: 'I should hold these infernals so everyone can escape.... I guess?', audio: 'res/img/raid/sounds/julia_hold.mp3' },
+        ];
+
+        let currentStep = 0;
+
+        function showNextChat() {
+            if (currentStep < conversation.length) {
+                const { character, text, audio } = conversation[currentStep];
+                let chatBubble;
+
+                if (character === 'Siegfried') {
+                    chatBubble = siegfriedChat;
+                } else if (character === 'Kokoro') {
+                    chatBubble = kokoroChat;
+                } else if (character === 'Ibuki') {
+                    chatBubble = ibukiChat;
+                } else if (character === 'Julia') {
+                    chatBubble = juliaChat; // Handle Julia chat bubble
+                }
+
+                if (chatBubble) {
+                    chatBubble.innerHTML = `<div>${text.replace(/\n/g, '<br>')}</div>`;
+                    chatBubble.style.display = 'flex';
+
+                    if (audio && userInteracted) {
+                        const audioElement = new Audio(audio);
+                        audioElement.play();
+                    }
+
+                    setTimeout(() => {
+                        chatBubble.style.display = 'none';
+                        currentStep++;
+                        showNextChat();
+                    }, currentStep === 3 ? 6500 : 4500); // Adjust the delay for the specific line
+                } else {
+                    console.error(`No chat bubble found for character: ${character}`);
+                }
+            } else {
+                startGameLogic();
+            }
+        }
+
+        showNextChat();
+    }
+
+    function startGameLogic() {
+        const juliaElement = document.getElementById('Julia');
+        juliaElement.style.display = 'inline-block';
+
+        // Enable all interactions
+        const abilityIcons = document.querySelectorAll('.ability-icons img');
+        abilityIcons.forEach(icon => {
+            icon.classList.remove('disabled');
+        });
+		
+		// Continue with any other game initialization logic
+        elementalTurn();
+    }
+
+let turnCounter = 0; // Initialize the turn counter
+let juliaAbility2BuffTurns = 0;
+let juliaAbility2Cooldown = 0;
+let juliaAbility3Cooldown = 0;
+let juliaAbility4Cooldown = 0;
+const elementalDebuffs = {
+    Elemental1: 0,
+    Elemental2: 0,
+    Elemental3: 0,
+    Elemental4: 0,
+    Elemental5: 0
+};
+
+	function scrollToBottom() {
+    const log = document.getElementById('log');
+    log.scrollTop = log.scrollHeight;
+}
+
+function updateCooldowns() {
+}
+
+
+function updateAbilityIcon(abilityId, cooldown) {
+    const abilityIcon = document.getElementById(abilityId);
+    if (abilityIcon) { // Check if element exists
+        if (cooldown > 0) {
+            abilityIcon.classList.add('cooldown');
+            abilityIcon.innerText = `Cooldown: ${cooldown}`;  // Optionally show the remaining turns
+        } else {
+            abilityIcon.classList.remove('cooldown');
+            abilityIcon.innerText = '';  // Clear the cooldown text
+        }
+    }
+}
+
+
+document.getElementById('turn-counter').innerText = `Turn: ${turnCounter}`;
+
+function elementalTurn() {
+    const elementals = ['Elemental1', 'Elemental2', 'Elemental3', 'Elemental4', 'Elemental5'];
+
+    elementals.forEach(elemental => {
+        if (elementalDebuffs[elemental] > 0) {
+            logAction(elemental, 'Debuffed', 'deals 0 damage', 0);
+        } else {
+            const randomValue = Math.random(); // Generate a random number between 0 and 1
+
+            if (randomValue < 0.50) {
+                castFireball(elemental);
+            } else if (randomValue < 0.85) {
+                castAoEDamageAndHeal(elemental);
+            } else {
+                castBurnDebuff();
+            }
+        }
+    });
+
+    applyBurnDebuff();
+    applyBuffsAndDebuffs();
+
+    turnCounter++;
+    document.getElementById('turn-counter').innerText = `Turn: ${turnCounter}`;
+	
+	if (turnCounter >= 70) {
+        endGame();
+    } else {
+        updateAbilityCooldowns();
+    }
+}
+
+
+function castFireball(elemental) {
+    const damage = 445;
+	const audio = new Audio('res/img/raid/sounds/fireball.mp3');
+	audio.volume = 0.2; // Set volume to 50%
+	audio.play();
+    updateCharacterStatus('Julia', damage);
+    logAction('Fire Elemental', 'Fireball', 'Julia', damage);
+}
+
+function castAoEDamageAndHeal(casterElemental) {
+    const aoeDamage = 400;
+    const healAmount = 2000;
+    const elementals = ['Elemental1', 'Elemental2', 'Elemental3', 'Elemental4', 'Elemental5'];
+	
+    
+    // Deal AoE damage to Julia and all elementals
+    updateCharacterStatus('Julia', aoeDamage);
+	const audio = new Audio('res/img/raid/sounds/explosion.mp3');
+	audio.volume = 0.2; // Set volume to 50%
+	audio.play();
+    elementals.forEach(elemental => {
+        if (elemental !== casterElemental) { // Ensure caster elemental doesn't damage itself
+            updateCharacterStatus(elemental, aoeDamage);
+        }
+        healCharacter(elemental, healAmount);
+    });
+
+    logAction('Fire Elemental', 'AoE Damage and Heal', 'all characters', aoeDamage);
+}
+
+let burnDebuffTurns = 0;
+
+function castBurnDebuff() {
+    burnDebuffTurns = 4; // Set the debuff duration
+	const audio = new Audio('res/img/raid/sounds/fire_debuff.mp3');
+	audio.volume = 0.2; // Set volume to 50%
+	audio.play();
+
+    const log = document.getElementById('log');
+    const logEntry = document.createElement('p');
+    logEntry.innerHTML = `<span style="color: orange;">Fire Elemental cast Burn Debuff on Julia for 4 turns!</span>`;
+    log.appendChild(logEntry);
+
+    const buffContainer = document.getElementById('Julia-buff-container');
+    let burnIcon = document.getElementById('burn-debuff-icon');
+
+    if (!burnIcon) {
+        burnIcon = document.createElement('img');
+        burnIcon.id = 'burn-debuff-icon';
+        burnIcon.src = 'res/img/raid/burn.jfif';
+        burnIcon.className = 'buff-icon';
+        buffContainer.appendChild(burnIcon);
+    }
+    burnIcon.style.display = 'inline-block';
+
+    scrollToBottom();
+}
+
+function applyBurnDebuff() {
+    if (burnDebuffTurns > 0) {
+        const burnDamage = 180;
+        updateCharacterStatus('Julia', burnDamage);
+
+        burnDebuffTurns--; // Decrement the turn counter
+
+        if (burnDebuffTurns === 0) {
+            const burnIcon = document.getElementById('burn-debuff-icon');
+            if (burnIcon) {
+                burnIcon.style.display = 'none';
+            }
+        }
+
+        const log = document.getElementById('log');
+        const logEntry = document.createElement('p');
+        logEntry.innerHTML = `<span style="color: red;">Julia took ${burnDamage} damage from Burn Debuff!</span>`;
+        log.appendChild(logEntry);
+        scrollToBottom();
+    }
+}
+
+//Julia
+// Function to cast Julia's first ability
+function castJuliaAbility1() {
+    const damage = 400;
+    const elementals = ['Elemental1', 'Elemental2', 'Elemental3', 'Elemental4', 'Elemental5'];
+    let totalDamageDealt = 0;
+
+    // Deal damage to all enemies and calculate total damage dealt
+    elementals.forEach(elemental => {
+        updateCharacterStatus(elemental, damage);
+        totalDamageDealt += damage;
+    });
+	
+	// Play audio
+    const audio = new Audio('res/img/raid/sounds/juliaa1.mp3');
+    audio.play();
+
+
+    // Heal Julia by 45% of the total damage dealt
+    const healAmount = totalDamageDealt * 0.55;
+    healCharacter('Julia', healAmount);
+
+    logAction('Julia', 'Ability 1', 'all enemies', damage);
+	// Proceed to Elementals' turn
+    elementalTurn();
+}
+
+// Add event listener to Julia's first ability icon
+document.getElementById('JuliaAbility1').addEventListener('click', castJuliaAbility1);
+document.getElementById('JuliaAbility2').addEventListener('click', castJuliaAbility2);
+document.getElementById('JuliaAbility3').addEventListener('click', castJuliaAbility3);
+document.getElementById('JuliaAbility4').addEventListener('click', castJuliaAbility4);
+
+function castJuliaAbility2() {
+    if (juliaAbility2Cooldown === 0) {
+        // Apply the buff to Julia
+        juliaAbility2BuffTurns = 2; // Buff lasts for 2 turn
+
+        const buffContainer = document.getElementById('Julia-buff-container');
+        let buffIcon = document.getElementById('juliaa2-buff-icon');
+
+        if (!buffIcon) {
+            buffIcon = document.createElement('img');
+            buffIcon.id = 'juliaa2-buff-icon';
+            buffIcon.src = 'res/img/raid/juliaa2.jfif';
+            buffIcon.className = 'buff-icon';
+            buffContainer.appendChild(buffIcon);
+        }
+        buffIcon.style.display = 'inline-block';
+
+
+		// Play audio
+		const audio = new Audio('res/img/raid/sounds/juliaa2.mp3');
+		audio.play();
+		
+        // Set cooldown
+        juliaAbility2Cooldown = 4;
+        updateAbilityCooldowns();
+
+        // Proceed to Elementals' turn
+        elementalTurn();
+    }
+}
+
+function castJuliaAbility3() {
+    if (juliaAbility3Cooldown === 0) {
+        const healIcons = document.getElementById('heal-icons');
+        healIcons.innerHTML = ''; // Clear previous icons
+
+        ['Elemental1', 'Elemental2', 'Elemental3', 'Elemental4', 'Elemental5'].forEach(elemental => {
+            const healIcon = document.createElement('img');
+            healIcon.src = 'res/img/raid/elementalicon.png';
+            healIcon.className = 'ability';
+            healIcon.onclick = () => {
+                healIcons.style.display = 'none'; // Hide icons instantly
+                dealDamageAndDebuffElemental(elemental);
+                elementalTurn(); // Call elementalTurn after dealing damage and applying debuff
+            };
+            healIcons.appendChild(healIcon);
+        });
+
+        healIcons.style.display = 'flex';
+
+        juliaAbility3Cooldown = 3;
+        updateAbilityCooldowns();
+    }
+}
+
+function dealDamageAndDebuffElemental(elemental) {
+    updateCharacterStatus(elemental, 1000); // Deal 1000 damage
+    elementalDebuffs[elemental] = 5; // Debuff for 5 turns
+
+    const buffContainer = document.getElementById(`${elemental}-buff-container`);
+    let debuffIcon = document.getElementById(`${elemental}-debuff-icon`);
+
+
+		// Play audio
+		const audio = new Audio('res/img/raid/sounds/juliaa3.mp3');
+		audio.play();
+
+    if (!debuffIcon) {
+        debuffIcon = document.createElement('img');
+        debuffIcon.id = `${elemental}-debuff-icon`;
+        debuffIcon.src = 'res/img/raid/juliaa3.jfif';
+        debuffIcon.className = 'buff-icon';
+        buffContainer.appendChild(debuffIcon);
+    }
+    debuffIcon.style.display = 'inline-block';
+
+}
+
+
+function castJuliaAbility4() {
+    if (juliaAbility4Cooldown === 0) {
+        // Heal Julia to full HP
+        healCharacterToFull('Julia');
+		
+		// Play audio
+		const audio = new Audio('res/img/raid/sounds/juliaa4.mp3');
+		audio.play();
+		const audio2 = new Audio('res/img/raid/sounds/julia_spirits.mp3');
+		audio2.play();
+        // Set cooldown
+        juliaAbility4Cooldown = 9;
+        updateAbilityCooldowns();
+    }
+}
+
+function applyBuffsAndDebuffs() {
+    // Apply debuffs to elementals
+    for (const elemental in elementalDebuffs) {
+        if (elementalDebuffs[elemental] > 0) {
+            elementalDebuffs[elemental]--;
+            if (elementalDebuffs[elemental] === 0) {
+                const debuffIcon = document.getElementById(`${elemental}-debuff-icon`);
+                if (debuffIcon) {
+                    debuffIcon.style.display = 'none';
+                }
+            }
+        }
+    }
+
+    // Apply Julia's 2nd ability buff
+    if (juliaAbility2BuffTurns > 0) {
+        juliaAbility2BuffTurns--;
+        if (juliaAbility2BuffTurns === 0) {
+            // Heal Julia for 3580 HP
+            healCharacter('Julia', 2875);
+
+            // Remove the buff icon
+            const buffIcon = document.getElementById('juliaa2-buff-icon');
+            if (buffIcon) {
+                buffIcon.style.display = 'none';
+            }
+        }
+    }
+}
+
+function updateAbilityCooldowns() {
+    updateSingleAbilityCooldown('JuliaAbility2', juliaAbility2Cooldown);
+    updateSingleAbilityCooldown('JuliaAbility3', juliaAbility3Cooldown);
+    updateSingleAbilityCooldown('JuliaAbility4', juliaAbility4Cooldown);
+
+    if (juliaAbility2Cooldown > 0) juliaAbility2Cooldown--;
+    if (juliaAbility3Cooldown > 0) juliaAbility3Cooldown--;
+    if (juliaAbility4Cooldown > 0) juliaAbility4Cooldown--;
+}
+
+function updateSingleAbilityCooldown(abilityId, cooldown) {
+    const abilityIcon = document.getElementById(abilityId);
+    const cooldownText = document.getElementById(`${abilityId}Cooldown`);
+    
+    if (cooldown > 0) {
+        abilityIcon.classList.add('cooldown');
+        cooldownText.innerText = cooldown;  // Show the remaining cooldown time
+    } else {
+        abilityIcon.classList.remove('cooldown');
+        cooldownText.innerText = '';  // Clear the cooldown text
+    }
+}
+
+
+function healCharacter(character, healAmount) {
+    const statusElement = document.getElementById(`${character}-status`);
+    const hpBarElement = document.getElementById(`${character}-hp-bar`);
+    if (!statusElement || !hpBarElement) {
+        console.error(`Element not found for character: ${character}`);
+        return;
+    }
+
+    let currentHp = parseInt(statusElement.innerText.split('/')[0].split(': ')[1]);
+    const maxHp = parseInt(statusElement.innerText.split('/')[1]);
+
+    currentHp += healAmount;
+    if (currentHp > maxHp) currentHp = maxHp;
+
+    statusElement.innerText = `HP: ${currentHp}/${maxHp}`;
+
+    // Update the width of the HP bar
+    const hpPercentage = (currentHp / maxHp) * 100;
+    hpBarElement.style.width = `${hpPercentage}%`;
+
+    // Flash green on heal
+    const characterImage = document.querySelector(`#${character} img`);
+    if (characterImage) {
+        characterImage.classList.add('flash-green');
+        setTimeout(() => {
+            characterImage.classList.remove('flash-green');
+        }, 500);
+    } else {
+        console.error(`Image element not found for character: ${character}`);
+    }
+}
+
+function healCharacterToFull(character) {
+    const statusElement = document.getElementById(`${character}-status`);
+    const hpBarElement = document.getElementById(`${character}-hp-bar`);
+    if (!statusElement || !hpBarElement) {
+        console.error(`Element not found for character: ${character}`);
+        return;
+    }
+
+    const maxHp = parseInt(statusElement.innerText.split('/')[1]);
+
+    statusElement.innerText = `HP: ${maxHp}/${maxHp}`;
+
+    // Update the width of the HP bar
+    hpBarElement.style.width = `100%`;
+
+    // Flash green on heal
+    const characterImage = document.querySelector(`#${character} img`);
+    if (characterImage) {
+        characterImage.classList.add('flash-green');
+        setTimeout(() => {
+            characterImage.classList.remove('flash-green');
+        }, 500);
+    } else {
+        console.error(`Image element not found for character: ${character}`);
+    }
+}
+
+// Add this function to check Julia's HP
+function gameOver() {
+    alert("Julia has been defeated. The page will reload.");
+    location.reload();
+}
+
+
+// Helper function to log actions
+function logAction(caster, spell, target, value) {
+    const log = document.getElementById('log');
+    const logEntry = document.createElement('p');
+    logEntry.innerHTML = `<span style="color: yellow;">${caster} cast ${spell} on ${target}, dealing ${value} damage!</span>`;
+    log.appendChild(logEntry);
+    scrollToBottom();
+}
+
+function updateCharacterStatus(character, damage) {
+    const statusElement = document.getElementById(`${character}-status`);
+    const hpBarElement = document.getElementById(`${character}-hp-bar`);
+
+    if (!statusElement || !hpBarElement) {
+        console.error(`Element not found for character: ${character}`);
+        return;
+    }
+
+    let currentHp = parseInt(statusElement.innerText.split('/')[0].split(': ')[1]);
+    const maxHp = parseInt(statusElement.innerText.split('/')[1]);
+
+    currentHp -= damage;
+    if (currentHp < 0) currentHp = 0;
+
+    statusElement.innerText = `HP: ${currentHp}/${maxHp}`;
+
+    // Update the width of the HP bar
+    const hpPercentage = (currentHp / maxHp) * 100;
+    hpBarElement.style.width = `${hpPercentage}%`;
+
+    // Flash red on damage
+    const characterImage = document.querySelector(`#${character} img`);
+    if (characterImage) {
+        characterImage.classList.add('flash-red');
+        setTimeout(() => {
+            characterImage.classList.remove('flash-red');
+        }, 500);
+    } else {
+        console.error(`Image element not found for character: ${character}`);
+    }
+
+    // Log the actual damage taken
+    const log = document.getElementById('log');
+    const logEntry = document.createElement('p');
+    logEntry.innerHTML = `<span style="color: yellow;">Turn ${turnCounter}:</span> <span style="color: red;">${character} took ${damage} damage!</span>`;
+    log.appendChild(logEntry);
+    scrollToBottom(); // Scroll to bottom
+
+    // Check if Julia's HP is 0
+    if (character === 'Julia' && currentHp <= 0) {
+        gameOver();
+    }
+}
+
+// Function to scroll to the bottom of the log
+function scrollToBottom() {
+    const log = document.getElementById('log');
+    log.scrollTop = log.scrollHeight;
+}
+
+
+function endGame() {
+    const abilityIcons = document.querySelectorAll('.ability-icons img');
+    abilityIcons.forEach(icon => {
+        icon.classList.add('disabled');
+        icon.style.pointerEvents = 'none';
+    });
+
+    if (bgAudio) {
+        bgAudio.pause();
+    }
+
+    // Show Shoma character
+    const shomaElement = document.getElementById('Shoma');
+    shomaElement.style.display = 'inline-block';
+
+    // Start conversation between Julia and Shoma
+    startShomaConversation();
+}
+
+function startShomaConversation() {
+    const shomaChat = document.getElementById('Shoma-chat');
+    const juliaChat = document.getElementById('Julia-chat');
+    const conversation = [
+        { character: 'Shoma', text: 'WATERBALL!!!!', delay: 1500, audio: 'res/img/raid/sounds/shoma_waterball.mp3' },
+        { character: 'Julia', text: 'Wha.....?', delay: 1000, audio: 'res/img/raid/sounds/julia_wha.mp3' },
+        { character: 'Julia', text: 'Shoma?', delay: 1000, audio: 'res/img/raid/sounds/julia_shoma.mp3' },
+        { character: 'Shoma', text: 'Just in time, right? Are you okay Julia?', delay: 3500, audio: 'res/img/raid/sounds/shoma_julia.mp3' },
+        { character: 'Julia', text: 'I guess yes, thanks. My nature power is not enough against these infernal monsters', delay: 5500, audio: 'res/img/raid/sounds/julia_yes.mp3' },
+        { character: 'Shoma', text: 'That\'s why you should stay here', delay: 2500, audio: 'res/img/raid/sounds/shoma_stay.mp3' },
+        { character: 'Julia', text: 'No, I want to help to the others too', delay: 3000, audio: 'res/img/raid/sounds/julia_others.mp3' },
+        { character: 'Shoma', text: 'Julia please. I want you to be safe.... I love you.....', delay: 4000, audio: 'res/img/raid/sounds/shoma_love.mp3' },
+        { character: 'Julia', text: 'Shoma....', delay: 2000, audio: 'res/img/raid/sounds/julia_shoma2.mp3' },
+        { character: 'Julia', text: 'Okay, but please be careful!', delay: 3000, audio: 'res/img/raid/sounds/julia_okay.mp3' },
+    ];
+
+    let currentStep = 0;
+
+    function showNextChat() {
+        if (currentStep < conversation.length) {
+            const { character, text, delay, audio } = conversation[currentStep];
+            let chatBubble;
+
+            if (character === 'Shoma') {
+                chatBubble = shomaChat;
+                if (text === 'WATERBALL!!!!') {
+                    killAllElementals();
+                }
+            } else if (character === 'Julia') {
+                chatBubble = juliaChat;
+            }
+
+            if (chatBubble) {
+                chatBubble.innerHTML = `<div>${text.replace(/\n/g, '<br>')}</div>`;
+                chatBubble.style.display = 'flex';
+
+                // Play audio
+                const audioElement = new Audio(audio);
+                audioElement.play();
+
+                setTimeout(() => {
+                    chatBubble.style.display = 'none';
+                    currentStep++;
+                    showNextChat();
+                }, delay);
+            }
+        } else {
+            document.getElementById('stage3-button').style.display = 'block';
+        }
+    }
+
+    showNextChat();
+}
+
+function killAllElementals() {
+    const elementals = ['Elemental1', 'Elemental2', 'Elemental3', 'Elemental4', 'Elemental5'];
+    elementals.forEach(elemental => {
+        updateCharacterStatus(elemental, 99999); // Set a high damage value to ensure HP goes to 0
+		const audio = new Audio('res/img/raid/sounds/splash.mp3');
+		audio.volume = 0.3; // Set volume to 50%
+		audio.play();
+        const elementalImage = document.querySelector(`#${elemental} .elemental-img`);
+        if (elementalImage) {
+            elementalImage.classList.add('grayscale');
+        }
+    });
+}
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === '5') {
+        turnCounter = 69;
+        document.getElementById('turn-counter').innerText = `Turn: ${turnCounter}`;
+    }
+});
+</script>

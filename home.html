@@ -9,6 +9,7 @@
             bottom: 20px;
             left: 20px;
             padding: 20px;
+			background: source src="Event/Eventvideo.mp4" type="video/mp4"
             background-color: #fff;
             border: 1px solid #ccc;
             border-radius: 10px;
@@ -73,7 +74,9 @@
                 'Jun.png', 'Reptile.png', 'Akuma.png', 'Elphelt.png', 'Kotal Kahn.png',
                 'Scorpion.png', 'Peacock.png', 'Angel.png', 'Astaroth.png', 'Ibuki.png',
                 'R.Mika.png', 'Raiden.png', 'Yugo.png', 'Talim.png', 'Noel.png',
-                'Blanka.png', 'Nina.png', 'Ayane.png', 'Siegfried.png', 'Shoma.png'
+                'Blanka.png', 'Nina.png', 'Ayane.png', 'Siegfried.png', 'Shoma.png', 
+				'Juri.png', 'Sub Zero.png', 'Christie.png'
+				
             ];
 
             icons.forEach(icon => {
@@ -302,7 +305,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 120px auto 20px auto;
             padding: 20px;
             background-color: rgba(255, 255, 255, 0.1);
@@ -315,12 +318,12 @@
             justify-content: flex-start;
             align-items: center;
             width: 100%;
-            max-width: 1000px;
+            max-width: 1140px;
             margin-top: 20px;
         }
         .champion-image {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             margin: 10px;
             border: 2px solid #444;
             border-radius: 10px;
@@ -370,6 +373,7 @@
 		}
 
 		#username-display {
+			position: center;
 			margin-right: 10px;
 			font-size: 20px;
 			color: white;
@@ -621,7 +625,6 @@
 			right: 3px; /* Align with profile-info */
 			align-items: center;
 			padding: 5px 10px;
-			width: calc(100% - 340px); /* Adjust width if necessary */
 			max-width: 275px;
 			z-index: 1000; /* Ensure it's above other content */
 			display: flex; /* Use flexbox to align items */
@@ -631,7 +634,7 @@
 		.currency-icon {
 			width: 25px; /* Adjusted width for better visibility */
 			height: auto; /* Maintain aspect ratio */
-			margin-right: 5px;
+			margin-left: 5px;
 		}
 		.currency-icon img {
 			width: 25px; /* Adjust the width as needed */
@@ -659,10 +662,9 @@
 		.cm-container {
 			position: fixed; /* Fixed position */
 			top: 215px; /* Adjust top position */
-			right: 77px; /* Align with profile-info */
+			right: 0px; /* Align with profile-info */
 			align-items: center; /* Align items vertically */
 			padding: 5px 10px; /* Padding around the container */
-			width: 200px; /* Adjust width as necessary */
 			max-width: 275px; /* Maximum width */
 			z-index: 1000; /* Ensure it's above other content */
 			display: flex; /* Use flexbox to align items */
@@ -671,7 +673,7 @@
 		.cm-icon {
 			width: 25px; /* Adjusted width for the icon */
 			height: auto; /* Maintain aspect ratio */
-			margin-right: 5px; /* Margin between icon and amount */
+			margin-left: 5px; /* Margin between icon and amount */
 		}
 
 		.cm-icon img {
@@ -685,12 +687,11 @@
 		}
 		#news-feed {
 			position: fixed;
-			top: 180px; /* Adjust based on your layout */
+			top: 55px; /* Adjust based on your layout */
 			left: 0;
-			width: 300px; /* Adjust width as needed */
+			width: 250px; /* Adjust width as needed */
 			background-color: rgba(0, 0, 0, 0.8);
 			color: white;
-			margin-left: 10px;
 			padding: 10px;
 			box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
 			z-index: 2000; /* Ensure it's above other content */
@@ -718,7 +719,7 @@
 		}
 		#friend-list-container {
             position: fixed;
-            bottom: 45px;
+            top: 75px;
             left: 10px;
             background-color: rgba(0, 0, 0, 0.8);
             color: white;
@@ -848,16 +849,16 @@
 	</div>
 
 	<div class="currency-container">
+		<div id="currency-amount"></div>
 		<div class="currency-icon">
 			<img src="res/img/fm.png" alt="Currency Icon">
 		</div>
-		<div id="currency-amount"></div>
 	</div>
 	<div class="cm-container">
+		<div id="cm-amount"></div>
 		<div class="cm-icon">
 			<img src="res/img/cm.png" alt="CM">
 		</div>
-		<div id="cm-amount"></div>
 	</div>
 
 	<!-- Profile Menu Pop-up -->
@@ -883,27 +884,6 @@
     </div>
     <!-- Champion Selector -->
     <div id="champion-selector-container">
-        <div id="search-container">
-            <input type="text" id="search-bar" placeholder="Search for a champion..." onkeyup="searchChampion()">
-        </div>
-		<div id="news-feed">
-    <div class="news-item">
-        <h3 class="news-title">Feel the BURN!</h3>
-		<img src="Icons/Profile/Infernal_Raiden.jfif" alt="News Image 1" class="news-image">
-        <p class="news-text">The Infernal Event is here along with the new battlepass. New skins for Astaroth, Scorpion, Ibuki and more...</p>
-    </div>
-    <div class="news-item">
-        <h3 class="news-title">Juri is now available!</h3>
-		<img src="Icons/Juri.png" alt="News Image 2" class="news-image">
-        <p class="news-text">Juri from Street Fighter is avaliable. The new hybrid jungler is ready to take revenge on their enemies.</p>
-    </div>
-	<div class="news-item">
-        <h3 class="news-title">Introducing "Recolors"</h3>
-		<img src="res/img/recolor.png" alt="News Image 2" class="news-image">
-        <p class="news-text">A new way to costumize your character. Recolors are skin variants. Check your quests for a surprise! </p>
-    </div>
-    <!-- Add more news items as needed -->
-</div>
  <!-- New Quests Box -->
     <div id="new-quests-box">
         <div class="header">Quests</div>
@@ -947,9 +927,14 @@
             <a href="characters/Shoma Page.html"><img src="Icons/Shoma.png" alt="Shoma" class="champion-image"></a>
 			<a href="characters/Juri Page.html"><img src="Icons/Juri.png" alt="Juri" class="champion-image"></a>
 			<a href="characters/Sub Zero Page.html"><img src="Icons/Sub Zero.png" alt="Sub Zero" class="champion-image"></a>
-			<a href="characters/Christie.html"><img src="Icons/Christie.png" alt="Christie" class="champion-image gray"></a>
-			<a href="characters/Kokoro.html"><img src="Icons/Kokoro.png" alt="Kokoro" class="champion-image gray"></a>
-			<a href="characters/Eagle.html"><img src="Icons/Eagle.png" alt="Eagle" class="champion-image gray"></a>
+			<a href="characters/Christie Page.html"><img src="Icons/Christie.png" alt="Christie" class="champion-image"></a>
+			<a href="characters/Kokoro Page.html"><img src="Icons/Kokoro.png" alt="Kokoro" class="champion-image gray"></a>
+			<a href="characters/Eagle Page.html"><img src="Icons/Eagle.png" alt="Eagle" class="champion-image gray"></a>
+			<a href="characters/default-icon.html"><img src="Icons/default-icon.jpg" alt="default-icon" class="champion-image gray"></a>
+			<a href="characters/default-icon.html"><img src="Icons/default-icon.jpg" alt="default-icon" class="champion-image gray"></a>
+			<a href="characters/default-icon.html"><img src="Icons/default-icon.jpg" alt="default-icon" class="champion-image gray"></a>
+			<a href="characters/default-icon.html"><img src="Icons/default-icon.jpg" alt="default-icon" class="champion-image gray"></a>
+			<a href="characters/default-icon.html"><img src="Icons/default-icon.jpg" alt="default-icon" class="champion-image gray"></a>
         </div>
     </div>
 

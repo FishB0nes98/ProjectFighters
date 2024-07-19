@@ -111,6 +111,15 @@
             document.getElementById(characterId).classList.toggle('active');
         });
     });
+	document.querySelectorAll('.character-icon').forEach(icon => {
+		const characterName = icon.getAttribute('alt');
+		const newSkins = ["Raiden", "Christie", "Cham Cham", "Sub Zero", "Angel", "Erron Black"];
+
+		if (newSkins.includes(characterName)) {
+			icon.classList.add('new-skin');
+		}
+	});
+	
 </script>
     <style>
         body {
@@ -382,6 +391,23 @@
 			justify-content: center;
 			width: 50px; /* Adjust width as needed */
 		}
+		/* Rainbow "New" text for new skins */
+		.character-icon.new-skin {
+			position: relative;
+		}
+
+		.character-icon.new-skin::before {
+			content: "New";
+			position: absolute;
+			top: -10px; /* Adjust as needed */
+			left: 50%;
+			transform: translateX(-50%);
+			font-size: 14px; /* Adjust as needed */
+			background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			font-weight: bold;
+		}
     </style>
 </head>
 <body>
@@ -408,21 +434,21 @@
     <div class="container" id="character-icons">
         <img src="Icons/Julia.png" alt="Julia" class="character-icon" data-character="Julia">
         <img src="Icons/Birdie.png" alt="Birdie" class="character-icon" data-character="Birdie">
-        <img src="Icons/Erron Black.png" alt="Erron Black" class="character-icon" data-character="ErronBlack">
+        <img src="Icons/Erron Black.png" alt="Erron Black" class="character-icon new-skin" data-character="ErronBlack">
         <img src="Icons/Morrigan.png" alt="Morrigan" class="character-icon" data-character="Morrigan">
         <img src="Icons/Jun.png" alt="Jun" class="character-icon" data-character="Jun">
-        <img src="Icons/Cham Cham.png" alt="Cham Cham" class="character-icon" data-character="ChamCham">
+        <img src="Icons/Cham Cham.png" alt="Cham Cham" class="character-icon new-skin" data-character="ChamCham">
         <img src="Icons/Reptile.png" alt="Reptile" class="character-icon" data-character="Reptile">
         <img src="Icons/Akuma.png" alt="Akuma" class="character-icon" data-character="Akuma">
         <img src="Icons/Elphelt.png" alt="Elphelt" class="character-icon" data-character="Elphelt">
         <img src="Icons/Kotal Kahn.png" alt="Kotal Kahn" class="character-icon" data-character="KotalKahn">
         <img src="Icons/Scorpion.png" alt="Scorpion" class="character-icon" data-character="Scorpion">
         <img src="Icons/Peacock.png" alt="Peacock" class="character-icon" data-character="Peacock">
-        <img src="Icons/Angel.png" alt="Angel" class="character-icon" data-character="Angel">
+        <img src="Icons/Angel.png" alt="Angel" class="character-icon new-skin" data-character="Angel">
         <img src="Icons/Astaroth.png" alt="Astaroth" class="character-icon" data-character="Astaroth">
         <img src="Icons/Ibuki.png" alt="Ibuki" class="character-icon" data-character="Ibuki">
         <img src="Icons/R.Mika.png" alt="R.Mika" class="character-icon" data-character="RMika">
-        <img src="Icons/Raiden.png" alt="Raiden" class="character-icon" data-character="Raiden">
+        <img src="Icons/Raiden.png" alt="Raiden" class="character-icon new-skin" data-character="Raiden">
         <img src="Icons/Yugo.png" alt="Yugo" class="character-icon" data-character="Yugo">
         <img src="Icons/Talim.png" alt="Talim" class="character-icon" data-character="Talim">
         <img src="Icons/Noel.png" alt="Noel" class="character-icon" data-character="Noel">
@@ -432,7 +458,8 @@
         <img src="Icons/Siegfried.png" alt="Siegfried" class="character-icon" data-character="Siegfried">
         <img src="Icons/Shoma.png" alt="Shoma" class="character-icon" data-character="Shoma">
         <img src="Icons/Juri.png" alt="Juri" class="character-icon" data-character="Juri">
-		<img src="Icons/Sub Zero.png" alt="Sub Zero" class="character-icon" data-character="SubZero">
+		<img src="Icons/Sub Zero.png" alt="Sub Zero" class="character-icon new-skin" data-character="SubZero">
+		<img src="Icons/Christie.png" alt="Christie" class="character-icon new-skin" data-character="Christie">
     </div>
 <div class="containerskins">
     <!-- Group by Characters -->
@@ -499,14 +526,19 @@
                 <div class="skin-name">Arctic Hunter Erron Black</div>
                 <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
             </div>
+			<div class="skin" data-src="Skins/Neon Core Erron Black.png" onclick="openLightbox('Skins/Neon Core Erron Black.png', 'Neon Core Erron Black', 2000)">
+                <img src="Skins/Neon Core Erron Black.png" alt="Neon Core Erron Black" class="scaled-image">
+                <div class="skin-name">Neon Core Erron Black</div>
+                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
+            </div>
         </div>
     </div>
     <div class="character" id="Morrigan">
         <h2>Morrigan</h2>
         <div class="skins">
-            <div class="skin" data-src="Skins/Neon Morrigan.jpeg" onclick="openLightbox('Skins/Neon Morrigan.jpeg', 'Neon Morrigan', 1000)">
-                <img src="Skins/Neon Morrigan.jpeg" alt="Neon Morrigan" class="scaled-image">
-                <div class="skin-name">Neon Morrigan</div>
+            <div class="skin" data-src="Skins/Neon Core Core Morrigan.png" onclick="openLightbox('Skins/Neon Core Morrigan.png', 'Neon Core Morrigan', 1000)">
+                <img src="Skins/Neon Core Morrigan.png" alt="Neon Core Morrigan" class="scaled-image">
+                <div class="skin-name">Neon Core Morrigan</div>
                 <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
             </div>
             <div class="skin" data-src="Skins/Dragon Tamer Morrigan.jpeg" onclick="openLightbox('Skins/Dragon Tamer Morrigan.jpeg', 'Dragon Tamer Morrigan', 2000)">
@@ -542,6 +574,11 @@
             <div class="skin" data-src="Skins/Blossom Cham Cham.png" onclick="openLightbox('Skins/Blossom Cham Cham.png', 'Blossom Cham Cham', 2000)">
                 <img src="Skins/Blossom Cham Cham.png" alt="Blossom Cham Cham" class="scaled-image">
                 <div class="skin-name">Blossom Cham Cham</div>
+                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
+            </div>
+			<div class="skin" data-src="Skins/Neon Core Cham Cham.png" onclick="openLightbox('Skins/Neon Core Cham Cham.png', 'Neon Core Cham Cham', 2000)">
+                <img src="Skins/Neon Core Cham Cham.png" alt="Blossom Cham Cham" class="scaled-image">
+                <div class="skin-name">Neon Core Cham Cham</div>
                 <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
             </div>
         </div>
@@ -659,15 +696,20 @@
 	<div class="character" id="Angel">
 		<h2>Angel</h2>
 		<div class="skins">
+			<div class="skin" data-src="Skins/Voidborn Angel.png" onclick="openLightbox('Skins/Voidborn Angel.png', 'Voidborn Angel', 1000)">
+				<img src="Skins/Voidborn Angel.png" alt="Voidborn Angel" class="scaled-image">
+				<div class="skin-name">Voidborn Angel</div>
+				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
+			</div>
 			<div class="skin" data-src="Skins/Blossom Angel.png" onclick="openLightbox('Skins/Blossom Angel.png', 'Blossom Angel', 3000)">
 				<img src="Skins/Blossom Angel.png" alt="Blossom Angel" class="scaled-image">
 				<div class="skin-name">Blossom Angel</div>
 				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
 			</div>
-			<div class="skin" data-src="Skins/Voidborn Angel.png" onclick="openLightbox('Skins/Voidborn Angel.png', 'Voidborn Angel', 1000)">
-				<img src="Skins/Voidborn Angel.png" alt="Voidborn Angel" class="scaled-image">
-				<div class="skin-name">Voidborn Angel</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
+			<div class="skin" data-src="Skins/Neon Core Angel.png" onclick="openLightbox('Skins/Neon Core Angel.png', 'Neon Core Angel', 2000)">
+				<img src="Skins/Neon Core Angel.png" alt="Neon Core Angel" class="scaled-image">
+				<div class="skin-name">Neon Core Angel</div>
+				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
 			</div>
 		</div>
 	</div>
@@ -757,6 +799,11 @@
 			<div class="skin" data-src="Skins/Infernal Raiden.png" onclick="openLightbox('Skins/Infernal Raiden.png', 'Infernal Raiden', 2000)">
 				<img src="Skins/Infernal Raiden.png" alt="Infernal Raiden" class="scaled-image">
 				<div class="skin-name">Infernal Raiden</div>
+				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
+			</div>
+			<div class="skin" data-src="Skins/Neon Core Raiden.png" onclick="openLightbox('Skins/Neon Core Raiden.png', 'Neon Core Raiden', 2000)">
+				<img src="Skins/Neon Core Raiden.png" alt="Neon Core Raiden" class="scaled-image">
+				<div class="skin-name">Neon Core Raiden</div>
 				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
 			</div>
 		</div>
@@ -899,8 +946,23 @@
 				<div class="skin-name small">Arcane Sorcerer Sub Zero</div>
 				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
 			</div>
+			<div class="skin" data-src="Skins/Neon Core Sub Zero.png" onclick="openLightbox('Skins/Neon Core Sub Zero.png', 'Neon Core Sub Zero', 1000)">
+				<img src="Skins/Neon Core Sub Zero.png" alt="Neon Core Sub Zero" class="scaled-image">
+				<div class="skin-name small">Neon Core Sub Zero</div>
+				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
+			</div>
 		</div>
 	</div>
+	<div class="character" id="Christie">
+		<h2>Christie</h2>
+		<div class="skins">
+			<div class="skin" data-src="Skins/Chris T.png" onclick="openLightbox('Skins/Chris T.png', 'Chris T', 1000)">
+				<img src="Skins/Chris T.png" alt="Chris T" class="scaled-image">
+				<div class="skin-name small">Chris T</div>
+				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
+			</div>
+		</div>
+	</div>	
 <div id="lightbox" class="lightbox">
         <div class="lightbox-content">
             <img id="lightbox-image" src="" alt="Skin Image">

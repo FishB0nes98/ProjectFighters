@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turn-Based Raid Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: url('res/img/raid/background3.png') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+        }
+
+        .character {
+            display: inline-block;
+            position: absolute;
+            bottom: 100px;
+            width: 250px;
+            height: 350px;
+        }
+
+        .shoma {
+            left: 30%;
+        }
+
+        .ayane {
+            right: 30%;
+        }
+
+        .enemy {
+            display: inline-block;
+            margin: 30px;
+            gap: 50px;
+            position: relative;
+            top: 15px;
+        }
+
+        .scorpion {
+            display: inline-block;
+            text-align: center;
+        }
+
+        .scorpion img {
+            width: 250px;
+            height: 350px;
+            padding-right: 20px;
+        }
+
+        .character img {
+            width: 250px;
+            height: 350px;
+        }
+
+        .status {
+            font-size: 18px;
+            margin-top: 10px;
+            width: 250px;
+            z-index: 1000;
+            position: absolute;
+        }
+
+        .chat-bubble {
+            position: absolute;
+            top: 5%;
+            right: 60%;
+            transform: translateY(-50%);
+            width: 200px;
+            height: 350px;
+            background: url('res/img/raid/chat.png') no-repeat center center;
+            background-size: contain;
+            color: black;
+            padding: 20px;
+            padding-top: 300px;
+            display: none;
+            z-index: 100;
+            display: flex;
+            align-items: flex-start;
+            word-wrap: break-word;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #allies {
+            position: absolute;
+            bottom: 25px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .log {
+            border: 1px solid #555;
+            padding: 10px;
+            height: 300px;
+            width: 500px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            position: absolute;
+            top: 15px;
+            left: 35px;
+            z-index: 10;
+        }
+
+        h1 {
+            position: absolute;
+            top: 0;
+            right: 20px;
+            margin: 20px;
+            z-index: 1000;
+        }
+
+        .turn-counter {
+            position: absolute;
+            top: 5px;
+            right: 925px;
+            z-index: 10;
+            font-size: 18px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        @keyframes flash-red {
+            0% {
+                filter: brightness(1);
+            }
+            50% {
+                filter: brightness(0) sepia(1) hue-rotate(-50deg) saturate(10);
+            }
+            100% {
+                filter: brightness(1);
+            }
+        }
+
+        .flash-red {
+            animation: flash-red 0.5s;
+        }
+
+        @keyframes flash-green {
+            0% {
+                filter: brightness(1);
+            }
+            50% {
+                filter: brightness(0.5) saturate(3) hue-rotate(120deg);
+            }
+            100% {
+                filter: brightness(1);
+            }
+        }
+
+        .flash-green {
+            animation: flash-green 0.5s ease-in-out;
+        }
+
+        .buff-container {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .buff-icon {
+            width: 50px !important;
+            height: 50px !important;
+            margin: 0 1px;
+            display: none;
+        }
+
+        .cooldown {
+            filter: grayscale(100%);
+            pointer-events: none;
+        }
+
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        #start-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        #stage2-button {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+		.stage4-button {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .hp-bar-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-color: #555;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .hp-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 100%;
+            transition: width 0.5s ease;
+            border-radius: 5px;
+        }
+
+        .grayscale {
+            filter: grayscale(100%);
+        }
+
+        #volume-control {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            display: flex;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        #volume-slider {
+            margin-left: 10px;
+        }
+
+        .objective {
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            z-index: 1000;
+            font-size: 18px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .shoma img, .ayane img {
+            width: 250px;
+            height: 350px;
+        }
+
+        .stage-button {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .cooldown-text {
+            position: absolute;
+            top: 65%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: blue;
+            font-size: 35px;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 1;
+        }
+		.ability-icons {
+			position: relative;
+		}
+
+	.ability-container {
+		position: relative;
+		display: inline-block;
+		width: max-content;
+	}
+		.ability-icons img.disabled {
+			opacity: 0.5;
+		}
+
+		.ability {
+			width: 50px !important;
+			height: 50px !important;
+			margin: 5px;
+			cursor: pointer;
+			padding-top: 30px;
+		}
+	.heal-icons {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.5);
+	}
+
+	.heal-icons img {
+		width: 25px;
+		height: 25px;
+		margin: 2px;
+		cursor: pointer;
+		margin-top: 225px;
+	}	
+	.cooldown-text {
+		position: absolute;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		color: blue;
+		font-size: 35px;
+		font-weight: bold;
+		pointer-events: none; /* Ensure it doesn't block clicks */
+		z-index: 1; /* Ensure it is above the image */
+	}
+
+	.disabled {
+		filter: grayscale(100%);
+		pointer-events: none;
+		opacity: 0.5;
+	}
+	.selection-icons {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.5);
+	}
+
+	.selection-icons img {
+		width: 50px;
+		height: 50px;
+		margin: 5px;
+		cursor: pointer;
+		margin-top: 225px;
+	}
+	.grayscale {
+		filter: grayscale(100%);
+	}
+    </style>
+</head>
+<body>
+    <h1>Stage 3</h1>
+    <div class="turn-counter" id="turn-counter">Turn: 0</div>
+    <button id="start-button" onclick="startGame()">Start Stage 3</button>
+
+    <div id="characters" style="display: none;">
+        <!-- Shoma Character -->
+        <div class="character shoma" id="Shoma" style="display: none;">
+            <img src="Loading Screen/Schoolboy Shoma.png" alt="Shoma">
+            <div class="status">
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="Shoma-hp-bar"></div>
+                </div>
+                <div id="Shoma-status">HP: 6280/6280</div>
+            </div>
+            <div class="buff-container" id="Shoma-buff-container"></div>
+            <div class="chat-bubble" id="Shoma-chat"></div>
+		<div class="ability-container" id="Shoma-abilities">
+		<div id="Shoma-abilities">
+		<div class="ability-container">
+			<img id="ShomaAbility1" src="res/img/raid/shomaa1.jfif" class="ability" alt="Ability 1" title="Shoma either deals 255 or 555 damage plus there is an 50% chance that the damage is increased by 20% more. ">
+			<div id="ShomaAbility1Cooldown" class="cooldown-text" style="display: none;"></div>
+		</div>
+		<div class="ability-container">
+			<img id="ShomaAbility2" src="res/img/raid/shomaa2.jfif" class="ability" alt="Ability 2" title="Select character to avoid 100% damage for 4 turns">
+			<div id="ShomaAbility2Cooldown" class="cooldown-text" style="display: none;"></div>
+		</div>
+		<div class="ability-container">
+			<img id="ShomaAbility3" src="res/img/raid/shomaa3.jfif" class="ability" alt="Baseball" title="Select from 4 different baseball effects">
+			<div id="ShomaAbility3Cooldown" class="cooldown-text" style="display: none;"></div>
+		</div>
+		<div class="ability-container">
+			<img id="ShomaAbility4" src="res/img/raid/shomaa4.jfif" class="ability" alt="Ability 4" title="Shoma can't take damage for 5 turns">
+			<div id="ShomaAbility4Cooldown" class="cooldown-text" style="display: none;"></div>
+		</div>
+	</div>
+	</div>
+	<div id="Shoma-selection" class="selection-icons" style="display: none;">
+	<img id="selectShoma" src="Icons/Shoma.png" class="selection" alt="Select Shoma" title="Select Shoma">
+    <img id="selectAyane" src="Icons/Ayane.png" class="selection" alt="Select Ayane" title="Select Ayane">
+	</div>
+	<div id="Shoma-baseballs" class="heal-icons" style="display: none;">
+		<img id="fireBall" src="res/img/raid/fireball.jfif" class="ability" alt="Fire Ball" title="Fire Ball: Boosts an ally's damage, so they will deal 3x more for 3 turns">
+		<img id="waterBall" src="res/img/raid/waterball.jfif" class="ability" alt="Water Ball" title="Water Ball: Deals 3000 damage">
+		<img id="grassBall" src="res/img/raid/grassball.jfif" class="ability" alt="Grass Ball" title="Grass Ball: Heals an ally for 2340HP ">
+		<img id="heavyBall" src="res/img/raid/heavyball.jfif" class="ability" alt="Heavy Ball" title="Heavy Ball: Applies a debuff on an enemy for 5 turns, so that will deal 55% less damage.">
+	</div>
+</div>
+        <!-- Ayane Character -->
+        <div class="character ayane" id="Ayane" style="display: none;">
+            <img src="Loading Screen/Schoolgirl Ayane.png" alt="Ayane">
+            <div class="status">
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="Ayane-hp-bar"></div>
+                </div>
+                <div id="Ayane-status">HP: 5050/5050</div>
+            </div>
+			<div id="Ayane-abilities">
+			<div class="ability-container ayane-abilities">
+				<div class="ability-container">
+					<img id="AyaneAbility1" src="res/img/raid/ayanea1.jfif" class="ability" alt="Ability 1" title="Deals 425 damage and 55% chance to avoid damage for 1 turn">
+					<div id="AyaneAbility1Cooldown" class="cooldown-text" style="display: none;"></div>
+				</div>
+				<div class="ability-container">
+					<img id="AyaneAbility2" src="res/img/raid/ayanea2.jfif" class="ability" alt="Ability 2" title="Increases all allies' damage by 20% for 5 turns but skips turn" />
+					<div id="AyaneAbility2Cooldown" class="cooldown-text" style="display: none;"></div>
+				</div>
+				<div class="ability-container">
+					<img id="AyaneAbility3" src="res/img/raid/ayanea3.jfif" class="ability" alt="Ability 3" title="Deals 3x damage for 2 turns but skips turn" />
+					<div id="AyaneAbility3Cooldown" class="cooldown-text" style="display: none;"></div>
+				</div>
+				<div class="ability-container">
+					<img id="AyaneAbility4" src="res/img/raid/ayanea4.jfif" class="ability" alt="Ability 4" title="Deals 2345 damage if Scorpion is below 35% health">
+					<div id="AyaneAbility4Cooldown" class="cooldown-text" style="display: none;"></div>
+				</div>
+			</div>
+			<div class="buff-container" id="Ayane-buff-container"></div>
+			<div class="chat-bubble" id="Ayane-chat"></div>
+		</div>
+	</div>
+        <!-- Enemies -->
+        <div class="enemy" id="scorpions">
+            <div class="scorpion" id="Scorpion">
+                <img src="Loading Screen/Infernal Scorpion.png" alt="Scorpion" class="scorpion-img">
+                <div class="status">
+                    <div class="hp-bar-container">
+                        <div class="hp-bar" id="Scorpion-hp-bar"></div>
+                    </div>
+					<div id="Scorpion-status">HP: 69500/69500</div>
+				</div>
+				<div class="buff-container" id="Scorpion-buff-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="log" id="log">
+        <p>Battle log:</p>
+    </div>
+    <div id="volume-control">
+        <label for="volume-slider">Volume:</label>
+        <input type="range" id="volume-slider" min="0" max="100" value="5">
+    </div>
+    <button id="stage4-button" onclick="location.href='Stage_4.html'" style="display: none; position: absolute; top: 47%; left: 50%; transform: translate(-50%, -50%); padding: 10px 20px; font-size: 20px; cursor: pointer; background-color: rgb(47 55 47); color: white; border: none; border-radius: 5px;">Go to Stage 4</button>
+</body>
+
+    <script>
+        let userInteracted = false;
+        let bgAudio;
+        let turnCounter = 0;
+        let buffs = { Shoma: {}, Ayane: {}, Scorpion: {} };
+        let abilityCooldowns = {
+            ShomaAbility2: 0,
+            ShomaAbility3: 0,
+            ShomaAbility4: 0,
+            AyaneAbility4: 0  // Ensure this is included
+        };
+
+        function startGame() {
+            userInteracted = true;
+            document.getElementById('start-button').style.display = 'none';
+            document.getElementById('characters').style.display = 'block';
+            document.getElementById('Ayane').style.display = 'block';
+            document.getElementById('Shoma').style.display = 'block';
+
+            bgAudio = new Audio('res/img/raid/sounds/bgaudio4.mp3');
+            bgAudio.volume = 0.20;
+            bgAudio.loop = true;
+            bgAudio.play();
+
+            // Initialize cooldowns
+            abilityCooldowns = {
+                ShomaAbility2: 0,
+                ShomaAbility3: 0,
+                ShomaAbility4: 0,
+                AyaneAbility4: 0  // Ensure this is included
+            };
+
+            preFightConversation();
+            updateAbilityAvailability(); // Initial check
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById('volume-slider').addEventListener('input', function(event) {
+                const volume = event.target.value / 100;
+                if (bgAudio && bgAudio.volume !== volume) {
+                    bgAudio.volume = volume;
+                }
+            });
+        });
+
+        function preFightConversation() {
+            const ayaneChat = document.getElementById('Ayane-chat');
+            const shomaChat = document.getElementById('Shoma-chat');
+            const scorpionChat = document.getElementById('Scorpion-chat');
+            const ayaneStatus = document.getElementById('Ayane-status');
+
+            // Set Ayane's initial HP to 4000 while keeping her max HP at 5050
+            ayaneStatus.innerText = 'HP: 4000/5050';
+            const ayaneHpBar = document.getElementById('Ayane-hp-bar');
+            ayaneHpBar.style.width = `${(4000 / 5050) * 100}%`;
+
+            const conversation = [
+                { character: 'Shoma', text: 'Ayane!', audio: 'res/img/raid/sounds/shoma_ayane.mp3' },
+                { character: 'Ayane', text: 'Finally some help....', audio: 'res/img/raid/sounds/ayane_finally.mp3' },
+                { character: 'Ayane', text: 'Dude just...', audio: 'res/img/raid/sounds/ayane_dude.mp3' },
+                { character: 'Ayane', text: '...help me beat this fucker', audio: 'res/img/raid/sounds/ayane_fucker.mp3' },
+            ];
+
+            let currentStep = 0;
+
+            function showNextChat() {
+                if (currentStep < conversation.length) {
+                    const { character, text, audio, delay } = conversation[currentStep];
+                    let chatBubble;
+
+                    if (character === 'Ayane') {
+                        chatBubble = ayaneChat;
+                    } else if (character === 'Shoma') {
+                        chatBubble = shomaChat;
+                    } else if (character === 'Scorpion') {
+                        chatBubble = scorpionChat;
+                    }
+
+                    if (chatBubble) {
+                        chatBubble.innerHTML = `<div>${text.replace(/\n/g, '<br>')}</div>`;
+                        chatBubble.style.display = 'flex';
+
+                        if (audio && userInteracted) {
+                            const audioElement = new Audio(audio);
+                            audioElement.play();
+                        }
+
+                        setTimeout(() => {
+                            chatBubble.style.display = 'none';
+                            currentStep++;
+                            if (currentStep === 3) {
+                                setTimeout(showNextChat, 10); // wait 3 seconds before the next dialogue
+                            } else {
+                                showNextChat();
+                            }
+                        }, delay || 1500); // custom delay for specific steps
+                    } else {
+                        console.error(`No chat bubble found for character: ${character}`);
+                    }
+                } else {
+                    // Re-enable abilities after the conversation
+                    enableAllAbilities();
+                    // Scorpion casts his ability on Ayane
+                    castScorpionAbility1();
+                }
+            }
+
+            // Disable abilities at the start of the conversation
+            disableAllAbilities();
+            showNextChat();
+        }
+
+        function castScorpionAbility1() {
+            const damage = 425; // example damage value
+            const ayaneStatus = document.getElementById('Ayane-status');
+            let currentHp = parseInt(ayaneStatus.innerText.split('/')[0].split(': ')[1]);
+            const maxHp = 5050; // Ayane's max HP
+
+            currentHp -= damage;
+            if (currentHp < 0) currentHp = 0;
+
+            // Play audio
+            const audio = new Audio('res/img/raid/sounds/getoverhere.mp3');
+            audio.play();
+
+            ayaneStatus.innerText = `HP: ${currentHp}/${maxHp}`;
+            const ayaneHpBar = document.getElementById('Ayane-hp-bar');
+            ayaneHpBar.style.width = `${(currentHp / maxHp) * 100}%`;
+
+            const ayaneChat = document.getElementById('Ayane-chat');
+            const audio2 = new Audio('res/img/raid/sounds/woah.mp3');
+            audio2.play();
+            ayaneChat.innerHTML = '<div>woah</div>';
+            ayaneChat.style.display = 'flex';
+
+            // Apply the buff to Ayane
+            applyBuff('Ayane', 'scorpionAbility1', 2, 'res/img/raid/spear.jfif', 'Increase damage taken by 20% for 4 turns');
+
+            setTimeout(() => {
+                ayaneChat.style.display = 'none';
+                startGameLogic();
+            }, 4000); // display "woah" for 2 seconds
+        }
+
+        function applyBuff(character, buffType, duration, iconSrc) {
+            if (!buffs[character]) {
+                buffs[character] = {};
+            }
+            buffs[character][buffType] = duration;
+
+            const buffContainer = document.getElementById(`${character}-buff-container`);
+            if (!buffContainer) {
+                console.error(`Buff container not found for character: ${character}`);
+                return;
+            }
+
+            let buffIcon = document.getElementById(`${character}-${buffType}-buff-icon`);
+            if (!buffIcon) {
+                buffIcon = document.createElement('img');
+                buffIcon.src = iconSrc;
+                buffIcon.className = 'buff-icon';
+                buffIcon.id = `${character}-${buffType}-buff-icon`;
+                buffContainer.appendChild(buffIcon);
+            }
+            buffIcon.style.display = 'inline-block';
+
+            if (buffType === 'abilityLock') {
+                disableCharacterAbilities(character);
+            }
+        }
+
+        function disableCharacterAbilities(character) {
+            const abilitiesContainer = document.getElementById(`${character}-abilities`);
+            if (abilitiesContainer) {
+                const abilityIcons = abilitiesContainer.getElementsByClassName('ability');
+                for (let icon of abilityIcons) {
+                    icon.classList.add('disabled');
+                    icon.style.pointerEvents = 'none';
+                }
+            }
+        }
+
+        function enableCharacterAbilities(character) {
+            const abilitiesContainer = document.getElementById(`${character}-abilities`);
+            if (abilitiesContainer) {
+                const abilityIcons = abilitiesContainer.getElementsByClassName('ability');
+                for (let icon of abilityIcons) {
+                    icon.classList.remove('disabled');
+                    icon.style.pointerEvents = 'auto';
+                }
+            }
+        }
+
+        function startGameLogic() {
+            const ayaneElement = document.getElementById('Ayane');
+            ayaneElement.style.display = 'inline-block';
+            const shomaElement = document.getElementById('Shoma');
+            shomaElement.style.display = 'inline-block';
+
+            scorpionTurn();
+        }
+
+        function disableAllAbilities() {
+            disableCharacterAbilities('Shoma');
+            disableCharacterAbilities('Ayane');
+        }
+
+        function enableAllAbilities() {
+            enableCharacterAbilities('Shoma');
+            enableCharacterAbilities('Ayane');
+        }
+
+function scorpionTurn() {
+    turnCounter++;
+    document.getElementById('turn-counter').innerText = `Turn: ${turnCounter}`;
+
+    let damageMultiplier = 1;
+    if (buffs['Scorpion'] && buffs['Scorpion']['lessDamage']) {
+        damageMultiplier = 0.45;  // 55% less damage
+    }
+
+    if (turnCounter % 7 === 0) {
+        castGetOverHere(damageMultiplier);
+    } else if (turnCounter % 12 === 0) {
+        castAbilityLock();
+    } else {
+        const randomAbility = Math.floor(Math.random() * 2) + 2;
+        if (randomAbility === 2) {
+            castHellfire(damageMultiplier);
+        } else if (randomAbility === 3) {
+            castDoubleStrike(damageMultiplier);
+        }
+    }
+
+    applyBuffsAndDebuffs();
+    updateBuffDurations();
+
+    // Heal Shoma for 425 HP if Shoma's third ability is not on cooldown
+    if (abilityCooldowns.ShomaAbility3 === 0) {
+        healCharacter('Shoma', 425);
+    }
+
+    // Reduce cooldowns and update cooldown display
+    updateAllCooldowns();
+
+    // Update ability availability based on conditions
+    updateAbilityAvailability();
+}
+
+        function updateCooldownDisplay(ability, cooldown) {
+            const cooldownElement = document.getElementById(`${ability}Cooldown`);
+
+            if (cooldown > 0) {
+                cooldownElement.innerText = cooldown;
+                cooldownElement.style.display = 'block';
+                document.getElementById(ability).classList.add('disabled');
+            } else {
+                cooldownElement.style.display = 'none';
+                document.getElementById(ability).classList.remove('disabled');
+            }
+            updateAbilityAvailability();  // Ensure ability availability is updated when cooldown changes
+        }
+
+        function updateAllCooldowns() {
+            for (let ability in abilityCooldowns) {
+                if (abilityCooldowns[ability] > 0) {
+                    abilityCooldowns[ability]--;
+                    updateCooldownDisplay(ability, abilityCooldowns[ability]);
+                }
+            }
+            updateAbilityAvailability();
+        }
+
+        // Ensure to reduce cooldowns and update display in each turn
+        for (let ability in abilityCooldowns) {
+            if (abilityCooldowns[ability] > 0) {
+                abilityCooldowns[ability]--;
+                updateCooldownDisplay(ability, abilityCooldowns[ability]);
+            }
+        }
+
+        // Function to cast Get Over Here
+        function castGetOverHere(damageMultiplier) {
+			const damage = 365 * damageMultiplier;
+			const target = Math.random() < 0.5 ? 'Shoma' : 'Ayane';
+			updateCharacterStatus(target, damage);
+			const audio = new Audio('res/img/raid/sounds/getoverhere.mp3');
+			audio.play();
+			logAction('Scorpion', 'Get over here', target, `dealt ${damage} damage and applied increased damage buff`);
+			applyBuff(target, 'getOverHere', 4, 'res/img/raid/spear.jfif', 'Increases damage taken by 20% for 4 turns');
+		}
+
+        // Function to cast Ability Lock
+        function castAbilityLock() {
+            const target = Math.random() < 0.5 ? 'Shoma' : 'Ayane';
+            const audio = new Audio('res/img/raid/sounds/scorpionportal.mp3');
+            audio.play();
+            applyBuff(target, 'abilityLock', 3, 'res/img/raid/portal.jfif', 'Scorpion sent you to the Netherrealm so your abilities are locked for 3 turns');
+            logAction('Scorpion', 'Ability Lock', target, 'locked abilities');
+        }
+
+        // Function to cast Hellfire
+        function castHellfire(damageMultiplier) {
+            const damage = 400 * damageMultiplier;
+            updateCharacterStatus('Shoma', damage);
+            updateCharacterStatus('Ayane', damage);
+            const audio = new Audio('res/img/raid/sounds/scorpionhellfire.mp3');
+            audio.play();
+            logAction('Scorpion', 'Hellfire', 'all characters', damage);
+        }
+
+        // Function to cast Double Strike
+        function castDoubleStrike(damageMultiplier) {
+            const damage = 2 * 435 * damageMultiplier;
+            const target = Math.random() < 0.5 ? 'Shoma' : 'Ayane';
+            const audio = new Audio('res/img/raid/sounds/scorpiondualblades.mp3');
+            audio.play();
+            updateCharacterStatus(target, damage);
+            logAction('Scorpion', 'Double Strike', target, damage);
+        }
+
+        function applyBuff(character, buffType, duration, iconSrc, title) {
+    if (!buffs[character]) {
+        buffs[character] = {};
+    }
+    buffs[character][buffType] = duration;
+
+    const buffContainer = document.getElementById(`${character}-buff-container`);
+    if (!buffContainer) {
+        console.error(`Buff container not found for character: ${character}`);
+        return;
+    }
+
+    let buffIcon = document.getElementById(`${character}-${buffType}-buff-icon`);
+    if (!buffIcon) {
+        buffIcon = document.createElement('img');
+        buffIcon.src = iconSrc;
+        buffIcon.className = 'buff-icon';
+        buffIcon.id = `${character}-${buffType}-buff-icon`;
+        buffIcon.title = title; // Add title for tooltip
+        buffContainer.appendChild(buffIcon);
+    }
+    buffIcon.style.display = 'inline-block';
+
+    if (buffType === 'abilityLock') {
+        disableCharacterAbilities(character);
+    }
+}
+
+        function disableCharacterAbilities(character) {
+            const abilitiesContainer = document.getElementById(`${character}-abilities`);
+            if (abilitiesContainer) {
+                const abilityIcons = abilitiesContainer.getElementsByClassName('ability');
+                for (let icon of abilityIcons) {
+                    icon.classList.add('disabled');
+                    icon.style.pointerEvents = 'none';
+                }
+            }
+        }
+
+        function enableCharacterAbilities(character) {
+            const abilitiesContainer = document.getElementById(`${character}-abilities`);
+            if (abilitiesContainer) {
+                const abilityIcons = abilitiesContainer.getElementsByClassName('ability');
+                for (let icon of abilityIcons) {
+                    icon.classList.remove('disabled');
+                    icon.style.pointerEvents = 'auto';
+                }
+            }
+        }
+
+        function updateBuffDurations() {
+            for (const character in buffs) {
+                for (const buff in buffs[character]) {
+                    buffs[character][buff]--;
+                    if (buffs[character][buff] <= 0) {
+                        removeBuff(character, buff);
+                    }
+                }
+            }
+        }
+
+        function removeBuff(character, buffType) {
+            delete buffs[character][buffType];
+            const buffIcon = document.getElementById(`${character}-${buffType}-buff-icon`);
+            if (buffIcon) {
+                buffIcon.style.display = 'none';
+            }
+            if (buffType === 'abilityLock') {
+                enableCharacterAbilities(character);
+            }
+        }
+
+        function applyBuffsAndDebuffs() {
+            // Check for Shoma's damage avoidance buff
+            if (buffs['Shoma'] && buffs['Shoma']['damageAvoidance'] > 0) {
+                const avoidDamage = Math.random() < 0.75;
+                if (avoidDamage) {
+                    // Logic to avoid damage
+                }
+            }
+        }
+
+        function updateCharacterStatus(character, damage) {
+			if ((character === 'Shoma' || character === 'Ayane') && buffs[character] && buffs[character]['avoidance'] > 0) {
+				const log = document.getElementById('log');
+				const logEntry = document.createElement('p');
+				logEntry.innerHTML = `<span style="color: yellow;">Turn ${turnCounter}:</span> <span style="color: green;">${character} avoided the damage!</span>`;
+				log.appendChild(logEntry);
+				scrollToBottom();
+				return; // Avoid damage
+			}
+
+			if (character === 'Shoma' && buffs['Shoma'] && buffs['Shoma']['damageAvoidance'] > 0) {
+				const avoidDamage = Math.random() < 0.75;
+				if (avoidDamage) {
+					const log = document.getElementById('log');
+					const logEntry = document.createElement('p');
+					logEntry.innerHTML = `<span style="color: yellow;">Turn ${turnCounter}:</span> <span style="color: green;">Shoma avoided the damage!</span>`;
+					log.appendChild(logEntry);
+					scrollToBottom();
+					return; // Avoid damage
+				}
+			}
+
+			if (character === 'Ayane' && buffs['Ayane'] && buffs['Ayane']['damageAvoidance'] > 0) {
+				const avoidDamage = Math.random() < 0.55;
+				if (avoidDamage) {
+					const log = document.getElementById('log');
+					const logEntry = document.createElement('p');
+					logEntry.innerHTML = `<span style="color: yellow;">Turn ${turnCounter}:</span> <span style="color: green;">Ayane avoided the damage!</span>`;
+					log.appendChild(logEntry);
+					scrollToBottom();
+					return; // Avoid damage
+				}
+			}
+
+			if (buffs[character] && buffs[character]['getOverHere'] > 0) {
+				damage *= 1.2;  // Increase damage by 20%
+			}
+
+			if (buffs[character] && buffs[character]['damageBoost'] > 0) {
+				damage *= 1.2;  // Increase damage by 20%
+			}
+
+			const statusElement = document.getElementById(`${character}-status`);
+			const hpBarElement = document.getElementById(`${character}-hp-bar`);
+
+			if (!statusElement || !hpBarElement) {
+				console.error(`Element not found for character: ${character}`);
+				return;
+			}
+
+			let currentHp = parseInt(statusElement.innerText.split('/')[0].split(': ')[1]);
+			const maxHp = parseInt(statusElement.innerText.split('/')[1]);
+
+			currentHp -= damage;
+			if (currentHp < 0) currentHp = 0;
+
+			statusElement.innerText = `HP: ${currentHp}/${maxHp}`;
+
+			const hpPercentage = (currentHp / maxHp) * 100;
+			hpBarElement.style.width = `${hpPercentage}%`;
+
+			const characterImage = document.querySelector(`#${character} img`);
+			if (characterImage) {
+				characterImage.classList.add('flash-red');
+				setTimeout(() => {
+					characterImage.classList.remove('flash-red');
+				}, 500);
+			} else {
+				console.error(`Image element not found for character: ${character}`);
+			}
+
+			const log = document.getElementById('log');
+			const logEntry = document.createElement('p');
+			logEntry.innerHTML = `<span style="color: yellow;">Turn ${turnCounter}:</span> <span style="color: red;">${character} took ${damage.toFixed(0)} damage!</span>`;
+			log.appendChild(logEntry);
+			scrollToBottom();
+
+			if (character === 'Scorpion' && currentHp <= 0) {
+				endGame(); // Call endGame function when Scorpion's HP reaches 0
+			}
+		}
+
+        function healCharacter(character, amount) {
+            const statusElement = document.getElementById(`${character}-status`);
+            const hpBarElement = document.getElementById(`${character}-hp-bar`);
+
+            if (!statusElement || !hpBarElement) {
+                console.error(`Element not found for character: ${character}`);
+                return;
+            }
+
+            let currentHp = parseInt(statusElement.innerText.split('/')[0].split(': ')[1]);
+            const maxHp = parseInt(statusElement.innerText.split('/')[1]);
+
+            currentHp += amount;
+            if (currentHp > maxHp) currentHp = maxHp;
+
+            statusElement.innerText = `HP: ${currentHp}/${maxHp}`;
+
+            const hpPercentage = (currentHp / maxHp) * 100;
+            hpBarElement.style.width = `${hpPercentage}%`;
+
+            const log = document.getElementById('log');
+            const logEntry = document.createElement('p');
+            logEntry.innerHTML = `<span style="color: green;">${character} healed for ${amount} HP!</span>`;
+            log.appendChild(logEntry);
+            scrollToBottom();
+        }
+
+        function logAction(caster, spell, target, description) {
+            const log = document.getElementById('log');
+            const logEntry = document.createElement('p');
+            logEntry.innerHTML = `<span style="color: yellow;">${caster} used ${spell} on ${target}:</span> <span style="color: white;">${description}</span>`;
+            log.appendChild(logEntry);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            const log = document.getElementById('log');
+            log.scrollTop = log.scrollHeight;
+        }
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const shomaAbility1 = document.getElementById('ShomaAbility1');
+            if (shomaAbility1) {
+                shomaAbility1.addEventListener('click', castShomaAbility1);
+            }
+        });
+
+        // Ayane abilities
+        document.addEventListener("DOMContentLoaded", function () {
+            const ayaneAbility1 = document.getElementById('AyaneAbility1');
+            const ayaneAbility2 = document.getElementById('AyaneAbility2');
+            const ayaneAbility3 = document.getElementById('AyaneAbility3');
+            const ayaneAbility4 = document.getElementById('AyaneAbility4');
+
+            if (ayaneAbility1) {
+                ayaneAbility1.addEventListener('click', castAyaneAbility1);
+            }
+            if (ayaneAbility2) {
+                ayaneAbility2.addEventListener('click', castAyaneAbility2);
+            }
+            if (ayaneAbility3) {
+                ayaneAbility3.addEventListener('click', castAyaneAbility3);
+            }
+            if (ayaneAbility4) {
+                ayaneAbility4.addEventListener('click', () => {
+                    console.log("Ayane's 4th ability clicked");
+                    if (abilityCooldowns.AyaneAbility4 === 0 && checkScorpionHealth()) {
+                        castAyaneAbility4();
+                    }
+                });
+            }
+
+            // Initial update of ability availability
+            updateAbilityAvailability();
+        });
+
+		function castAyaneAbility2() {
+			// Apply the buff to all allies for 4 rounds
+			applyBuff('Shoma', 'damageBoost', 4, 'res/img/raid/ayanea2.jfif', 'Increases damage by 20% for 4 turns');
+			applyBuff('Ayane', 'damageBoost', 4, 'res/img/raid/ayanea2.jfif', 'Increases damage by 20% for 4 turns');
+
+			const audio = new Audio('res/img/raid/sounds/ayanea2spell.mp3');
+			audio.play();
+
+			// Set cooldown for Ayane's 2nd ability
+			abilityCooldowns.AyaneAbility2 = 9;
+			updateCooldownDisplay('AyaneAbility2', 9);
+
+			// Log the action
+			logAction('Ayane', 'Ability 2', 'All Allies', 'increases all allies\' damage by 20% for 4 turns but skips turn');
+
+			// Continue to Scorpion's turn
+			scorpionTurn();
+		}
+
+        // Function to cast Ayane's Ability3
+        function castAyaneAbility3() {
+            applyBuff('Ayane', 'tripleDamage', 2, 'res/img/raid/ayanea3.jfif', 'Deals triple damage'); // Ayane's Ability3 icon
+            abilityCooldowns.AyaneAbility3 = 7;
+            updateCooldownDisplay('AyaneAbility3', 7);
+            logAction('Ayane', 'Ability 3', 'Self', 'activated triple damage buff for 2 turns');
+            scorpionTurn();
+        }
+
+        function checkScorpionHealth() {
+            const scorpionStatus = document.getElementById('Scorpion-status');
+            const currentHp = parseInt(scorpionStatus.innerText.split('/')[0].split(': ')[1]);
+            const maxHp = parseInt(scorpionStatus.innerText.split('/')[1]);
+            console.log(`Scorpion Health: ${currentHp}/${maxHp}`);
+            return (currentHp / maxHp) < 0.35;
+        }
+
+        function updateAbilityAvailability() {
+            const ayaneAbility4 = document.getElementById('AyaneAbility4');
+            const isScorpionHealthLow = checkScorpionHealth();
+            console.log(`Updating ability availability. Scorpion below 35% HP: ${isScorpionHealthLow}, AyaneAbility4 cooldown: ${abilityCooldowns.AyaneAbility4}`);
+
+            if (isScorpionHealthLow && abilityCooldowns.AyaneAbility4 === 0) {
+                ayaneAbility4.classList.remove('disabled');
+                ayaneAbility4.style.pointerEvents = 'auto';
+                console.log("Ayane's 4th ability is enabled");
+            } else {
+                ayaneAbility4.classList.add('disabled');
+                ayaneAbility4.style.pointerEvents = 'none';
+                console.log("Ayane's 4th ability is disabled");
+            }
+        }
+
+        function castAyaneAbility4() {
+            let damage = 2345;
+            if (buffs['Ayane'] && buffs['Ayane']['tripleDamage'] > 0) {
+                damage *= 3;  // Apply triple damage
+            }
+            if (buffs['Ayane'] && buffs['Ayane']['damageBoost'] > 0) {
+                damage *= 1.2;  // Apply 20% damage boost
+            }
+            updateCharacterStatus('Scorpion', damage);
+
+            abilityCooldowns.AyaneAbility4 = 3;
+            updateCooldownDisplay('AyaneAbility4', 3);
+            const audio = new Audio('res/img/raid/sounds/ayanea4.mp3');
+            audio.play();
+            logAction('Ayane', 'Ability 4', 'Scorpion', 'deals 2345 damage if Scorpion is below 35% health');
+            scorpionTurn();
+        }
+
+        function castAyaneAbility1() {
+            let damage = 425;
+            if (buffs['Ayane'] && buffs['Ayane']['tripleDamage'] > 0) {
+                damage *= 3;  // Apply triple damage
+            }
+            if (buffs['Ayane'] && buffs['Ayane']['damageBoost'] > 0) {
+                damage *= 1.2;  // Apply 20% damage boost
+            }
+            updateCharacterStatus('Scorpion', damage);
+
+            applyBuff('Ayane', 'damageAvoidance', 2, 'res/img/raid/ayanea1.jfif', 'Avoid damage this round');
+            const audio = new Audio('res/img/raid/sounds/ayanea1spell.mp3');
+            audio.play();
+            logAction('Ayane', 'Ability 1', 'Scorpion', 'deals 425 damage and gets 55% chance to avoid damage for 1 turn');
+            scorpionTurn();
+        }
+
+        // Shoma abilities
+        document.addEventListener("DOMContentLoaded", function () {
+            const shomaAbility1 = document.getElementById('ShomaAbility1');
+            const shomaAbility2 = document.getElementById('ShomaAbility2');
+            const shomaAbility3 = document.getElementById('ShomaAbility3');
+            const shomaAbility4 = document.getElementById('ShomaAbility4');
+
+            if (shomaAbility1) {
+                shomaAbility1.addEventListener('click', castShomaAbility1);
+            }
+            if (shomaAbility2) {
+                shomaAbility2.addEventListener('click', () => {
+                    if (abilityCooldowns.ShomaAbility2 === 0) {
+                        castShomaAbility2();
+                    }
+                });
+            }
+            if (shomaAbility3) {
+                shomaAbility3.addEventListener('click', () => {
+                    if (abilityCooldowns.ShomaAbility3 === 0) {
+                        document.getElementById('Shoma-baseballs').style.display = 'block';
+                    }
+                });
+            }
+            if (shomaAbility4) {
+                shomaAbility4.addEventListener('click', () => {
+                    if (abilityCooldowns.ShomaAbility4 === 0) {
+                        castShomaAbility4();
+                    }
+                });
+            }
+
+            const selectAyane = document.getElementById('selectAyane');
+            const selectShoma = document.getElementById('selectShoma');
+
+            if (selectAyane) selectAyane.addEventListener('click', () => applyAvoidanceBuff('Ayane'));
+            if (selectShoma) selectShoma.addEventListener('click', () => applyAvoidanceBuff('Shoma'));
+
+            const fireBall = document.getElementById('fireBall');
+            const waterBall = document.getElementById('waterBall');
+            const grassBall = document.getElementById('grassBall');
+            const heavyBall = document.getElementById('heavyBall');
+
+            if (fireBall) fireBall.addEventListener('click', castFireBall);
+            if (waterBall) waterBall.addEventListener('click', castWaterBall);
+            if (grassBall) grassBall.addEventListener('click', castGrassBall);
+            if (heavyBall) heavyBall.addEventListener('click', castHeavyBall);
+        });
+
+        function castShomaAbility1() {
+            let damage = 255;
+            const doubleDamage = 555;
+            if (Math.random() < 0.5) {
+                damage = doubleDamage;
+            }
+
+            if (Math.random() < 0.5) {
+                damage += (Math.random() < 0.5) ? 255 : 555;
+            }
+
+            if (buffs['Shoma'] && buffs['Shoma']['damageBoost'] > 0) {
+                damage *= 1.2;  // Apply 20% damage boost
+            }
+            updateCharacterStatus('Scorpion', damage);
+            const audio = new Audio('res/img/raid/sounds/shomaa1.mp3');
+            audio.play();
+            logAction('Shoma', 'Ability 1', 'Scorpion', `deals ${damage} damage`);
+            scorpionTurn();
+        }
+
+        function castFireBall() {
+            const audio = new Audio('res/img/raid/sounds/shoma_fireball.mp3');
+            audio.play();
+            applyBuff('Ayane', 'tripleDamage', 2, 'res/img/raid/fireball.jfif', 'Deals triple damage'); // Shoma's Fireball icon
+            logAction('Shoma', 'Fire Ball', 'Ayane', 'triple damage buff');
+            endBaseball();
+        }
+
+		function castWaterBall() {
+			let damage = 3000;
+
+			// Check for damageBoost buff on Shoma
+			if (buffs['Shoma'] && buffs['Shoma']['damageBoost'] > 0) {
+				damage *= 1.2;  // Apply 20% damage boost
+			}
+
+			const audio = new Audio('res/img/raid/sounds/shoma_water2.mp3');
+			audio.play();
+			updateCharacterStatus('Scorpion', damage);
+			logAction('Shoma', 'Water Ball', 'Scorpion', damage);
+			endBaseball();
+		}
+
+        function castGrassBall() {
+            const audio = new Audio('res/img/raid/sounds/shoma_grassball.mp3');
+            audio.play();
+            const maxHp = 4680;  // Assuming Ayane's max HP is 4680
+            const healAmount = maxHp * 0.5;
+            healCharacter('Ayane', healAmount);
+            logAction('Shoma', 'Grass Ball', 'Ayane', `healed for ${healAmount}`);
+            endBaseball();
+        }
+
+        function castHeavyBall() {
+            const audio = new Audio('res/img/raid/sounds/shoma_heavyball.mp3');
+            audio.play();
+            applyBuff('Scorpion', 'lessDamage', 4, 'res/img/raid/heavyball.jfif', 'Deals 55% less damage');
+            logAction('Shoma', 'Heavy Ball', 'Scorpion', '55% less damage buff');
+            endBaseball();
+        }
+
+        function endBaseball() {
+            document.getElementById('Shoma-baseballs').style.display = 'none';
+            abilityCooldowns.ShomaAbility3 = 4;  // Set cooldown to 4 turns
+            updateCooldownDisplay('ShomaAbility3', 4);
+        }
+
+        function castShomaAbility4() {
+            const audio = new Audio('res/img/raid/sounds/shomaa4.mp3');
+            audio.play();
+            // Apply buff to Shoma for 5 turns
+            applyBuff('Shoma', 'damageAvoidance', 5, 'res/img/raid/shomaa4.jfif', 'Shoma is completly immune to damage');
+
+            // Set cooldown for the ability
+            abilityCooldowns.ShomaAbility4 = 14;
+            updateCooldownDisplay('ShomaAbility4', 14);
+            logAction('Shoma', 'Ability 4', 'Shoma', 'activated damage avoidance');
+            scorpionTurn();
+        }
+
+        function castShomaAbility2() {
+            const audio = new Audio('res/img/raid/sounds/shomaa2.mp3');
+            audio.play();
+            document.getElementById('Shoma-selection').style.display = 'block';
+        }
+
+        function applyAvoidanceBuff(character) {
+            applyBuff(character, 'avoidance', 4, 'res/img/raid/shomaa2.jfif', 'You can not take damage');
+            abilityCooldowns.ShomaAbility2 = 9;
+            updateCooldownDisplay('ShomaAbility2', 9);
+            logAction('Shoma', 'Ability 2', character, 'activated avoidance buff');
+            document.getElementById('Shoma-selection').style.display = 'none';
+            scorpionTurn();
+        }
+
+function endGame() {
+    // Turn Scorpion's image grey
+    const scorpionImage = document.querySelector('#Scorpion img');
+    if (scorpionImage) {
+        scorpionImage.classList.add('grayscale');
+    }
+
+    // Disable all ability icons
+    const abilityIcons = document.querySelectorAll('.ability');
+    abilityIcons.forEach(icon => {
+        icon.classList.add('disabled');
+        icon.style.pointerEvents = 'none';
+    });
+
+    // Pause background audio
+    if (bgAudio) {
+        bgAudio.pause();
+    }
+
+    // Start Shoma's conversation at the end of the game
+    startShomaConversation();
+}
+
+function startShomaConversation() {
+    const shomaChat = document.getElementById('Shoma-chat');
+    const ayaneChat = document.getElementById('Ayane-chat');
+    const conversation = [
+        { character: 'Shoma', text: 'Homerun baby!', delay: 1500, audio: 'res/img/raid/sounds/shoma_homerun.mp3' },
+        { character: 'Ayane', text: 'That wasn\'t.... easy?!', delay: 1000, audio: 'res/img/raid/sounds/ayane_easy.mp3' },
+        { character: 'Shoma', text: 'I was in time just like always.', delay: 1000, audio: 'res/img/raid/sounds/shoma_intime.mp3' },
+        { character: 'Ayane', text: 'Yeah I was lucky, thanks!', delay: 3500, audio: 'res/img/raid/sounds/ayane_lucky.mp3' },
+        { character: 'Ayane', text: 'Have you found Julia?', delay: 2500, audio: 'res/img/raid/sounds/ayane_haveyou.mp3' },
+        { character: 'Shoma', text: 'Yep, she is safe outside', delay: 3000, audio: 'res/img/raid/sounds/shoma_yep.mp3' },
+        { character: 'Ayane', text: 'Then we should save the others too.', delay: 2500, audio: 'res/img/raid/sounds/ayane_save.mp3' },
+        { character: 'Shoma', text: 'Agree. Let\'s go find them.', delay: 2000, audio: 'res/img/raid/sounds/shoma_findthem.mp3' },
+    ];
+
+    let currentStep = 0;
+
+    function showNextChat() {
+        if (currentStep < conversation.length) {
+            const { character, text, delay, audio } = conversation[currentStep];
+            let chatBubble;
+
+            if (character === 'Shoma') {
+                chatBubble = shomaChat;
+            } else if (character === 'Ayane') {
+                chatBubble = ayaneChat;
+            }
+
+            if (chatBubble) {
+                chatBubble.innerHTML = `<div>${text.replace(/\n/g, '<br>')}</div>`;
+                chatBubble.style.display = 'flex';
+
+                const audioElement = new Audio(audio);
+                audioElement.play();
+
+                setTimeout(() => {
+                    chatBubble.style.display = 'none';
+                    currentStep++;
+                    showNextChat();
+                }, delay);
+            }
+        } else {
+            // Show the stage4 button after the conversation ends
+            document.getElementById('stage4-button').style.display = 'block';
+        }
+    }
+
+    showNextChat();
+}
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'F5') {
+                event.preventDefault();
+                const scorpionStatus = document.getElementById('Scorpion-status');
+                scorpionStatus.innerText = 'HP: 5/69500';
+                const scorpionHpBar = document.getElementById('Scorpion-hp-bar');
+                scorpionHpBar.style.width = '0.0072%'; // Calculate percentage (5 / 69500 * 100)
+            }
+        });
+
+        // Other existing functions and event listeners
+    </script>
+</body>
+</html>
