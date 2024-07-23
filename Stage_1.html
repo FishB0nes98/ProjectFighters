@@ -223,6 +223,81 @@
             margin-left: 10px;
         }
     </style>
+    <!-- Include Firebase SDK and configuration as module scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        // Fallback for non-module browsers (if needed)
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+    <script type="module">
+        // Initialize Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        window.updateStageCompletion = function() {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = ref(database, 'users/' + user.uid + '/Raid/Stage1');
+                set(userRef, 1)
+                    .then(() => {
+                        console.log('Stage 1 completion updated successfully');
+                    })
+                    .catch(error => {
+                        console.error('Error updating stage completion:', error);
+                    });
+            } else {
+                console.error('User not authenticated');
+            }
+        }
+
+        window.onload = function() {
+            onAuthStateChanged(auth, (user) => {
+                if (!user) {
+                    // Redirect to index.html if the user is not logged in
+                    window.location.href = 'index.html';
+                }
+            });
+        };
+        window.setIbukiHpToFive = function() {
+            const ibukiStatus = document.getElementById('Ibuki-status');
+            const ibukiHpBar = document.getElementById('Ibuki-hp-bar');
+            const maxIbukiHp = 10555;
+            const newHp = 5;
+
+            ibukiStatus.innerText = `HP: ${newHp}/${maxIbukiHp}`;
+            ibukiHpBar.style.width = `${(newHp / maxIbukiHp) * 100}%`;
+
+            console.log('Ibuki\'s HP set to 5');
+        }
+
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'F5') {
+                event.preventDefault(); // Prevent the default F5 refresh behavior
+                setIbukiHpToFive();
+            }
+        });
+
+    </script>
 </head>
 <body>
     <h1>Stage 1</h1>
@@ -1246,65 +1321,70 @@ function updateCharacterStatus(character, damage) {
     scrollToBottom(); // Scroll to bottom
 }
 
-function postIbukiDefeatConversation() {
-    const siegfriedChat = document.getElementById('Siegfried-chat');
-    const kokoroChat = document.getElementById('Kokoro-chat');
-    const ibukiChat = document.getElementById('Ibuki-chat');
-    const abilityIcons = document.querySelectorAll('.ability-icons img');
-	bgAudio.pause();
+function endGame() {
+            alert("The player lost, the page will reload.");
+            location.reload();
+        }
 
-	
-    // Disable all ability icons
-    abilityIcons.forEach(icon => {
-        icon.classList.add('disabled');
-    });
+        function postIbukiDefeatConversation() {
+            const siegfriedChat = document.getElementById('Siegfried-chat');
+            const kokoroChat = document.getElementById('Kokoro-chat');
+            const ibukiChat = document.getElementById('Ibuki-chat');
+            const abilityIcons = document.querySelectorAll('.ability-icons img');
+            bgAudio.pause();
 
-    const conversation = [
-        { character: 'Siegfried', text: 'She is down....', audio: 'res/img/raid/sounds/siegfried_victory.mp3' },
-        { character: 'Kokoro', text: 'Do you think she.....I hope she\'ll be okay once she wakes up.', audio: 'res/img/raid/sounds/kokoro_concern.mp3' },
-        { character: 'Siegfried', text: 'I\'ll go and look for the others. You should stay with her.', audio: 'res/img/raid/sounds/siegfried_prep.mp3' }
-    ];
+            // Disable all ability icons
+            abilityIcons.forEach(icon => {
+                icon.classList.add('disabled');
+            });
 
-    let currentStep = 0;
+            const conversation = [
+                { character: 'Siegfried', text: 'She is down....', audio: 'res/img/raid/sounds/siegfried_victory.mp3' },
+                { character: 'Kokoro', text: 'Do you think she.....I hope she\'ll be okay once she wakes up.', audio: 'res/img/raid/sounds/kokoro_concern.mp3' },
+                { character: 'Siegfried', text: 'I\'ll go and look for the others. You should stay with her.', audio: 'res/img/raid/sounds/siegfried_prep.mp3' }
+            ];
 
-    function showNextChat() {
-        if (currentStep < conversation.length) {
-            const { character, text, audio } = conversation[currentStep];
-            let chatBubble;
+            let currentStep = 0;
 
-            if (character === 'Siegfried') {
-                chatBubble = siegfriedChat;
-                if (audio && userInteracted) {
-                    const audioElement = new Audio(audio);
-                    audioElement.play();
-                }
-            } else if (character === 'Kokoro') {
-                chatBubble = kokoroChat;
-                if (audio && userInteracted) {
-                    const audioElement = new Audio(audio);
-                    audioElement.play();
+            function showNextChat() {
+                if (currentStep < conversation.length) {
+                    const { character, text, audio } = conversation[currentStep];
+                    let chatBubble;
+
+                    if (character === 'Siegfried') {
+                        chatBubble = siegfriedChat;
+                        if (audio && userInteracted) {
+                            const audioElement = new Audio(audio);
+                            audioElement.play();
+                        }
+                    } else if (character === 'Kokoro') {
+                        chatBubble = kokoroChat;
+                        if (audio && userInteracted) {
+                            const audioElement = new Audio(audio);
+                            audioElement.play();
+                        }
+                    }
+
+                    chatBubble.innerHTML = `<div>${text.replace(/\n/g, '<br>')}</div>`;
+                    chatBubble.style.display = 'flex';
+
+                    setTimeout(() => {
+                        chatBubble.style.display = 'none';
+                        currentStep++;
+                        showNextChat();
+                    }, 4500); // Adjust the delay as needed
+                } else {
+                    document.getElementById('stage2-button').style.display = 'block';
+                    updateStageCompletion(); // Update the database when the button appears
                 }
             }
 
-            chatBubble.innerHTML = `<div>${text.replace(/\n/g, '<br>')}</div>`;
-            chatBubble.style.display = 'flex';
-
-            setTimeout(() => {
-                chatBubble.style.display = 'none';
-                currentStep++;
-                showNextChat();
-            }, 4500); // Adjust the delay as needed
-        } else {
-            document.getElementById('stage2-button').style.display = 'block';
+            showNextChat();
         }
-    }
 
-    showNextChat();
-}
-
-// HTML updates to add the Stage 2 button
-document.body.innerHTML += '<button id="stage2-button" onclick="location.href=\'Stage_2.html\'">Go to Stage 2</button>';
-</script>
+        // HTML updates to add the Stage 2 button
+        document.body.innerHTML += '<button id="stage2-button" onclick="location.href=\'Stage_2.html\'">Go to Stage 2</button>';
+    </script>
 
 </body>
 </html>

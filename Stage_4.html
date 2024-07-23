@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turn-Based Raid Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: url('res/img/raid/background4.png') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+        }
+
+        .character {
+            display: inline-block;
+            position: absolute;
+            bottom: 100px;
+            width: 250px;
+            height: 350px;
+        }
+
+        .siegfried {
+            left: 30%;
+        }
+
+        .elphelt {
+            right: 30%;
+        }
+
+        .enemy {
+            display: inline-block;
+            margin: 30px;
+            gap: 50px;
+            position: relative;
+            top: 15px;
+        }
+
+        .birdie {
+            display: inline-block;
+            text-align: center;
+        }
+
+        .birdie img {
+            width: 250px;
+            height: 350px;
+            padding-right: 20px;
+        }
+
+        .character img {
+            width: 250px;
+            height: 350px;
+        }
+
+        .status {
+            font-size: 18px;
+            margin-top: 10px;
+            width: 250px;
+            z-index: 1000;
+            position: absolute;
+        }
+
+        .chat-bubble {
+            position: absolute;
+            top: 5%;
+            right: 60%;
+            transform: translateY(-50%);
+            width: 200px;
+            height: 350px;
+            background: url('res/img/raid/chat.png') no-repeat center center;
+            background-size: contain;
+            color: black;
+            padding: 20px;
+            padding-top: 300px;
+            display: none;
+            z-index: 100;
+            display: flex;
+            align-items: flex-start;
+            word-wrap: break-word;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #allies {
+            position: absolute;
+            bottom: 25px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .log {
+            border: 1px solid #555;
+            padding: 10px;
+            height: 300px;
+            width: 500px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            position: absolute;
+            top: 15px;
+            left: 35px;
+            z-index: 10;
+        }
+
+        h1 {
+            position: absolute;
+            top: 0;
+            right: 20px;
+            margin: 20px;
+            z-index: 1000;
+        }
+
+        .turn-counter {
+            position: absolute;
+            top: 5px;
+            right: 925px;
+            z-index: 10;
+            font-size: 18px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        @keyframes flash-red {
+            0% {
+                filter: brightness(1);
+            }
+            50% {
+                filter: brightness(0) sepia(1) hue-rotate(-50deg) saturate(10);
+            }
+            100% {
+                filter: brightness(1);
+            }
+        }
+
+        .flash-red {
+            animation: flash-red 0.5s;
+        }
+
+        @keyframes flash-green {
+            0% {
+                filter: brightness(1);
+            }
+            50% {
+                filter: brightness(0.5) saturate(3) hue-rotate(120deg);
+            }
+            100% {
+                filter: brightness(1);
+            }
+        }
+
+        .flash-green {
+            animation: flash-green 0.5s ease-in-out;
+        }
+
+        .buff-container {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .buff-icon {
+            width: 50px !important;
+            height: 50px !important;
+            margin: 0 1px;
+            display: none;
+        }
+
+        .cooldown {
+            filter: grayscale(100%);
+            pointer-events: none;
+        }
+
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        #start-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        #stage2-button {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+		.stage5-button {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .hp-bar-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-color: #555;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .hp-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 100%;
+            transition: width 0.5s ease;
+            border-radius: 5px;
+        }
+
+        .grayscale {
+            filter: grayscale(100%);
+        }
+
+        #volume-control {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            display: flex;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        #volume-slider {
+            margin-left: 10px;
+        }
+
+        .objective {
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            z-index: 1000;
+            font-size: 18px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .siegfried img, .elphelt img {
+            width: 250px;
+            height: 350px;
+        }
+
+        .stage-button {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .cooldown-text {
+            position: absolute;
+            top: 65%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: blue;
+            font-size: 35px;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 1;
+        }
+		.ability-icons {
+			position: relative;
+		}
+
+	.ability-container {
+		position: relative;
+		display: inline-block;
+		width: max-content;
+	}
+		.ability-icons img.disabled {
+			opacity: 0.5;
+		}
+
+		.ability {
+			width: 50px !important;
+			height: 50px !important;
+			margin: 5px;
+			cursor: pointer;
+			padding-top: 30px;
+		}
+	.heal-icons {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.5);
+	}
+
+	.heal-icons img {
+		width: 25px;
+		height: 25px;
+		margin: 2px;
+		cursor: pointer;
+		margin-top: 225px;
+	}	
+	.cooldown-text {
+		position: absolute;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		color: blue;
+		font-size: 35px;
+		font-weight: bold;
+		pointer-events: none; /* Ensure it doesn't block clicks */
+		z-index: 1; /* Ensure it is above the image */
+	}
+	.disabled {
+		filter: grayscale(100%);
+		pointer-events: none;
+		opacity: 0.5;
+	}
+	.selection-icons {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.5);
+	}
+
+	.selection-icons img {
+		width: 50px;
+		height: 50px;
+		margin: 5px;
+		cursor: pointer;
+		margin-top: 225px;
+	}
+	.grayscale {
+		filter: grayscale(100%);
+	}
+	#Birdie-chat {
+		position: absolute;
+		top: 5%;
+		right: 60%; /* Adjust position based on layout */
+		transform: translateY(-50%);
+		width: 200px;
+		height: 350px;
+		background: url('res/img/raid/chat.png') no-repeat center center;
+		background-size: contain;
+		color: black;
+		padding: 20px;
+		padding-top: 300px;
+		display: none;
+		z-index: 100;
+		display: flex;
+		align-items: flex-start;
+		word-wrap: break-word;
+		justify-content: center;
+		text-align: center;
+	}
+    </style>
+    <!-- Include Firebase SDK and configuration as module scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        // Fallback for non-module browsers (if needed)
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+    <script type="module">
+        // Initialize Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        window.updateStageCompletion = function() {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = ref(database, 'users/' + user.uid + '/Raid/Stage4');
+                set(userRef, 1)
+                    .then(() => {
+                        console.log('Stage 4 completion updated successfully');
+                    })
+                    .catch(error => {
+                        console.error('Error updating stage completion:', error);
+                    });
+            } else {
+                console.error('User not authenticated');
+            }
+        }
+
+        window.onload = function() {
+            onAuthStateChanged(auth, (user) => {
+                if (!user) {
+                    // Redirect to index.html if the user is not logged in
+                    window.location.href = 'index.html';
+                }
+            });
+        };
+    </script>
+</head>
+<body>
+    <h1>Stage 4</h1>
+    <div class="turn-counter" id="turn-counter">Turn: 0</div>
+    <button id="start-button" onclick="startGame()">Start Stage 4</button>
+
+    <div id="characters" style="display: none;">
+        <!-- Siegfried Character -->
+        <div class="character siegfried" id="Siegfried" style="display: none;">
+            <img src="Loading Screen/Schoolboy Siegfried.png" alt="Siegfried">
+            <div class="status">
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="Siegfried-hp-bar"></div>
+                </div>
+                <div id="Siegfried-status">HP: 6300/6300</div>
+            </div>
+            <div class="buff-container" id="Siegfried-buff-container"></div>
+            <div class="chat-bubble" id="Siegfried-chat"></div>
+		<div class="ability-container" id="Siegfried-abilities">
+		<div id="Siegfried-abilities">
+		<div class="ability-container">
+			<img id="SiegfriedAbility1" src="res/img/raid/siegfrieda1.jfif" class="ability" alt="Ability 1" title="Siegfried either deals 255 or 555 damage plus there is an 50% chance that the damage is increased by 20% more. ">
+			<div id="SiegfriedAbility1Cooldown" class="cooldown-text" style="display: none;"></div>
+		</div>
+		<div class="ability-container">
+			<img id="SiegfriedAbility2" src="res/img/raid/siegfrieda2.jfif" class="ability" alt="Ability 2" title="Select character to avoid 100% damage for 4 turns">
+			<div id="SiegfriedAbility2Cooldown" class="cooldown-text" style="display: none;"></div>
+		</div>
+		<div class="ability-container">
+			<img id="SiegfriedAbility3" src="res/img/raid/siegfrieda3.jfif" class="ability" alt="Baseball" title="Select from 4 different baseball effects">
+			<div id="SiegfriedAbility3Cooldown" class="cooldown-text" style="display: none;"></div>
+		</div>
+		<div class="ability-container">
+			<img id="SiegfriedAbility4" src="res/img/raid/siegfrieda4.jfif" class="ability" alt="Ability 4" title="Siegfried can't take damage for 5 turns">
+			<div id="SiegfriedAbility4Cooldown" class="cooldown-text" style="display: none;"></div>
+		</div>
+	</div>
+	</div>
+	<div id="Siegfried-selection" class="selection-icons" style="display: none;">
+	<img id="selectSiegfried" src="Icons/Siegfried.png" class="selection" alt="Select Siegfried" title="Select Siegfried">
+    <img id="selectElphelt" src="Icons/Elphelt.png" class="selection" alt="Select Elphelt" title="Select Elphelt">
+	</div>
+	<div id="Siegfried-baseballs" class="heal-icons" style="display: none;">
+		<img id="fireBall" src="res/img/raid/fireball.jfif" class="ability" alt="Fire Ball" title="Fire Ball: Boosts an ally's damage, so they will deal 3x more for 3 turns">
+		<img id="waterBall" src="res/img/raid/waterball.jfif" class="ability" alt="Water Ball" title="Water Ball: Deals 3000 damage">
+		<img id="grassBall" src="res/img/raid/grassball.jfif" class="ability" alt="Grass Ball" title="Grass Ball: Heals an ally for 2340HP ">
+		<img id="heavyBall" src="res/img/raid/heavyball.jfif" class="ability" alt="Heavy Ball" title="Heavy Ball: Applies a debuff on an enemy for 5 turns, so that will deal 55% less damage.">
+	</div>
+</div>
+    <!-- Elphelt Character -->
+    <div class="character elphelt" id="Elphelt" style="display: none;">
+        <img src="Loading Screen/Schoolgirl Elphelt.png" alt="Elphelt">
+        <div class="status">
+            <div class="hp-bar-container">
+                <div class="hp-bar" id="Elphelt-hp-bar"></div>
+            </div>
+            <div id="Elphelt-status">HP: 4895/4895</div>
+        </div>
+        <div id="Elphelt-abilities">
+            <div class="ability-container elphelt-abilities">
+                <div class="ability-container">
+                    <img id="ElpheltAbility1" src="res/img/raid/elphelta1.jfif" class="ability" alt="Ability 1" title="Deals 400. If used again in the last two turns, it deals 800 damage instead">
+                    <div id="ElpheltAbility1Cooldown" class="cooldown-text" style="display: none;"></div>
+                </div>
+			<div class="ability-container">
+				<img id="ElpheltAbility2" src="res/img/raid/elphelta2.jfif" class="ability" alt="Ability 2" title="Birdie deals 30% less damage with Ability 1 and Ability 4 for 4 turns">
+				<div id="ElpheltAbility2Cooldown" class="cooldown-text" style="display: none;"></div>
+			</div>
+			<div class="ability-container">
+				<img id="ElpheltAbility3" src="res/img/raid/elphelta3.jfif" class="ability" alt="Ability 3" title="Elphelt deals 40% more damage to Birdie for 5 turns">
+				<div id="ElpheltAbility3Cooldown" class="cooldown-text" style="display: none;"></div>
+			</div>
+                <div class="ability-container">
+                    <img id="ElpheltAbility4" src="res/img/raid/elphelta4.jfif" class="ability" alt="Ability 4" title="Deals 5000 damage">
+                    <div id="ElpheltAbility4Cooldown" class="cooldown-text" style="display: none;"></div>
+                </div>
+            </div>
+            <div class="buff-container" id="Elphelt-buff-container"></div>
+            <div class="chat-bubble" id="Elphelt-chat"></div>
+        </div>
+    </div>
+        <!-- Enemies -->
+        <div class="enemy" id="birdies">
+			<div class="birdie" id="Birdie" style="display: none;">
+				<img src="Loading Screen/Infernal Birdie.png" alt="Birdie" class="birdie-img">
+				<div class="status">
+					<div class="hp-bar-container">
+						<div class="hp-bar" id="Birdie-hp-bar"></div>
+					</div>
+					<div id="Birdie-status" style="display: none;">HP: 60000/60000</div>
+				</div>
+				<div class="buff-container" id="Birdie-buff-container"></div>
+				<div class="chat-bubble" id="Birdie-chat"></div> <!-- Add Birdie's chat bubble here -->
+			</div>
+		</div>
+        </div>
+    </div>
+    <div class="log" id="log">
+        <p>Battle log:</p>
+    </div>
+    <div id="volume-control">
+        <label for="volume-slider">Volume:</label>
+        <input type="range" id="volume-slider" min="0" max="100" value="5">
+    </div>
+    <button id="stage5-button" onclick="location.href='Stage_5.html'" style="display: none; position: absolute; top: 47%; left: 50%; transform: translate(-50%, -50%); padding: 10px 20px; font-size: 20px; cursor: pointer; background-color: rgb(47 55 47); color: white; border: none; border-radius: 5px;">Go to Stage 5</button>
+</body>
+
+<script>
+    let userInteracted = false;
+    let bgAudio;
+    let turnCounter = 0; // Track the current turn
+    let buffs = { Siegfried: {}, Elphelt: {}, Birdie: {} };
+
+		document.addEventListener("DOMContentLoaded", function() {
+		document.getElementById('volume-slider').addEventListener('input', function(event) {
+			const volume = event.target.value / 100;
+			if (bgAudio && bgAudio.volume !== volume) {
+				bgAudio.volume = volume;
+			}
+		});
+	});
+	function startGame() {
+		userInteracted = true;
+		document.getElementById('start-button').style.display = 'none';
+		document.getElementById('characters').style.display = 'block';
+		document.getElementById('Elphelt').style.display = 'block';
+		document.getElementById('Siegfried').style.display = 'block';
+
+		bgAudio = new Audio('res/img/raid/sounds/bgaudio5.mp3');
+		bgAudio.volume = 0.20;
+		bgAudio.loop = true;
+		bgAudio.play();
+
+		preFightConversation();
+	}
+
+function preFightConversation() {
+    const elpheltChat = document.getElementById('Elphelt-chat');
+    const siegfriedChat = document.getElementById('Siegfried-chat');
+    const birdieChat = document.getElementById('Birdie-chat');
+    
+    const conversation = [
+        { character: 'Elphelt', text: 'HELP!', delay: 1000, audio: 'res/img/raid/sounds/elphelt_help.mp3' },
+        { character: 'Siegfried', text: 'I\'m here.... what?', delay: 2350, audio: 'res/img/raid/sounds/siegfried_imhere.mp3' },
+        { character: 'Siegfried', text: 'What? You are....', delay: 2000, audio: 'res/img/raid/sounds/siegfried_youare.mp3' },
+        { character: 'Siegfried', text: 'Mr. Birdie. The cleaning man in the school', delay: 3000, audio: 'res/img/raid/sounds/siegfried_mrbirdie.mp3' },
+        { character: 'Birdie', text: 'Shu\' up boy!', delay: 1500, audio: 'res/img/raid/sounds/birdie_shut.mp3' },
+        { character: 'Elphelt', text: 'Go ef of!', delay: 1200, audio: 'res/img/raid/sounds/elphelt_efof.mp3' },
+        { character: 'Birdie', text: 'You\'ll regret tha\'!', delay: 1800, audio: 'res/img/raid/sounds/birdie_regret.mp3' }
+    ];
+
+    let currentStep = 0;
+
+    function showNextChat() {
+        if (currentStep < conversation.length) {
+            const { character, text, delay, audio } = conversation[currentStep];
+            let chatBubble;
+
+            if (character === 'Elphelt') {
+                chatBubble = elpheltChat;
+            } else if (character === 'Siegfried') {
+                chatBubble = siegfriedChat;
+            } else if (character === 'Birdie') {
+                chatBubble = birdieChat;
+            }
+
+            if (chatBubble) {
+                chatBubble.innerHTML = `<div>${text.replace(/\n/g, '<br>')}</div>`;
+                chatBubble.style.display = 'flex';
+
+                // Play the associated audio
+                if (audio) {
+                    const audioElement = new Audio(audio);
+                    audioElement.play();
+                }
+
+                setTimeout(() => {
+                    chatBubble.style.display = 'none';
+                    currentStep++;
+                    if (currentStep === 2) {
+                        // Make Birdie appear after the second Siegfried line
+                        document.getElementById('Birdie').style.display = 'inline-block';
+                        document.getElementById('Birdie-status').style.display = 'block';
+                    }
+                    if (currentStep === 5) {
+                        // Trigger Elphelt's ability after her line
+                        castElpheltAbility4();
+                    }
+                    showNextChat();
+                }, delay);
+            }
+        } else {
+            // Re-enable abilities after the conversation
+            enableAllAbilities();
+        }
+    }
+
+    // Disable abilities at the start of the conversation
+    disableAllAbilities();
+    showNextChat();
+}
+	
+		let elpheltLastUsedAbility1Turns = []; // Track the turns when Elphelt used Ability 1
+		let abilityCooldowns = {
+			ElpheltAbility1: 0,
+			ElpheltAbility2: 0, // Starts on cooldown
+			ElpheltAbility3: 0, // Starts on cooldown
+			ElpheltAbility4: 20,
+			SiegfriedAbility1: 0,
+			SiegfriedAbility2: 0,
+			SiegfriedAbility3: 0,
+			SiegfriedAbility4: 0
+		};
+
+
+    function disableCharacterAbilities(character) {
+        const abilitiesContainer = document.getElementById(`${character}-abilities`);
+        if (abilitiesContainer) {
+            const abilityIcons = abilitiesContainer.getElementsByClassName('ability');
+            for (let icon of abilityIcons) {
+                icon.classList.add('disabled');
+                icon.style.pointerEvents = 'none';
+            }
+        }
+    }
+
+    function enableCharacterAbilities(character) {
+        const abilitiesContainer = document.getElementById(`${character}-abilities`);
+        if (abilitiesContainer) {
+            const abilityIcons = abilitiesContainer.getElementsByClassName('ability');
+            for (let icon of abilityIcons) {
+                icon.classList.remove('disabled');
+                icon.style.pointerEvents = 'auto';
+            }
+        }
+    }
+
+    function startGameLogic() {
+        const elpheltElement = document.getElementById('Elphelt');
+        elpheltElement.style.display = 'inline-block';
+        const siegfriedElement = document.getElementById('Siegfried');
+        siegfriedElement.style.display = 'inline-block';
+
+        birdieTurn();
+    }
+
+    function disableAllAbilities() {
+        disableCharacterAbilities('Siegfried');
+        disableCharacterAbilities('Elphelt');
+    }
+
+    function enableAllAbilities() {
+        enableCharacterAbilities('Siegfried');
+        enableCharacterAbilities('Elphelt');
+    }
+
+
+        function updateAbilityAvailability() {
+            const abilities = {
+                ElpheltAbility1: abilityCooldowns.ElpheltAbility1,
+                ElpheltAbility2: abilityCooldowns.ElpheltAbility2,
+                ElpheltAbility3: abilityCooldowns.ElpheltAbility3,
+                ElpheltAbility4: abilityCooldowns.ElpheltAbility4,
+                SiegfriedAbility1: abilityCooldowns.SiegfriedAbility1,
+                SiegfriedAbility2: abilityCooldowns.SiegfriedAbility2,
+                SiegfriedAbility3: abilityCooldowns.SiegfriedAbility3,
+                SiegfriedAbility4: abilityCooldowns.SiegfriedAbility4
+            };
+
+            for (let ability in abilities) {
+                const abilityElement = document.getElementById(ability);
+                const cooldownElement = document.getElementById(`${ability}Cooldown`);
+                if (abilityElement) {
+                    if (abilities[ability] > 0) {
+                        abilityElement.classList.add('disabled');
+                        abilityElement.style.pointerEvents = 'none';
+                        if (cooldownElement) {
+                            cooldownElement.innerText = abilities[ability];
+                            cooldownElement.style.display = 'block';
+                        }
+                    } else {
+                        abilityElement.classList.remove('disabled');
+                        abilityElement.style.pointerEvents = 'auto';
+                        if (cooldownElement) {
+                            cooldownElement.style.display = 'none';
+                        }
+                    }
+                }
+            }
+        }
+	let birdieLastUsedChainSlashTurn = 0;
+	let chainSlashMultiplier = 1;
+
+    function birdieTurn() {
+    turnCounter++;
+    document.getElementById('turn-counter').innerText = `Turn: ${turnCounter}`;
+    const randomAbility = Math.random() * 100;
+
+    if (randomAbility < 75) {
+        castBirdieAbility1();
+    } else if (randomAbility < 89) {
+        castBirdieAbility2();
+    } else if (randomAbility < 96) {
+        castBirdieAbility3();
+    } else {
+        castBirdieAbility4();
+    }
+    applyBuffsAndDebuffs();
+    updateBuffDurations();
+    updateAllCooldowns();
+	
+	elpheltLastUsedAbility1 = false; // Reset the flag for Elphelt's Ability 1
+}
+
+function castBirdieAbility1() {
+    let damage = 50 * chainSlashMultiplier;
+	const audio = new Audio('res/img/raid/sounds/birdiechains.mp3');
+						audio.play();
+    if (buffs['Birdie'] && buffs['Birdie']['damageReductionElphelt2']) {
+        damage *= 0.7; // Apply 30% damage reduction if Elphelt's Ability 2 is active
+    }
+
+    damage = Math.floor(damage); // Ensure damage is an integer
+
+    updateCharacterStatus('Siegfried', damage);
+    updateCharacterStatus('Elphelt', damage);
+
+    logAction('Birdie', 'Chain Slash', 'all enemies', `${damage} damage`);
+
+    if (birdieLastUsedChainSlashTurn === turnCounter - 1) {
+        chainSlashMultiplier *= 1.2; // Change multiplier to 1.2
+    } else {
+        chainSlashMultiplier = 1;
+    }
+
+    birdieLastUsedChainSlashTurn = turnCounter;
+}
+
+
+function castBirdieAbility2() {
+    healCharacter('Birdie', 3000);
+	const audio = new Audio('res/img/raid/sounds/birdie_drink.mp3');
+						audio.play();
+    logAction('Birdie', 'Heal', 'Self', 'heals for 3000 HP');
+    
+    // Activate flash-green effect on Birdie's image
+    const birdieImage = document.querySelector('#Birdie img');
+    if (birdieImage) {
+        birdieImage.classList.add('flash-green');
+        setTimeout(() => {
+            birdieImage.classList.remove('flash-green');
+        }, 500); // Duration should match the animation duration
+    }
+}
+
+    function castBirdieAbility3() {
+		const audio = new Audio('res/img/raid/sounds/birdiebuff.mp3');
+						audio.play();
+        applyBuff('Birdie', 'damageReduction', 4, 'res/img/raid/birdie_buff.jfif', 'Reduces damage taken by 50%');
+        logAction('Birdie', 'Damage Reduction Buff', 'Self', 'reduces damage taken by 50% for 4 turns');
+    }
+
+function castBirdieAbility4() {
+	const audio = new Audio('res/img/raid/sounds/birdiea4.mp3');
+						audio.play();
+    const target = getHighestCurrentHpCharacter(['Siegfried', 'Elphelt']);
+    let damage = 3175;
+    if (buffs['Birdie'] && buffs['Birdie']['damageReductionElphelt2']) {
+        damage *= 0.7; // Apply 30% damage reduction if Elphelt's Ability 2 is active
+    }
+
+    damage = Math.floor(damage); // Ensure damage is an integer
+
+    updateCharacterStatus(target, damage);
+    logAction('Birdie', 'Targeted Attack', target, `${damage} damage`);
+}
+
+function getHighestCurrentHpCharacter(characters) {
+    let highestHpCharacter = characters[0];
+    let highestHp = getCharacterHp(characters[0]);
+
+    characters.forEach(character => {
+        const currentHp = getCharacterHp(character);
+        if (currentHp > highestHp) {
+            highestHpCharacter = character;
+            highestHp = currentHp;
+        }
+    });
+
+    return highestHpCharacter;
+}
+
+function getCharacterHp(character) {
+    const statusElement = document.getElementById(`${character}-status`);
+    const currentHp = parseInt(statusElement.innerText.split('/')[0].split(': ')[1]);
+    return currentHp;
+}
+
+        let damageMultiplier = 1;
+        if (buffs['Birdie'] && buffs['Birdie']['lessDamage']) {
+            damageMultiplier = 0.45;  // 55% less damage
+        }
+		
+
+    // Reduce cooldowns and update cooldown display
+    updateAllCooldowns();
+
+    // Update ability availability based on conditions
+        updateAbilityAvailability(); // Ensure ability availability is updated
+    
+
+    function updateCooldownDisplay(ability, cooldown) {
+    const cooldownElement = document.getElementById(`${ability}Cooldown`);
+
+    if (cooldown > 0) {
+        cooldownElement.innerText = cooldown;
+        cooldownElement.style.display = 'block';
+        document.getElementById(ability).classList.add('disabled');
+    } else {
+        cooldownElement.style.display = 'none';
+        document.getElementById(ability).classList.remove('disabled');
+    }
+    updateAbilityAvailability();  // Ensure ability availability is updated when cooldown changes
+}
+
+    // Ensure cooldowns decrease correctly
+	function updateAllCooldowns() {
+		for (let ability in abilityCooldowns) {
+			if (abilityCooldowns[ability] > 0) {
+				abilityCooldowns[ability]--;
+				updateCooldownDisplay(ability, abilityCooldowns[ability]);
+			}
+		}
+		updateAbilityAvailability(); // Call here to ensure abilities are updated correctly
+	}
+
+
+
+
+
+    function applyBuff(character, buffType, duration, iconSrc, title) {
+    if (!buffs[character]) {
+        buffs[character] = {};
+    }
+    buffs[character][buffType] = duration;
+
+    const buffContainer = document.getElementById(`${character}-buff-container`);
+    if (!buffContainer) {
+        console.error(`Buff container not found for character: ${character}`);
+        return;
+    }
+
+    let buffIcon = document.getElementById(`${character}-${buffType}-buff-icon`);
+    if (!buffIcon) {
+        buffIcon = document.createElement('img');
+        buffIcon.src = iconSrc;
+        buffIcon.className = 'buff-icon';
+        buffIcon.id = `${character}-${buffType}-buff-icon`;
+        buffIcon.title = title; // Add title for tooltip
+        buffContainer.appendChild(buffIcon);
+    }
+    buffIcon.style.display = 'inline-block';
+}
+
+    function removeBuff(character, buffType) {
+        delete buffs[character][buffType];
+        const buffIcon = document.getElementById(`${character}-${buffType}-buff-icon`);
+        if (buffIcon) {
+            buffIcon.style.display = 'none';
+        }
+        if (buffType === 'abilityLock') {
+            enableCharacterAbilities(character);
+        }
+    }
+
+    function disableCharacterAbilities(character) {
+        const abilitiesContainer = document.getElementById(`${character}-abilities`);
+        if (abilitiesContainer) {
+            const abilityIcons = abilitiesContainer.getElementsByClassName('ability');
+            for (let icon of abilityIcons) {
+                icon.classList.add('disabled');
+                icon.style.pointerEvents = 'none';
+            }
+        }
+    }
+
+    function enableCharacterAbilities(character) {
+        const abilitiesContainer = document.getElementById(`${character}-abilities`);
+        if (abilitiesContainer) {
+            const abilityIcons = abilitiesContainer.getElementsByClassName('ability');
+            for (let icon of abilityIcons) {
+                icon.classList.remove('disabled');
+                icon.style.pointerEvents = 'auto';
+            }
+        }
+    }
+
+    function updateBuffDurations() {
+        for (const character in buffs) {
+            for (const buff in buffs[character]) {
+                buffs[character][buff]--;
+                if (buffs[character][buff] <= 0) {
+                    removeBuff(character, buff);
+                }
+            }
+        }
+    }
+
+    // Apply buffs and debuffs each turn
+    function applyBuffsAndDebuffs() {
+        // Check for Birdie's damage over time debuff
+        if (buffs['Birdie'] && buffs['Birdie']['damageOverTime'] > 0) {
+            let damage = 450;
+            if (buffs['Siegfried'] && buffs['Siegfried']['damageMultiplier']) {
+                damage *= 3; // Apply 3x multiplier if Ability 4 is active
+            }
+            updateCharacterStatus('Birdie', damage);
+
+            if (buffs['Siegfried'] && buffs['Siegfried']['damageMultiplier']) {
+                healCharacter('Siegfried', damage * 0.5); // Heal for 50% of the damage dealt
+            }
+        }
+    }
+
+    // Update character status and apply damage
+// Apply damage reduction from Birdie's Ability 3
+function updateCharacterStatus(character, damage, isElpheltAbility = false) {
+    // Check for Birdie's damage reduction buff
+    if (buffs['Birdie'] && buffs['Birdie']['damageReduction']) {
+        if (
+            (character === 'Birdie' && isElpheltAbility) || 
+            (character === 'Birdie' && character === 'Siegfried')
+        ) {
+            damage *= 0.5; // Reduce damage by 50%
+        }
+    }
+
+    // Other damage reduction and buff effects
+    if (buffs[character] && buffs[character]['damageReduction']) {
+        damage *= 0.5; // Reduce damage by 50% for Birdie buffs
+    }
+    
+    // Update character's health
+    const statusElement = document.getElementById(`${character}-status`);
+    const hpBarElement = document.getElementById(`${character}-hp-bar`);
+
+    let currentHp = parseInt(statusElement.innerText.split('/')[0].split(': ')[1]);
+    const maxHp = parseInt(statusElement.innerText.split('/')[1]);
+
+    currentHp -= damage;
+    if (currentHp < 0) currentHp = 0;
+
+    statusElement.innerText = `HP: ${currentHp}/${maxHp}`;
+
+    const hpPercentage = (currentHp / maxHp) * 100;
+    hpBarElement.style.width = `${hpPercentage}%`;
+
+    // Log the damage and apply visual effects
+    const characterImage = document.querySelector(`#${character} img`);
+    if (characterImage) {
+        characterImage.classList.add('flash-red');
+        setTimeout(() => {
+            characterImage.classList.remove('flash-red');
+        }, 500);
+    }
+
+    const log = document.getElementById('log');
+    const logEntry = document.createElement('p');
+    logEntry.innerHTML = `<span style="color: yellow;">Turn ${turnCounter}:</span> <span style="color: red;">${character} took ${damage.toFixed(0)} damage!</span>`;
+    log.appendChild(logEntry);
+    scrollToBottom();
+
+    checkGameOver();
+
+    if (character === 'Birdie' && currentHp <= 0) {
+        endGame(); // Call endGame function when Birdie's HP reaches 0
+    }
+}
+
+    // Heal the character
+    function healCharacter(character, amount) {
+        const statusElement = document.getElementById(`${character}-status`);
+        const hpBarElement = document.getElementById(`${character}-hp-bar`);
+
+        let currentHp = parseInt(statusElement.innerText.split('/')[0].split(': ')[1]);
+        const maxHp = parseInt(statusElement.innerText.split('/')[1]);
+
+        currentHp += amount;
+        if (currentHp > maxHp) currentHp = maxHp;
+
+        statusElement.innerText = `HP: ${currentHp}/${maxHp}`;
+
+        const hpPercentage = (currentHp / maxHp) * 100;
+        hpBarElement.style.width = `${hpPercentage}%`;
+
+        const log = document.getElementById('log');
+        const logEntry = document.createElement('p');
+        logEntry.innerHTML = `<span style="color: green;">${character} healed for ${amount.toFixed(0)} HP!</span>`;
+        log.appendChild(logEntry);
+        scrollToBottom();
+    }
+
+    function logAction(caster, spell, target, description) {
+        const log = document.getElementById('log');
+        const logEntry = document.createElement('p');
+        logEntry.innerHTML = `<span style="color: yellow;">${caster} used ${spell} on ${target}:</span> <span style="color: white;">${description}</span>`;
+        log.appendChild(logEntry);
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        const log = document.getElementById('log');
+        log.scrollTop = log.scrollHeight;
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const siegfriedAbility1 = document.getElementById('SiegfriedAbility1');
+        if (siegfriedAbility1) {
+            siegfriedAbility1.addEventListener('click', castSiegfriedAbility1);
+        }
+    });
+
+    // Elphelt abilities
+		document.addEventListener("DOMContentLoaded", function () {
+            const elpheltAbility1 = document.getElementById('ElpheltAbility1');
+            const elpheltAbility2 = document.getElementById('ElpheltAbility2');
+            const elpheltAbility3 = document.getElementById('ElpheltAbility3');
+            const elpheltAbility4 = document.getElementById('ElpheltAbility4');
+
+            if (elpheltAbility1) {
+                elpheltAbility1.addEventListener('click', castElpheltAbility1);
+            }
+            if (elpheltAbility2) {
+                elpheltAbility2.addEventListener('click', () => {
+                    if (abilityCooldowns.ElpheltAbility2 === 0) {
+                        castElpheltAbility2();
+                    } else {
+                        console.log("Elphelt's Ability 2 is on cooldown");
+                    }
+                });
+            }
+            if (elpheltAbility3) {
+                elpheltAbility3.addEventListener('click', () => {
+                    if (abilityCooldowns.ElpheltAbility3 === 0) {
+                        castElpheltAbility3();
+                    } else {
+                        console.log("Elphelt's Ability 3 is on cooldown");
+                    }
+                });
+            }
+            if (elpheltAbility4) {
+                elpheltAbility4.addEventListener('click', () => {
+                    if (abilityCooldowns.ElpheltAbility4 === 0) {
+                        castElpheltAbility4();
+                    } else {
+                        console.log("Elphelt's Ability 4 is on cooldown");
+                    }
+                });
+            }
+
+            updateAbilityAvailability(); // Initial update of ability availability
+        });
+
+function castElpheltAbility1() {
+    let damage = 400;
+	
+	const audio = new Audio('res/img/raid/sounds/elphelta1.mp3');
+	audio.play();
+    if (elpheltLastUsedAbility1Turns.includes(turnCounter - 1) || elpheltLastUsedAbility1Turns.includes(turnCounter - 2)) {
+        damage = 800; // Double damage if Ability 1 was used in the last two turns
+    }
+
+    // Check if ability 3 buff is active and apply it
+    if (buffs['Elphelt'] && buffs['Elphelt']['damageBoostElphelt3']) {
+        damage *= 1.4; // Increase damage by 40%
+    }
+
+    updateCharacterStatus('Birdie', damage, true); // Pass true to indicate it's Elphelt's ability
+    logAction('Elphelt', 'Ability 1', 'Birdie', `deals ${damage} damage`);
+
+    elpheltLastUsedAbility1Turns.push(turnCounter); // Track the turn when Ability 1 is used
+    if (elpheltLastUsedAbility1Turns.length > 2) {
+        elpheltLastUsedAbility1Turns.shift(); // Keep only the last two turns
+    }
+
+    abilityCooldowns.ElpheltAbility1 = 1; // Set cooldown for Ability 1
+
+    updateAbilityAvailability();
+    birdieTurn();
+}
+
+function castElpheltAbility2() {
+    console.log("Elphelt's Ability 2 activated");
+	const audio = new Audio('res/img/raid/sounds/elphelt_a2.mp3');
+						audio.play();
+    
+    // Apply the damage reduction buff on Birdie for 4 turns
+    applyBuff('Birdie', 'damageReductionElphelt2', 4, 'res/img/raid/elphelta2.jfif', 'Deals 30% less damage with Ability 1 and Ability 4');
+
+    abilityCooldowns.ElpheltAbility2 = 6; // Set cooldown for Ability 2
+    updateCooldownDisplay('ElpheltAbility2', 6); // Update cooldown display
+    logAction('Elphelt', 'Ability 2', 'Birdie', 'applies 30% damage reduction with Ability 1 and Ability 4');
+    birdieTurn();
+}
+
+function castElpheltAbility3() {
+    console.log("Elphelt's Ability 3 activated");
+	const audio = new Audio('res/img/raid/sounds/elphelt_charm.mp3');
+						audio.play();
+    
+    // Apply the damage boost buff on Elphelt for 5 turns
+    applyBuff('Elphelt', 'damageBoostElphelt3', 5, 'res/img/raid/elphelta3.jfif', 'Elphelt deals 40% more damage with Ability 1 and Ability 4');
+
+    abilityCooldowns.ElpheltAbility3 = 10; // Set cooldown for Ability 3
+    updateCooldownDisplay('ElpheltAbility3', 10); // Update cooldown display
+    logAction('Elphelt', 'Ability 3', 'Birdie', 'applies 40% damage boost to Elphelt');
+    birdieTurn();
+}
+
+function castElpheltAbility4() {
+    let damage = 5000;
+	const audio = new Audio('res/img/raid/sounds/elphelta4.mp3');
+						audio.play();
+
+    // Check if ability 3 buff is active and apply it
+    if (buffs['Elphelt'] && buffs['Elphelt']['damageBoostElphelt3']) {
+        damage *= 1.4; // Increase damage by 40%
+    }
+
+    updateCharacterStatus('Birdie', damage, true); // Pass true to indicate it's Elphelt's ability
+    logAction('Elphelt', 'Ability 4', 'Birdie', `deals ${damage} damage`);
+
+    abilityCooldowns.ElpheltAbility4 = 20; // Set cooldown for Ability 4
+    updateCooldownDisplay('ElpheltAbility4', 20); // Update cooldown display
+}
+
+    // Siegfried abilities
+    document.addEventListener("DOMContentLoaded", function () {
+        const siegfriedAbility1 = document.getElementById('SiegfriedAbility1');
+        const siegfriedAbility2 = document.getElementById('SiegfriedAbility2');
+        const siegfriedAbility3 = document.getElementById('SiegfriedAbility3');
+        const siegfriedAbility4 = document.getElementById('SiegfriedAbility4');
+
+        if (siegfriedAbility1) {
+            siegfriedAbility1.addEventListener('click', castSiegfriedAbility1);
+        }
+        if (siegfriedAbility2) {
+            siegfriedAbility2.addEventListener('click', () => {
+                if (abilityCooldowns.SiegfriedAbility2 === 0) {
+                    castSiegfriedAbility2();
+                }
+            });
+        }
+        if (siegfriedAbility3) {
+            siegfriedAbility3.addEventListener('click', () => {
+                if (abilityCooldowns.SiegfriedAbility3 === 0) {
+                    castSiegfriedAbility3();
+                }
+            });
+        }
+        if (siegfriedAbility4) {
+            siegfriedAbility4.addEventListener('click', () => {
+                if (abilityCooldowns.SiegfriedAbility4 === 0) {
+                    castSiegfriedAbility4();
+                }
+            });
+        }
+    });
+
+    // Ability 1: Deals 500 damage to Birdie
+    function castSiegfriedAbility1() {
+		const audio = new Audio('res/img/raid/sounds/siegfrieda1sfx.mp3');
+						audio.play();
+        let damage = 500;
+        if (buffs['Siegfried'] && buffs['Siegfried']['damageMultiplier']) {
+            damage *= 3; // Apply 3x multiplier if Ability 4 is active
+        }
+        updateCharacterStatus('Birdie', damage);
+
+        if (buffs['Siegfried'] && buffs['Siegfried']['damageMultiplier']) {
+            healCharacter('Siegfried', damage * 0.5); // Heal for 50% of the damage dealt
+        }
+
+        logAction('Siegfried', 'Ability 1', 'Birdie', `deals ${damage} damage`);
+        birdieTurn();
+    }
+
+    // Ability 2: Heals Siegfried for 30% of missing HP, gives 30% damage reduction for 3 turns
+		function castSiegfriedAbility2() {
+		const audio = new Audio('res/img/raid/sounds/siegfrieda2.mp3');
+						audio.play();
+		const maxHp = 6300;
+		const currentHp = parseInt(document.getElementById('Siegfried-status').innerText.split('/')[0].split(': ')[1]);
+		const missingHp = maxHp - currentHp;
+		const healAmount = Math.floor(missingHp * 0.3);
+
+		healCharacter('Siegfried', healAmount);
+		applyBuff('Siegfried', 'damageReduction', 3, 'res/img/raid/siegfrieda2.jfif', 'Reduces damage taken by 30% from Birdie');
+
+		abilityCooldowns.SiegfriedAbility2 = 7;
+		updateCooldownDisplay('SiegfriedAbility2', 7);
+		logAction('Siegfried', 'Ability 2', 'Self', `heals for ${healAmount} and gains damage reduction`);
+		birdieTurn();
+	}
+
+    // Ability 3: Applies a damage-over-time buff on Birdie
+    function castSiegfriedAbility3() {
+	const audio = new Audio('res/img/raid/sounds/siegfrieda3.mp3');
+						audio.play();
+        applyBuff('Birdie', 'damageOverTime', 3, 'res/img/raid/siegfrieda3.jfif', 'Takes 450 damage after attacking');
+
+        abilityCooldowns.SiegfriedAbility3 = 7;
+        updateCooldownDisplay('SiegfriedAbility3', 7);
+        logAction('Siegfried', 'Ability 3', 'Birdie', 'applies damage over time');
+        birdieTurn();
+    }
+
+    // Ability 4: Buffs Siegfried for triple damage and lifesteal
+    function castSiegfriedAbility4() {
+	const audio = new Audio('res/img/raid/sounds/siegfrieda4.mp3');
+						audio.play();
+        applyBuff('Siegfried', 'damageMultiplier', 5, 'res/img/raid/siegfrieda4.jfif', 'Deals triple damage and lifesteal');
+
+        abilityCooldowns.SiegfriedAbility4 = 11;
+        updateCooldownDisplay('SiegfriedAbility4', 11);
+        logAction('Siegfried', 'Ability 4', 'Self', 'gains damage boost and lifesteal');
+        birdieTurn();
+    }
+	
+	function checkGameOver() {
+    const siegfriedHp = parseInt(document.getElementById('Siegfried-status').innerText.split('/')[0].split(': ')[1]);
+    const elpheltHp = parseInt(document.getElementById('Elphelt-status').innerText.split('/')[0].split(': ')[1]);
+    const birdieHp = parseInt(document.getElementById('Birdie-status').innerText.split('/')[0].split(': ')[1]);
+
+    if (siegfriedHp <= 0 || elpheltHp <= 0) {
+        alert("Game Over! Reloading the page...");
+        location.reload();
+    }
+
+}
+
+function endGame() {
+    // Turn Birdie's image grey
+    const birdieImage = document.querySelector('#Birdie img');
+    if (birdieImage) {
+        birdieImage.classList.add('grayscale');
+    }
+	
+	function disableCharacterAbilities(character) {
+        const abilitiesContainer = document.getElementById(`${character}-abilities`);
+        if (abilitiesContainer) {
+            const abilityIcons = abilitiesContainer.getElementsByClassName('ability');
+            for (let icon of abilityIcons) {
+                icon.classList.add('disabled');
+                icon.style.pointerEvents = 'none';
+            }
+        }
+    }
+
+	disableAllAbilities();
+
+    // Pause background audio
+    if (bgAudio) {
+        bgAudio.pause();
+    }
+
+    // Start Siegfried's conversation at the end of the game
+    startSiegfriedConversation();
+}
+
+function startSiegfriedConversation() {
+            const siegfriedChat = document.getElementById('Siegfried-chat');
+            const elpheltChat = document.getElementById('Elphelt-chat');
+            const conversation = [
+                { character: 'Elphelt', text: 'BOOOM!', delay: 3500, audio: 'res/img/raid/sounds/elphelt_boom.mp3' },
+                { character: null, text: '', delay: 2000, audio: 'res/img/raid/sounds/kokoro_scream.mp3' },
+                { character: 'Siegfried', text: 'Oh no! That was Kokoro!', delay: 2000, audio: 'res/img/raid/sounds/siegfried_ohno.mp3' },
+                { character: 'Elphelt', text: 'Go go go go go!', delay: 2500, audio: 'res/img/raid/sounds/elphelt_go.mp3' },
+            ];
+
+            let currentStep = 0;
+
+            // Preload all audio files
+            const audioFiles = {
+                'res/img/raid/sounds/elphelt_boom.mp3': new Audio('res/img/raid/sounds/elphelt_boom.mp3'),
+                'res/img/raid/sounds/kokoro_scream.mp3': new Audio('res/img/raid/sounds/kokoro_scream.mp3'),
+                'res/img/raid/sounds/siegfried_ohno.mp3': new Audio('res/img/raid/sounds/siegfried_ohno.mp3'),
+                'res/img/raid/sounds/elphelt_go.mp3': new Audio('res/img/raid/sounds/elphelt_go.mp3')
+            };
+
+            // Set audio preload attribute
+            for (let key in audioFiles) {
+                audioFiles[key].preload = 'auto';
+            }
+
+            function showNextChat() {
+                if (currentStep < conversation.length) {
+                    const { character, text, delay, audio } = conversation[currentStep];
+                    let chatBubble;
+
+                    if (character === 'Siegfried') {
+                        chatBubble = siegfriedChat;
+                    } else if (character === 'Elphelt') {
+                        chatBubble = elpheltChat;
+                    }
+
+                    // Play audio even if there's no chat bubble (for the scream)
+                    if (audio) {
+                        audioFiles[audio].play();
+                    }
+
+                    // Only show chat bubbles for actual dialogue lines
+                    if (chatBubble) {
+                        chatBubble.innerHTML = `<div>${text.replace(/\n/g, '<br>')}</div>`;
+                        chatBubble.style.display = 'flex';
+                    }
+
+                    setTimeout(() => {
+                        if (chatBubble) {
+                            chatBubble.style.display = 'none';
+                        }
+                        currentStep++;
+                        showNextChat();
+                    }, delay);
+                } else {
+                    // Show the stage5 button after the conversation ends
+                    document.getElementById('stage5-button').style.display = 'block';
+                    updateStageCompletion(); // Update the database when the button appears
+                }
+            }
+
+            showNextChat();
+        }
+
+// Ensure the stage5 button exists and is hidden initially
+document.addEventListener("DOMContentLoaded", function() {
+    const stage5Button = document.createElement('button');
+    stage5Button.id = 'stage5-button';
+    stage5Button.innerText = 'Go to Stage 5';
+    stage5Button.style.display = 'none';
+    stage5Button.style.position = 'absolute';
+    stage5Button.style.top = '50%';
+    stage5Button.style.left = '50%';
+    stage5Button.style.transform = 'translate(-50%, -50%)';
+    stage5Button.style.padding = '10px 20px';
+    stage5Button.style.fontSize = '20px';
+    stage5Button.style.cursor = 'pointer';
+    stage5Button.style.backgroundColor = '#4CAF50';
+    stage5Button.style.color = 'white';
+    stage5Button.style.border = 'none';
+    stage5Button.style.borderRadius = '5px';
+    stage5Button.onclick = function() {
+        location.href = 'Stage_5.html';
+    };
+    document.body.appendChild(stage5Button);
+});
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'F5') {
+            event.preventDefault();
+            const birdieStatus = document.getElementById('Birdie-status');
+            birdieStatus.innerText = 'HP: 5/69500';
+            const birdieHpBar = document.getElementById('Birdie-hp-bar');
+            birdieHpBar.style.width = '0.0072%'; // Calculate percentage (5 / 60000 * 100)
+        }
+    });
+
+    // Other existing functions and event listeners
+</script>
+</body>
+</html>

@@ -336,6 +336,62 @@ h1 {
     z-index: 1; /* Ensure it is above the image */
 }
     </style>
+    <!-- Include Firebase SDK and configuration as module scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        // Fallback for non-module browsers (if needed)
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+    <script type="module">
+        // Initialize Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        window.updateStageCompletion = function() {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = ref(database, 'users/' + user.uid + '/Raid/Stage2');
+                set(userRef, 1)
+                    .then(() => {
+                        console.log('Stage 2 completion updated successfully');
+                    })
+                    .catch(error => {
+                        console.error('Error updating stage completion:', error);
+                    });
+            } else {
+                console.error('User not authenticated');
+            }
+        }
+
+        window.onload = function() {
+            onAuthStateChanged(auth, (user) => {
+                if (!user) {
+                    // Redirect to index.html if the user is not logged in
+                    window.location.href = 'index.html';
+                }
+            });
+        };
+    </script>
 <body>
     <h1>Stage 2</h1>
     <div class="turn-counter" id="turn-counter">Turn: 0</div>
@@ -1034,58 +1090,60 @@ function endGame() {
 }
 
 function startShomaConversation() {
-    const shomaChat = document.getElementById('Shoma-chat');
-    const juliaChat = document.getElementById('Julia-chat');
-    const conversation = [
-        { character: 'Shoma', text: 'WATERBALL!!!!', delay: 1500, audio: 'res/img/raid/sounds/shoma_waterball.mp3' },
-        { character: 'Julia', text: 'Wha.....?', delay: 1000, audio: 'res/img/raid/sounds/julia_wha.mp3' },
-        { character: 'Julia', text: 'Shoma?', delay: 1000, audio: 'res/img/raid/sounds/julia_shoma.mp3' },
-        { character: 'Shoma', text: 'Just in time, right? Are you okay Julia?', delay: 3500, audio: 'res/img/raid/sounds/shoma_julia.mp3' },
-        { character: 'Julia', text: 'I guess yes, thanks. My nature power is not enough against these infernal monsters', delay: 5500, audio: 'res/img/raid/sounds/julia_yes.mp3' },
-        { character: 'Shoma', text: 'That\'s why you should stay here', delay: 2500, audio: 'res/img/raid/sounds/shoma_stay.mp3' },
-        { character: 'Julia', text: 'No, I want to help to the others too', delay: 3000, audio: 'res/img/raid/sounds/julia_others.mp3' },
-        { character: 'Shoma', text: 'Julia please. I want you to be safe.... I love you.....', delay: 4000, audio: 'res/img/raid/sounds/shoma_love.mp3' },
-        { character: 'Julia', text: 'Shoma....', delay: 2000, audio: 'res/img/raid/sounds/julia_shoma2.mp3' },
-        { character: 'Julia', text: 'Okay, but please be careful!', delay: 3000, audio: 'res/img/raid/sounds/julia_okay.mp3' },
-    ];
+            const shomaChat = document.getElementById('Shoma-chat');
+            const juliaChat = document.getElementById('Julia-chat');
+            const conversation = [
+                { character: 'Shoma', text: 'WATERBALL!!!!', delay: 1500, audio: 'res/img/raid/sounds/shoma_waterball.mp3' },
+                { character: 'Julia', text: 'Wha.....?', delay: 1000, audio: 'res/img/raid/sounds/julia_wha.mp3' },
+                { character: 'Julia', text: 'Shoma?', delay: 1000, audio: 'res/img/raid/sounds/julia_shoma.mp3' },
+                { character: 'Shoma', text: 'Just in time, right? Are you okay Julia?', delay: 3500, audio: 'res/img/raid/sounds/shoma_julia.mp3' },
+                { character: 'Julia', text: 'I guess yes, thanks. My nature power is not enough against these infernal monsters', delay: 5500, audio: 'res/img/raid/sounds/julia_yes.mp3' },
+                { character: 'Shoma', text: 'That\'s why you should stay here', delay: 2500, audio: 'res/img/raid/sounds/shoma_stay.mp3' },
+                { character: 'Julia', text: 'No, I want to help to the others too', delay: 3000, audio: 'res/img/raid/sounds/julia_others.mp3' },
+                { character: 'Shoma', text: 'Julia please. I want you to be safe.... I love you.....', delay: 4000, audio: 'res/img/raid/sounds/shoma_love.mp3' },
+                { character: 'Julia', text: 'Shoma....', delay: 2000, audio: 'res/img/raid/sounds/julia_shoma2.mp3' },
+                { character: 'Julia', text: 'Okay, but please be careful!', delay: 3000, audio: 'res/img/raid/sounds/julia_okay.mp3' },
+            ];
 
-    let currentStep = 0;
+            let currentStep = 0;
 
-    function showNextChat() {
-        if (currentStep < conversation.length) {
-            const { character, text, delay, audio } = conversation[currentStep];
-            let chatBubble;
+            function showNextChat() {
+                if (currentStep < conversation.length) {
+                    const { character, text, delay, audio } = conversation[currentStep];
+                    let chatBubble;
 
-            if (character === 'Shoma') {
-                chatBubble = shomaChat;
-                if (text === 'WATERBALL!!!!') {
-                    killAllElementals();
+                    if (character === 'Shoma') {
+                        chatBubble = shomaChat;
+                        if (text === 'WATERBALL!!!!') {
+                            killAllElementals();
+                        }
+                    } else if (character === 'Julia') {
+                        chatBubble = juliaChat;
+                    }
+
+                    if (chatBubble) {
+                        chatBubble.innerHTML = `<div>${text.replace(/\n/g, '<br>')}</div>`;
+                        chatBubble.style.display = 'flex';
+
+                        // Play audio
+                        const audioElement = new Audio(audio);
+                        audioElement.play();
+
+                        setTimeout(() => {
+                            chatBubble.style.display = 'none';
+                            currentStep++;
+                            showNextChat();
+                        }, delay);
+                    }
+                } else {
+                    document.getElementById('stage3-button').style.display = 'block';
+                    updateStageCompletion(); // Update the database when the button appears
                 }
-            } else if (character === 'Julia') {
-                chatBubble = juliaChat;
             }
 
-            if (chatBubble) {
-                chatBubble.innerHTML = `<div>${text.replace(/\n/g, '<br>')}</div>`;
-                chatBubble.style.display = 'flex';
-
-                // Play audio
-                const audioElement = new Audio(audio);
-                audioElement.play();
-
-                setTimeout(() => {
-                    chatBubble.style.display = 'none';
-                    currentStep++;
-                    showNextChat();
-                }, delay);
-            }
-        } else {
-            document.getElementById('stage3-button').style.display = 'block';
+            showNextChat();
         }
-    }
 
-    showNextChat();
-}
 
 function killAllElementals() {
     const elementals = ['Elemental1', 'Elemental2', 'Elemental3', 'Elemental4', 'Elemental5'];

@@ -49,6 +49,7 @@
             background: linear-gradient(to bottom, #0f0, #0f0);
             transition: height 0.5s ease;
             z-index: 0;
+            transform: translateX(-50%); /* Center the progress line horizontally */
         }
 
         .battle-pass-item {
@@ -212,16 +213,20 @@
         const database = getDatabase(app);
 
         const battlePassItems = [
-            { id: 'Item1', exp: 100, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free LootBox' },
-            { id: 'Item2', exp: 200, img: 'Icons/Christie.png', skinName: 'Christie', name: 'Christie Fighter Unlock' },
-			{ id: 'Item3', exp: 300, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
-            { id: 'Item4', exp: 450, img: 'Loading Screen/Chris T.png', skinName: 'Chris T', name: 'Chris T Skin' },
-			{ id: 'Item5', exp: 600, img: 'Icons/Profile/Neoncore_SubZero.png', folder: 'Icons', name: 'Neon Core Sub Zero Icon' },
-			{ id: 'Item6', exp: 700, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
-			{ id: 'Item7', exp: 850, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free LootBox' },
-			{ id: 'Item8', exp: 900, img: 'Loading Screen/Neon Core Raiden.png', skinName: 'Neon Core Raiden', name: 'Neon Core Raiden Skin' },
-			{ id: 'Item9', exp: 950, img: 'Icons/Profile/Neoncore_ErronBlack.png', folder: 'Icons', name: 'Neon Core Erron Black Icon' },
-			{ id: 'Item10', exp: 1000, img: 'Loading Screen/Neon Core Raiden Silver.png', skinName: 'Neon Core Raiden Silver', name: 'Neon Core Raiden Silver Recolor' },
+            { id: 'Item1', exp: 50, img: 'Icons/Kokoro.png', skinName: 'Kokoro', name: 'Kokoro Fighter Unlock' },
+            { id: 'Item2', exp: 100, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free LootBox' },
+            { id: 'Item3', exp: 200, img: 'Loading Screen/Schoolgirl Kokoro.png', skinName: 'Schoolgirl Kokoro', name: 'Schoolgirl Kokoro Skin' },
+			{ id: 'Item4', exp: 300, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
+            { id: 'Item5', exp: 400, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free LootBox' },
+			{ id: 'Item6', exp: 500, img: 'Icons/Profile/Kokoro_Butterfly.png', folder: 'Icons', name: 'Kokoro Butterfly Icon' },
+			{ id: 'Item7', exp: 700, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
+			{ id: 'Item8', exp: 750, img: 'Icons/Profile/Root.png', folder: 'Icons', name: 'Root Icon' },
+			{ id: 'Item9', exp: 800, img: 'Icons/Profile/Schoolgirl_Julia.png', folder: 'Icons', name: 'Schoolgirl Julia Icon' },
+			{ id: 'Item10', exp: 950, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
+			{ id: 'Item11', exp: 1000, img: 'Loading Screen/Schoolboy Siegfried.png', skinName: 'Schoolboy Siegfried', name: 'Schoolboy Siegfried Skin' },
+            { id: 'Item12', exp: 1100, img: 'res/img/cm.png', name: '2500 CM', type: 'CM' },
+            { id: 'Item13', exp: 1350, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free LootBox' },
+            { id: 'Item14', exp: 1500, img: 'Loading Screen/Schoolboy Siegfried Crimson.png', skinName: 'Schoolboy Siegfried Crimson', name: 'Schoolboy Siegfried Crimson Recolor' },
         ];
 
         onAuthStateChanged(auth, (user) => {
@@ -317,11 +322,15 @@
         }
 
         function updateProgressLine(userExp) {
-			const maxExp = 1000; // Set max experience to 1000
-			const progressLine = document.getElementById('progress-line');
-			const progressHeight = Math.min((userExp / maxExp) * 100, 100);
-			progressLine.style.height = `${progressHeight}%`;
-		}
+            const totalItems = 14; // Total number of items in the battlepass
+            const maxExp = 1500; // Set max experience to 1000
+            const progressLine = document.getElementById('progress-line');
+            const itemHeight = 100 / totalItems; // Height percentage for each item
+            const progressHeight = Math.min((userExp / maxExp) * 100, 100);
+            const currentItem = Math.floor((userExp / maxExp) * totalItems);
+            const itemProgressHeight = currentItem * itemHeight;
+            progressLine.style.height = `${itemProgressHeight}%`;
+        }
     </script>
 </body>
 </html>

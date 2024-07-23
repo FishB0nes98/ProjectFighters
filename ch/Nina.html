@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nina - Character Page</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('../Default Splash/Nina.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            font-family: Arial, sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        .menu {
+            /* Reuse the menu styles from home.html */
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+        .menu:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+        .menu .menu-items {
+            display: flex;
+        }
+        .menu a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+        .play-button {
+            margin-right: 20px;
+            background-color: orange;
+            color: black;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s, color 0.3s;
+            padding: 10px 20px;
+        }
+        .play-button:hover {
+            background-color: darkgoldenrod;
+            color: white;
+            transform: scale(1.2);
+        }
+        .content {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 100px 50px 50px 50px;
+        }
+        .left-panel {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-right: 20px;
+            max-width: 400px;
+        }
+        .left-panel h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .left-panel p {
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .role {
+            font-size: 24px;
+            font-weight: bold;
+            color: gold;
+            margin-bottom: 20px;
+        }
+        .bio-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .bio-button:hover {
+            background-color: #0056b3;
+        }
+        .skins-container {
+            display: flex;
+            overflow-x: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            cursor: pointer;
+        }
+        .skins-container::-webkit-scrollbar {
+            display: none; /* Hide scrollbar */
+        }
+        .skin-image {
+            width: 300px;
+            height: 169px; /* 16:9 aspect ratio */
+            margin: 10px;
+            border: 2px solid #444;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+        }
+        .skin-image:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
+        }
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+        }
+        .lightbox .close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+        }
+        .lightbox .arrow {
+            position: absolute;
+            top: 50%;
+            font-size: 50px;
+            color: white;
+            cursor: pointer;
+        }
+        .lightbox .arrow.left {
+            left: 20px;
+        }
+        .lightbox .arrow.right {
+            right: 20px;
+        }
+        .best-players {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-width: 400px;
+            text-align: center;
+        }
+        .best-players h2 {
+            font-size: 24px;
+            color: gold;
+            margin-bottom: 10px;
+        }
+        .best-players ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .best-players li {
+            font-size: 18px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .right-panel {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            right: 50px;
+            position: fixed;
+            top: 175px;
+        }
+        .more-link {
+            color: #007bff;
+            cursor: pointer;
+        }
+        /* ... existing styles ... */
+        .hide-ui-button {
+            position: fixed;
+            top: 75px; /* Adjust based on the menu height */
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1001; /* Ensure it's above other content */
+        }
+        .hide-ui-button:hover {
+            background-color: #0056b3;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+    <!-- Include Firebase SDK and configuration as module scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        // Fallback for non-module browsers (if needed)
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+    <script type="module">
+        // Initialize Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        async function fetchBestNinaPlayers() {
+            const usersRef = ref(database, 'users');
+            const snapshot = await get(usersRef);
+            const users = snapshot.val();
+            const NinaPlayers = [];
+
+            for (const userId in users) {
+                const user = users[userId];
+                if (user.characters && user.characters['Nina']) {
+                    const { win, lose } = user.characters['Nina'];
+                    const totalGames = win + lose;
+                    if (totalGames >= 15) {
+                        const winrate = (win / totalGames) * 100;
+                        NinaPlayers.push({ username: user.username, winrate });
+                    }
+                }
+            }
+
+            NinaPlayers.sort((a, b) => b.winrate - a.winrate);
+            return NinaPlayers.slice(0, 5);
+        }
+
+        async function displayBestNinaPlayers() {
+            const bestPlayers = await fetchBestNinaPlayers();
+            const bestPlayersList = document.getElementById('best-players-list');
+            bestPlayersList.innerHTML = '';
+
+            bestPlayers.forEach(player => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `<span>${player.username}</span><span>${player.winrate.toFixed(2)}%</span>`;
+                bestPlayersList.appendChild(listItem);
+            });
+        }
+
+        window.onload = function() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    displayBestNinaPlayers();
+                }
+            });
+        };
+    </script>
+</head>
+<body>
+    <!-- Menu -->
+    <div class="menu">
+        <div class="menu-items">
+            <a href="../home.html">Home</a>
+            <a href="../Store.html">Store</a>
+            <a href="../event.html">Event</a>
+            <a href="../Team Builder.html">Team Builder</a>
+            <a href="../championstats.html">Statistics</a>
+        </div>
+        <div>
+            <a href="../battlepass.html" class="battlepass-button">Battlepass</a>
+        </div>
+        <div>
+            <a href="../Game Modes.html" class="play-button">Play</a>
+        </div>
+    </div>
+     <!-- Hide UI Button -->
+    <button class="hide-ui-button" onclick="toggleUI()">Hide UI</button>
+    <!-- Content -->
+    <div class="content">
+    <!-- Left Panel -->
+    <div class="left-panel">
+        <h1>Nina</h1>
+        <div class="role">Role: ADC/On-hit</div>
+        <p id="story">
+            Nina is a character from the Tekken series. <span id="more" style="display: none;">She is an Irish professional assassin and the sister of Anna Williams. Nina is known for her cold and ruthless nature, as well as her exceptional skills in assassination and hand-to-hand combat. Throughout the series, she is often involved in various conflicts and missions, including her long-standing rivalry with her sister. Despite her tough exterior, Nina's story reveals her struggles with her past and her attempts to find her own path.</span> <span id="more-link" class="more-link" onclick="toggleStory()">more</span>
+        </p>
+        <button class="bio-button" onclick="window.location.href='../characters/Nina Page.html'">Check Bio</button>
+    </div>
+</div>
+    <div class="content">
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="best-players">
+                <h2>Best Nina Players</h2>
+                <ul id="best-players-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skins Container -->
+    <div class="skins-container">
+        <label style="position: absolute; top: 10px; left: 10px; color: white;">
+            <input type="checkbox" id="hide-recolors" onclick="toggleRecolors()"> Hide Recolors
+        </label>
+        <img src="../Skins/Summertime Nina.png" alt="Summertime Nina" class="skin-image" onclick="openLightbox(0)">
+        <img src="../Skins/Arctic Huntress Nina.png" alt="Arctic Huntress Nina" class="skin-image" onclick="openLightbox(1)">
+        <img src="../Skins/Farmer Nina.png" alt="Farmer Nina" class="skin-image" onclick="openLightbox(2)">
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox">
+        <span class="close" onclick="closeLightbox()">&times;</span>
+        <span class="arrow left" onclick="prevImage()">&#10094;</span>
+        <img id="lightbox-img" src="" alt="Skin Image">
+        <span class="arrow right" onclick="nextImage()">&#10095;</span>
+    </div>
+
+    <script>
+        const skins = [
+                        '../Skins/Summertime Nina.png',
+                        '../Skins/Arctic Huntress Nina.png',
+                        '../Skins/Farmer Nina.png',
+        ];
+        let currentIndex = 0;
+
+        function openLightbox(index) {
+            currentIndex = index;
+            document.getElementById('lightbox-img').src = skins[currentIndex];
+            document.getElementById('lightbox').style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+
+        function prevImage() {
+            currentIndex = (currentIndex > 0) ? currentIndex - 1 : skins.length - 1;
+            document.getElementById('lightbox-img').src = skins[currentIndex];
+        }
+
+        function nextImage() {
+            currentIndex = (currentIndex < skins.length - 1) ? currentIndex + 1 : 0;
+            document.getElementById('lightbox-img').src = skins[currentIndex];
+        }
+
+        document.querySelector('.skins-container').addEventListener('mousemove', function(e) {
+            const container = e.currentTarget;
+            const containerWidth = container.offsetWidth;
+            const scrollWidth = container.scrollWidth;
+            const scrollLeft = container.scrollLeft;
+            const mouseX = e.clientX - container.getBoundingClientRect().left;
+
+            if (mouseX < containerWidth * 0.1) {
+                container.scrollLeft = Math.max(0, scrollLeft - 10);
+            } else if (mouseX > containerWidth * 0.9) {
+                container.scrollLeft = Math.min(scrollWidth - containerWidth, scrollLeft + 10);
+            }
+        });
+
+        function toggleUI() {
+            const elementsToHide = document.querySelectorAll('.menu, .content, .skins-container, .lightbox');
+            const hideUIButton = document.querySelector('.hide-ui-button');
+            elementsToHide.forEach(element => {
+                element.classList.toggle('hidden');
+            });
+            hideUIButton.textContent = hideUIButton.textContent === 'Hide UI' ? 'Show UI' : 'Hide UI';
+        }
+
+        function toggleStory() {
+            const moreText = document.getElementById('more');
+            const moreLink = document.getElementById('more-link');
+            const leftPanel = document.querySelector('.left-panel');
+
+            if (moreText.style.display === 'none' || moreText.style.display === '') {
+                moreText.style.display = 'inline';
+                moreLink.textContent = 'less';
+                leftPanel.style.flex = '2';
+            } else {
+                moreText.style.display = 'none';
+                moreLink.textContent = 'more';
+                leftPanel.style.flex = '1';
+            }
+        }
+
+        function hideButton() {
+            document.querySelector('.hide-ui-button').classList.add('hidden');
+        }
+
+        function showButton() {
+            document.querySelector('.hide-ui-button').classList.remove('hidden');
+        }
+
+        document.addEventListener('mousemove', () => {
+            showButton();
+            clearTimeout(mouseTimer);
+            mouseTimer = setTimeout(hideButton, 5000);
+        });
+
+        // Initialize the timer to hide the button after 5 seconds of inactivity
+        let mouseTimer = setTimeout(hideButton, 5000); // Added 'let' to declare the variable
+
+        function toggleRecolors() {
+            const recolorSkins = document.querySelectorAll('.skin-image.recolor');
+            const hideRecolors = document.getElementById('hide-recolors').checked;
+            recolorSkins.forEach(skin => {
+                skin.style.display = hideRecolors ? 'none' : 'block';
+            });
+        }
+    </script>
+</body>
+</html>

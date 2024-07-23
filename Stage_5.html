@@ -1,0 +1,1997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turn-Based Raid Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: url('res/img/raid/background.png') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+        }
+
+        .character {
+            display: inline-block;
+            position: absolute;
+            bottom: 100px;
+            width: 250px;
+            height: 350px;
+        }
+
+        .shoma {
+            left: 28%;
+        }
+
+        .ayane {
+            left: 13%;
+        }
+		.elphelt {
+            left: 43%;
+        }
+		.siegfried {
+            left: 58%;
+        }
+		.kokoro {
+            left: 73%;
+        }
+
+        .enemy {
+            display: inline-block;
+            margin: 30px;
+            gap: 50px;
+            position: relative;
+            top: 15px;
+        }
+
+        .astaroth {
+            display: inline-block;
+            text-align: center;
+        }
+
+        .astaroth img {
+            width: 250px;
+            height: 350px;
+            padding-right: 20px;
+        }
+
+        .character img {
+            width: 250px;
+            height: 350px;
+        }
+
+        .status {
+            font-size: 18px;
+            margin-top: 10px;
+            width: 250px;
+            z-index: 1000;
+            position: absolute;
+        }
+
+        .chat-bubble {
+            position: absolute;
+            top: 5%;
+            right: 60%;
+            transform: translateY(-50%);
+            width: 200px;
+            height: 350px;
+            background: url('res/img/raid/chat.png') no-repeat center center;
+            background-size: contain;
+            color: black;
+            padding: 20px;
+            padding-top: 300px;
+            display: none;
+            z-index: 100;
+            display: flex;
+            align-items: flex-start;
+            word-wrap: break-word;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #allies {
+            position: absolute;
+            bottom: 25px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .log {
+            border: 1px solid #555;
+            padding: 10px;
+            height: 300px;
+            width: 500px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            position: absolute;
+            top: 15px;
+            left: 35px;
+            z-index: 10;
+        }
+
+        h1 {
+            position: absolute;
+            top: 0;
+            right: 20px;
+            margin: 20px;
+            z-index: 1000;
+        }
+
+        .turn-counter {
+            position: absolute;
+            top: 5px;
+            right: 925px;
+            z-index: 10;
+            font-size: 18px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        @keyframes flash-red {
+            0% {
+                filter: brightness(1);
+            }
+            50% {
+                filter: brightness(0) sepia(1) hue-rotate(-50deg) saturate(10);
+            }
+            100% {
+                filter: brightness(1);
+            }
+        }
+
+        .flash-red {
+            animation: flash-red 0.5s;
+        }
+
+        @keyframes flash-green {
+            0% {
+                filter: brightness(1);
+            }
+            50% {
+                filter: brightness(0.5) saturate(3) hue-rotate(120deg);
+            }
+            100% {
+                filter: brightness(1);
+            }
+        }
+
+        .flash-green {
+            animation: flash-green 0.5s ease-in-out;
+        }
+
+        .buff-container {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .buff-icon {
+            width: 50px !important;
+            height: 50px !important;
+            margin: 0 1px;
+            display: none;
+        }
+
+        .cooldown {
+            filter: grayscale(100%);
+            pointer-events: none;
+        }
+
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        #start-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        #stage2-button {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+		.stage4-button {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .hp-bar-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-color: #555;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .hp-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 100%;
+            transition: width 0.5s ease;
+            border-radius: 5px;
+        }
+
+        .grayscale {
+            filter: grayscale(100%);
+        }
+
+        #volume-control {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            display: flex;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        #volume-slider {
+            margin-left: 10px;
+        }
+
+        .objective {
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            z-index: 1000;
+            font-size: 18px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .shoma img, .ayane img {
+            width: 250px;
+            height: 350px;
+        }
+
+        .stage-button {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .cooldown-text {
+            position: absolute;
+            top: 65%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: blue;
+            font-size: 35px;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 1;
+        }
+		.ability-icons {
+			position: relative;
+		}
+
+	.ability-container {
+		position: relative;
+		display: inline-block;
+		width: max-content;
+	}
+		.ability-icons img.disabled {
+			opacity: 0.5;
+		}
+
+		.ability {
+			width: 50px !important;
+			height: 50px !important;
+			margin: 5px;
+			cursor: pointer;
+			padding-top: 30px;
+		}
+	.heal-icons {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.5);
+	}
+
+	.heal-icons img {
+		width: 25px;
+		height: 25px;
+		margin: 2px;
+		cursor: pointer;
+		margin-top: 225px;
+	}	
+
+    .heal-icons2 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .heal-icons2 img {
+        width: 50px;
+        height: 50px;
+        margin: 5px;
+        cursor: pointer;
+        padding-top: 55px;
+    }
+	.cooldown-text {
+		position: absolute;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		color: blue;
+		font-size: 35px;
+		font-weight: bold;
+		pointer-events: none; /* Ensure it doesn't block clicks */
+		z-index: 1; /* Ensure it is above the image */
+	}
+
+	.disabled {
+		filter: grayscale(100%);
+		pointer-events: none;
+		opacity: 0.5;
+	}
+	.selection-icons {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.5);
+	}
+
+    .raiden {
+            position: absolute;
+            top: 0;
+            left: 500px;
+        }
+
+	.selection-icons img {
+		width: 50px;
+		height: 50px;
+		margin: 5px;
+		cursor: pointer;
+		padding-top: 55px;
+	}
+	.grayscale {
+		filter: grayscale(100%);
+	}
+    </style>
+    <!-- Include Firebase SDK and configuration as module scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        // Fallback for non-module browsers (if needed)
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+    <script type="module">
+        // Initialize Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        window.updateStageCompletion = function() {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = ref(database, 'users/' + user.uid + '/Raid/Stage5');
+                set(userRef, 1)
+                    .then(() => {
+                        console.log('Stage 5 completion updated successfully');
+                    })
+                    .catch(error => {
+                        console.error('Error updating stage completion:', error);
+                    });
+            } else {
+                console.error('User not authenticated');
+            }
+        }
+
+        window.onload = function() {
+            onAuthStateChanged(auth, (user) => {
+                if (!user) {
+                    // Redirect to index.html if the user is not logged in
+                    window.location.href = 'index.html';
+                }
+            });
+        };
+    </script>
+</head>
+<body>
+    <h1>Stage 5</h1>
+    <div class="turn-counter" id="turn-counter">Turn: 0</div>
+    <button id="start-button" onclick="startGame()">Start Stage 5</button>
+
+    <div id="characters" style="display: none;">
+        <!-- Ayane Character -->
+        <div class="character ayane" id="Ayane" style="display: none;">
+            <img src="Loading Screen/Schoolgirl Ayane.png" alt="Ayane">
+            <div class="status">
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="Ayane-hp-bar"></div>
+                </div>
+                <div id="Ayane-status">HP: 5050/5050</div>
+            </div>
+			<div id="Ayane-abilities">
+			<div class="ability-container ayane-abilities">
+				<div class="ability-container">
+					<img id="AyaneAbility1" src="res/img/raid/ayanea1.jfif" class="ability" alt="Ability 1" title="Deals 425 damage and 55% chance to avoid damage for 1 turn">
+					<div id="AyaneAbility1Cooldown" class="cooldown-text" style="display: none;"></div>
+				</div>
+				<div class="ability-container">
+					<img id="AyaneAbility2" src="res/img/raid/ayanea2.jfif" class="ability" alt="Ability 2" title="Increases all allies' damage by 20% for 5 turns but skips turn" />
+					<div id="AyaneAbility2Cooldown" class="cooldown-text" style="display: none;"></div>
+				</div>
+				<div class="ability-container">
+					<img id="AyaneAbility3" src="res/img/raid/ayanea3.jfif" class="ability" alt="Ability 3" title="Deals 3x damage for 2 turns but skips turn" />
+					<div id="AyaneAbility3Cooldown" class="cooldown-text" style="display: none;"></div>
+				</div>
+				<div class="ability-container">
+					<img id="AyaneAbility4" src="res/img/raid/ayanea4.jfif" class="ability" alt="Ability 4" title="Deals 2345 damage if Astaroth is below 35% health">
+					<div id="AyaneAbility4Cooldown" class="cooldown-text" style="display: none;"></div>
+				</div>
+			</div>
+			<div class="buff-container" id="Ayane-buff-container"></div>
+			<div class="chat-bubble" id="Ayane-chat" style="display: none;"></div>
+		</div>
+	</div>
+	 <!-- Shoma Character -->
+        <div class="character shoma" id="Shoma" style="display: none;">
+            <img src="Loading Screen/Schoolboy Shoma.png" alt="Shoma">
+            <div class="status">
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="Shoma-hp-bar"></div>
+                </div>
+                <div id="Shoma-status">HP: 6280/6280</div>
+            </div>
+            <div class="buff-container" id="Shoma-buff-container"></div>
+            <div class="chat-bubble" id="Shoma-chat" style="display: none;"></div>
+		<div class="ability-container" id="Shoma-abilities">
+		<div id="Shoma-abilities">
+		<div class="ability-container">
+			<img id="ShomaAbility1" src="res/img/raid/shomaa1.jfif" class="ability" alt="Ability 1" title="Shoma either deals 255 or 555 damage plus there is an 50% chance that the damage is increased by 20% more. ">
+			<div id="ShomaAbility1Cooldown" class="cooldown-text" style="display: none;"></div>
+		</div>
+		<div class="ability-container">
+			<img id="ShomaAbility2" src="res/img/raid/shomaa2.jfif" class="ability" alt="Ability 2" title="Select character to avoid 100% damage for 4 turns">
+			<div id="ShomaAbility2Cooldown" class="cooldown-text" style="display: none;"></div>
+		</div>
+		<div class="ability-container">
+			<img id="ShomaAbility3" src="res/img/raid/shomaa3.jfif" class="ability" alt="Baseball" title="Select from 4 different baseball effects">
+			<div id="ShomaAbility3Cooldown" class="cooldown-text" style="display: none;"></div>
+		</div>
+		<div class="ability-container">
+			<img id="ShomaAbility4" src="res/img/raid/shomaa4.jfif" class="ability" alt="Ability 4" title="Shoma can't take damage for 5 turns">
+			<div id="ShomaAbility4Cooldown" class="cooldown-text" style="display: none;"></div>
+		</div>
+	</div>
+	</div>
+	<div id="Shoma-selection" class="selection-icons" style="display: none;">
+	<img id="selectShoma" src="Icons/Shoma.png" class="selection" alt="Select Shoma" title="Select Shoma">
+    <img id="selectAyane" src="Icons/Ayane.png" class="selection" alt="Select Ayane" title="Select Ayane">
+	<img id="selectElphelt" src="Icons/Elphelt.png" class="selection" alt="Select Elphelt" title="Select Elphelt">
+    <img id="selectSiegfried" src="Icons/Siegfried.png" class="selection" alt="Select Siegfried" title="Select Siegfried">
+	<img id="selectKokoro" src="Icons/Kokoro.png" class="selection" alt="Select Kokoro" title="Select Kokoro">
+	</div>
+	<div id="Shoma-ball-selection" class="selection-icons" style="display: none;">
+    <img id="ballSelectShoma" src="Icons/Shoma.png" class="selection" alt="Select Shoma" title="Select Shoma">
+    <img id="ballSelectAyane" src="Icons/Ayane.png" class="selection" alt="Select Ayane" title="Select Ayane">
+    <img id="ballSelectElphelt" src="Icons/Elphelt.png" class="selection" alt="Select Elphelt" title="Select Elphelt">
+    <img id="ballSelectSiegfried" src="Icons/Siegfried.png" class="selection" alt="Select Siegfried" title="Select Siegfried">
+    <img id="ballSelectKokoro" src="Icons/Kokoro.png" class="selection" alt="Select Kokoro" title="Select Kokoro">
+	</div>
+	<div id="Shoma-baseballs" class="heal-icons" style="display: none;">
+		<img id="fireBall" src="res/img/raid/fireball.jfif" class="ability" alt="Fire Ball" title="Fire Ball: Boosts an ally's damage, so they will deal 3x more for 3 turns">
+		<img id="waterBall" src="res/img/raid/waterball.jfif" class="ability" alt="Water Ball" title="Water Ball: Deals 3000 damage">
+		<img id="grassBall" src="res/img/raid/grassball.jfif" class="ability" alt="Grass Ball" title="Grass Ball: Heals an ally for 2340HP ">
+		<img id="heavyBall" src="res/img/raid/heavyball.jfif" class="ability" alt="Heavy Ball" title="Heavy Ball: Applies a debuff on an enemy for 5 turns, so that will deal 55% less damage.">
+	</div>
+</div>
+    <!-- Elphelt Character -->
+    <div class="character elphelt" id="Elphelt" style="display: none;">
+        <img src="Loading Screen/Schoolgirl Elphelt.png" alt="Elphelt">
+        <div class="status">
+            <div class="hp-bar-container">
+                <div class="hp-bar" id="Elphelt-hp-bar"></div>
+            </div>
+            <div id="Elphelt-status">HP: 4895/4895</div>
+        </div>
+        <div id="Elphelt-abilities">
+            <div class="ability-container elphelt-abilities">
+                <div class="ability-container">
+                    <img id="ElpheltAbility1" src="res/img/raid/elphelta1.jfif" class="ability" alt="Ability 1" title="Deals 400. If used again in the last two turns, it deals 800 damage instead">
+                    <div id="ElpheltAbility1Cooldown" class="cooldown-text" style="display: none;"></div>
+                </div>
+			<div class="ability-container">
+				<img id="ElpheltAbility2" src="res/img/raid/elphelta2.jfif" class="ability" alt="Ability 2" title="Birdie deals 30% less damage with Ability 1 and Ability 4 for 4 turns">
+				<div id="ElpheltAbility2Cooldown" class="cooldown-text" style="display: none;"></div>
+			</div>
+			<div class="ability-container">
+				<img id="ElpheltAbility3" src="res/img/raid/elphelta3.jfif" class="ability" alt="Ability 3" title="Elphelt deals 40% more damage to Birdie for 5 turns">
+				<div id="ElpheltAbility3Cooldown" class="cooldown-text" style="display: none;"></div>
+			</div>
+                <div class="ability-container">
+                    <img id="ElpheltAbility4" src="res/img/raid/elphelta4.jfif" class="ability" alt="Ability 4" title="Deals 5000 damage">
+                    <div id="ElpheltAbility4Cooldown" class="cooldown-text" style="display: none;"></div>
+                </div>
+            </div>
+            <div class="buff-container" id="Elphelt-buff-container"></div>
+            <div class="chat-bubble" id="Elphelt-chat" style="display: none;"></div>
+        </div>
+    </div>
+<!-- Siegfried Character -->
+<div class="character siegfried" id="Siegfried" style="display: none;">
+    <img src="Loading Screen/Schoolboy Siegfried.png" alt="Siegfried">
+    <div class="status">
+        <div class="hp-bar-container">
+            <div class="hp-bar" id="Siegfried-hp-bar"></div>
+        </div>
+        <div id="Siegfried-status">HP: 6300/6300</div>
+    </div>
+    <div class="buff-container" id="Siegfried-buff-container"></div>
+    <div class="chat-bubble" id="Siegfried-chat" style="display: none;"></div>
+    <div class="ability-container" id="Siegfried-abilities">
+        <div class="ability-container">
+            <img id="SiegfriedAbility1" src="res/img/raid/siegfrieda1.jfif" class="ability" alt="Ability 1" title="Siegfried either deals 255 or 555 damage plus there is an 50% chance that the damage is increased by 20% more. ">
+            <div id="SiegfriedAbility1Cooldown" class="cooldown-text" style="display: none;"></div>
+        </div>
+        <div class="ability-container">
+            <img id="SiegfriedAbility2" src="res/img/raid/siegfrieda2.jfif" class="ability" alt="Ability 2" title="Select character to avoid 100% damage for 4 turns">
+            <div id="SiegfriedAbility2Cooldown" class="cooldown-text" style="display: none;"></div>
+        </div>
+        <div class="ability-container">
+            <img id="SiegfriedAbility3" src="res/img/raid/siegfrieda3.jfif" class="ability" alt="Ability 3" title="Applies a damage-over-time buff on Astaroth">
+            <div id="SiegfriedAbility3Cooldown" class="cooldown-text" style="display: none;"></div>
+        </div>
+        <div class="ability-container">
+            <img id="SiegfriedAbility4" src="res/img/raid/siegfrieda4.jfif" class="ability" alt="Ability 4" title="Buffs Siegfried for triple damage and lifesteal">
+            <div id="SiegfriedAbility4Cooldown" class="cooldown-text" style="display: none;"></div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<!-- Kokoro Character -->
+<div class="character kokoro" id="Kokoro" style="display: none;">
+    <img src="Loading Screen/Schoolgirl Kokoro.png" alt="Kokoro">
+    <div class="status">
+        <div class="hp-bar-container">
+            <div class="hp-bar" id="Kokoro-hp-bar"></div>
+        </div>
+        <div id="Kokoro-status">HP: 4250/4250</div>
+    </div>
+    <div class="buff-container" id="Kokoro-buff-container"></div>
+    <div class="chat-bubble" id="Kokoro-chat" style="display: none;"></div>
+    <div id="Kokoro-abilities">
+        <div class="ability-container kokoro-abilities">
+            <div class="ability-container">
+                <img id="KokoroAbility1" src="res/img/raid/kokoroa1.jfif" class="ability" alt="Ability 1" title="Heals the chosen ally by 1350">
+                <div id="KokoroAbility1Cooldown" class="cooldown-text" style="display: none;"></div>
+            </div>
+            <div class="ability-container">
+                <img id="KokoroAbility2" src="res/img/raid/kokoroa2.jfif" class="ability" alt="Ability 2" title="Kokoro casts a debuff on the enemy who will deal 50% less damage for 3 turns.">
+                <div id="KokoroAbility2Cooldown" class="cooldown-text" style="display: none;"></div>
+            </div>
+            <div class="ability-container">
+                <img id="KokoroAbility3" src="res/img/raid/kokoroa3.jfif" class="ability" alt="Ability 3" title="Kokoro heals all allies by 870">
+                <div id="KokoroAbility3Cooldown" class="cooldown-text" style="display: none;"></div>
+            </div>
+            <div class="ability-container">
+                <img id="KokoroAbility4" src="res/img/raid/kokoroa4.jfif" class="ability" alt="Ability 4" title="Kokoro places a buff on all her allies. Buffed allies will take 50% less damage for 4 turns.">
+                <div id="KokoroAbility4Cooldown" class="cooldown-text" style="display: none;"></div>
+            </div>
+        </div>
+        <div class="buff-container" id="Kokoro-buff-container"></div>
+        <div class="chat-bubble" id="Kokoro-chat" style="display: none;"></div>
+    </div>
+    <div id="Kokoro-heal-selection" class="heal-icons2" style="display: none;">
+        <img id="healSelectShoma" src="Icons/Shoma.png" class="selection" alt="Select Shoma" title="Select Shoma">
+        <img id="healSelectAyane" src="Icons/Ayane.png" class="selection" alt="Select Ayane" title="Select Ayane">
+        <img id="healSelectElphelt" src="Icons/Elphelt.png" class="selection" alt="Select Elphelt" title="Select Elphelt">
+        <img id="healSelectSiegfried" src="Icons/Siegfried.png" class="selection" alt="Select Siegfried" title="Select Siegfried">
+        <img id="healSelectKokoro" src="Icons/Kokoro.png" class="selection" alt="Select Kokoro" title="Select Kokoro">
+    </div>
+</div>
+</div>
+        <!-- Enemies -->
+        <div class="enemy" id="astaroths">
+            <div class="astaroth" id="Astaroth">
+                <img src="Loading Screen/Infernal Astaroth.png" alt="Astaroth" class="astaroth-img">
+                <div class="status">
+                    <div class="hp-bar-container">
+                        <div class="hp-bar" id="Astaroth-hp-bar"></div>
+                    </div>
+                    <div id="Astaroth-status">HP: 200500/200500</div>
+                </div>
+                <div class="buff-container" id="Astaroth-buff-container"></div>
+            </div>
+            <!-- Raiden Character -->
+            <div class="character enemy raiden" id="Raiden" style="display: none;">
+                <img src="Loading Screen/Infernal Raiden.png" alt="Raiden">
+                <div class="chat-bubble" id="Raiden-chat" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+    <div class="log" id="log">
+        <p>Battle log:</p>
+    </div>
+    <div id="volume-control">
+        <label for="volume-slider">Volume:</label>
+        <input type="range" id="volume-slider" min="0" max="100" value="5">
+    </div>
+    <button id="stage4-button" onclick="location.href='Stage_4.html'" style="display: none; position: absolute; top: 47%; left: 50%; transform: translate(-50%, -50%); padding: 10px 20px; font-size: 20px; cursor: pointer; background-color: rgb(47 55 47); color: white; border: none; border-radius: 5px;">Go to Stage 4</button>
+</body>
+
+<script>
+    let userInteracted = false;
+    let bgAudio;
+    let turnCounter = 0;
+    let buffs = { Shoma: {}, Ayane: {}, Astaroth: {}, Siegfried: {}, Elphelt: {}, Kokoro: {} }; // Ensure Siegfried is included in buffs
+    let elpheltLastUsedAbility1Turns = []; // Track the turns when Elphelt used Ability 1
+    let abilityCooldowns = {
+        ShomaAbility2: 0,
+        ShomaAbility3: 0,
+        ShomaAbility4: 0,
+        AyaneAbility4: 0,
+        SiegfriedAbility1: 0,
+        SiegfriedAbility2: 0,
+        SiegfriedAbility3: 0,
+        SiegfriedAbility4: 0,
+        ElpheltAbility1: 0,
+        ElpheltAbility2: 0,
+        ElpheltAbility3: 0,
+        ElpheltAbility4: 0,
+        KokoroAbility1: 0,
+        KokoroAbility2: 0,
+        KokoroAbility3: 0,
+        KokoroAbility4: 0
+    };
+
+    let turnInProgress = false; // Flag to indicate if a turn is in progress
+
+    function startGame() {
+        console.log("startGame called");
+        userInteracted = true;
+        document.getElementById('start-button').style.display = 'none';
+        document.getElementById('characters').style.display = 'block';
+        document.getElementById('Kokoro').style.display = 'block';
+        document.getElementById('Astaroth').style.display = 'block';
+        document.getElementById('Raiden').style.display = 'block'; // Show Raiden next to Astaroth
+
+        // Start background music
+        bgAudio = new Audio('res/img/raid/sounds/bgaudio6.mp3');
+        bgAudio.volume = 0.20;
+        bgAudio.loop = true;
+        bgAudio.play();
+
+        startPreGameConversation();
+    }
+
+    // Add event listener to volume slider
+    document.addEventListener("DOMContentLoaded", function() {
+        const volumeSlider = document.getElementById('volume-slider');
+        volumeSlider.addEventListener('input', function() {
+            if (bgAudio) {
+                bgAudio.volume = volumeSlider.value / 100;
+            }
+        });
+    });
+
+    function startPreGameConversation() {
+        const kokoroChat = document.getElementById('Kokoro-chat');
+        const siegfriedChat = document.getElementById('Siegfried-chat');
+        const shomaChat = document.getElementById('Shoma-chat');
+        const ayaneChat = document.getElementById('Ayane-chat');
+        const elpheltChat = document.getElementById('Elphelt-chat');
+        const raidenChat = document.getElementById('Raiden-chat');
+
+        const conversation = [
+            { character: 'Kokoro', text: 'What do you want from us?', audio: 'res/img/raid/sounds/kokoro_whatdoyouwant.mp3' },
+            { character: 'Siegfried', text: 'Kokoro, what\'s goin on?.... oh no...', audio: 'res/img/raid/sounds/siegfried_ohno2.mp3', show: ['Siegfried', 'Elphelt'] },
+            { character: 'Shoma', text: 'We heard screams...', audio: 'res/img/raid/sounds/shoma_weheardscreams.mp3', show: ['Shoma', 'Ayane'] },
+            { character: 'Ayane', text: 'Oh shit....', audio: 'res/img/raid/sounds/ayane_ohshit.mp3' },
+            { character: 'Raiden', text: 'Foolish kids', audio: 'res/img/raid/sounds/raiden_foolishkids.wav' },
+            { character: 'Siegfried', text: 'Who are you? And why do you attack our school?', audio: 'res/img/raid/sounds/siegfried_whoareyou.mp3' },
+            { character: 'Elphelt', text: 'Yeah, what do you want?', audio: 'res/img/raid/sounds/elphelt_whatdoyouwant.mp3' },
+            { character: 'Raiden', text: 'Come to the Infernal Realm and find out!', audio: 'res/img/raid/sounds/raiden_infernalrealm.wav' },
+            { character: 'Shoma', text: 'No way!', audio: 'res/img/raid/sounds/shoma_noway.mp3' },
+            { character: 'Raiden', text: 'hmph', audio: 'res/img/raid/sounds/raiden_hmph.mp3' },
+            { character: 'Raiden', text: 'Astaroth, attack them', audio: 'res/img/raid/sounds/raiden_attack.wav' },
+            { character: 'Raiden', text: '', hide: ['Raiden'] },
+            { character: 'Ayane', text: 'Fucker!', audio: 'res/img/raid/sounds/ayane_fucker2.mp3' },
+        ];
+
+        let currentStep = 0;
+
+        function showNextChat() {
+            if (currentStep < conversation.length) {
+                const { character, text, audio, show, hide } = conversation[currentStep];
+                let chatBubble;
+
+                if (character === 'Kokoro') chatBubble = kokoroChat;
+                else if (character === 'Siegfried') chatBubble = siegfriedChat;
+                else if (character === 'Shoma') chatBubble = shomaChat;
+                else if (character === 'Ayane') chatBubble = ayaneChat;
+                else if (character === 'Elphelt') chatBubble = elpheltChat;
+                else if (character === 'Raiden') chatBubble = raidenChat;
+
+                if (show) show.forEach(id => document.getElementById(id).style.display = 'block');
+                if (hide) hide.forEach(id => document.getElementById(id).style.display = 'none');
+
+                if (chatBubble) {
+                    chatBubble.innerHTML = `<div>${text.replace(/\n/g, '<br>')}</div>`;
+                    chatBubble.style.display = 'flex';
+
+                    const audioElement = new Audio(audio);
+                    audioElement.play();
+
+                    setTimeout(() => {
+                        chatBubble.style.display = 'none';
+                        currentStep++;
+                        showNextChat();
+                    }, 2500); // Fixed delay of 2500ms
+                }
+            } else {
+                enableAbilities();
+                startGameLogic();
+            }
+        }
+
+        disableAbilities();
+        showNextChat();
+    }
+
+    function disableAbilities() {
+        const abilities = document.querySelectorAll('.ability');
+        abilities.forEach(ability => {
+            ability.classList.add('disabled');
+            ability.style.pointerEvents = 'none';
+        });
+    }
+
+    function enableAbilities() {
+        const abilities = document.querySelectorAll('.ability');
+        abilities.forEach(ability => {
+            ability.classList.remove('disabled');
+            ability.style.pointerEvents = 'auto';
+        });
+    }
+
+    function endGame() {
+        disableAbilities();
+        if (bgAudio) {
+            bgAudio.pause();
+        }
+        const astarothImage = document.querySelector('#Astaroth img');
+        if (astarothImage) {
+            astarothImage.style.filter = 'grayscale(100%)';
+        }
+        startEndGameConversation();
+    }
+
+    function startEndGameConversation() {
+            const kokoroChat = document.getElementById('Kokoro-chat');
+            const shomaChat = document.getElementById('Shoma-chat');
+            const ayaneChat = document.getElementById('Ayane-chat');
+
+            const endGameConversation = [
+                { character: 'Kokoro', text: 'Is it? Over?', audio: 'res/img/raid/sounds/kokoro_isitover.mp3' },
+                { character: 'Shoma', text: 'Seems like the infernal fire is fading', audio: 'res/img/raid/sounds/shoma_infernalfire.mp3' },
+                { character: 'Ayane', text: 'School is saved... horaaay', audio: 'res/img/raid/sounds/ayane_horaaay.mp3' },
+            ];
+
+            let currentStep = 0;
+
+            function showNextEndGameChat() {
+                if (currentStep < endGameConversation.length) {
+                    const { character, text, audio } = endGameConversation[currentStep];
+                    let chatBubble;
+
+                    if (character === 'Kokoro') chatBubble = kokoroChat;
+                    else if (character === 'Shoma') chatBubble = shomaChat;
+                    else if (character === 'Ayane') chatBubble = ayaneChat;
+
+                    if (chatBubble) {
+                        chatBubble.innerHTML = `<div>${text.replace(/\n/g, '<br>')}</div>`;
+                        chatBubble.style.display = 'flex';
+
+                        const audioElement = new Audio(audio);
+                        audioElement.play();
+
+                        setTimeout(() => {
+                            chatBubble.style.display = 'none';
+                            currentStep++;
+                            showNextEndGameChat();
+                        }, 2500); // Fixed delay of 2500ms
+                    }
+                } else {
+                    showBonusStageButton();
+                }
+            }
+
+            showNextEndGameChat();
+        }
+
+        function showBonusStageButton() {
+            const bonusStageButton = document.createElement('button');
+            bonusStageButton.id = 'bonus-stage-button';
+            bonusStageButton.innerText = 'Bonus Stage';
+            bonusStageButton.style.position = 'absolute';
+            bonusStageButton.style.top = '50%';
+            bonusStageButton.style.left = '50%';
+            bonusStageButton.style.transform = 'translate(-50%, -50%)';
+            bonusStageButton.style.padding = '10px 20px';
+            bonusStageButton.style.fontSize = '20px';
+            bonusStageButton.style.cursor = 'pointer';
+            bonusStageButton.style.backgroundColor = '#4CAF50';
+            bonusStageButton.style.color = 'white';
+            bonusStageButton.style.border = 'none';
+            bonusStageButton.style.borderRadius = '5px';
+            bonusStageButton.onclick = () => {
+                location.href = 'Bonus_Stage.html';
+            };
+            document.body.appendChild(bonusStageButton);
+            updateStageCompletion(); // Update the database when the button appears
+        }
+
+    function startGameLogic() {
+        console.log("startGameLogic called");
+        const ayaneElement = document.getElementById('Ayane');
+        ayaneElement.style.display = 'inline-block';
+        const shomaElement = document.getElementById('Shoma');
+        shomaElement.style.display = 'inline-block';
+
+        console.log("Characters displayed, starting Astaroth's turn");
+        astarothTurn();
+    }
+
+    function astarothTurn() {
+        if (turnInProgress) return; // Prevent starting a new turn if one is already in progress
+        turnInProgress = true; // Set the flag to indicate a turn is in progress
+
+        console.log("astarothTurn called");
+        turnCounter++;
+        document.getElementById('turn-counter').innerText = `Turn: ${turnCounter}`;
+
+        let damageMultiplier = 1;
+        if (buffs['Astaroth'] && buffs['Astaroth']['lessDamage']) {
+            damageMultiplier = 0.45;  // 55% less damage
+        }
+
+        // Apply damage-over-time effect if present
+        if (buffs['Astaroth'] && buffs['Astaroth']['damageOverTime'] > 0) {
+            const baseDamageOverTime = 450; // Base damage-over-time value
+            let actualDamage = baseDamageOverTime;
+
+            // Check for damageBoost buff on Siegfried
+            if (buffs['Siegfried'] && buffs['Siegfried']['damageBoost'] > 0) {
+                actualDamage *= 1.2;  // Apply 20% damage boost
+            }
+
+            // Check for tripleDamage buff on Siegfried
+            if (buffs['Siegfried'] && buffs['Siegfried']['tripleDamage'] > 0) {
+                actualDamage *= 3;  // Apply triple damage
+            }
+
+            // Check for damageMultiplier buff on Siegfried
+            if (buffs['Siegfried'] && buffs['Siegfried']['damageMultiplier']) {
+                actualDamage *= 3;  // Apply 3x multiplier if Ability 4 is active
+            }
+
+            updateCharacterStatus('Astaroth', actualDamage);
+            logAction('Siegfried', 'Damage Over Time', 'Astaroth', `deals ${actualDamage} damage`);
+        }
+
+        // Determine which ability to cast based on the given probabilities
+        const randomChance = Math.random() * 100;
+        if (randomChance < 5) {
+            castMassiveSmash();
+        } else if (randomChance < 45) {
+            castInferno();
+        } else {
+            castRandomStrike();
+        }
+
+        applyBuffsAndDebuffs();
+        updateBuffDurations();
+
+        // Heal Shoma for 425 HP if Shoma's third ability is not on cooldown
+        if (abilityCooldowns.ShomaAbility3 === 0) {
+            healCharacter('Shoma', 425);
+        }
+
+        // Reduce cooldowns and update cooldown display
+        updateAllCooldowns();
+
+        // Update ability availability based on conditions
+        updateAbilityAvailability();
+
+        turnInProgress = false; // Reset the flag to indicate the turn is complete
+    }
+
+    function castMassiveSmash() {
+        const characters = ['Shoma', 'Ayane', 'Elphelt', 'Siegfried', 'Kokoro'];
+        const target = characters[Math.floor(Math.random() * characters.length)];
+        let damage = 2500;
+
+        // Play sound effect for Massive Smash
+        const audioElement = new Audio('res/img/raid/sounds/astarothmassiveattack.mp3');
+        audioElement.volume = 0.20;
+        audioElement.play();
+
+        // Check for Shoma's Heavy Ball buff on Astaroth
+        if (buffs['Astaroth'] && buffs['Astaroth']['lessDamage'] > 0) {
+            damage *= 0.45;  // Reduce damage by 55%
+        }
+
+        // Check for Elphelt's Ability 2 buff on Astaroth
+        if (buffs['Astaroth'] && buffs['Astaroth']['reducedDamage'] > 0) {
+            damage *= 0.7;  // Reduce damage by 30%
+        }
+
+        // Check for Kokoro's Ability 2 buff on Astaroth
+        if (buffs['Astaroth'] && buffs['Astaroth']['reducedDamageKokoro2'] > 0) {
+            damage *= 0.5;  // Reduce damage by 50%
+        }
+
+        // Check for Siegfried's Ability 2 buff on Siegfried
+        if (target === 'Siegfried' && buffs['Siegfried'] && buffs['Siegfried']['damageReduction'] > 0) {
+            damage *= 0.7;  // Reduce damage by 30%
+        }
+
+        // Check for Kokoro's Ability 4 buff on the target
+        if (buffs[target] && buffs[target]['damageReductionKokoro4'] > 0) {
+            damage *= 0.5;  // Reduce damage by 50%
+        }
+
+        // Check for Shoma's Ability 2 buff on the target
+        if (buffs[target] && buffs[target]['damageAvoidance']) {
+            damage = 0;  // Reduce damage to 0 if the buff is present
+        }
+
+        updateCharacterStatus(target, damage);
+        const audio = new Audio('res/img/raid/sounds/massive_smash.mp3');
+        audio.play();
+        logAction('Astaroth', 'Massive Smash', target, `deals ${damage} damage`);
+    }
+
+    function castInferno() {
+        const characters = ['Shoma', 'Ayane', 'Elphelt', 'Siegfried', 'Kokoro'];
+        let damage = 445;
+
+         // Play sound effect for Inferno
+        const audioElement = new Audio('res/img/raid/sounds/inferno.mp3');
+        audioElement.volume = 0.20;
+        audioElement.play();
+
+        // Check for Shoma's Heavy Ball buff on Astaroth
+        if (buffs['Astaroth'] && buffs['Astaroth']['lessDamage'] > 0) {
+            damage *= 0.45;  // Reduce damage by 55%
+        }
+
+        // Check for Elphelt's Ability 2 buff on Astaroth
+        if (buffs['Astaroth'] && buffs['Astaroth']['reducedDamage'] > 0) {
+            damage *= 0.7;  // Reduce damage by 30%
+        }
+
+        // Check for Kokoro's Ability 2 buff on Astaroth
+        if (buffs['Astaroth'] && buffs['Astaroth']['reducedDamageKokoro2'] > 0) {
+            damage *= 0.5;  // Reduce damage by 50%
+        }
+
+        characters.forEach(character => {
+            let characterDamage = damage;
+
+            // Check for Siegfried's Ability 2 buff on Siegfried
+            if (character === 'Siegfried' && buffs['Siegfried'] && buffs['Siegfried']['damageReduction'] > 0) {
+                characterDamage *= 0.7;  // Reduce damage by 30%
+            }
+
+            // Check for Kokoro's Ability 4 buff on the character
+            if (buffs[character] && buffs[character]['damageReductionKokoro4'] > 0) {
+                characterDamage *= 0.5;  // Reduce damage by 50%
+            }
+
+            // Check for Shoma's Ability 2 buff on the character
+            if (buffs[character] && buffs[character]['damageAvoidance']) {
+                characterDamage = 0;  // Reduce damage to 0 if the buff is present
+            }
+
+            updateCharacterStatus(character, characterDamage);
+        });
+        const audio = new Audio('res/img/raid/sounds/inferno.mp3');
+        audio.play();
+        logAction('Astaroth', 'Inferno', 'all characters', `deals ${damage} damage to all characters`);
+    }
+
+    function castRandomStrike() {
+        const characters = ['Shoma', 'Ayane', 'Elphelt', 'Siegfried', 'Kokoro'];
+        let damage = 600;
+
+        // Play sound effect for Random Strike
+        const audioElement = new Audio('res/img/raid/sounds/randomstrike.mp3');
+        audioElement.volume = 0.20;
+        audioElement.play();
+
+        // Check for Shoma's Heavy Ball buff on Astaroth
+        if (buffs['Astaroth'] && buffs['Astaroth']['lessDamage'] > 0) {
+            damage *= 0.45;  // Reduce damage by 55%
+        }
+
+        // Check for Elphelt's Ability 2 buff on Astaroth
+        if (buffs['Astaroth'] && buffs['Astaroth']['reducedDamage'] > 0) {
+            damage *= 0.7;  // Reduce damage by 30%
+        }
+
+        // Check for Kokoro's Ability 2 buff on Astaroth
+        if (buffs['Astaroth'] && buffs['Astaroth']['reducedDamageKokoro2'] > 0) {
+            damage *= 0.5;  // Reduce damage by 50%
+        }
+
+        const target1 = characters[Math.floor(Math.random() * characters.length)];
+        let target2 = characters[Math.floor(Math.random() * characters.length)];
+        while (target2 === target1) {
+            target2 = characters[Math.floor(Math.random() * characters.length)];
+        }
+
+        // Check for Siegfried's Ability 2 buff on Siegfried
+        let target1Damage = damage;
+        let target2Damage = damage;
+        if (target1 === 'Siegfried' && buffs['Siegfried'] && buffs['Siegfried']['damageReduction'] > 0) {
+            target1Damage *= 0.7;  // Reduce damage by 30%
+        }
+        if (target2 === 'Siegfried' && buffs['Siegfried'] && buffs['Siegfried']['damageReduction'] > 0) {
+            target2Damage *= 0.7;  // Reduce damage by 30%
+        }
+
+        // Check for Kokoro's Ability 4 buff on the targets
+        if (buffs[target1] && buffs[target1]['damageReductionKokoro4'] > 0) {
+            target1Damage *= 0.5;  // Reduce damage by 50%
+        }
+        if (buffs[target2] && buffs[target2]['damageReductionKokoro4'] > 0) {
+            target2Damage *= 0.5;  // Reduce damage by 50%
+        }
+
+        // Check for Shoma's Ability 2 buff on the targets
+        if (buffs[target1] && buffs[target1]['damageAvoidance']) {
+            target1Damage = 0;  // Reduce damage to 0 if the buff is present
+        }
+        if (buffs[target2] && buffs[target2]['damageAvoidance']) {
+            target2Damage = 0;  // Reduce damage to 0 if the buff is present
+        }
+
+        updateCharacterStatus(target1, target1Damage);
+        updateCharacterStatus(target2, target2Damage);
+        const audio = new Audio('res/img/raid/sounds/random_strike.mp3');
+        audio.play();
+        logAction('Astaroth', 'Random Strike', `${target1} and ${target2}`, `deals ${damage} damage to two random characters`);
+    }
+
+    function applyBuff(character, buffType, duration, iconSrc, title) {
+        if (!buffs[character]) {
+            buffs[character] = {};
+        }
+        buffs[character][buffType] = duration;
+
+        const buffContainer = document.getElementById(`${character}-buff-container`);
+        if (!buffContainer) {
+            console.error(`Buff container not found for character: ${character}`);
+            return;
+        }
+
+        let buffIcon = document.getElementById(`${character}-${buffType}-buff-icon`);
+        if (!buffIcon) {
+            buffIcon = document.createElement('img');
+            buffIcon.src = iconSrc;
+            buffIcon.className = 'buff-icon';
+            buffIcon.id = `${character}-${buffType}-buff-icon`;
+            buffIcon.title = title; // Add title for tooltip
+            buffContainer.appendChild(buffIcon);
+        }
+        buffIcon.style.display = 'inline-block';
+
+        if (buffType === 'abilityLock') {
+            disableCharacterAbilities(character);
+        }
+    }
+
+        function disableCharacterAbilities(character) {
+            const abilitiesContainer = document.getElementById(`${character}-abilities`);
+            if (abilitiesContainer) {
+                const abilityIcons = abilitiesContainer.getElementsByClassName('ability');
+                for (let icon of abilityIcons) {
+                    icon.classList.add('disabled');
+                    icon.style.pointerEvents = 'none';
+                }
+            }
+        }
+
+        function enableCharacterAbilities(character) {
+            const abilitiesContainer = document.getElementById(`${character}-abilities`);
+            if (abilitiesContainer) {
+                const abilityIcons = abilitiesContainer.getElementsByClassName('ability');
+                for (let icon of abilityIcons) {
+                    icon.classList.remove('disabled');
+                    icon.style.pointerEvents = 'auto';
+                }
+            }
+        }
+
+        function updateBuffDurations() {
+            for (const character in buffs) {
+                for (const buff in buffs[character]) {
+                    buffs[character][buff]--;
+                    if (buffs[character][buff] <= 0) {
+                        removeBuff(character, buff);
+                    }
+                }
+            }
+        }
+
+     // Function to remove buff
+    function removeBuff(character, buff) {
+        delete buffs[character][buff];
+        const buffIcon = document.getElementById(`${character}-${buff}-buff-icon`);
+        if (buffIcon) {
+            buffIcon.style.display = 'none';
+        }
+    }
+
+        function applyBuffsAndDebuffs() {
+            // Check for Shoma's damage avoidance buff
+            if (buffs['Shoma'] && buffs['Shoma']['damageAvoidance'] > 0) {
+                const avoidDamage = Math.random() < 0.75;
+                if (avoidDamage) {
+                    // Logic to avoid damage
+                }
+            }
+        }
+
+        function updateCharacterStatus(character, damage) {
+        const statusElement = document.getElementById(`${character}-status`);
+        const hpBarElement = document.getElementById(`${character}-hp-bar`);
+
+        if (!statusElement || !hpBarElement) {
+            console.error(`Element not found for character: ${character}`);
+            return;
+        }
+
+        let currentHp = parseInt(statusElement.innerText.split('/')[0].split(': ')[1]);
+        const maxHp = parseInt(statusElement.innerText.split('/')[1]);
+
+        currentHp -= damage;
+        if (currentHp < 0) currentHp = 0;
+
+        statusElement.innerText = `HP: ${currentHp}/${maxHp}`;
+
+        const hpPercentage = (currentHp / maxHp) * 100;
+        hpBarElement.style.width = `${hpPercentage}%`;
+
+        const characterImage = document.querySelector(`#${character} img`);
+        if (characterImage) {
+            characterImage.classList.add('flash-red');
+            setTimeout(() => {
+                characterImage.classList.remove('flash-red');
+            }, 500);
+        } else {
+            console.error(`Image element not found for character: ${character}`);
+        }
+
+        const log = document.getElementById('log');
+        const logEntry = document.createElement('p');
+        logEntry.innerHTML = `<span style="color: yellow;">Turn ${turnCounter}:</span> <span style="color: red;">${character} took ${damage.toFixed(0)} damage!</span>`;
+        log.appendChild(logEntry);
+        scrollToBottom();
+
+        if (character === 'Astaroth' && currentHp <= 0) {
+            endGame(); // Call endGame function when Astaroth's HP reaches 0
+        } else if (character !== 'Astaroth' && currentHp <= 0) {
+            alert(`${character} has been defeated! You lost the game.`);
+            location.reload(); // Reload the page if any character except Astaroth reaches 0 HP
+        }
+    }
+
+
+
+    
+function healCharacter(character, amount) {
+        const statusElement = document.getElementById(`${character}-status`);
+        const hpBarElement = document.getElementById(`${character}-hp-bar`);
+
+        let currentHp = parseInt(statusElement.innerText.split('/')[0].split(': ')[1]);
+        const maxHp = parseInt(statusElement.innerText.split('/')[1]);
+
+        currentHp += amount;
+        if (currentHp > maxHp) currentHp = maxHp;
+
+        statusElement.innerText = `HP: ${currentHp}/${maxHp}`;
+
+        const hpPercentage = (currentHp / maxHp) * 100;
+        hpBarElement.style.width = `${hpPercentage}%`;
+
+        const log = document.getElementById('log');
+        const logEntry = document.createElement('p');
+        logEntry.innerHTML = `<span style="color: green;">${character} healed for ${amount.toFixed(0)} HP!</span>`;
+        log.appendChild(logEntry);
+        scrollToBottom();
+
+        document.getElementById('Kokoro-heal-selection').style.display = 'none';
+    }
+
+    function logAction(caster, spell, target, description) {
+        const log = document.getElementById('log');
+        const logEntry = document.createElement('p');
+        logEntry.innerHTML = `<span style="color: yellow;">${caster} used ${spell} on ${target}:</span> <span style="color: white;">${description}</span>`;
+        log.appendChild(logEntry);
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        const log = document.getElementById('log');
+        log.scrollTop = log.scrollHeight;
+    }
+
+    function updateAllCooldowns() {
+        for (let ability in abilityCooldowns) {
+            if (abilityCooldowns[ability] > 0) {
+                abilityCooldowns[ability]--;
+                updateCooldownDisplay(ability, abilityCooldowns[ability]);
+            }
+        }
+        updateAbilityAvailability();
+    }
+        // Function to update cooldown display
+        function updateCooldownDisplay(ability, cooldown) {
+        const cooldownElement = document.getElementById(`${ability}Cooldown`);
+        if (cooldownElement) {
+            cooldownElement.innerText = cooldown > 0 ? cooldown : '';
+            cooldownElement.style.display = cooldown > 0 ? 'block' : 'none';
+        }
+    }
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const shomaAbility1 = document.getElementById('ShomaAbility1');
+            if (shomaAbility1) {
+                shomaAbility1.addEventListener('click', castShomaAbility1);
+            }
+        });
+
+//AYANE
+        document.addEventListener("DOMContentLoaded", function () {
+            const ayaneAbility1 = document.getElementById('AyaneAbility1');
+            const ayaneAbility2 = document.getElementById('AyaneAbility2');
+            const ayaneAbility3 = document.getElementById('AyaneAbility3');
+            const ayaneAbility4 = document.getElementById('AyaneAbility4');
+
+            if (ayaneAbility1) {
+                ayaneAbility1.addEventListener('click', castAyaneAbility1);
+            }
+            if (ayaneAbility2) {
+                ayaneAbility2.addEventListener('click', castAyaneAbility2);
+            }
+            if (ayaneAbility3) {
+                ayaneAbility3.addEventListener('click', castAyaneAbility3);
+            }
+            if (ayaneAbility4) {
+                ayaneAbility4.addEventListener('click', () => {
+                    console.log("Ayane's 4th ability clicked");
+                    if (abilityCooldowns.AyaneAbility4 === 0 && checkAstarothHealth()) {
+                        castAyaneAbility4();
+                    }
+                });
+            }
+
+            // Initial update of ability availability
+            updateAbilityAvailability();
+        });
+
+		function castAyaneAbility2() {
+			// Apply the buff to all allies for 4 rounds
+			applyBuff('Shoma', 'damageBoost', 4, 'res/img/raid/ayanea2.jfif', 'Increases damage by 20% for 4 turns');
+			applyBuff('Ayane', 'damageBoost', 4, 'res/img/raid/ayanea2.jfif', 'Increases damage by 20% for 4 turns');
+			applyBuff('Elphelt', 'damageBoost', 4, 'res/img/raid/ayanea2.jfif', 'Increases damage by 20% for 4 turns');
+			applyBuff('Siegfried', 'damageBoost', 4, 'res/img/raid/ayanea2.jfif', 'Increases damage by 20% for 4 turns');
+			applyBuff('Kokoro', 'damageBoost', 4, 'res/img/raid/ayanea2.jfif', 'Increases damage by 20% for 4 turns');
+
+			const audio = new Audio('res/img/raid/sounds/ayanea2spell.mp3');
+			audio.play();
+
+			// Set cooldown for Ayane's 2nd ability
+			abilityCooldowns.AyaneAbility2 = 9;
+			updateCooldownDisplay('AyaneAbility2', 9);
+
+			// Log the action
+			logAction('Ayane', 'Ability 2', 'All Allies', 'increases all allies\' damage by 20% for 4 turns but skips turn');
+
+			// Continue to Astaroth's turn
+			astarothTurn();
+		}
+
+        // Function to cast Ayane's Ability3
+        function castAyaneAbility3() {
+            applyBuff('Ayane', 'tripleDamage', 2, 'res/img/raid/ayanea3.jfif', 'Deals triple damage'); // Ayane's Ability3 icon
+            abilityCooldowns.AyaneAbility3 = 7;
+            updateCooldownDisplay('AyaneAbility3', 7);
+            logAction('Ayane', 'Ability 3', 'Self', 'activated triple damage buff for 2 turns');
+            astarothTurn();
+        }
+
+        function checkAstarothHealth() {
+            const astarothStatus = document.getElementById('Astaroth-status');
+            const currentHp = parseInt(astarothStatus.innerText.split('/')[0].split(': ')[1]);
+            const maxHp = parseInt(astarothStatus.innerText.split('/')[1]);
+            console.log(`Astaroth Health: ${currentHp}/${maxHp}`);
+            return (currentHp / maxHp) < 0.35;
+        }
+
+        function updateAbilityAvailability() {
+            const ayaneAbility4 = document.getElementById('AyaneAbility4');
+            const isAstarothHealthLow = checkAstarothHealth();
+            console.log(`Updating ability availability. Astaroth below 35% HP: ${isAstarothHealthLow}, AyaneAbility4 cooldown: ${abilityCooldowns.AyaneAbility4}`);
+
+            if (isAstarothHealthLow && abilityCooldowns.AyaneAbility4 === 0) {
+                ayaneAbility4.classList.remove('disabled');
+                ayaneAbility4.style.pointerEvents = 'auto';
+                console.log("Ayane's 4th ability is enabled");
+            } else {
+                ayaneAbility4.classList.add('disabled');
+                ayaneAbility4.style.pointerEvents = 'none';
+                console.log("Ayane's 4th ability is disabled");
+            }
+        }
+
+        function castAyaneAbility4() {
+        let damage = 2345;
+        if (buffs['Ayane'] && buffs['Ayane']['tripleDamage'] > 0) {
+            damage *= 3;  // Apply triple damage
+        }
+        if (buffs['Ayane'] && buffs['Ayane']['damageBoost'] > 0) {
+            damage *= 1.2;  // Apply 20% damage boost
+        }
+        updateCharacterStatus('Astaroth', damage);
+
+        abilityCooldowns.AyaneAbility4 = 3;
+        updateCooldownDisplay('AyaneAbility4', 3);
+        const audio = new Audio('res/img/raid/sounds/ayanea4.mp3');
+        audio.play();
+        logAction('Ayane', 'Ability 4', 'Astaroth', `deals ${damage} damage if Astaroth is below 35% health`);
+        astarothTurn();
+    }
+
+        function castAyaneAbility1() {
+        let damage = 425;
+        if (buffs['Ayane'] && buffs['Ayane']['tripleDamage'] > 0) {
+            damage *= 3;  // Apply triple damage
+        }
+        if (buffs['Ayane'] && buffs['Ayane']['damageBoost'] > 0) {
+            damage *= 1.2;  // Apply 20% damage boost
+        }
+        updateCharacterStatus('Astaroth', damage);
+
+        applyBuff('Ayane', 'damageAvoidance', 2, 'res/img/raid/ayanea1.jfif', 'Avoid damage this round');
+        const audio = new Audio('res/img/raid/sounds/ayanea1spell.mp3');
+        audio.play();
+        logAction('Ayane', 'Ability 1', 'Astaroth', 'deals 425 damage and gets 55% chance to avoid damage for 1 turn');
+        astarothTurn();
+    }
+//SHOMA
+document.addEventListener("DOMContentLoaded", function () {
+    const shomaAbility1 = document.getElementById('ShomaAbility1');
+    const shomaAbility2 = document.getElementById('ShomaAbility2');
+    const shomaAbility3 = document.getElementById('ShomaAbility3');
+    const shomaAbility4 = document.getElementById('ShomaAbility4');
+
+    if (shomaAbility1) {
+        shomaAbility1.addEventListener('click', castShomaAbility1);
+    }
+    if (shomaAbility2) {
+        shomaAbility2.addEventListener('click', () => {
+            if (abilityCooldowns.ShomaAbility2 === 0) {
+                castShomaAbility2();
+            }
+        });
+    }
+    if (shomaAbility3) {
+        shomaAbility3.addEventListener('click', () => {
+            if (abilityCooldowns.ShomaAbility3 === 0) {
+                document.getElementById('Shoma-baseballs').style.display = 'block';
+            }
+        });
+    }
+    if (shomaAbility4) {
+        shomaAbility4.addEventListener('click', () => {
+            if (abilityCooldowns.ShomaAbility4 === 0) {
+                castShomaAbility4();
+            }
+        });
+    }
+
+    const selectAyane = document.getElementById('selectAyane');
+    const selectShoma = document.getElementById('selectShoma');
+    const selectElphelt = document.getElementById('selectElphelt');
+    const selectSiegfried = document.getElementById('selectSiegfried');
+    const selectKokoro = document.getElementById('selectKokoro');
+
+    if (selectAyane) selectAyane.addEventListener('click', () => applyAvoidanceBuff('Ayane'));
+    if (selectShoma) selectShoma.addEventListener('click', () => applyAvoidanceBuff('Shoma'));
+    if (selectElphelt) selectElphelt.addEventListener('click', () => applyAvoidanceBuff('Elphelt'));
+    if (selectSiegfried) selectSiegfried.addEventListener('click', () => applyAvoidanceBuff('Siegfried'));
+    if (selectKokoro) selectKokoro.addEventListener('click', () => applyAvoidanceBuff('Kokoro'));
+
+    const ballSelectAyane = document.getElementById('ballSelectAyane');
+    const ballSelectShoma = document.getElementById('ballSelectShoma');
+    const ballSelectElphelt = document.getElementById('ballSelectElphelt');
+    const ballSelectSiegfried = document.getElementById('ballSelectSiegfried');
+    const ballSelectKokoro = document.getElementById('ballSelectKokoro');
+
+    if (ballSelectAyane) ballSelectAyane.addEventListener('click', () => applyBallEffect('Ayane'));
+    if (ballSelectShoma) ballSelectShoma.addEventListener('click', () => applyBallEffect('Shoma'));
+    if (ballSelectElphelt) ballSelectElphelt.addEventListener('click', () => applyBallEffect('Elphelt'));
+    if (ballSelectSiegfried) ballSelectSiegfried.addEventListener('click', () => applyBallEffect('Siegfried'));
+    if (ballSelectKokoro) ballSelectKokoro.addEventListener('click', () => applyBallEffect('Kokoro'));
+
+    const fireBall = document.getElementById('fireBall');
+    const waterBall = document.getElementById('waterBall');
+    const grassBall = document.getElementById('grassBall');
+    const heavyBall = document.getElementById('heavyBall');
+
+    if (fireBall) fireBall.addEventListener('click', castFireBall);
+    if (waterBall) waterBall.addEventListener('click', castWaterBall);
+    if (grassBall) grassBall.addEventListener('click', castGrassBall);
+    if (heavyBall) heavyBall.addEventListener('click', castHeavyBall);
+});
+
+function showSelectionIcons() {
+    document.getElementById('Shoma-ball-selection').style.display = 'flex';
+}
+
+let selectedAbility = null;
+
+function castFireBall() {
+    selectedAbility = 'fireball';
+    document.getElementById('Shoma-baseballs').style.display = 'none';
+    showSelectionIcons();
+}
+
+function castGrassBall() {
+    selectedAbility = 'grassball';
+    document.getElementById('Shoma-baseballs').style.display = 'none';
+    showSelectionIcons();
+}
+
+function applyBallEffect(target) {
+    if (target === 'Shoma') {
+        alert('Shoma cannot use this ability on himself!');
+        return;
+    }
+
+    if (selectedAbility === 'fireball') {
+        applyBuff(target, 'tripleDamage', 2, 'res/img/raid/fireball.jfif', 'Deals triple damage');
+        logAction('Shoma', 'Fire Ball', target, 'triple damage buff');
+    } else if (selectedAbility === 'grassball') {
+        const maxHp = 4680;  // Assuming Ayane's max HP is 4680
+        const healAmount = maxHp * 0.5;
+        healCharacter(target, healAmount);
+        logAction('Shoma', 'Grass Ball', target, `healed for ${healAmount}`);
+    }
+    endBallSelection();
+    astarothTurn();
+}
+
+function endBallSelection() {
+    document.getElementById('Shoma-ball-selection').style.display = 'none';
+    selectedAbility = null;
+    abilityCooldowns.ShomaAbility3 = 5;  // Apply 5-turn cooldown
+    updateCooldownDisplay('ShomaAbility3', 5);
+}
+
+    function castShomaAbility1() {
+            let damage = 255;
+            const doubleDamage = 555;
+            if (Math.random() < 0.5) {
+                damage = doubleDamage;
+            }
+
+            if (Math.random() < 0.5) {
+                damage += (Math.random() < 0.5) ? 255 : 555;
+            }
+
+            if (buffs['Shoma'] && buffs['Shoma']['damageBoost'] > 0) {
+                damage *= 1.2;  // Apply 20% damage boost
+            }
+            updateCharacterStatus('Astaroth', damage);
+            const audio = new Audio('res/img/raid/sounds/shomaa1.mp3');
+            audio.play();
+            logAction('Shoma', 'Ability 1', 'Astaroth', `deals ${damage} damage`);
+            astarothTurn();
+        }
+
+        function castWaterBall() {
+        let damage = 3000;
+
+        // Check for damageBoost buff on Shoma
+        if (buffs['Shoma'] && buffs['Shoma']['damageBoost'] > 0) {
+            damage *= 1.2;  // Apply 20% damage boost
+        }
+
+        const audio = new Audio('res/img/raid/sounds/shoma_water2.mp3');
+        audio.play();
+        updateCharacterStatus('Astaroth', damage);
+        logAction('Shoma', 'Water Ball', 'Astaroth', damage);
+        endBaseball();
+    }
+
+function castHeavyBall() {
+    const audio = new Audio('res/img/raid/sounds/shoma_heavyball.mp3');
+    audio.play();
+    applyBuff('Astaroth', 'lessDamage', 4, 'res/img/raid/heavyball.jfif', 'Deals 55% less damage');
+    logAction('Shoma', 'Heavy Ball', 'Astaroth', '55% less damage buff');
+    endBaseball();
+}
+
+function endBaseball() {
+    document.getElementById('Shoma-baseballs').style.display = 'none';
+    abilityCooldowns.ShomaAbility3 = 5;  // Set cooldown to 5 turns
+    updateCooldownDisplay('ShomaAbility3', 5);
+}
+
+function castShomaAbility4() {
+    const audio = new Audio('res/img/raid/sounds/shomaa4.mp3');
+    audio.play();
+    // Apply buff to Shoma for 5 turns
+    applyBuff('Shoma', 'damageAvoidance', 5, 'res/img/raid/shomaa4.jfif', 'Shoma is completely immune to damage');
+
+    // Set cooldown for the ability
+    abilityCooldowns.ShomaAbility4 = 14;
+    updateCooldownDisplay('ShomaAbility4', 14);
+    logAction('Shoma', 'Ability 4', 'Shoma', 'activated damage avoidance');
+    astarothTurn();
+}
+
+function castShomaAbility2() {
+        const audio = new Audio('res/img/raid/sounds/shomaa2.mp3');
+        audio.play();
+        document.getElementById('Shoma-selection').style.display = 'block';
+    }
+
+    function applyAvoidanceBuff(character) {
+        applyBuff(character, 'damageAvoidance', 4, 'res/img/raid/shomaa2.jfif', 'Avoids 100% damage');
+        abilityCooldowns.ShomaAbility2 = 9;
+        updateCooldownDisplay('ShomaAbility2', 9);
+        logAction('Shoma', 'Ability 2', character, 'activated avoidance buff');
+        document.getElementById('Shoma-selection').style.display = 'none';
+        astarothTurn();
+    }
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    const siegfriedAbility1 = document.getElementById('SiegfriedAbility1');
+    if (siegfriedAbility1) {
+        siegfriedAbility1.addEventListener('click', castSiegfriedAbility1);
+    }
+});
+
+// Elphelt abilities
+document.addEventListener("DOMContentLoaded", function () {
+    const elpheltAbility1 = document.getElementById('ElpheltAbility1');
+    const elpheltAbility2 = document.getElementById('ElpheltAbility2');
+    const elpheltAbility3 = document.getElementById('ElpheltAbility3');
+    const elpheltAbility4 = document.getElementById('ElpheltAbility4');
+
+    if (elpheltAbility1) {
+        elpheltAbility1.addEventListener('click', castElpheltAbility1);
+    }
+    if (elpheltAbility2) {
+        elpheltAbility2.addEventListener('click', () => {
+            if (abilityCooldowns.ElpheltAbility2 === 0) {
+                castElpheltAbility2();
+            } else {
+                console.log("Elphelt's Ability 2 is on cooldown");
+            }
+        });
+    }
+    if (elpheltAbility3) {
+        elpheltAbility3.addEventListener('click', () => {
+            if (abilityCooldowns.ElpheltAbility3 === 0) {
+                castElpheltAbility3();
+            } else {
+                console.log("Elphelt's Ability 3 is on cooldown");
+            }
+        });
+    }
+    if (elpheltAbility4) {
+        elpheltAbility4.addEventListener('click', () => {
+            if (abilityCooldowns.ElpheltAbility4 === 0) {
+                castElpheltAbility4();
+            } else {
+                console.log("Elphelt's Ability 4 is on cooldown");
+            }
+        });
+    }
+
+    updateAbilityAvailability(); // Initial update of ability availability
+});
+
+function castElpheltAbility1() {
+        let damage = 400;
+        const audio = new Audio('res/img/raid/sounds/elphelta1.mp3');
+        audio.play();
+        if (elpheltLastUsedAbility1Turns.includes(turnCounter - 1) || elpheltLastUsedAbility1Turns.includes(turnCounter - 2)) {
+            damage = 800; // Double damage if Ability 1 was used in the last two turns
+        }
+
+        // Check if ability 3 buff is active and apply it
+        if (buffs['Elphelt'] && buffs['Elphelt']['damageBoostElphelt3']) {
+            damage *= 1.4; // Increase damage by 40%
+        }
+
+        // Check for damageBoost buff on Elphelt
+        if (buffs['Elphelt'] && buffs['Elphelt']['damageBoost'] > 0) {
+            damage *= 1.2;  // Apply 20% damage boost
+        }
+
+        // Check for tripleDamage buff on Elphelt
+        if (buffs['Elphelt'] && buffs['Elphelt']['tripleDamage'] > 0) {
+            damage *= 3;  // Apply triple damage
+        }
+
+        updateCharacterStatus('Astaroth', damage, true); // Pass true to indicate it's Elphelt's ability
+        logAction('Elphelt', 'Ability 1', 'Astaroth', `deals ${damage} damage`);
+
+        elpheltLastUsedAbility1Turns.push(turnCounter); // Track the turn when Ability 1 is used
+        if (elpheltLastUsedAbility1Turns.length > 2) {
+            elpheltLastUsedAbility1Turns.shift(); // Keep only the last two turns
+        }
+
+        abilityCooldowns.ElpheltAbility1 = 1; // Set cooldown for Ability 1
+
+        updateAbilityAvailability();
+        astarothTurn();
+    }
+
+    function castElpheltAbility2() {
+        const audio = new Audio('res/img/raid/sounds/elphelta2.mp3');
+        audio.play();
+        applyBuff('Astaroth', 'reducedDamage', 4, 'res/img/raid/elphelta2.jfif', 'Deals 30% less damage');
+        abilityCooldowns.ElpheltAbility2 = 6;
+        updateCooldownDisplay('ElpheltAbility2', 6);
+        logAction('Elphelt', 'Ability 2', 'Astaroth', 'reduces Astaroth\'s damage by 30% for 4 turns');
+        astarothTurn();
+    }
+
+
+function castElpheltAbility3() {
+    console.log("Elphelt's Ability 3 activated");
+    const audio = new Audio('res/img/raid/sounds/elphelt_charm.mp3');
+    audio.play();
+    
+    // Apply the damage boost buff on Elphelt for 5 turns
+    applyBuff('Elphelt', 'damageBoostElphelt3', 5, 'res/img/raid/elphelta3.jfif', 'Elphelt deals 40% more damage with Ability 1 and Ability 4');
+
+    abilityCooldowns.ElpheltAbility3 = 10; // Set cooldown for Ability 3
+    updateCooldownDisplay('ElpheltAbility3', 10); // Update cooldown display
+    logAction('Elphelt', 'Ability 3', 'Astaroth', 'applies 40% damage boost to Elphelt');
+    astarothTurn();
+}
+
+function castElpheltAbility4() {
+        let damage = 5000;
+        const audio = new Audio('res/img/raid/sounds/elphelta4.mp3');
+        audio.play();
+
+        // Check if ability 3 buff is active and apply it
+        if (buffs['Elphelt'] && buffs['Elphelt']['damageBoostElphelt3']) {
+            damage *= 1.4; // Increase damage by 40%
+        }
+
+        // Check for damageBoost buff on Elphelt
+        if (buffs['Elphelt'] && buffs['Elphelt']['damageBoost'] > 0) {
+            damage *= 1.2;  // Apply 20% damage boost
+        }
+
+        // Check for tripleDamage buff on Elphelt
+        if (buffs['Elphelt'] && buffs['Elphelt']['tripleDamage'] > 0) {
+            damage *= 3;  // Apply triple damage
+        }
+
+        updateCharacterStatus('Astaroth', damage, true); // Pass true to indicate it's Elphelt's ability
+        logAction('Elphelt', 'Ability 4', 'Astaroth', `deals ${damage} damage`);
+
+        abilityCooldowns.ElpheltAbility4 = 20; // Set cooldown for Ability 4
+        updateCooldownDisplay('ElpheltAbility4', 20); // Update cooldown display
+    }
+
+// Siegfried abilities
+document.addEventListener("DOMContentLoaded", function () {
+    const siegfriedAbility1 = document.getElementById('SiegfriedAbility1');
+    const siegfriedAbility2 = document.getElementById('SiegfriedAbility2');
+    const siegfriedAbility3 = document.getElementById('SiegfriedAbility3');
+    const siegfriedAbility4 = document.getElementById('SiegfriedAbility4');
+
+    if (siegfriedAbility1) {
+        siegfriedAbility1.addEventListener('click', castSiegfriedAbility1);
+    }
+    if (siegfriedAbility2) {
+        siegfriedAbility2.addEventListener('click', () => {
+            if (abilityCooldowns.SiegfriedAbility2 === 0) {
+                castSiegfriedAbility2();
+            }
+        });
+    }
+    if (siegfriedAbility3) {
+        siegfriedAbility3.addEventListener('click', () => {
+            if (abilityCooldowns.SiegfriedAbility3 === 0) {
+                castSiegfriedAbility3();
+            }
+        });
+    }
+    if (siegfriedAbility4) {
+        siegfriedAbility4.addEventListener('click', () => {
+            if (abilityCooldowns.SiegfriedAbility4 === 0) {
+                castSiegfriedAbility4();
+            }
+        });
+    }
+});
+
+function castSiegfriedAbility1() {
+        const audio = new Audio('res/img/raid/sounds/siegfrieda1sfx.mp3');
+        audio.play();
+        let damage = 500;
+        if (buffs['Siegfried'] && buffs['Siegfried']['damageMultiplier']) {
+            damage *= 3; // Apply 3x multiplier if Ability 4 is active
+        }
+
+        // Check for damageBoost buff on Siegfried
+        if (buffs['Siegfried'] && buffs['Siegfried']['damageBoost'] > 0) {
+            damage *= 1.2;  // Apply 20% damage boost
+        }
+
+        // Check for tripleDamage buff on Siegfried
+        if (buffs['Siegfried'] && buffs['Siegfried']['tripleDamage'] > 0) {
+            damage *= 3;  // Apply triple damage
+        }
+
+        updateCharacterStatus('Astaroth', damage);
+
+        if (buffs['Siegfried'] && buffs['Siegfried']['damageMultiplier']) {
+            healCharacter('Siegfried', damage * 0.5); // Heal for 50% of the damage dealt
+        }
+
+        logAction('Siegfried', 'Ability 1', 'Astaroth', `deals ${damage} damage`);
+        astarothTurn();
+    }
+
+// Ability 2: Heals Siegfried for 30% of missing HP, gives 30% damage reduction for 3 turns
+function castSiegfriedAbility2() {
+        const audio = new Audio('res/img/raid/sounds/siegfrieda2.mp3');
+        audio.play();
+        const maxHp = 6300;
+        const currentHp = parseInt(document.getElementById('Siegfried-status').innerText.split('/')[0].split(': ')[1]);
+        const missingHp = maxHp - currentHp;
+        const healAmount = Math.floor(missingHp * 0.3);
+
+        healCharacter('Siegfried', healAmount);
+        applyBuff('Siegfried', 'damageReduction', 3, 'res/img/raid/siegfrieda2.jfif', 'Reduces damage taken by 30% from Astaroth');
+
+        abilityCooldowns.SiegfriedAbility2 = 7;
+        updateCooldownDisplay('SiegfriedAbility2', 7);
+        logAction('Siegfried', 'Ability 2', 'Self', `heals for ${healAmount} and gains damage reduction`);
+        astarothTurn();
+    }
+
+
+// Ability 3: Applies a damage-over-time buff on Astaroth
+function castSiegfriedAbility3() {
+        const audio = new Audio('res/img/raid/sounds/siegfrieda3.mp3');
+        audio.play();
+        let damageOverTime = 450;
+
+        // Check for damageBoost buff on Siegfried
+        if (buffs['Siegfried'] && buffs['Siegfried']['damageBoost'] > 0) {
+            damageOverTime *= 1.2;  // Apply 20% damage boost
+        }
+
+        // Check for tripleDamage buff on Siegfried
+        if (buffs['Siegfried'] && buffs['Siegfried']['tripleDamage'] > 0) {
+            damageOverTime *= 3;  // Apply triple damage
+        }
+
+        // Check for damageMultiplier buff on Siegfried
+        if (buffs['Siegfried'] && buffs['Siegfried']['damageMultiplier']) {
+            damageOverTime *= 3;  // Apply 3x multiplier if Ability 4 is active
+        }
+
+        applyBuff('Astaroth', 'damageOverTime', 3, 'res/img/raid/siegfrieda3.jfif', `Takes ${damageOverTime} damage after attacking`);
+
+        abilityCooldowns.SiegfriedAbility3 = 7;
+        updateCooldownDisplay('SiegfriedAbility3', 7);
+        logAction('Siegfried', 'Ability 3', 'Astaroth', `applies damage over time (${damageOverTime} per turn)`);
+        astarothTurn();
+    }
+
+// Ability 4: Buffs Siegfried for triple damage and lifesteal
+function castSiegfriedAbility4() {
+        const audio = new Audio('res/img/raid/sounds/siegfrieda4.mp3');
+        audio.play();
+        applyBuff('Siegfried', 'damageMultiplier', 5, 'res/img/raid/siegfrieda4.jfif', 'Deals triple damage and lifesteal');
+
+        abilityCooldowns.SiegfriedAbility4 = 11;
+        updateCooldownDisplay('SiegfriedAbility4', 11);
+        logAction('Siegfried', 'Ability 4', 'Self', 'gains damage boost and lifesteal');
+        astarothTurn();
+    }
+
+//Kokoro
+document.addEventListener("DOMContentLoaded", function () {
+        const kokoroAbility1 = document.getElementById('KokoroAbility1');
+        const kokoroAbility2 = document.getElementById('KokoroAbility2');
+        const kokoroAbility3 = document.getElementById('KokoroAbility3');
+        const kokoroAbility4 = document.getElementById('KokoroAbility4');
+
+        if (kokoroAbility1) {
+            kokoroAbility1.addEventListener('click', () => {
+                if (abilityCooldowns.KokoroAbility1 === 0) {
+                    document.getElementById('Kokoro-heal-selection').style.display = 'flex';
+                }
+            });
+        }
+        if (kokoroAbility2) {
+            kokoroAbility2.addEventListener('click', () => {
+                if (abilityCooldowns.KokoroAbility2 === 0) {
+                    castKokoroAbility2();
+                }
+            });
+        }
+        if (kokoroAbility3) {
+            kokoroAbility3.addEventListener('click', () => {
+                if (abilityCooldowns.KokoroAbility3 === 0) {
+                    castKokoroAbility3();
+                }
+            });
+        }
+        if (kokoroAbility4) {
+            kokoroAbility4.addEventListener('click', () => {
+                if (abilityCooldowns.KokoroAbility4 === 0) {
+                    castKokoroAbility4();
+                }
+            });
+        }
+
+        const healSelectShoma = document.getElementById('healSelectShoma');
+        const healSelectAyane = document.getElementById('healSelectAyane');
+        const healSelectElphelt = document.getElementById('healSelectElphelt');
+        const healSelectSiegfried = document.getElementById('healSelectSiegfried');
+        const healSelectKokoro = document.getElementById('healSelectKokoro');
+
+        if (healSelectShoma) healSelectShoma.addEventListener('click', () => healCharacter('Shoma', 2150));
+        if (healSelectAyane) healSelectAyane.addEventListener('click', () => healCharacter('Ayane', 2150));
+        if (healSelectElphelt) healSelectElphelt.addEventListener('click', () => healCharacter('Elphelt', 2150));
+        if (healSelectSiegfried) healSelectSiegfried.addEventListener('click', () => healCharacter('Siegfried', 2150));
+        if (healSelectKokoro) healSelectKokoro.addEventListener('click', () => healCharacter('Kokoro', 2150));
+    });
+
+    function castKokoroAbility2() {
+        const audio = new Audio('res/img/raid/sounds/kokoroa2.mp3');
+        audio.play();
+        applyBuff('Astaroth', 'reducedDamageKokoro2', 3, 'res/img/raid/kokoroa2.jfif', 'Deals 50% less damage');
+        abilityCooldowns.KokoroAbility2 = 6;
+        updateCooldownDisplay('KokoroAbility2', 6);
+        logAction('Kokoro', 'Ability 2', 'Astaroth', 'reduces Astaroth\'s damage by 50% for 3 turns');
+        astarothTurn();
+    }
+
+    function castKokoroAbility3() {
+        healCharacter('Shoma', 1350);
+        healCharacter('Ayane', 1350);
+        healCharacter('Elphelt', 1350);
+        healCharacter('Siegfried', 1350);
+        healCharacter('Kokoro', 1350);
+        abilityCooldowns.KokoroAbility3 = 3;
+        updateCooldownDisplay('KokoroAbility3', 3);
+        logAction('Kokoro', 'Ability 3', 'All Allies', 'heals all allies for 1350 HP');
+        astarothTurn();
+    }
+
+    function castKokoroAbility4() {
+        applyBuff('Shoma', 'damageReductionKokoro4', 4, 'res/img/raid/kokoroa4.jfif', 'Takes 50% less damage');
+        applyBuff('Ayane', 'damageReductionKokoro4', 4, 'res/img/raid/kokoroa4.jfif', 'Takes 50% less damage');
+        applyBuff('Elphelt', 'damageReductionKokoro4', 4, 'res/img/raid/kokoroa4.jfif', 'Takes 50% less damage');
+        applyBuff('Siegfried', 'damageReductionKokoro4', 4, 'res/img/raid/kokoroa4.jfif', 'Takes 50% less damage');
+        applyBuff('Kokoro', 'damageReductionKokoro4', 4, 'res/img/raid/kokoroa4.jfif', 'Takes 50% less damage');
+        abilityCooldowns.KokoroAbility4 = 8;
+        updateCooldownDisplay('KokoroAbility4', 8);
+        logAction('Kokoro', 'Ability 4', 'All Allies', 'applies 50% damage reduction for 4 turns');
+        astarothTurn();
+    }
+
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'F5') {
+                event.preventDefault();
+                const astarothStatus = document.getElementById('Astaroth-status');
+                astarothStatus.innerText = 'HP: 5/69500';
+                const astarothHpBar = document.getElementById('Astaroth-hp-bar');
+                astarothHpBar.style.width = '0.0072%'; // Calculate percentage (5 / 69500 * 100)
+            }
+        });
+
+</script>
+</body>
+</html>
