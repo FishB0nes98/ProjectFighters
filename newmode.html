@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>1v1 MOBA Game</title>
+        <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+        <script nomodule>
+            document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+            document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+            document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+        </script>
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+    import { getDatabase, ref, set, onValue, push, remove, onDisconnect, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
+    console.log("Firebase modules imported");
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+        authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+        databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "project-fighters-by-fishb0nes",
+        storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+        messagingSenderId: "867339299995",
+        appId: "1:867339299995:web:99c379940014b9c05cea3e",
+        measurementId: "G-LNEM6HR842"
+    };
+
+    console.log("Firebase config set");
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+
+    console.log("Firebase initialized");
+
+    let playerId = null;
+    let playerRole = null;
+    let queueRef = ref(database, 'queue');
+    let readyRef = null;
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            playerId = user.uid;
+            console.log("User authenticated:", playerId);
+            joinQueue(playerId);
+        } else {
+            auth.signInAnonymously().catch((error) => {
+                console.error("Error signing in anonymously:", error);
+            });
+        }
+    });
+
+    function joinQueue(playerId) {
+    const playerRef = ref(database, `queue/${playerId}`);
+    set(playerRef, {
+        playerId: playerId,
+        team: null // Initialize team as null
+    });
+
+    onDisconnect(playerRef).remove();
+
+    onValue(queueRef, (snapshot) => {
+        const queue = snapshot.val();
+        console.log("Queue updated:", queue);
+        if (queue && Object.keys(queue).length === 2) {
+            const players = Object.keys(queue);
+            const player1 = players[0];
+            const player2 = players[1];
+            startGame(player1, player2);
+        } else {
+            showWaitingMessage();
+        }
+    });
+}
+
+function startGame(player1, player2) {
+    const player1Ref = ref(database, `players/${player1}`);
+    const player2Ref = ref(database, `players/${player2}`);
+    set(player1Ref, { role: 'player1', team: 'team1', character: null, ready: false });
+    set(player2Ref, { role: 'player2', team: 'team2', character: null, ready: false });
+
+    remove(queueRef);
+
+    // Assign roles to the current player
+    if (playerId === player1) {
+        playerRole = 'player1';
+    } else if (playerId === player2) {
+        playerRole = 'player2';
+    }
+
+    readyRef = ref(database, `players/${playerId}/ready`);
+
+    // Remove waiting message and grey filter
+    document.getElementById('waiting-message').style.display = 'none';
+    document.getElementById('grey-filter').style.display = 'none';
+
+    // Show ready button for the current player
+    document.getElementById(`${playerRole}-ready-button`).style.display = 'block';
+
+    // Listen for character selection changes
+    onValue(player1Ref, (snapshot) => {
+        const data = snapshot.val();
+        console.log("Player 1 data updated:", data);
+        if (data && data.character) {
+            updateCharacterImage('player1', data.character);
+        }
+        if (data && data.ready) {
+            document.getElementById('player1-ready-status').innerText = 'Ready';
+        }
+    });
+
+    onValue(player2Ref, (snapshot) => {
+        const data = snapshot.val();
+        console.log("Player 2 data updated:", data);
+        if (data && data.character) {
+            updateCharacterImage('player2', data.character);
+        }
+        if (data && data.ready) {
+            document.getElementById('player2-ready-status').innerText = 'Ready';
+        }
+    });
+
+    // Show arrows when both players are ready
+    document.getElementById('player1-arrow').style.display = 'block';
+    document.getElementById('player2-arrow').style.display = 'block';
+
+    // Add event listeners to arrows
+    document.getElementById('player1-arrow').addEventListener('click', () => toggleStats('player1'));
+    document.getElementById('player2-arrow').addEventListener('click', () => toggleStats('player2'));
+
+    // Listen for disconnects
+    onDisconnect(player1Ref).remove();
+    onDisconnect(player2Ref).remove();
+
+    onValue(player1Ref, (snapshot) => {
+        if (!snapshot.exists()) {
+            window.location.href = 'Game Modes.html';
+        }
+    });
+
+    onValue(player2Ref, (snapshot) => {
+        if (!snapshot.exists()) {
+            window.location.href = 'Game Modes.html';
+        }
+    });
+
+    // Listen for both players being ready
+    onValue(ref(database, 'players'), (snapshot) => {
+        const players = snapshot.val();
+        console.log("Players data updated:", players);
+        if (players && players[player1] && players[player2] && players[player1].ready && players[player2].ready) {
+            document.querySelector('.character-selection').style.display = 'none';
+            document.getElementById('player1-ready-button').style.display = 'none';
+            document.getElementById('player2-ready-button').style.display = 'none';
+            // Show arrows when both players are ready
+            document.getElementById('player1-arrow').style.display = 'block';
+            document.getElementById('player2-arrow').style.display = 'block';
+            // Update HP bars
+            updateHP('player1', players[player1].currentHP, players[player1].maxHP);
+            updateHP('player2', players[player2].currentHP, players[player2].maxHP);
+        }
+    });
+}
+
+    function showWaitingMessage() {
+        document.getElementById('waiting-message').style.display = 'block';
+        document.getElementById('grey-filter').style.display = 'block';
+    }
+
+    function initializeHP(playerRole, maxHP) {
+        const playerRef = ref(database, `players/${playerId}`);
+        set(playerRef, {
+            role: playerRole,
+            currentHP: maxHP,
+            maxHP: maxHP,
+            ready: false
+        });
+        updateHP(playerRole, maxHP, maxHP);
+    }
+
+    function selectCharacter(characterName) {
+    console.log(`Character selected: ${characterName}`);
+    const playerRef = ref(database, `players/${playerId}`);
+    update(playerRef, {
+        character: characterName,
+        ready: false
+    }).then(() => {
+        console.log(`Character ${characterName} set for player ${playerId}`);
+        document.getElementById(`${playerRole}-ready-button`).style.display = 'block';
+        document.getElementById(`${playerRole}-ready-button`).disabled = false;
+
+        // Load the character stats file
+        loadCharacterStats(characterName, (characterStats) => {
+            initializeHP(playerRole, characterStats.HP);
+            loadCharacterSpells(characterName); // Load spells
+        });
+    }).catch((error) => {
+        console.error(`Error setting character ${characterName} for player ${playerId}:`, error);
+    });
+}
+
+    function setReady() {
+        set(readyRef, true);
+        document.getElementById(`${playerRole}-ready-button`).disabled = true;
+        document.getElementById(`${playerRole}-ready-button`).style.backgroundColor = 'grey';
+
+        // Disable character selection and turn icons grey
+        const characterIcons = document.querySelectorAll('.character-icon');
+        characterIcons.forEach(icon => {
+            icon.style.pointerEvents = 'none';
+            icon.style.filter = 'grayscale(100%)';
+        });
+    }
+
+    function updateCharacterImage(player, character) {
+        const characterImage = document.getElementById(`${player}-character`);
+        characterImage.src = `Loading Screen/${character}.png`;
+        characterImage.style.display = 'block';
+    }
+
+    function loadCharacterStats(characterName, callback) {
+        const scriptId = `${characterName.toLowerCase()}-stats-script`;
+        if (!document.getElementById(scriptId)) {
+            console.log(`Loading stats for ${characterName}`);
+            const script = document.createElement('script');
+            script.id = scriptId;
+            script.src = `stats/${characterName.toLowerCase()}stats.js`;
+            script.onload = () => {
+                console.log(`${characterName} stats script loaded`);
+                const displayFunctionName = `display${characterName}Stats`;
+                if (typeof window[displayFunctionName] === 'function') {
+                    console.log(`Calling ${displayFunctionName}`);
+                    window[displayFunctionName]();
+                    // Initialize HP using the loaded stats
+                    const characterStats = window[`${characterName.toLowerCase()}Stats`];
+                    if (callback) {
+                        callback(characterStats);
+                    }
+                } else {
+                    console.error(`Function ${displayFunctionName} not found`);
+                }
+            };
+            script.onerror = () => {
+                console.error(`Failed to load script: ${script.src}`);
+            };
+            document.body.appendChild(script);
+        } else {
+            console.log(`Stats script for ${characterName} already loaded`);
+            const characterStats = window[`${characterName.toLowerCase()}Stats`];
+            if (callback) {
+                callback(characterStats);
+            }
+        }
+    }
+
+    function toggleStats(player) {
+        const statsContainer = document.getElementById(`${player}-stats`);
+        if (statsContainer.style.display === 'none' || statsContainer.style.display === '') {
+            console.log(`Showing stats for ${player}`);
+            statsContainer.style.display = 'block';
+        } else {
+            console.log(`Hiding stats for ${player}`);
+            statsContainer.style.display = 'none';
+        }
+    }
+
+    function updateHP(player, currentHP, maxHP) {
+        const hpBarInner = document.getElementById(`${player}-hp`);
+        const hpText = document.getElementById(`${player}-hp-text`);
+        const hpPercentage = (currentHP / maxHP) * 100;
+        hpBarInner.style.width = `${hpPercentage}%`;
+        hpText.innerText = `${currentHP} / ${maxHP}`;
+    }
+
+    function loadCharacterSpells(characterName) {
+        const spell1Icon = document.getElementById('player1-spell1-icon');
+        const characterStats = window[`${characterName.toLowerCase()}Stats`];
+        if (characterStats && characterStats.Spells) {
+            spell1Icon.src = characterStats.Spells.spell1;
+        }
+    }
+
+    document.getElementById('player1-spell1').addEventListener('click', () => {
+        console.log("Player 1 spell 1 clicked"); // Add this log to confirm the click event
+        const playerRef = ref(database, `players/${playerId}`);
+        onValue(playerRef, (snapshot) => {
+            const playerData = snapshot.val();
+            console.log('Player data:', playerData);
+            if (playerData && playerData.character) {
+                const useAbilityFunctionName = `use${playerData.character}FirstAbility`;
+                console.log(`Calling function: ${useAbilityFunctionName}`);
+                if (typeof window[useAbilityFunctionName] === 'function') {
+                    window[useAbilityFunctionName](database, ref, playerId); // Pass the database, ref function, and playerId
+                } else {
+                    console.error(`${useAbilityFunctionName} function is not defined`);
+                }
+            } else {
+                console.error('Player data or character not found');
+            }
+        });
+    });
+
+    window.selectCharacter = selectCharacter;
+    window.setReady = setReady;
+</script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .menu {
+            top: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+
+        .menu:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .menu .menu-items {
+            display: flex;
+        }
+
+        .menu a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+
+        .play-button {
+            margin-right: 20px;
+            background-color: orange;
+            color: black;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s, color 0.3s;
+            padding: 10px 20px;
+        }
+
+        .play-button:hover {
+            background-color: darkgoldenrod;
+            color: white;
+            transform: scale(1.2);
+        }
+
+        .battlepass-button {
+            background-color: red;
+            color: #000;
+            border-radius: 25px;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-right: 300px;
+        }
+
+        .game-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px; /* Adjusted size */
+            margin-top: 50px;
+        }
+
+        .player-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 40%; /* Adjusted size */
+        }
+
+        .hp-bar {
+            width: 300px; /* Adjusted size */
+            height: 20px;
+            background-color: red;
+            border: 2px solid #444;
+            border-radius: 10px;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .hp-bar-inner {
+            width: 100%;
+            height: 100%;
+            background-color: green;
+            border-radius: 8px;
+        }
+
+        .spells-container {
+            display: flex;
+            justify-content: space-around;
+            width: 60%;
+            margin-top: 20px;
+        }
+
+        .spell {
+            width: 60px;
+            height: 60px;
+            background-color: #444;
+            border: 2px solid #222;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .spell:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .spell img {
+            width: 100%;
+            height: auto;
+        }
+
+        .character-selection {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .character-icon {
+            width: 100px;
+            height: auto;
+            margin: 0 10px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .character-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .character-image {
+            width: 400px; /* Adjusted size */
+            display: none;
+        }
+
+        #grey-filter {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(128, 128, 128, 0.5);
+            display: none;
+            z-index: 999;
+        }
+
+        #waiting-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: yellow;
+            font-size: 24px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .ready-button {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .ready-status {
+            margin-top: 10px;
+            font-size: 18px;
+            color: yellow;
+        }
+
+        .arrow {
+        display: none;
+        position: absolute;
+        cursor: pointer;
+        z-index: 1002;
+        width: 50px; /* Adjusted size */
+        height: 50px; /* Adjusted size */
+        filter: invert(100%); /* White filter */
+    }
+
+    #player1-arrow {
+        left: 10px; /* Adjusted position */
+        top: 50%; /* Center vertically */
+        transform: translateY(-50%);
+    }
+
+    #player2-arrow {
+        right: 10px; /* Adjusted position */
+        top: 50%; /* Center vertically */
+        transform: translateY(-50%);
+    }
+
+    .stats-container {
+        display: none; /* Initially hidden */
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        z-index: 1001;
+        width: 300px; /* Adjusted size */
+        height: 400px; /* Adjusted size */
+    }
+
+    #player1-stats {
+        left: 20px; /* Adjusted position */
+        text-align: right; /* Align text to the right */
+    }
+
+    #player2-stats {
+        right: 20px; /* Adjusted position */
+    }
+
+    .hp-text {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        top: 0;
+        left: 0;
+        color: white;
+        font-weight: bold;
+    }
+
+    </style>
+</head>
+<body>
+    <!-- Menu -->
+    <div class="menu">
+        <div class="menu-items">
+            <a href="home.html">Home</a>
+            <a href="Store.html">Store</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+            <a href="championstats.html">Statistics</a>
+        </div>
+        <div>
+            <a href="battlepass.html" class="battlepass-button">Battlepass</a>
+        </div>
+        <div>
+            <a href="Game Modes.html" class="play-button">Play</a>
+        </div>
+    </div>
+
+    <!-- Character Selection -->
+    <div class="character-selection">
+        <img src="Icons/Julia.png" alt="Julia" class="character-icon" onclick="selectCharacter('Julia')">
+        <img src="Icons/Shoma.png" alt="Shoma" class="character-icon" onclick="selectCharacter('Shoma')">
+    </div>
+
+    <!-- Game Container -->
+    <div class="game-container">
+        <!-- Player 1 -->
+        <div class="player-container" id="player1">
+            <img src="" alt="Player 1 Character" class="character-image" id="player1-character">
+            <div class="hp-bar">
+                <div class="hp-bar-inner" id="player1-hp"></div>
+                <span class="hp-text" id="player1-hp-text"></span> <!-- Added span for HP text -->
+            </div>
+            <div class="spells-container">
+                <div class="spell" id="player1-spell1"><img id="player1-spell1-icon" src="" alt="Spell 1"></div>
+                <div class="spell" id="player1-spell2"><img src="spell2.png" alt="Spell 2"></div>
+                <div class="spell" id="player1-spell3"><img src="spell3.png" alt="Spell 3"></div>
+                <div class="spell" id="player1-spell4"><img src="spell4.png" alt="Spell 4"></div>
+            </div>
+            <button id="player1-ready-button" class="ready-button" onclick="setReady()" disabled>Ready</button>
+            <div id="player1-ready-status" class="ready-status"></div>
+            <div id="player1-stats" class="stats-container"></div>
+            <img src="res/img/arrow.png" alt="Player 1 Arrow" class="arrow" id="player1-arrow">
+        </div>
+
+        <!-- Player 2 -->
+        <div class="player-container" id="player2">
+            <img src="" alt="Player 2 Character" class="character-image" id="player2-character">
+            <div class="hp-bar">
+                <div class="hp-bar-inner" id="player2-hp"></div>
+                <span class="hp-text" id="player2-hp-text"></span> <!-- Added span for HP text -->
+            </div>
+            <div class="spells-container">
+                <div class="spell" id="player2-spell1"><img src="spell1.png" alt="Spell 1"></div>
+                <div class="spell" id="player2-spell2"><img src="spell2.png" alt="Spell 2"></div>
+                <div class="spell" id="player2-spell3"><img src="spell3.png" alt="Spell 3"></div>
+                <div class="spell" id="player2-spell4"><img src="spell4.png" alt="Spell 4"></div>
+            </div>
+            <button id="player2-ready-button" class="ready-button" onclick="setReady()" disabled>Ready</button>
+            <div id="player2-ready-status" class="ready-status"></div>
+            <div id="player2-stats" class="stats-container"></div>
+            <img src="res/img/arrow.png" alt="Player 2 Arrow" class="arrow" id="player2-arrow">
+        </div>
+    </div>
+
+
+    <div id="julia-stats" class="stats-container"></div>
+    <div id="shoma-stats" class="stats-container"></div>
+
+    <!-- Grey Filter and Waiting Message -->
+    <div id="grey-filter"></div>
+    <div id="waiting-message">Waiting for players...</div>
+</body>
+</html>
