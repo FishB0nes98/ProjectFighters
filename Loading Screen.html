@@ -174,10 +174,23 @@
             'High Elf Noel': 'Noel',
             'High Elf Akuma': 'Akuma',
             'High Elf Jun': 'Jun',
+            'Goth Sophitia': 'Sophitia',
+            'Goth Elphelt': 'Elphelt',
+            'Goth Elphelt Golden': 'Elphelt',
+            'Goth Elphelt Crimson Noir': 'Elphelt',
+            'Goth Elphelt Midnight Azure': 'Elphelt',
+            'Goth Elphelt White': 'Elphelt',
+            'Goth Eagle': 'Eagle',
+            'Goth Reptile': 'Reptile',
+            'Goth R Mika': 'R Mika',
+            'Sophitia': 'Sophitia',
+            'Deadpool Scorpion': 'Scorpion',
+            'Lady Deadpool Ibuki': 'Ibuki',
+            'Wolverine Yugo': 'Yugo'
         };
 
-        let charactersWithBanners = {}; // Store characters that need banners
-        let charactersWithSilverBorder = {}; // Store characters that need Silver border
+        let charactersWithBanners = {}; // Store characters with their respective banners
+        let charactersWithBorders = {}; // Store characters with their respective borders
 
         window.onload = function() {
             onAuthStateChanged(auth, async (user) => {
@@ -242,6 +255,53 @@
             });
         };
 
+        let bordersVisible = true;
+        let bannersVisible = true;
+        let bordersToggleEnabled = true;
+        let bannersToggleEnabled = true;    
+
+        document.addEventListener('keydown', (event) => {
+    if (event.key === 'P' || event.key === 'p') {
+        if (bordersToggleEnabled) {
+            toggleBorders();
+        } else {
+            bordersToggleEnabled = true;
+        }
+    } else if (event.key === 'O' || event.key === 'o') {
+        if (bannersToggleEnabled) {
+            toggleBanners();
+        } else {
+            bannersToggleEnabled = true;
+        }
+    }
+});
+
+function adjustSkinNameFontSize(skinNameDiv) {
+        if (skinNameDiv.textContent.length > 23) {
+            skinNameDiv.style.fontSize = '14px';
+        } else {
+            skinNameDiv.style.fontSize = '16px';
+        }
+    }
+
+function toggleBorders() {
+    const borders = document.querySelectorAll('.silver-border');
+    borders.forEach(border => {
+        border.style.display = bordersVisible ? 'none' : 'block';
+    });
+    bordersVisible = !bordersVisible;
+    bordersToggleEnabled = false;
+}
+
+function toggleBanners() {
+    const banners = document.querySelectorAll('.banner');
+    banners.forEach(banner => {
+        banner.style.display = bannersVisible ? 'none' : 'block';
+    });
+    bannersVisible = !bannersVisible;
+    bannersToggleEnabled = false;
+}
+
         function populateSkinButtons(skins) {
             const playerSlots = document.querySelectorAll('.player-slot');
             playerSlots.forEach(slot => {
@@ -290,39 +350,42 @@
         }
 
 		// JavaScript code to ensure the silver border is added correctly
-		function showSilverBorder(playerSlot) {
-			let silverBorder = playerSlot.querySelector('.silver-border');
-			if (!silverBorder) {
-				silverBorder = document.createElement('img');
-				silverBorder.src = 'res/img/silver.png'; // Ensure the path to the silver border image is correct
-				silverBorder.className = 'silver-border';
-				playerSlot.appendChild(silverBorder);
-			}
-			silverBorder.style.display = 'block';
-		}
-		function selectSkin(playerSlot, skin) {
-			const img = playerSlot.querySelector('img');
-			const skinNameDiv = playerSlot.querySelector('.skin-name');
+        function showBorder(playerSlot, borderClass) {
+    let border = playerSlot.querySelector(`.${borderClass}`);
+    if (!border) {
+        border = document.createElement('img');
+        border.src = `res/img/${borderClass}.png`; // Ensure the path to the border image is correct
+        border.className = borderClass;
+        playerSlot.appendChild(border);
+    }
+    border.style.display = 'block';
+}
 
-			loadImage(img, `Loading Screen/${skin}`);
-			skinNameDiv.textContent = skin;
-			skinNameDiv.style.display = 'block';
+function selectSkin(playerSlot, skin) {
+    const img = playerSlot.querySelector('img');
+    const skinNameDiv = playerSlot.querySelector('.skin-name');
 
-			playerSlot.querySelector('.choose-fighter-button').style.display = 'none'; // Hide the button
+    loadImage(img, `Loading Screen/${skin}`);
+    skinNameDiv.textContent = skin;
+    skinNameDiv.style.display = 'block';
 
-			const baseCharacter = skinToBaseCharacterMap[skin] || skin;
+    adjustSkinNameFontSize(skinNameDiv); // Adjust font size based on length
 
-			if (charactersWithBanners[baseCharacter]) {
-				showBanner(playerSlot);
-			}
+    playerSlot.querySelector('.choose-fighter-button').style.display = 'none'; // Hide the button
 
-			if (charactersWithSilverBorder[baseCharacter]) {
-				showSilverBorder(playerSlot);
-			}
+    const baseCharacter = skinToBaseCharacterMap[skin] || skin;
 
-			closeSkinSelectionWindow();
-			checkAllSkinsSelected();
-		}
+    if (charactersWithBorders[baseCharacter]) {
+        showBorder(playerSlot, charactersWithBorders[baseCharacter]);
+    }
+
+    if (charactersWithBanners[baseCharacter]) {
+        showBanner(playerSlot, charactersWithBanners[baseCharacter]);
+    }
+
+    closeSkinSelectionWindow();
+    checkAllSkinsSelected();
+}
 
         function loadImage(imgElement, basePath) {
             const extensions = ['.png'];
@@ -478,34 +541,49 @@
 
         // New function to check character games
         async function checkCharacterGames(characters) {
-            if (!characters) return;
+    if (!characters) return;
 
-            for (const character in characters) {
-                const charData = characters[character];
-                const totalGames = (charData.win || 0) + (charData.lose || 0);
-                if (totalGames >= 20) {
-                    charactersWithBanners[character] = true;
-                }
-                if (charData.win >= 15) {
-                    charactersWithSilverBorder[character] = true;
-                }
+    for (const character in characters) {
+        const charData = characters[character];
+        const totalGames = (charData.win || 0) + (charData.lose || 0);
+        if (totalGames >= 10) {
+            const winRate = (charData.win / totalGames) * 100;
+            if (winRate <= 35) {
+                charactersWithBorders[character] = 'silver-border';
+            } else if (winRate <= 50) {
+                charactersWithBorders[character] = 'gold-border';
+            } else if (winRate <= 60) {
+                charactersWithBorders[character] = 'emerald-border';
+            } else if (winRate <= 75) {
+                charactersWithBorders[character] = 'diamond-border';
+            } else {
+                charactersWithBorders[character] = 'challenger-border';
+            }
+
+            // Assign banners based on the number of wins
+            if (charData.win >= 100) {
+                charactersWithBanners[character] = 'banner4';
+            } else if (charData.win >= 55) {
+                charactersWithBanners[character] = 'banner3';
+            } else if (charData.win >= 30) {
+                charactersWithBanners[character] = 'banner2';
+            } else if (charData.win >= 15) {
+                charactersWithBanners[character] = 'banner1';
             }
         }
+    }
+}
 
-        function showBanner(playerSlot) {
-            let banner = playerSlot.querySelector('.banner');
-            if (!banner) {
-                banner = document.createElement('img');
-                banner.src = 'res/img/banner1.png';
-                banner.className = 'banner';
-                playerSlot.appendChild(banner);
-            }
-            banner.style.display = 'block';
-        }
-
-        function applySilverBorder(playerSlot) {
-            playerSlot.style.borderImage = 'url("res/img/silver.png") 30 stretch';
-        }
+function showBanner(playerSlot, bannerClass) {
+    let banner = playerSlot.querySelector(`.${bannerClass}`);
+    if (!banner) {
+        banner = document.createElement('img');
+        banner.src = `res/img/${bannerClass}.png`; // Ensure the path to the banner image is correct
+        banner.className = bannerClass;
+        playerSlot.appendChild(banner);
+    }
+    banner.style.display = 'block';
+}
     </script>
     <style>
         body {
@@ -614,11 +692,12 @@
             background-color: black;
             border: 0px solid #444;
             border-radius: 20px;
-            overflow: hidden;
+            overflow: visible;
             display: flex;
             flex-direction: column;
             align-items: center;
             position: relative;
+            box-shadow: 0 0 40px 20px rgba(0, 0, 0, 0.5); /* Big shadow all over the player-slot */
         }
 
         .player-slot img {
@@ -626,21 +705,24 @@
 			height: auto;
 			display: block;
 		}
-
         .choose-fighter-button {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            background-color: #444;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            cursor: pointer;
-        }
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #444;
+        color: white;
+        text-align: center;
+        padding: 10px;
+        cursor: pointer;
+        z-index: 0; /* Ensure it stays above other elements */
+        border-radius: 5%; /* Rounded corners */
+    }
+
 
         .skin-name {
             position: absolute;
-            bottom: 3px;
+            bottom: 7px;
             width: 100%;
             text-align: center;
             background-color: rgba(0, 0, 0, 0.5);
@@ -761,22 +843,24 @@
             padding: 10px;
         }
 
-        .banner {
-            position: absolute;
-            top: -8px;
-            left: -7px;
-            width: 65px !important; /* Adjust width as needed */
-            height: 90px !important; /* Adjust height as needed */
-			z-index: 1000;
-        }
-        .silver-border {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100% !important;
-            pointer-events: none; /* Ensure the border image doesn't interfere with clicks */
-        }
+        .banner1, .banner2, .banner3, .banner4 {
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        width: 65px !important; /* Adjust width as needed */
+        height: 90px !important; /* Adjust height as needed */
+        z-index: 0; /* Ensure it stays below other elements */
+    }
+
+    .silver-border, .gold-border, .emerald-border, .diamond-border, .challenger-border {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100% !important;
+        pointer-events: none; /* Ensure the border image doesn't interfere with clicks */
+        z-index: 0; /* Ensure it stays below other elements */
+    }
     </style>
 </head>
 <body>

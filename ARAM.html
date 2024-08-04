@@ -31,9 +31,9 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 		
-		const charactersWithBanners = {}; // Store characters that need banners
-        const charactersWithSilverBorder = {}; // Store characters that need Silver border
-		
+        let charactersWithBorders = {}; // Store characters with their respective borders
+let charactersWithBanners = {}; // Store characters with their respective banners
+
 		const characters = {
 			'Akuma': ['Akuma', 'Rockstar Akuma', 'Thunder God Akuma', 'Captain Akuma', 'High Elf Akuma'],
 			'Angel': ['Angel', 'Blossom Angel', 'Voidborn Angel', 'Neon Core Angel'],
@@ -42,9 +42,9 @@
 			'Birdie': ['Birdie', 'Professional Weightlifter Birdie', 'Rockstar Birdie', 'Sand Soldier Birdie', 'Infernal Birdie'],
 			'Blanka': ['Blanka', 'Blanka Red', 'Professional Baller Blanka'],
 			'Cham Cham': ['Cham Cham', 'Blossom Cham Cham', 'Cham Cham Monochrome', 'Neon Core Cham Cham'],
-			'Elphelt': ['Elphelt', 'Cyber Hunter Elphelt', 'Maid Elphelt', 'Summertime Elphelt', 'Schoolgirl Elphelt'],
+			'Elphelt': ['Elphelt', 'Cyber Hunter Elphelt', 'Maid Elphelt', 'Summertime Elphelt', 'Schoolgirl Elphelt', 'Goth Elphelt', 'Goth Elphelt Golden', 'Goth Elphelt Crimson Noir', 'Goth Elphelt Midnight Azure', 'Goth Elphelt White'],
 			'Erron Black': ['Erron Black', 'Arctic Hunter Erron Black', 'Country Erron Black', 'Mafia Leader Erron Black', 'Neon Core Erron Black'],
-			'Ibuki': ['Ibuki', 'Cyber Ninja Ibuki', 'Demon Hunter Ibuki', 'DJ Ibuki', 'Professional Athlete Ibuki', 'Infernal Ibuki', 'Infernal Ibuki Greenfire', 'Infernal Ibuki Silver Flame', 'Infernal Ibuki Golden Flame', 'Infernal Ibuki Blue Flame'],
+			'Ibuki': ['Ibuki', 'Cyber Ninja Ibuki', 'Demon Hunter Ibuki', 'DJ Ibuki', 'Professional Athlete Ibuki', 'Infernal Ibuki', 'Infernal Ibuki Greenfire', 'Infernal Ibuki Silver Flame', 'Infernal Ibuki Golden Flame', 'Infernal Ibuki Blue Flame', 'Lady Deadpool Ibuki'],
 			'Juri': ['Juri', 'Casual Wear Juri'],
 			'Julia': ['Julia', 'Disco Queen Julia', 'Dragon Tamer Julia', 'River Spirit Julia', 'Infernal Julia', 'Schoolgirl Julia'],
 			'Jun': ['Jun', 'Blossom Jun', 'Dragon Tamer Jun', 'Summertime Jun', 'High Elf Jun'],
@@ -53,18 +53,19 @@
 			'Nina': ['Nina', 'Arctic Huntress Nina', 'Farmer Nina', 'Summertime Nina'],
 			'Noel': ['Noel', 'Arctic Huntress Noel', 'Officer Noel', 'Captain Noel', 'High Elf Noel'],
 			'Peacock': ['Peacock', 'Arctic Huntress Peacock', 'Cyber Bomber Peacock', 'Captain Peacock'],
-			'R Mika': ['R Mika', 'Phoenix R Mika', 'Pop Star R Mika', 'Professional Tennis Player R Mika'],
+			'R Mika': ['R Mika', 'Phoenix R Mika', 'Pop Star R Mika', 'Professional Tennis Player R Mika', 'Goth R Mika'],
 			'Raiden': ['Raiden', 'Dragon Tamer Raiden', 'Master of Monks Raiden', 'Infernal Raiden', 'Raiden Red', 'Neon Core Raiden', 'Neon Core Raiden Scarlet', 'Neon Core Raiden Emerald', 'Neon Core Raiden Silver', 'Neon Core Raiden White'],
-			'Reptile': ['Reptile', 'Blood Predator Reptile', 'Cyber Ninja Reptile', 'Cyber Predator Reptile', 'Summertime Reptile', 'Reptile Sand'],
-			'Scorpion': ['Scorpion', 'Scorpion Blossom', 'Scorpion Spider', 'Infernal Scorpion'],
+			'Reptile': ['Reptile', 'Blood Predator Reptile', 'Cyber Ninja Reptile', 'Cyber Predator Reptile', 'Summertime Reptile', 'Reptile Sand', 'Goth Reptile'],
+			'Scorpion': ['Scorpion', 'Scorpion Blossom', 'Scorpion Spider', 'Infernal Scorpion', 'Deadpool Scorpion'],
 			'Siegfried': ['Siegfried', 'Professional Footballer Siegfried', 'Schoolboy Siegfried', 'Schoolboy Siegfried Azure', 'Schoolboy Siegfried Crimson', 'Schoolboy Siegfried Obisidan Sapphire', 'Schoolboy Siegfried Obisidan Regal Midnight', 'High Elf Siegfried'],
 			'Talim': ['Talim', 'Sand Soldier Talim', 'Talim Bloody', 'Captain Talim'],
-			'Yugo': ['Yugo', 'Arctic Beast Yugo', 'Cyber Predator Yugo'],
+			'Yugo': ['Yugo', 'Arctic Beast Yugo', 'Cyber Predator Yugo', 'Wolverine Yugo'],
 			'Shoma': ['Shoma', 'Summertime Shoma', 'Pirate Shoma', 'Pirate Shoma Blue', 'Pirate Shoma Jade', 'Pirate Shoma Monochrome', 'Pirate Shoma Violet', 'Shoma Schoolboy'],
 			'Sub Zero': ['Sub Zero', 'Arcane Sorcerer Sub Zero', 'Neon Core Sub Zero'],
 			'Christie': ['Christie', 'Chris T'],
             'Kokoro': ['Kokoro', 'Schoolgirl Kokoro'],
-            'Eagle': ['Eagle', 'High Elf Eagle']
+            'Eagle': ['Eagle', 'High Elf Eagle', 'Goth Eagle'],
+            'Sophitia': ['Sophitia', 'Goth Sophitia']
 		};
 
                 const skinToBaseCharacterMap = {
@@ -210,6 +211,19 @@
             'High Elf Noel': 'Noel',
             'High Elf Akuma': 'Akuma',
             'High Elf Jun': 'Jun',
+            'Goth Sophitia': 'Sophitia',
+            'Goth Elphelt': 'Elphelt',
+            'Goth Elphelt Golden': 'Elphelt',
+            'Goth Elphelt Crimson Noir': 'Elphelt',
+            'Goth Elphelt Midnight Azure': 'Elphelt',
+            'Goth Elphelt White': 'Elphelt',
+            'Goth Eagle': 'Eagle',
+            'Goth Reptile': 'Reptile',
+            'Goth R Mika': 'R Mika',
+            'Sophitia': 'Sophitia',
+            'Deadpool Scorpion': 'Scorpion',
+            'Lady Deadpool Ibuki': 'Ibuki',
+            'Wolverine Yugo': 'Yugo'
         };
 
 		window.onload = function() {
@@ -292,27 +306,27 @@
         }
 		
 		// JavaScript code to ensure the silver border is added correctly
-        function showSilverBorder(playerSlot) {
-            let silverBorder = playerSlot.querySelector('.silver-border');
-            if (!silverBorder) {
-                silverBorder = document.createElement('img');
-                silverBorder.src = 'res/img/silver.png'; // Ensure the path to the silver border image is correct
-                silverBorder.className = 'silver-border';
-                playerSlot.appendChild(silverBorder);
-            }
-            silverBorder.style.display = 'block';
-        }
+        function showBorder(playerSlot, borderClass) {
+    let border = playerSlot.querySelector(`.${borderClass}`);
+    if (!border) {
+        border = document.createElement('img');
+        border.src = `res/img/${borderClass}.png`; // Ensure the path to the border image is correct
+        border.className = borderClass;
+        playerSlot.appendChild(border);
+    }
+    border.style.display = 'block';
+}
 
-        function showBanner(playerSlot) {
-            let banner = playerSlot.querySelector('.banner');
-            if (!banner) {
-                banner = document.createElement('img');
-                banner.src = 'res/img/banner1.png';
-                banner.className = 'banner';
-                playerSlot.appendChild(banner);
-            }
-            banner.style.display = 'block';
-        }
+function showBanner(playerSlot, bannerClass) {
+    let banner = playerSlot.querySelector(`.${bannerClass}`);
+    if (!banner) {
+        banner = document.createElement('img');
+        banner.src = `res/img/${bannerClass}.png`; // Ensure the path to the banner image is correct
+        banner.className = bannerClass;
+        playerSlot.appendChild(banner);
+    }
+    banner.style.display = 'block';
+}
 
         function getRandomCharacter() {
             const keys = Object.keys(characters);
@@ -320,20 +334,47 @@
         }
 		
 		    // New function to check character games
-			async function checkCharacterGames(characters) {
-				if (!characters) return;
+            async function checkCharacterGames(characters) {
+    if (!characters) return;
 
-				for (const character in characters) {
-					const charData = characters[character];
-					const totalGames = (charData.win || 0) + (charData.lose || 0);
-					if (totalGames >= 20) {
-						charactersWithBanners[character] = true;
-					}
-					if (charData.win >= 15) {
-						charactersWithSilverBorder[character] = true;
-					}
-				}
-			}
+    for (const character in characters) {
+        const charData = characters[character];
+        const totalGames = (charData.win || 0) + (charData.lose || 0);
+        if (totalGames >= 10) {
+            const winRate = (charData.win / totalGames) * 100;
+            if (winRate <= 35) {
+                charactersWithBorders[character] = 'silver-border';
+            } else if (winRate <= 50) {
+                charactersWithBorders[character] = 'gold-border';
+            } else if (winRate <= 60) {
+                charactersWithBorders[character] = 'emerald-border';
+            } else if (winRate <= 75) {
+                charactersWithBorders[character] = 'diamond-border';
+            } else {
+                charactersWithBorders[character] = 'challenger-border';
+            }
+
+            // Assign banners based on the number of wins
+            if (charData.win >= 100) {
+                charactersWithBanners[character] = 'banner4';
+            } else if (charData.win >= 55) {
+                charactersWithBanners[character] = 'banner3';
+            } else if (charData.win >= 30) {
+                charactersWithBanners[character] = 'banner2';
+            } else if (charData.win >= 15) {
+                charactersWithBanners[character] = 'banner1';
+            }
+        }
+    }
+}
+
+function adjustSkinNameFontSize(skinNameDiv) {
+        if (skinNameDiv.textContent.length > 23) {
+            skinNameDiv.style.fontSize = '14px';
+        } else {
+            skinNameDiv.style.fontSize = '16px';
+        }
+    }
 
 
         function populateSkinButtons(skins) {
@@ -384,30 +425,31 @@
 
 
 		// Add this to the function where you select a skin
-		function selectSkin(playerSlot, skin) {
-			const img = playerSlot.querySelector('img');
-			const skinNameDiv = playerSlot.querySelector('.skin-name');
+        function selectSkin(playerSlot, skin) {
+    const img = playerSlot.querySelector('img');
+    const skinNameDiv = playerSlot.querySelector('.skin-name');
 
-			loadImage(img, `Loading Screen/${skin}`);
-			skinNameDiv.textContent = skin;
-			skinNameDiv.style.display = 'block';
+    loadImage(img, `Loading Screen/${skin}`);
+    skinNameDiv.textContent = skin;
+    skinNameDiv.style.display = 'block';
 
-			playerSlot.querySelector('.choose-fighter-button').style.display = 'none'; // Hide the button
+    adjustSkinNameFontSize(skinNameDiv); // Adjust font size based on length
 
-			const baseCharacter = skinToBaseCharacterMap[skin] || skin;
+    playerSlot.querySelector('.choose-fighter-button').style.display = 'none'; // Hide the button
 
-			if (charactersWithBanners[baseCharacter]) {
-				showBanner(playerSlot);
-			}
+    const baseCharacter = skinToBaseCharacterMap[skin] || skin;
 
-			if (charactersWithSilverBorder[baseCharacter]) {
-				showSilverBorder(playerSlot);
-			}
+    if (charactersWithBorders[baseCharacter]) {
+        showBorder(playerSlot, charactersWithBorders[baseCharacter]);
+    }
 
-			closeSkinSelectionWindow();
-			checkAllSkinsSelected();
-			closeSkinSelectionWindow();
-		}
+    if (charactersWithBanners[baseCharacter]) {
+        showBanner(playerSlot, charactersWithBanners[baseCharacter]);
+    }
+
+    closeSkinSelectionWindow();
+    checkAllSkinsSelected();
+}
 
         function loadImage(imgElement, basePath) {
             const extensions = ['.png'];
@@ -657,44 +699,48 @@
             width: 100%;
         }
         .player-slot {
-            width: 250px;
-            height: 375px;
-            margin: 0 10px;
-            background-color: black;
-            border: 2px solid #444;
-            border-radius: 20px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-        }
-        .player-slot img {
-            width: 100%; /* Adjust the width as needed */
-            height: auto; /* Maintain aspect ratio */
-        }
-        .choose-fighter-button {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            background-color: #444;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            cursor: pointer;
-        }
-        .skin-name {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-            font-size: 16px;
-            text-shadow: 1px 1px 2px black;
-            padding: 10px 0;
-            display: none;
-        }
+        width: 250px;
+        height: 375px;
+        margin: 0 10px;
+        background-color: black;
+        border: 2px solid #444;
+        border-radius: 20px;
+        overflow: visible; /* Allow banners to extend beyond the slot */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+    }
+
+    .player-slot img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    .choose-fighter-button {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background-color: #444;
+        color: white;
+        text-align: center;
+        padding: 10px;
+        cursor: pointer;
+        z-index: 10; /* Ensure the button stays above other elements */
+    }
+    .skin-name {
+        position: absolute;
+        bottom: 6px;
+        width: 100%;
+        text-align: center;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        font-size: 16px;
+        text-shadow: 1px 1px 2px black;
+        padding: 5px 0;
+        display: none;
+        z-index: 0; /* Ensure the skin name stays above other elements */
+    }
         #vs-text {
             color: red;
             font-size: 25px;
@@ -800,22 +846,22 @@
             justify-content: space-between;
             padding: 10px;
         }
-		.banner {
-			position: absolute;
-			top: -8px;
-			left: -7px;
-			width: 65px !important; /* Adjust width as needed */
-			height: 90px !important; /* Adjust height as needed */
-			z-index: 1000;
-		}
-		.silver-border {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100% !important;
-			pointer-events: none; /* Ensure the border image doesn't interfere with clicks */
-		}
+        .banner1, .banner2, .banner3, .banner4 {
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        width: 65px !important; /* Adjust width as needed */
+        height: 90px !important; /* Adjust height as needed */
+        z-index: 1000;
+    }
+        .silver-border, .gold-border, .emerald-border, .diamond-border, .challenger-border {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100% !important;
+        pointer-events: none; /* Ensure the border image doesn't interfere with clicks */
+    }
     </style>
 <head>	
 <body>
