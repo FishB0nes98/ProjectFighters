@@ -75,33 +75,29 @@
             display: block;
             font-size: 18px;
         }
+        /* Transparent Menu */
         .menu {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1;
             position: fixed;
             top: 0;
             width: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 10px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            transition: background-color 0.3s ease;
         }
 
-        .menu:hover {
-            background-color: rgba(0, 0, 0, 0.9);
-        }
-
-        .menu .menu-items {
+        .menu-items {
             display: flex;
+            justify-content: center;
+            position: relative;
         }
 
         .menu a {
-            display: block;
             color: white;
-            text-align: center;
-            padding: 14px 16px;
             text-decoration: none;
+            padding: 14px 16px;
             font-family: 'Roboto', sans-serif;
             font-size: 16px;
             transition: background-color 0.3s, transform 0.3s;
@@ -112,31 +108,36 @@
             transform: scale(1.1);
         }
 
-		.play-button {
-            margin-right: 20px; /* Adjust as needed */
-            background-color: orange;
-            color: black;
-            border-radius: 20px;
-            font-size: 18px;
+        .play-button-container {
+            display: flex;
+            justify-content: flex-start;
+            padding: 20px;
+            z-index: 1;
+            position: fixed;
+            top: 5px;
+            left: 0;
+        }
+
+        .play-button {
+            background-color: #ffbb00; /* Modern blue color */
+            color: white;
+            border: none;
+            border-radius: 25px; /* Slightly less rounded corners for a modern look */
+            font-size: 22px; /* Slightly larger font size */
             font-weight: bold;
             text-decoration: none;
-            transition: background-color 0.3s, transform 0.3s, color 0.3s;
-            padding: 10px 20px;
+            padding: 15px 40px; /* Increased padding for a more prominent button */
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* More pronounced shadow for a modern effect */
+            top: 3px;
+            position: fixed;
         }
 
         .play-button:hover {
-            background-color: darkgoldenrod;
-            color: white;
-            transform: scale(1.2);
+            background-color: #ff8800;  /* Slightly darker blue on hover */
+            transform: scale(1.05); /* Slightly enlarge the button on hover */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
         }
-		.battlepass-button {
-			background-color: red; /* Gold background */
-			color: #000; /* Black text */
-			border-radius: 25px; /* Rounded corners */
-			font-size: 12px;
-			text-transform: uppercase; /* Uppercase text */
-			margin-right: 300px;
-		}
         #video-background {
             position: fixed;
             right: 0;
@@ -156,12 +157,6 @@
         }
     </style>
 </head>
-<body>
-    <!-- Video Background -->
-    <video id="video-background" autoplay muted loop>
-        <source src="Event/Eventvideo.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
     <!-- Menu -->
     <div class="menu">
         <div class="menu-items">
@@ -169,26 +164,30 @@
             <a href="Store.html">Store</a>
             <a href="event.html">Event</a>
             <a href="Team Builder.html">Team Builder</a>
-			<a href="championstats.html">Statistics</a>
-			</div>
-			<div>
-			<a href="battlepass.html" class="battlepass-button">Battlepass</a>
-			</div>
-		<div>
+            <a href="championstats.html">Statistics</a>
+        </div>
+    </div>
+    <div class="play-button-container">
         <a href="Game Modes.html" class="play-button">Play</a>
     </div>
 </div>
+<body>
+    <!-- Video Background -->
+    <video id="video-background" autoplay muted loop>
+        <source src="Event/Eventvideo.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
     <div class="container">
         <h1>Game Mode</h1>
         <div class="game-mode" style="background-image: url('res/img/ls.jpeg'); width: 200px; height:200px; background-size: cover;" onclick="location.href='Loading Screen.html'">
             <img src="res/img/Draft Mode.png" alt="Draft Mode">
             <span>Draft Mode</span>
         </div>
-		<div class="game-mode" onclick="location.href='ARAM.html'">
+		<div class="game-mode" style="background-image: url('res/img/ARAM.jpeg'); width: 200px; height:200px; background-size: cover;" onclick="location.href='ARAM.html'">
             <img src="res/img/ARAM.png" alt="1v1">
             <span>ARAM</span>
         </div>
-        <div class="game-mode" onclick="location.href='1v1.html'">
+        <div class="game-mode" style="background-image: url('res/img/1v1.jpeg'); width: 200px; height:200px; background-size: cover;" onclick="location.href='1v1.html'">
             <img src="res/img/1v1.png" alt="1v1">
             <span>1vs1</span>
         </div>

@@ -14,55 +14,67 @@
             position: relative;
             overflow: hidden;
         }
+        /* Transparent Menu */
         .menu {
-            /* Reuse the menu styles from home.html */
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 10px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            transition: background-color 0.3s ease;
-        }
-        .menu:hover {
-            background-color: rgba(0, 0, 0, 0.9);
-        }
-        .menu .menu-items {
-            display: flex;
-        }
-        .menu a {
-            display: block;
-            color: white;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            font-family: 'Roboto', sans-serif;
-            font-size: 16px;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        .menu a:hover {
-            background-color: #111;
-            transform: scale(1.1);
-        }
-        .play-button {
-            margin-right: 20px;
-            background-color: orange;
-            color: black;
-            border-radius: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            text-decoration: none;
-            transition: background-color 0.3s, transform 0.3s, color 0.3s;
-            padding: 10px 20px;
-        }
-        .play-button:hover {
-            background-color: darkgoldenrod;
-            color: white;
-            transform: scale(1.2);
-        }
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 0;
+    }
+
+    .menu-items {
+        display: flex;
+        justify-content: center;
+        position: relative;
+    }
+
+    .menu a {
+        color: white;
+        text-decoration: none;
+        padding: 14px 16px;
+        font-family: 'Roboto', sans-serif;
+        font-size: 16px;
+        transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .menu a:hover {
+        background-color: #111;
+        transform: scale(1.1);
+    }
+
+    .play-button-container {
+    display: flex;
+    justify-content: flex-start;
+    padding: 20px;
+    z-index: auto;
+    position: fixed;
+}
+
+    .play-button {
+        background-color: #ffbb00; /* Modern blue color */
+        color: white;
+        border: none;
+        border-radius: 25px; /* Slightly less rounded corners for a modern look */
+        font-size: 22px; /* Slightly larger font size */
+        font-weight: bold;
+        text-decoration: none;
+        padding: 15px 40px; /* Increased padding for a more prominent button */
+        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* More pronounced shadow for a modern effect */
+        z-index: 1; /* Ensure it is above other elements */
+        top: 5px; /* Adjusted position */
+        position: fixed;
+        left: 0px;
+    }
+
+    .play-button:hover {
+        background-color: #ff8800;  /* Slightly darker blue on hover */
+        transform: scale(1.05); /* Slightly enlarge the button on hover */
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
+    }
+
         .content {
             display: flex;
             flex-direction: row;
@@ -302,6 +314,7 @@
     </script>
 </head>
 <body>
+
     <!-- Menu -->
     <div class="menu">
         <div class="menu-items">
@@ -311,10 +324,8 @@
             <a href="../Team Builder.html">Team Builder</a>
             <a href="../championstats.html">Statistics</a>
         </div>
-        <div>
-            <a href="../battlepass.html" class="battlepass-button">Battlepass</a>
-        </div>
-        <div>
+    </div>
+        <div class="play-button-container">
             <a href="../Game Modes.html" class="play-button">Play</a>
         </div>
     </div>
@@ -417,7 +428,7 @@
         });
 
         function toggleUI() {
-            const elementsToHide = document.querySelectorAll('.menu, .content, .skins-container, .lightbox');
+            const elementsToHide = document.querySelectorAll('.menu, .content, .skins-container, .lightbox, .play-button-container');
             const hideUIButton = document.querySelector('.hide-ui-button');
             elementsToHide.forEach(element => {
                 element.classList.toggle('hidden');

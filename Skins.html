@@ -135,69 +135,66 @@
             margin-top: 50px;
             color: #ffcc00;
         }
-                /* Transparent Menu */
+        /* Transparent Menu */
         .menu {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 10px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            transition: background-color 0.3s ease;
-        }
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 0;
+    }
 
-        .menu:hover {
-            background-color: rgba(0, 0, 0, 0.9);
-        }
+    .menu-items {
+        display: flex;
+        justify-content: center;
+        position: relative;
+    }
 
-        .menu .menu-items {
-            display: flex;
-        }
+    .menu a {
+        color: white;
+        text-decoration: none;
+        padding: 14px 16px;
+        font-family: 'Roboto', sans-serif;
+        font-size: 16px;
+        transition: background-color 0.3s, transform 0.3s;
+    }
 
-        .menu a {
-            display: block;
-            color: white;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            font-family: 'Roboto', sans-serif;
-            font-size: 16px;
-            transition: background-color 0.3s, transform 0.3s;
-        }
+    .menu a:hover {
+        background-color: #111;
+        transform: scale(1.1);
+    }
 
-        .menu a:hover {
-            background-color: #111;
-            transform: scale(1.1);
-        }
+    .play-button-container {
+    display: flex;
+    justify-content: flex-start;
+    padding: 20px;
+    z-index: auto;
+    top: -20px; /* Adjusted position */
+        position: absolute;
+        left: 0px;
+}
 
-		.play-button {
-            margin-right: 20px; /* Adjust as needed */
-            background-color: orange;
-            color: black;
-            border-radius: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            text-decoration: none;
-            transition: background-color 0.3s, transform 0.3s, color 0.3s;
-            padding: 10px 20px;
-        }
+    .play-button {
+        background-color: #ffbb00; /* Modern blue color */
+        color: white;
+        border: none;
+        border-radius: 25px; /* Slightly less rounded corners for a modern look */
+        font-size: 22px; /* Slightly larger font size */
+        font-weight: bold;
+        text-decoration: none;
+        padding: 15px 40px; /* Increased padding for a more prominent button */
+        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* More pronounced shadow for a modern effect */
+        z-index: 1; /* Ensure it is above other elements */
+    }
 
-        .play-button:hover {
-            background-color: darkgoldenrod;
-            color: white;
-            transform: scale(1.2);
-        }
-		.battlepass-button {
-			background-color: red; /* Gold background */
-			color: #000; /* Black text */
-			border-radius: 25px; /* Rounded corners */
-			font-size: 12px;
-			text-transform: uppercase; /* Uppercase text */
-			margin-right: 300px;
-		}
+    .play-button:hover {
+        background-color: #ff8800;  /* Slightly darker blue on hover */
+        transform: scale(1.05); /* Slightly enlarge the button on hover */
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
+    }
+
         .container {
             display: flex;
             flex-wrap: wrap;
@@ -372,12 +369,12 @@
         .currency-container {
             display: flex;
             align-items: center;
-            position: fixed;
             top: 75px;
             left: 97%;
             transform: translateX(-50%);
-            z-index: 1000;
+            z-index: 0;
 			background-color: black;
+            position: fixed;
         }
 		.currency-display {
 			display: flex;
@@ -412,21 +409,21 @@
     </style>
 </head>
 <body>
+
+    <!-- Menu -->
     <div class="menu">
         <div class="menu-items">
             <a href="home.html">Home</a>
             <a href="Store.html">Store</a>
             <a href="event.html">Event</a>
             <a href="Team Builder.html">Team Builder</a>
-			<a href="championstats.html">Statistics</a>
-        </div>
-        <div>
-            <a href="battlepass.html" class="battlepass-button">Battlepass</a>
-        </div>
-        <div>
-            <a href="Game Modes.html" class="play-button">Play</a>
+            <a href="championstats.html">Statistics</a>
         </div>
     </div>
+    <div class="play-button-container">
+        <a href="Game Modes.html" class="play-button">Play</a>
+    </div>
+</div>
     <div class="currency-container">
 		<img src="res/img/fm.png" alt="FM" style="width: 20px; height: 20px;">
 		<span id="currency-amount" class="currency-display">0</span>
@@ -464,6 +461,7 @@
         <img src="Icons/Kokoro.png" alt="Kokoro" class="character-icon" data-character="Kokoro">
         <img src="Icons/Eagle.png" alt="Eagle" class="character-icon" data-character="Eagle">
         <img src="Icons/Sophitia.png" alt="Sophitia" class="character-icon" data-character="Sophitia">
+        <img src="Icons/Shizumaru.png" alt="Shizumaru" class="character-icon" data-character="Shizumaru">
     </div>
 <div class="containerskins">
     <!-- Group by Characters -->
@@ -603,6 +601,11 @@
 			<div class="skin" data-src="Skins/Neon Core Cham Cham.png" onclick="openLightbox('Skins/Neon Core Cham Cham.png', 'Neon Core Cham Cham', 2000)">
                 <img src="Skins/Neon Core Cham Cham.png" alt="Blossom Cham Cham" class="scaled-image">
                 <div class="skin-name">Neon Core Cham Cham</div>
+                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
+            </div>
+            <div class="skin" data-src="Skins/Pajama Party Cham Cham.jpg" onclick="openLightbox('Skins/Pajama Party Cham Cham.jpg', 'Pajama Party Cham Cham', 2000)">
+                <img src="Skins/Pajama Party Cham Cham.jpg" alt="Pajama Party Cham Cham" class="scaled-image">
+                <div class="skin-name">Pajama Party Cham Cham</div>
                 <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
             </div>
         </div>
@@ -940,6 +943,11 @@
 				<div class="skin-name">Professional Baller Blanka</div>
 				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
 			</div>
+			<div class="skin" data-src="Skins/Pajama Party Blanka.jpeg" onclick="openLightbox('Skins/Pajama Party Blanka.jpeg', 'Pajama Party Blanka', 1000)">
+				<img src="Skins/Pajama Party Blanka.jpeg" alt="Pajama Party Blanka" class="scaled-image">
+				<div class="skin-name">Pajama Party Blanka</div>
+				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
+			</div>
 		</div>
 	</div>
 	<div class="character" id="Nina">
@@ -1010,6 +1018,11 @@
 				<div class="skin-name small">Pirate Shoma</div>
 				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
 			</div>
+			<div class="skin" data-src="Skins/Pajama Party Shoma.png" onclick="openLightbox('Skins/Pajama Party Shoma.png', 'Pajama Party Shoma', 1000)">
+				<img src="Skins/Pajama Party Shoma.png" alt="Pajama Party Shoma" class="scaled-image">
+				<div class="skin-name small">Pajama Party Shoma</div>
+				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
+			</div>
 		</div>
 	</div>
 		<div class="character" id="Juri">
@@ -1045,6 +1058,11 @@
 				<div class="skin-name small">Chris T</div>
 				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
 			</div>
+            <div class="skin" data-src="Skins/Pajama Party Christie.jpeg" onclick="openLightbox('Skins/Pajama Party Christie.jpeg', 'Pajama Party Christie', 1000)">
+				<img src="Skins/Pajama Party Christie.jpeg" alt="Pajama Party Christie" class="scaled-image">
+				<div class="skin-name small">Pajama Party Christie</div>
+				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
+			</div>
 		</div>
 	</div>
 	<div class="character" id="Kokoro">
@@ -1053,6 +1071,11 @@
 			<div class="skin" data-src="Skins/Schoolgirl Kokoro.png" onclick="openLightbox('Skins/Schoolgirl Kokoro.png', 'Schoolgirl Kokoro', 1000)">
 				<img src="Skins/Schoolgirl Kokoro.png" alt="Schoolgirl Kokoro" class="scaled-image">
 				<div class="skin-name small">Schoolgirl Kokoro</div>
+				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
+			</div>
+            <div class="skin" data-src="Skins/Pajama Party Kokoro.jpeg" onclick="openLightbox('Skins/Pajama Party Kokoro.jpeg', 'Pajama Party Kokoro', 1000)">
+				<img src="Skins/Pajama Party Kokoro.jpeg" alt="Pajama Party Kokoro" class="scaled-image">
+				<div class="skin-name small">Pajama Party Kokoro</div>
 				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
 			</div>
 		</div>
@@ -1082,6 +1105,16 @@
 			</div>
 		</div>
 	</div>
+    <div class="character" id="Shizumaru">
+        <h2>Shizumaru</h2>
+        <div class="skins">
+            <div class="skin" data-src="Skins/Samurai Shizumaru.jpeg" onclick="openLightbox('Skins/Samurai Shizumaru.jpeg', 'Samurai Shizumaru', 1000)">
+                <img src="Skins/Samurai Shizumaru.jpeg" alt="Samurai Shizumaru" class="scaled-image">
+                <div class="skin-name">Samurai Shizumaru</div>
+                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
+            </div>
+        </div>
+    </div>
 <div id="lightbox" class="lightbox">
         <div class="lightbox-content">
             <img id="lightbox-image" src="" alt="Skin Image">
