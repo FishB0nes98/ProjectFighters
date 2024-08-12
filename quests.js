@@ -7,35 +7,37 @@ const quests = [
         goal: 3,
         reward: { 'freelootbox/basicbox': 1 },
         requirement: (userData) => userData.gamesPlayed >= 3,
-        image: 'res/img/basicbox.png', // Add image path
-        hoverText: 'Basic Lootbox' // Add hover text
+        image: 'res/img/basicbox.png',
+        hoverText: 'Basic Lootbox'
     },
     {
-        id: 'winAsSpecificCharacter',
-        title: "Pajama Party Invitation",
-        description: "Win a game as Kokoro, Shoma, Blanka, Cham Cham, or Christie",
+        id: 'play10gamesAsForestCharacters',
+        title: "Secrets of the Forest",
+        description: "Play 10 games as Angel, Julia, Astaroth, Kotal Kahn, Morrigan, or Talim",
         progress: 0,
-        goal: 1,
-        reward: { 'freelootbox/pajamapartybox': 1 },
+        goal: 10,
+        reward: { 'CM': 4500 },
         requirement: (userData, team) => {
-            const characters = ['Kokoro', 'Shoma', 'Blanka', 'Cham Cham', 'Christie'];
+            const characters = ['Angel', 'Julia', 'Astaroth', 'Kotal Kahn', 'Morrigan', 'Talim'];
             return team.some(player => characters.includes(player));
         },
-        image: 'res/img/pajamapartybox.png', // Add image path
-        hoverText: 'Pajama Party Lootbox' // Add hover text
+        image: 'res/img/cm.png',
+        hoverText: '4500 CM'
     },
     {
-        id: 'play5gamesWithShizumaru',
-        title: "NEW CHALLENGER!",
-        description: "Play 5 games with Shizumaru",
+        id: 'win4gamesAgainstInfernalAttackVol2',
+        title: "Infernal Attack vol.2",
+        description: "Win 4 games against Scorpion, Raiden, Birdie, Julia, Astaroth, Ibuki",
         progress: 0,
-        goal: 5,
-        reward: { 'skins/Samurai Shizumaru': 1 },
-        requirement: (userData, team) => {
-            return team.includes('Shizumaru') && userData.gamesPlayedWithShizumaru >= 5;
+        goal: 4,
+        reward: { 'skins/Kagome': 1 },
+        requirement: (userData, opponents) => {
+            const characters = ['Scorpion', 'Raiden', 'Birdie', 'Julia', 'Astaroth', 'Ibuki'];
+            return opponents.some(opponent => characters.includes(opponent));
         },
-        image: 'Loading Screen/Samurai Shizumaru.png', // Add image path
-        hoverText: 'Samurai Shizumaru Skin' // Add hover text
-    }
+        image: 'Icons/Kagome.png',
+        hoverText: 'Kagome Fighter Unlock'
+    },
 ];
+
 export { quests };

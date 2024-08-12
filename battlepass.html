@@ -20,54 +20,53 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
-
+        
         const battlePassItems = [
-            { id: 'Item1', exp: 0, img: 'Icons/Shizumaru.png', skinName: 'Shizumaru', name: 'Shizumaru Fighter Unlock' },
-            { id: 'Item2', exp: 85, img: 'Loading Screen/Pajama Party Christie.png', skinName: 'Pajama Party Christie', name: 'Pajama Party Christie Skin' },
-            { id: 'Item3', exp: 190, img: 'Icons/Profile/Pajama_ChamCham.png', folder: 'Icons', name: 'Pajama Party Cham Cham Icon' },
+            { id: 'Item1', exp: 0, img: 'Loading Screen/Spectral Archer Kagome.png', skinName: 'Spectral Archer Kagome', name: 'Spectral Archer Kagome Skin' },
+            { id: 'Item2', exp: 50, img: 'res/img/cm.png', name: '4500 CM', type: 'CM' },
+            { id: 'Item3', exp: 155, img: 'Icons/Profile/Forest_Goddess_Angel.png', folder: 'Icons', name: 'Forest Goddess Angel Icon' },
 			{ id: 'Item4', exp: 250, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
-            { id: 'Item5', exp: 375, img: 'Loading Screen/Pajama Party Cham Cham.png', skinName: 'Pajama Party Cham Cham', name: 'Pajama Party Cham Cham Skin' },
-			{ id: 'Item6', exp: 450, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
-			{ id: 'Item7', exp: 570, img: 'Loading Screen/Pajama Party Shoma.png', skinName: 'Pajama Party Shoma', name: 'Pajama Party Shoma Skin' },
-			{ id: 'Item8', exp: 655, img: 'Icons/Profile/Pajama_Shoma.png', skinName: 'Pajama Party Shoma', name: 'Pajama Party Shoma Icon' },
-            { id: 'Item9', exp: 780, img: 'res/img/pajamapartybox.png', folder: 'freelootbox', name: 'Free Pajama Party Box' },
-			{ id: 'Item10', exp: 835, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
-			{ id: 'Item111', exp: 945, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free LootBox' },
-            { id: 'Item12', exp: 1000, img: 'Loading Screen/Pajama Party Cham Cham Cotton Candy.png', skinName: 'Pajama Party Cham Cham Cotton Candy', name: 'Pajama Party Cham Cham Cotton Candy Recolor' },
+            { id: 'Item5', exp: 375, img: 'Loading Screen/River Spirit Julia.png', skinName: 'River Spirit Julia', name: 'River Spirit Julia Skin' },
+			{ id: 'Item6', exp: 450, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free LootBox' },
+			{ id: 'Item7', exp: 570, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
+			{ id: 'Item8', exp: 655, img: 'Loading Screen/River Spirit Julia Golden.png', skinName: 'River Spirit Julia Golden', name: 'River Spirit Julia Golden Recolor' },
+            { id: 'Item9', exp: 780, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
+			{ id: 'Item10', exp: 835, img: 'Loading Screen/Forest Goddess Angel.png', skinName: 'Forest Goddess Angel', name: 'Forest Goddess Angel Skin' },
+            { id: 'Item11', exp: 900, img: 'Loading Screen/Forest Behemoth Astaroth.png', skinName: 'Forest Behemoth Astaroth', name: 'Forest Behemoth Astaroth Skin' },
+            { id: 'Item12', exp: 1000, img: 'Loading Screen/Forest Behemoth Astaroth Rosy.png', skinName: 'Forest Behemoth Astaroth Rosy', name: 'Forest Behemoth Astaroth Rosy Recolor' }
         ];
 
   // Ensure the function is called when the user is authenticated
   onAuthStateChanged(auth, (user) => {
-            if (user) {
-                const userId = user.uid;
-                const userRef = ref(database, 'users/' + userId);
+        if (user) {
+            const userId = user.uid;
+            const userRef = ref(database, 'users/' + userId);
 
-                get(userRef).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        const userData = snapshot.val();
-                        const userExp = userData.BattlePassExp || 0;
-                        const claimedItems = userData.BPprogress || {};
-                        const hasBattlepass = userData.hasBattlepass || false;
-                        document.getElementById('currency-amount').textContent = userData.FM || 0;
-                        document.getElementById('currency-amount-cm').textContent = userData.CM || 0;
-                        // Set BattlePassExp
-                        document.getElementById('battlepass-exp').textContent = `${userExp} BP Exp`;
-                        displayBattlePass(userExp, claimedItems);
-                        updateProgressLine(userExp);
+            get(userRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    const userExp = userData.BattlePassExp || 0;
+                    const claimedItems = userData.BPprogress || {};
+                    const hasBattlepass = userData.hasBattlepass || false;
+                    document.getElementById('currency-amount').textContent = userData.FM || 0;
+                    document.getElementById('currency-amount-cm').textContent = userData.CM || 0;
+                    // Set BattlePassExp
+                    document.getElementById('battlepass-exp').textContent = `${userExp} BP Exp`;
+                    displayBattlePass(userExp, claimedItems);
 
-                        // Hide the buy button if the user has already purchased the battlepass
-                        if (hasBattlepass) {
-                            document.querySelector('.buy-battlepass-button').style.display = 'none';
-                        }
+                    // Hide the buy button if the user has already purchased the battlepass
+                    if (hasBattlepass) {
+                        document.querySelector('.buy-battlepass-button').style.display = 'none';
                     }
-                }).catch((error) => {
-                    console.error(error);
-                });
-            } else {
-                console.log("User is not authenticated");
-                displayBattlePass(0, {}); // Display greyed-out items for unauthenticated users
-            }
-        });
+                }
+            }).catch((error) => {
+                console.error(error);
+            });
+        } else {
+            console.log("User is not authenticated");
+            displayBattlePass(0, {}); // Display greyed-out items for unauthenticated users
+        }
+    });
 
 
         function buyBattlepass() {
@@ -88,8 +87,8 @@
 
                         // Set up event listeners for the buttons
                         document.getElementById('buy-with-fm').onclick = () => {
-                            if (userFM >= 2000) {
-                                purchaseBattlepass(userId, 'FM', userFM - 2000);
+                            if (userFM >= 3000) {
+                                purchaseBattlepass(userId, 'FM', userFM - 3000);
                             } else {
                                 alert("You don't have enough FM to purchase the battlepass.");
                             }
@@ -131,73 +130,74 @@
 
 
         function displayBattlePass(userExp, claimedItems) {
-            const container = document.getElementById('battle-pass-container');
-            container.innerHTML = '<div id="progress-line" class="progress-line"></div>'; // Reset and include progress line
+    const container = document.getElementById('battle-pass-container');
 
-            const user = auth.currentUser;
-            if (user) {
-                const userId = user.uid;
-                const userRef = ref(database, 'users/' + userId);
+    const user = auth.currentUser;
+    if (user) {
+        const userId = user.uid;
+        const userRef = ref(database, 'users/' + userId);
 
-                get(userRef).then((snapshot) => {
-                    const userData = snapshot.exists() ? snapshot.val() : {};
-                    const hasBattlepass = userData.hasBattlepass || false;
+        get(userRef).then((snapshot) => {
+            const userData = snapshot.exists() ? snapshot.val() : {};
+            const hasBattlepass = userData.hasBattlepass || false;
 
-                    battlePassItems.forEach((item) => {
-                        const itemContainer = document.createElement('div');
-                        itemContainer.classList.add('battle-pass-item');
+            battlePassItems.forEach((item) => {
+                const itemContainer = document.createElement('div');
+                itemContainer.classList.add('battle-pass-item');
+                itemContainer.title = `Requires ${item.exp} BP Exp`; // Add title attribute
 
-                        const imgElement = document.createElement('img');
-                        imgElement.src = `${item.img}`;
-                        imgElement.alt = `Item ${item.exp}`;
+                const imgElement = document.createElement('img');
+                imgElement.src = `${item.img}`;
+                imgElement.alt = `Item ${item.exp}`;
 
-                        const nameElement = document.createElement('div');
-                        nameElement.classList.add('item-name');
-                        nameElement.textContent = item.name || 'Unknown Item';
+                const nameElement = document.createElement('div');
+                nameElement.classList.add('item-name');
+                nameElement.textContent = item.name || 'Unknown Item';
 
-                        itemContainer.appendChild(imgElement);
-                        itemContainer.appendChild(nameElement);
+                itemContainer.appendChild(imgElement);
+                itemContainer.appendChild(nameElement);
 
-                        if (!hasBattlepass) {
-                            itemContainer.classList.add('greyed-out');
-                            itemContainer.style.pointerEvents = 'none'; // Make unclickable
-                        } else if (userExp < item.exp) {
-                            imgElement.classList.add('locked');
-                        } else if (claimedItems[item.id]) {
-                            imgElement.classList.add('claimed');
-                        } else {
-                            itemContainer.onclick = () => claimItem(item.id, item.img, item.exp, item.folder, item.skinName, item.type);
-                        }
-
-                        container.appendChild(itemContainer);
-                    });
-                }).catch((error) => {
-                    console.error(error);
-                });
-            } else {
-                // If no user is authenticated, still display the items greyed out
-                battlePassItems.forEach((item) => {
-                    const itemContainer = document.createElement('div');
-                    itemContainer.classList.add('battle-pass-item');
-
-                    const imgElement = document.createElement('img');
-                    imgElement.src = `${item.img}`;
-                    imgElement.alt = `Item ${item.exp}`;
-
-                    const nameElement = document.createElement('div');
-                    nameElement.classList.add('item-name');
-                    nameElement.textContent = item.name || 'Unknown Item';
-
+                if (!hasBattlepass) {
                     itemContainer.classList.add('greyed-out');
                     itemContainer.style.pointerEvents = 'none'; // Make unclickable
+                } else if (userExp < item.exp) {
+                    imgElement.classList.add('locked');
+                } else if (claimedItems[item.id]) {
+                    imgElement.classList.add('claimed');
+                } else {
+                    itemContainer.onclick = () => claimItem(item.id, item.img, item.exp, item.folder, item.skinName, item.type);
+                }
 
-                    itemContainer.appendChild(imgElement);
-                    itemContainer.appendChild(nameElement);
+                container.appendChild(itemContainer);
+            });
+        }).catch((error) => {
+            console.error(error);
+        });
+    } else {
+        // If no user is authenticated, still display the items greyed out
+        battlePassItems.forEach((item) => {
+            const itemContainer = document.createElement('div');
+            itemContainer.classList.add('battle-pass-item');
+            itemContainer.title = `Requires ${item.exp} BP Exp`; // Add title attribute
 
-                    container.appendChild(itemContainer);
-                });
-            }
-        }
+            const imgElement = document.createElement('img');
+            imgElement.src = `${item.img}`;
+            imgElement.alt = `Item ${item.exp}`;
+
+            const nameElement = document.createElement('div');
+            nameElement.classList.add('item-name');
+            nameElement.textContent = item.name || 'Unknown Item';
+
+            itemContainer.classList.add('greyed-out');
+            itemContainer.style.pointerEvents = 'none'; // Make unclickable
+
+            itemContainer.appendChild(imgElement);
+            itemContainer.appendChild(nameElement);
+
+            container.appendChild(itemContainer);
+        });
+    }
+}
                 // Attach the function to the window object
                 window.buyBattlepass = buyBattlepass;
 
@@ -239,17 +239,6 @@
                     console.error(error);
                 });
             }
-        }
-
-        function updateProgressLine(userExp) {
-            const totalItems = 14; // Total number of items in the battlepass
-            const maxExp = 1500; // Set max experience to 1000
-            const progressLine = document.getElementById('progress-line');
-            const itemHeight = 100 / totalItems; // Height percentage for each item
-            const progressHeight = Math.min((userExp / maxExp) * 100, 100);
-            const currentItem = Math.floor((userExp / maxExp) * totalItems);
-            const itemProgressHeight = currentItem * itemHeight;
-            progressLine.style.height = `${itemProgressHeight}%`;
         }
     </script>
 <head>
@@ -375,16 +364,6 @@
             margin-right: 10px;
         }
 
-        .progress-line {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            width: 10px;
-            background: linear-gradient(to bottom, #0f0, #0f0);
-            transition: height 0.5s ease;
-            z-index: 0;
-            transform: translateX(-50%); /* Center the progress line horizontally */
-        }
 
         .battle-pass-item {
             display: flex;
@@ -404,7 +383,6 @@
         }
 
         .battle-pass-item img {
-            width: 100px;
             height: 100px;
             border: 2px solid #444;
             border-radius: 10px;
@@ -578,13 +556,12 @@
     <div class="price-box">
         Price:    
         <img src="res/img/fm.png" alt="FM">
-        <span>2000 FM</span>
+        <span>3000 FM</span>
         <img src="res/img/cm.png" alt="CM">
         <span>100000 CM</span>
     </div>
     <button class="buy-battlepass-button" onclick="buyBattlepass()">Buy Battlepass</button>
     <div id="battle-pass-container">
-        <div id="progress-line" class="progress-line"></div>
     </div>
 </body>
 </html>
