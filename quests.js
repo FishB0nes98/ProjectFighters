@@ -38,6 +38,31 @@ const quests = [
         image: 'Icons/Kagome.png',
         hoverText: 'Kagome Fighter Unlock'
     },
+    {
+        id: 'play10gamesArcadeEvent',
+        title: "Arcade Legends",
+        description: "Play 10 games as Raiden, Sophitia, Sub Zero, Christie, or Noel",
+        progress: 0,
+        goal: 10,
+        reward: { 'Icons/Arcade_Sub_Zero': 1 },
+        requirement: (userData, team) => {
+            const characters = ['Raiden', 'Sophitia', 'Sub Zero', 'Christie', 'Noel'];
+            return team.some(player => characters.includes(player));
+        },
+        image: 'Icons/Profile/Arcade_Sub_Zero.png',
+        hoverText: 'Arcade Sub Zero Icon'
+    },
+    {
+        id: 'play10_1vs1_games',
+        title: "1vs1 Challenger",
+        description: "Play 10 1vs1 games",
+        progress: 0,
+        goal: 10,
+        reward: { 'FM': 500 },
+        requirement: (userData) => userData.oneVsOneGamesPlayed >= 10,
+        image: 'res/img/FM.png',
+        hoverText: '500 FM'
+    },
 ];
 
 export { quests };

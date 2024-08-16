@@ -31,72 +31,76 @@ function displayJuliaStats() {
     player2StatsContainer.innerHTML = statsHTML;
 }
 
-function getOpponentKey(database, ref, playerId, callback) {
-    const playersRef = ref(database, 'players');
-    onValue(playersRef, (snapshot) => {
-        const players = snapshot.val();
-        for (const key in players) {
-            if (key !== playerId) {
-                callback(key);
+function useJuliaFirstAbility(database, ref, get, playerId, update) {
+    console.log("useJuliaFirstAbility called");
+    const playerRef = ref(database, `players/${playerId}`);
+    get(playerRef).then((snapshot) => {
+        const playerData = snapshot.val();
+        console.log("Player data:", playerData);
+        if (playerData && playerData.character === 'Julia') {
+            // Use Julia's AD value from the juliaStats object
+            const juliaAD = juliaStats.AD;
+            if (typeof juliaAD !== 'number' || isNaN(juliaAD)) {
+                console.error("Invalid or undefined AD value in juliaStats:", juliaAD);
                 return;
             }
-        }
-        console.error(`Opponent for player ${playerId} not found`);
-    });
-}
 
-function useJuliaFirstAbility(database, ref, playerId) {
-    console.log("useJuliaFirstAbility function called"); // Initial log to confirm function call
-
-    const playerRef = ref(database, `players/${playerId}`);
-    onValue(playerRef, (snapshot) => {
-        const playerData = snapshot.val();
-        console.log('Player data:', playerData);
-        if (playerData) {
-            const damage = 425 + (0.5 * playerData.AD);
-            const healing = 0.25 * damage + (playerData.HealingBoost / 100 * damage);
-
-            console.log(`Using Julia's first ability: Damage = ${damage}, Healing = ${healing}`);
-
-            // Get all players
-            const playersRef = ref(database, 'players');
-            onValue(playersRef, (snapshot) => {
-                const players = snapshot.val();
-                for (const key in players) {
-                    if (players[key].team !== playerData.team) {
-                        // Deal damage to players in the opposite team
-                        const opponentRef = ref(database, `players/${key}`);
-                        const opponentData = players[key];
-                        const newOpponentHP = opponentData.currentHP - damage;
-                        set(opponentRef, {
-                            ...opponentData,
-                            currentHP: newOpponentHP > 0 ? newOpponentHP : 0
-                        }).then(() => {
-                            console.log('Opponent HP updated');
-                            updateHP(key, newOpponentHP > 0 ? newOpponentHP : 0, opponentData.maxHP);
-                        }).catch((error) => {
-                            console.error('Error updating Opponent HP:', error);
-                        });
+            // Determine the opponent's team based on Julia's team
+            const opponentTeam = playerData.team === 'team1' ? 'team2' : 'team1';
+            const opponentRef = ref(database, `players`);
+            console.log("Fetching opponent data from:", `players/${opponentTeam}`);
+            get(opponentRef).then((opponentSnapshot) => {
+                const playersData = opponentSnapshot.val();
+                console.log("All players data:", playersData);
+                let opponentData = null;
+                let opponentKey = null;
+                for (const key in playersData) {
+                    if (playersData[key].team === opponentTeam) {
+                        opponentData = playersData[key];
+                        opponentKey = key;
+                        break;
                     }
                 }
-            });
+                console.log("Opponent data:", opponentData);
+                if (opponentData) {
+                    const damage = Math.round(juliaAD * 1.1);
+                    const healing = Math.round(damage * 0.5);
+                    const newOpponentHP = opponentData.currentHP - damage;
+                    const newPlayerHP = Math.min(playerData.maxHP, playerData.currentHP + healing);
 
-            const newPlayerHP = playerData.currentHP + healing;
-            set(playerRef, {
-                ...playerData,
-                currentHP: newPlayerHP < playerData.maxHP ? newPlayerHP : playerData.maxHP
-            }).then(() => {
-                console.log('Player HP updated');
-                updateHP(playerId, newPlayerHP < playerData.maxHP ? newPlayerHP : playerData.maxHP);
+                    // Validate calculations
+                    if (isNaN(newOpponentHP) || isNaN(newPlayerHP)) {
+                        console.error("Invalid HP calculation:", { newOpponentHP, newPlayerHP });
+                        return;
+                    }
+
+                    console.log(`Dealing ${damage} damage to opponent and healing ${healing} HP`);
+
+                    // Use transactions to ensure atomic updates
+                    update(ref(database, `players/${opponentKey}`), { currentHP: newOpponentHP }).then(() => {
+                        console.log("Opponent HP updated");
+                        update(playerRef, { currentHP: newPlayerHP }).then(() => {
+                            console.log(`Julia dealt ${damage} damage to ${opponentTeam} and healed ${healing} HP`);
+                        }).catch((error) => {
+                            console.error("Error updating Julia's HP:", error);
+                        });
+                    }).catch((error) => {
+                        console.error("Error updating opponent's HP:", error);
+                    });
+                } else {
+                    console.error("Opponent data not found");
+                }
             }).catch((error) => {
-                console.error('Error updating Player HP:', error);
+                console.error("Error getting opponent data:", error);
             });
         } else {
-            console.error('Player data not found');
+            console.error("Player data not found or character is not Julia");
         }
+    }).catch((error) => {
+        console.error("Error getting player data:", error);
     });
 }
 
 // Ensure the global variable is accessible
-window.useJuliaFirstAbility = useJuliaFirstAbility;
 window.juliaStats = juliaStats;
+window.useJuliaFirstAbility = useJuliaFirstAbility;

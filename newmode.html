@@ -12,9 +12,9 @@
             document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
         </script>
 <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
-    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
-    import { getDatabase, ref, set, onValue, push, remove, onDisconnect, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+import { getDatabase, ref, set, onValue, push, remove, onDisconnect, update, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
 
     console.log("Firebase modules imported");
 
@@ -55,116 +55,116 @@
     });
 
     function joinQueue(playerId) {
-    const playerRef = ref(database, `queue/${playerId}`);
-    set(playerRef, {
-        playerId: playerId,
-        team: null // Initialize team as null
-    });
+        const playerRef = ref(database, `queue/${playerId}`);
+        set(playerRef, {
+            playerId: playerId,
+            team: null // Initialize team as null
+        });
 
-    onDisconnect(playerRef).remove();
+        onDisconnect(playerRef).remove();
 
-    onValue(queueRef, (snapshot) => {
-        const queue = snapshot.val();
-        console.log("Queue updated:", queue);
-        if (queue && Object.keys(queue).length === 2) {
-            const players = Object.keys(queue);
-            const player1 = players[0];
-            const player2 = players[1];
-            startGame(player1, player2);
-        } else {
-            showWaitingMessage();
-        }
-    });
-}
-
-function startGame(player1, player2) {
-    const player1Ref = ref(database, `players/${player1}`);
-    const player2Ref = ref(database, `players/${player2}`);
-    set(player1Ref, { role: 'player1', team: 'team1', character: null, ready: false });
-    set(player2Ref, { role: 'player2', team: 'team2', character: null, ready: false });
-
-    remove(queueRef);
-
-    // Assign roles to the current player
-    if (playerId === player1) {
-        playerRole = 'player1';
-    } else if (playerId === player2) {
-        playerRole = 'player2';
+        onValue(queueRef, (snapshot) => {
+            const queue = snapshot.val();
+            console.log("Queue updated:", queue);
+            if (queue && Object.keys(queue).length === 2) {
+                const players = Object.keys(queue);
+                const player1 = players[0];
+                const player2 = players[1];
+                startGame(player1, player2);
+            } else {
+                showWaitingMessage();
+            }
+        });
     }
 
-    readyRef = ref(database, `players/${playerId}/ready`);
+    function startGame(player1, player2) {
+        const player1Ref = ref(database, `players/${player1}`);
+        const player2Ref = ref(database, `players/${player2}`);
+        set(player1Ref, { role: 'player1', team: 'team1', character: null, ready: false });
+        set(player2Ref, { role: 'player2', team: 'team2', character: null, ready: false });
 
-    // Remove waiting message and grey filter
-    document.getElementById('waiting-message').style.display = 'none';
-    document.getElementById('grey-filter').style.display = 'none';
+        remove(queueRef);
 
-    // Show ready button for the current player
-    document.getElementById(`${playerRole}-ready-button`).style.display = 'block';
-
-    // Listen for character selection changes
-    onValue(player1Ref, (snapshot) => {
-        const data = snapshot.val();
-        console.log("Player 1 data updated:", data);
-        if (data && data.character) {
-            updateCharacterImage('player1', data.character);
+        // Assign roles to the current player
+        if (playerId === player1) {
+            playerRole = 'player1';
+        } else if (playerId === player2) {
+            playerRole = 'player2';
         }
-        if (data && data.ready) {
-            document.getElementById('player1-ready-status').innerText = 'Ready';
-        }
-    });
 
-    onValue(player2Ref, (snapshot) => {
-        const data = snapshot.val();
-        console.log("Player 2 data updated:", data);
-        if (data && data.character) {
-            updateCharacterImage('player2', data.character);
-        }
-        if (data && data.ready) {
-            document.getElementById('player2-ready-status').innerText = 'Ready';
-        }
-    });
+        readyRef = ref(database, `players/${playerId}/ready`);
 
-    // Show arrows when both players are ready
-    document.getElementById('player1-arrow').style.display = 'block';
-    document.getElementById('player2-arrow').style.display = 'block';
+        // Remove waiting message and grey filter
+        document.getElementById('waiting-message').style.display = 'none';
+        document.getElementById('grey-filter').style.display = 'none';
 
-    // Add event listeners to arrows
-    document.getElementById('player1-arrow').addEventListener('click', () => toggleStats('player1'));
-    document.getElementById('player2-arrow').addEventListener('click', () => toggleStats('player2'));
+        // Show ready button for the current player
+        document.getElementById(`${playerRole}-ready-button`).style.display = 'block';
 
-    // Listen for disconnects
-    onDisconnect(player1Ref).remove();
-    onDisconnect(player2Ref).remove();
+        // Listen for character selection changes
+        onValue(player1Ref, (snapshot) => {
+            const data = snapshot.val();
+            console.log("Player 1 data updated:", data);
+            if (data && data.character) {
+                updateCharacterImage('player1', data.character);
+            }
+            if (data && data.ready) {
+                document.getElementById('player1-ready-status').innerText = 'Ready';
+            }
+        });
 
-    onValue(player1Ref, (snapshot) => {
-        if (!snapshot.exists()) {
-            window.location.href = 'Game Modes.html';
-        }
-    });
+        onValue(player2Ref, (snapshot) => {
+            const data = snapshot.val();
+            console.log("Player 2 data updated:", data);
+            if (data && data.character) {
+                updateCharacterImage('player2', data.character);
+            }
+            if (data && data.ready) {
+                document.getElementById('player2-ready-status').innerText = 'Ready';
+            }
+        });
 
-    onValue(player2Ref, (snapshot) => {
-        if (!snapshot.exists()) {
-            window.location.href = 'Game Modes.html';
-        }
-    });
+        // Show arrows when both players are ready
+        document.getElementById('player1-arrow').style.display = 'block';
+        document.getElementById('player2-arrow').style.display = 'block';
 
-    // Listen for both players being ready
-    onValue(ref(database, 'players'), (snapshot) => {
-        const players = snapshot.val();
-        console.log("Players data updated:", players);
-        if (players && players[player1] && players[player2] && players[player1].ready && players[player2].ready) {
-            document.querySelector('.character-selection').style.display = 'none';
-            document.getElementById('player1-ready-button').style.display = 'none';
-            document.getElementById('player2-ready-button').style.display = 'none';
-            // Show arrows when both players are ready
-            document.getElementById('player1-arrow').style.display = 'block';
-            document.getElementById('player2-arrow').style.display = 'block';
-            // Update HP bars
-            updateHP('player1', players[player1].currentHP, players[player1].maxHP);
-            updateHP('player2', players[player2].currentHP, players[player2].maxHP);
-        }
-    });
-}
+        // Add event listeners to arrows
+        document.getElementById('player1-arrow').addEventListener('click', () => toggleStats('player1'));
+        document.getElementById('player2-arrow').addEventListener('click', () => toggleStats('player2'));
+
+        // Listen for disconnects
+        onDisconnect(player1Ref).remove();
+        onDisconnect(player2Ref).remove();
+
+        onValue(player1Ref, (snapshot) => {
+            if (!snapshot.exists()) {
+                window.location.href = 'Game Modes.html';
+            }
+        });
+
+        onValue(player2Ref, (snapshot) => {
+            if (!snapshot.exists()) {
+                window.location.href = 'Game Modes.html';
+            }
+        });
+
+        // Listen for both players being ready
+        onValue(ref(database, 'players'), (snapshot) => {
+            const players = snapshot.val();
+            console.log("Players data updated:", players);
+            if (players && players[player1] && players[player2] && players[player1].ready && players[player2].ready) {
+                document.querySelector('.character-selection').style.display = 'none';
+                document.getElementById('player1-ready-button').style.display = 'none';
+                document.getElementById('player2-ready-button').style.display = 'none';
+                // Show arrows when both players are ready
+                document.getElementById('player1-arrow').style.display = 'block';
+                document.getElementById('player2-arrow').style.display = 'block';
+                // Update HP bars
+                updateHP('player1', players[player1].currentHP, players[player1].maxHP);
+                updateHP('player2', players[player2].currentHP, players[player2].maxHP);
+            }
+        });
+    }
 
     function showWaitingMessage() {
         document.getElementById('waiting-message').style.display = 'block';
@@ -172,49 +172,79 @@ function startGame(player1, player2) {
     }
 
     function initializeHP(playerRole, maxHP) {
-        const playerRef = ref(database, `players/${playerId}`);
-        set(playerRef, {
-            role: playerRole,
-            currentHP: maxHP,
-            maxHP: maxHP,
-            ready: false
-        });
-        updateHP(playerRole, maxHP, maxHP);
-    }
-
-    function selectCharacter(characterName) {
-    console.log(`Character selected: ${characterName}`);
     const playerRef = ref(database, `players/${playerId}`);
     update(playerRef, {
-        character: characterName,
-        ready: false
+        currentHP: maxHP,
+        maxHP: maxHP
     }).then(() => {
-        console.log(`Character ${characterName} set for player ${playerId}`);
-        document.getElementById(`${playerRole}-ready-button`).style.display = 'block';
-        document.getElementById(`${playerRole}-ready-button`).disabled = false;
-
-        // Load the character stats file
-        loadCharacterStats(characterName, (characterStats) => {
-            initializeHP(playerRole, characterStats.HP);
-            loadCharacterSpells(characterName); // Load spells
-        });
+        updateHP(playerRole, maxHP, maxHP);
     }).catch((error) => {
-        console.error(`Error setting character ${characterName} for player ${playerId}:`, error);
+        console.error("Error initializing HP:", error);
     });
 }
 
-    function setReady() {
-        set(readyRef, true);
-        document.getElementById(`${playerRole}-ready-button`).disabled = true;
-        document.getElementById(`${playerRole}-ready-button`).style.backgroundColor = 'grey';
+    let selectCharacterTimeout;
 
-        // Disable character selection and turn icons grey
-        const characterIcons = document.querySelectorAll('.character-icon');
-        characterIcons.forEach(icon => {
-            icon.style.pointerEvents = 'none';
-            icon.style.filter = 'grayscale(100%)';
-        });
+function selectCharacter(characterName) {
+    if (selectCharacterTimeout) {
+        clearTimeout(selectCharacterTimeout);
     }
+
+    selectCharacterTimeout = setTimeout(() => {
+        console.log(`Character selected: ${characterName}`);
+        const playerRef = ref(database, `players/${playerId}`);
+        update(playerRef, {
+            character: characterName,
+            ready: false // Ensure ready status is set to false when character is selected
+        }).then(() => {
+            console.log(`Character ${characterName} set for player ${playerId}`);
+            document.getElementById(`${playerRole}-ready-button`).style.display = 'block';
+            document.getElementById(`${playerRole}-ready-button`).disabled = false;
+
+            // Load the character stats file
+            loadCharacterStats(characterName, (characterStats) => {
+                console.log(`Character stats loaded:`, characterStats);
+                initializeHP(playerRole, characterStats.HP);
+                loadCharacterSpells(characterName); // Load spells
+            });
+        }).catch((error) => {
+            console.error(`Error setting character ${characterName} for player ${playerId}:`, error);
+        });
+    }, 300); // 300ms debounce time
+}
+
+function setReady() {
+    const playerRef = ref(database, `players/${playerId}`);
+    get(playerRef).then((snapshot) => {
+        const playerData = snapshot.val();
+        console.log("Player data before setting ready:", playerData);
+        if (playerData && playerData.character) {
+            update(playerRef, { 
+                ready: true,
+                character: playerData.character // Ensure character is included
+            })
+            .then(() => {
+                console.log("Ready status set for player:", playerId);
+                document.getElementById(`${playerRole}-ready-button`).disabled = true;
+                document.getElementById(`${playerRole}-ready-button`).style.backgroundColor = 'grey';
+
+                // Disable character selection and turn icons grey
+                const characterIcons = document.querySelectorAll('.character-icon');
+                characterIcons.forEach(icon => {
+                    icon.style.pointerEvents = 'none';
+                    icon.style.filter = 'grayscale(100%)';
+                });
+            })
+            .catch((error) => {
+                console.error("Error setting ready status:", error);
+            });
+        } else {
+            console.error("Character data not found for player");
+        }
+    }).catch((error) => {
+        console.error("Error retrieving player data:", error);
+    });
+}
 
     function updateCharacterImage(player, character) {
         const characterImage = document.getElementById(`${player}-character`);
@@ -232,11 +262,10 @@ function startGame(player1, player2) {
             script.onload = () => {
                 console.log(`${characterName} stats script loaded`);
                 const displayFunctionName = `display${characterName}Stats`;
+                const characterStats = window[`${characterName.toLowerCase()}Stats`];
                 if (typeof window[displayFunctionName] === 'function') {
                     console.log(`Calling ${displayFunctionName}`);
                     window[displayFunctionName]();
-                    // Initialize HP using the loaded stats
-                    const characterStats = window[`${characterName.toLowerCase()}Stats`];
                     if (callback) {
                         callback(characterStats);
                     }
@@ -284,25 +313,28 @@ function startGame(player1, player2) {
         }
     }
 
-    document.getElementById('player1-spell1').addEventListener('click', () => {
-        console.log("Player 1 spell 1 clicked"); // Add this log to confirm the click event
-        const playerRef = ref(database, `players/${playerId}`);
-        onValue(playerRef, (snapshot) => {
-            const playerData = snapshot.val();
-            console.log('Player data:', playerData);
-            if (playerData && playerData.character) {
-                const useAbilityFunctionName = `use${playerData.character}FirstAbility`;
-                console.log(`Calling function: ${useAbilityFunctionName}`);
-                if (typeof window[useAbilityFunctionName] === 'function') {
-                    window[useAbilityFunctionName](database, ref, playerId); // Pass the database, ref function, and playerId
-                } else {
-                    console.error(`${useAbilityFunctionName} function is not defined`);
-                }
+    function useAbility(abilityType) {
+    const playerRef = ref(database, `players/${playerId}`);
+    onValue(playerRef, (snapshot) => {
+        const playerData = snapshot.val();
+        console.log("Player data:", playerData);
+        if (playerData && playerData.character) {
+            const character = playerData.character;
+            const abilityFunctionName = `use${character}${abilityType}`;
+            if (typeof window[abilityFunctionName] === 'function') {
+                window[abilityFunctionName](database, ref, onValue, playerId, update);
             } else {
-                console.error('Player data or character not found');
+                console.error(`Ability ${abilityType} for character ${character} is not defined`);
             }
-        });
+        } else {
+            console.error('Player data or character not found');
+        }
     });
+}
+document.getElementById('player1-spell1').addEventListener('click', () => {
+    console.log("Player 1 spell 1 clicked");
+    useJuliaFirstAbility(database, ref, get, playerId, update);
+});
 
     window.selectCharacter = selectCharacter;
     window.setReady = setReady;

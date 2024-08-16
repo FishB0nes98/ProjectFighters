@@ -29,5 +29,11 @@ function displayShomaStats() {
     player2StatsContainer.innerHTML = statsHTML;
 }
 
+function useShomaFirstAbility(database, ref, onValue, playerId, update) {
+    // Define Shoma's first ability here
+    console.log("Shoma's first ability used");
+}
+
 // Ensure the global variable is accessible
 window.shomaStats = shomaStats;
+window.useShomaFirstAbility = useShomaFirstAbility;
