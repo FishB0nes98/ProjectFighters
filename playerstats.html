@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Stats</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            padding: 0;
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px; /* Ensures table starts below the menu */
+        }
+
+        thead {
+            background-color: #333333;
+        }
+
+        th, td {
+            border: 1px solid #444444;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #ff9800;
+            color: white;
+            cursor: pointer;
+        }
+
+        img {
+            margin-right: 10px;
+            vertical-align: middle;
+            width: 50px;
+            height: 50px;
+        }
+
+        /* Transparent Menu */
+        .menu {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 0;
+        }
+
+        .menu-items {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 16px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+
+        .play-button {
+            background-color: #ffbb00; /* Modern blue color */
+            color: white;
+            border: none;
+            border-radius: 25px; /* Slightly less rounded corners for a modern look */
+            font-size: 22px; /* Slightly larger font size */
+            font-weight: bold;
+            text-decoration: none;
+            padding: 15px 40px; /* Increased padding for a more prominent button */
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* More pronounced shadow for a modern effect */
+            top: 0px;
+            position: absolute;
+            left: 0px;
+        }
+
+        .play-button:hover {
+            background-color: #ff8800;  /* Slightly darker blue on hover */
+            transform: scale(1.05); /* Slightly enlarge the button on hover */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .search-container input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #444444;
+            border-radius: 5px;
+            width: 300px;
+            background-color: #333333;
+            color: white;
+        }
+
+        .search-container button {
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff9800;
+            color: white;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .search-container button:hover {
+            background-color: #ff8800;
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body>
+    <!-- Menu -->
+    <div class="menu">
+        <div class="menu-items">
+            <a href="home.html">Home</a>
+            <a href="Store.html">Store</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+            <a href="statistics.html">Statistics</a>
+        </div>
+    </div>
+    <div class="play-button-container">
+        <a href="Game Modes.html" class="play-button">Play</a>
+    </div>
+    <div class="search-container">
+        <input type="text" id="usernameInput" placeholder="Enter player's username">
+        <button onclick="fetchPlayerData()">Search</button>
+    </div>
+    <table id="playerTable">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)">Character</th>
+                <th onclick="sortTable(1)">Win Rate</th>
+                <th onclick="sortTable(2)">Wins</th>
+                <th onclick="sortTable(3)">Losses</th>
+                <th onclick="sortTable(4)">Max Games</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be added here by JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        // Your Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        var database = firebase.database();
+
+        function fetchPlayerData() {
+            var username = document.getElementById('usernameInput').value;
+            console.log("Searching for username:", username); // Log the username input
+            if (username) {
+                // Search for the user ID by username
+                database.ref('users').orderByChild('username').equalTo(username).once('value', function(snapshot) {
+                    if (snapshot.exists()) {
+                        snapshot.forEach(function(userSnapshot) {
+                            var userId = userSnapshot.key;
+                            console.log("User ID:", userId); // Log the user ID
+                            // Now, get the character data using the user ID
+                            database.ref('users/' + userId + '/characters').once('value', function(snapshot) {
+                                console.log("Firebase query snapshot:", snapshot.val()); // Log the Firebase query result
+                                var tableBody = document.querySelector('#playerTable tbody');
+                                tableBody.innerHTML = ''; // Clear previous results
+                                snapshot.forEach(function(childSnapshot) {
+                                    var character = childSnapshot.key;
+                                    var data = childSnapshot.val();
+                                    console.log("Character data:", character, data); // Log each character's data
+                                    var wins = data.win || 0;
+                                    var losses = data.lose || 0;
+                                    var winRate = (wins + losses) > 0 ? ((wins / (wins + losses)) * 100).toFixed(2) + '%' : '0%';
+                                    var maxGames = wins + losses;
+
+                                    addTableRow(character, wins, losses, winRate, maxGames);
+                                });
+                            });
+                        });
+                    } else {
+                        console.log("User not found");
+                    }
+                });
+            }
+        }
+
+        function addTableRow(character, wins, losses, winRate, maxGames) {
+            var tableBody = document.querySelector('#playerTable tbody');
+            var row = document.createElement('tr');
+            
+            var cellCharacter = document.createElement('td');
+            var img = document.createElement('img');
+            img.src = `Icons/${character}.png`;
+            img.alt = character;
+            var anchor = document.createElement('a');
+            anchor.href = `characters/${character} Page.html`;
+            anchor.textContent = character;
+            anchor.style.color = 'white'; // Adjust link color as needed
+
+            cellCharacter.appendChild(img);
+            cellCharacter.appendChild(anchor);
+
+            var cellWinRate = document.createElement('td');
+            cellWinRate.textContent = winRate;
+
+            var cellWins = document.createElement('td');
+            cellWins.textContent = wins;
+
+            var cellLosses = document.createElement('td');
+            cellLosses.textContent = losses;
+
+            var cellMaxGames = document.createElement('td');
+            cellMaxGames.textContent = maxGames;
+
+            row.appendChild(cellCharacter);
+            row.appendChild(cellWinRate);
+            row.appendChild(cellWins);
+            row.appendChild(cellLosses);
+            row.appendChild(cellMaxGames);
+            tableBody.appendChild(row);
+        }
+
+        function sortTable(columnIndex) {
+            var table = document.getElementById("playerTable");
+            var rows = Array.from(table.rows).slice(1);
+            var isNumericColumn = columnIndex > 0; // Win Rate, Wins, Losses, and Max Games are numeric
+
+            rows.sort(function(a, b) {
+                var cellA = a.cells[columnIndex].innerText;
+                var cellB = b.cells[columnIndex].innerText;
+
+                if (isNumericColumn) {
+                    var numA = parseFloat(cellA.replace('%', ''));
+                    var numB = parseFloat(cellB.replace('%', ''));
+                    return numB - numA; // Sort numerically, highest to lowest
+                } else {
+                    return cellA.localeCompare(cellB); // Sort alphabetically
+                }
+            });
+
+            rows.forEach(function(row) {
+                table.tBodies[0].appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>

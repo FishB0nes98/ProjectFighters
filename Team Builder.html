@@ -13,6 +13,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
         h1 {
             text-align: center;
@@ -32,20 +34,40 @@
             flex-direction: column;
             align-items: center;
             background-color: #333;
-            padding: 40px;
+            padding: 20px;
             border-radius: 10px;
             width: 40%;
         }
         .champion-pool {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             background-color: #333;
             padding: 10px;
             max-width: 1300px;
             margin: 20px auto;
             border-radius: 10px;
+            overflow-y: auto;
+        }
+        .role-container {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .role-container h3 {
+            cursor: pointer;
+            background-color: #444;
+            padding: 10px;
+            margin: 0;
+            border-radius: 5px;
+        }
+        .role-container .champion-list {
+            display: none;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            background-color: #333;
+            padding: 10px;
+            border-radius: 5px;
         }
         .champion-image {
             margin: 5px;
@@ -65,6 +87,37 @@
         }
         .banned {
             border-color: red;
+        }
+        .team, .ban {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .team .champion-slot, .ban .champion-slot {
+            width: 100px;
+            height: 100px;
+            margin: 0 10px;
+            border: 2px dashed #555;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+        .ban .champion-slot {
+            width: 50px;
+            height: 50px;
+        }
+        .team .champion-slot.selected, .ban .champion-slot.banned {
+            border-color: transparent;
+        }
+        .team .champion-slot img, .ban .champion-slot img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .ban .champion-slot img {
+            max-width: 50px;
+            max-height: 50px;
         }
         .menu {
         display: flex;
@@ -100,9 +153,7 @@
     justify-content: flex-start;
     padding: 20px;
     z-index: auto;
-    position: absolute;
-    top: 5px; /* Adjusted position */
-    left: 0px;
+    position: fixed;
 }
 
     .play-button {
@@ -117,6 +168,9 @@
         transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* More pronounced shadow for a modern effect */
         z-index: 1; /* Ensure it is above other elements */
+        top: 5px; /* Adjusted position */
+        position: fixed;
+        left: 0px;
     }
 
     .play-button:hover {
@@ -124,47 +178,6 @@
         transform: scale(1.05); /* Slightly enlarge the button on hover */
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
     }
-
-
-		.battlepass-button {
-			background-color: red; /* Gold background */
-			color: #000; /* Black text */
-			border-radius: 25px; /* Rounded corners */
-			font-size: 12px;
-			text-transform: uppercase; /* Uppercase text */
-			margin-right: 300px;
-		}
-        .team, .ban {
-            margin: 20px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .team .champion-slot, .ban .champion-slot {
-            width: 100px;
-            height: 100px;
-            margin: 0 10px;
-            border: 2px dashed #555;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background-color 0.2s;
-        }
-        .ban .champion-slot {
-            width: 50px;
-            height: 50px;
-        }
-        .team .champion-slot.selected, .ban .champion-slot.banned {
-            border-color: transparent;
-        }
-        .team .champion-slot img, .ban .champion-slot img {
-            max-width: 100%;
-            max-height: 100%;
-        }
-        .ban .champion-slot img {
-            max-width: 50px;
-            max-height: 50px;
-        }
     </style>
 </head>
 <body>
@@ -216,43 +229,10 @@
         </div>
     </div>
     <div class="champion-pool" id="champion-pool">
-        <img src="Icons/Julia.png" alt="Julia" class="champion-image" onclick="selectChampion('Julia')">
-        <img src="Icons/Birdie.png" alt="Birdie" class="champion-image" onclick="selectChampion('Birdie')">
-        <img src="Icons/Erron Black.png" alt="Erron Black" class="champion-image" onclick="selectChampion('Erron Black')">
-        <img src="Icons/Cham Cham.png" alt="Cham Cham" class="champion-image" onclick="selectChampion('Cham Cham')">
-        <img src="Icons/Morrigan.png" alt="Morrigan" class="champion-image" onclick="selectChampion('Morrigan')">
-        <img src="Icons/Jun.png" alt="Jun" class="champion-image" onclick="selectChampion('Jun')">
-        <img src="Icons/Reptile.png" alt="Reptile" class="champion-image" onclick="selectChampion('Reptile')">
-        <img src="Icons/Akuma.png" alt="Akuma" class="champion-image" onclick="selectChampion('Akuma')">
-        <img src="Icons/Elphelt.png" alt="Elphelt" class="champion-image" onclick="selectChampion('Elphelt')">
-        <img src="Icons/Kotal Kahn.png" alt="Kotal Kahn" class="champion-image" onclick="selectChampion('Kotal Kahn')">
-        <img src="Icons/Scorpion.png" alt="Scorpion" class="champion-image" onclick="selectChampion('Scorpion')">
-        <img src="Icons/Peacock.png" alt="Peacock" class="champion-image" onclick="selectChampion('Peacock')">
-        <img src="Icons/Angel.png" alt="Angel" class="champion-image" onclick="selectChampion('Angel')">
-        <img src="Icons/Astaroth.png" alt="Astaroth" class="champion-image" onclick="selectChampion('Astaroth')">
-        <img src="Icons/Ibuki.png" alt="Ibuki" class="champion-image" onclick="selectChampion('Ibuki')">
-        <img src="Icons/R.Mika.png" alt="R.Mika" class="champion-image" onclick="selectChampion('R.Mika')">
-        <img src="Icons/Raiden.png" alt="Raiden" class="champion-image" onclick="selectChampion('Raiden')">
-        <img src="Icons/Yugo.png" alt="Yugo" class="champion-image" onclick="selectChampion('Yugo')">
-        <img src="Icons/Talim.png" alt="Talim" class="champion-image" onclick="selectChampion('Talim')">
-        <img src="Icons/Noel.png" alt="Noel" class="champion-image" onclick="selectChampion('Noel')">
-		<img src="Icons/Blanka.png" alt="Blanka" class="champion-image" onclick="selectChampion('Blanka')">
-		<img src="Icons/Nina.png" alt="Nina" class="champion-image" onclick="selectChampion('Nina')">
-		<img src="Icons/Ayane.png" alt="Ayane" class="champion-image" onclick="selectChampion('Ayane')">
-		<img src="Icons/Siegfried.png" alt="Siegfried" class="champion-image" onclick="selectChampion('Siegfried')">
-		<img src="Icons/Shoma.png" alt="Shoma" class="champion-image" onclick="selectChampion('Shoma')">
-		<img src="Icons/Juri.png" alt="Juri" class="champion-image" onclick="selectChampion('Juri')">
-		<img src="Icons/Sub Zero.png" alt="Sub Zero" class="champion-image" onclick="selectChampion('Sub Zero')">
-		<img src="Icons/Christie.png" alt="Christie" class="champion-image" onclick="selectChampion('Christie')">
-        <img src="Icons/Kokoro.png" alt="Kokoro" class="champion-image" onclick="selectChampion('Kokoro')">
-        <img src="Icons/Eagle.png" alt="Eagle" class="champion-image" onclick="selectChampion('Eagle')">
-        <img src="Icons/Sophitia.png" alt="Sophitia" class="champion-image" onclick="selectChampion('Sophitia')">
-        <img src="Icons/Shizumaru.png" alt="Shizumaru" class="champion-image" onclick="selectChampion('Shizumaru')">
-        <img src="Icons/Kagome.png" alt="Kagome" class="champion-image" onclick="selectChampion('Kagome')">
-        <img src="Icons/Kabal.png" alt="Kabal" class="champion-image" onclick="selectChampion('Kabal')">
-    </div>
 
-    <script>
+    <script type="module">
+        import { roles } from './roles.js';
+
         let selectedChampion = null;
         const teamSlots = {
             my: Array(5).fill(null),
@@ -263,11 +243,36 @@
             enemy: Array(3).fill(null)
         };
 
-        function selectChampion(championName) {
+        function createChampionPool() {
+            const championPool = document.getElementById('champion-pool');
+            for (const [role, champions] of Object.entries(roles)) {
+                const roleContainer = document.createElement('div');
+                roleContainer.classList.add('role-container');
+                roleContainer.innerHTML = `<h3 onclick="toggleRole('${role}')">${role}</h3><div class="champion-list" id="${role}-list"></div>`;
+                champions.forEach(champion => {
+                    const img = document.createElement('img');
+                    img.src = `Icons/${champion}.png`;
+                    img.alt = champion;
+                    img.classList.add('champion-image');
+                    img.onclick = () => selectChampion(champion);
+                    roleContainer.querySelector('.champion-list').appendChild(img);
+                });
+                championPool.appendChild(roleContainer);
+            }
+        }
+
+        window.toggleRole = function(role) {
+            const list = document.getElementById(`${role}-list`);
+            list.style.display = list.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        createChampionPool();
+
+        window.selectChampion = function(championName) {
             selectedChampion = championName;
         }
 
-        function banChampion(team, slotIndex) {
+        window.banChampion = function(team, slotIndex) {
             if (selectedChampion && !banSlots[team].includes(selectedChampion) && !teamSlots.my.includes(selectedChampion) && !teamSlots.enemy.includes(selectedChampion)) {
                 banSlots[team][slotIndex] = selectedChampion;
                 updateBans(team);
@@ -275,7 +280,7 @@
             }
         }
 
-        function selectForTeam(team, slotIndex) {
+        window.selectForTeam = function(team, slotIndex) {
             if (selectedChampion && !teamSlots[team].includes(selectedChampion) && !banSlots.my.includes(selectedChampion) && !banSlots.enemy.includes(selectedChampion)) {
                 teamSlots[team][slotIndex] = selectedChampion;
                 updateTeam(team);
@@ -283,7 +288,7 @@
             }
         }
 
-        function updateBans(team) {
+        window.updateBans = function(team) {
             const banElements = document.querySelectorAll(`#${team}-bans .champion-slot`);
             banElements.forEach((el, index) => {
                 el.innerHTML = banSlots[team][index] ? `<img src="Icons/${banSlots[team][index]}.png" alt="${banSlots[team][index]}">` : '';
@@ -291,7 +296,7 @@
             });
         }
 
-        function updateTeam(team) {
+        window.updateTeam = function(team) {
             const teamElements = document.querySelectorAll(`#${team}-team .champion-slot`);
             teamElements.forEach((el, index) => {
                 el.innerHTML = teamSlots[team][index] ? `<img src="Icons/${teamSlots[team][index]}.png" alt="${teamSlots[team][index]}">` : '';

@@ -11,20 +11,6 @@ const quests = [
         hoverText: 'Basic Lootbox'
     },
     {
-        id: 'play10gamesAsForestCharacters',
-        title: "Secrets of the Forest",
-        description: "Play 10 games as Angel, Julia, Astaroth, Kotal Kahn, Morrigan, or Talim",
-        progress: 0,
-        goal: 10,
-        reward: { 'CM': 4500 },
-        requirement: (userData, team) => {
-            const characters = ['Angel', 'Julia', 'Astaroth', 'Kotal Kahn', 'Morrigan', 'Talim'];
-            return team.some(player => characters.includes(player));
-        },
-        image: 'res/img/cm.png',
-        hoverText: '4500 CM'
-    },
-    {
         id: 'win4gamesAgainstInfernalAttackVol2',
         title: "Infernal Attack vol.2",
         description: "Win 4 games against Scorpion, Raiden, Birdie, Julia, Astaroth, Ibuki",
@@ -39,27 +25,27 @@ const quests = [
         hoverText: 'Kagome Fighter Unlock'
     },
     {
-        id: 'play10gamesArcadeEvent',
-        title: "Arcade Legends",
-        description: "Play 10 games as Raiden, Sophitia, Sub Zero, Christie, or Noel",
+        id: 'play1gameAsKuma',
+        title: "The Bears Are Coming",
+        description: "Play 1 game as Kuma",
         progress: 0,
-        goal: 10,
-        reward: { 'Icons/Arcade_Sub_Zero': 1 },
+        goal: 1,
+        reward: { 'Icons/Panda': 1 },
         requirement: (userData, team) => {
-            const characters = ['Raiden', 'Sophitia', 'Sub Zero', 'Christie', 'Noel'];
+            const characters = ['Kuma'];
             return team.some(player => characters.includes(player));
         },
-        image: 'Icons/Profile/Arcade_Sub_Zero.png',
-        hoverText: 'Arcade Sub Zero Icon'
+        image: 'Icons/Profile/Panda.png',
+        hoverText: 'Panda Icon'
     },
     {
-        id: 'play10_1vs1_games',
-        title: "1vs1 Challenger",
-        description: "Play 10 1vs1 games",
+        id: 'play10ARAMGames',
+        title: "Introducing Rerolls",
+        description: "Play 10 ARAM games",
         progress: 0,
         goal: 10,
         reward: { 'FM': 500 },
-        requirement: (userData) => userData.oneVsOneGamesPlayed >= 10,
+        requirement: (userData) => userData.aramGamesPlayed >= 10,
         image: 'res/img/FM.png',
         hoverText: '500 FM'
     },
