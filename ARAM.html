@@ -16,6 +16,8 @@
     import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
     import { getDatabase, ref, push, set, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
     import { quests } from './quests.js';
+    import { characters } from './characterskinref.js'; // Import characters
+    import { skinToBaseCharacterMap } from './skinmapping.js'; // Import skinToBaseCharacterMap
     
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
@@ -34,246 +36,6 @@
 		
         let charactersWithBorders = {}; // Store characters with their respective borders
 let charactersWithBanners = {}; // Store characters with their respective banners
-
-const characters = {
-			'Akuma': ['Akuma', 'Rockstar Akuma', 'Thunder God Akuma', 'Captain Akuma', 'High Elf Akuma'],
-			'Angel': ['Angel', 'Blossom Angel', 'Voidborn Angel', 'Neon Core Angel', 'Forest Goddess Angel'],
-			'Astaroth': ['Forest Behemoth Astaroth', 'Forest Behemoth Astaroth Gilded', 'Forest Behemoth Astaroth Opulent', 'Forest Behemoth Astaroth Rosy', 'Forest Behemoth Astaroth Ashen', 'Astaroth', 'Arctic Monster Astaroth', 'Royal Guard Astaroth', 'Sand Soldier Astaroth', 'Infernal Astaroth'],
-			'Ayane': ['Ayane', 'Obsidian Wraith Ayane', 'Schoolgirl Ayane'],
-			'Birdie': ['Birdie', 'Professional Weightlifter Birdie', 'Rockstar Birdie', 'Sand Soldier Birdie', 'Infernal Birdie'],
-			'Blanka': ['Blanka', 'Blanka Red', 'Professional Baller Blanka', 'Pajama Party Blanka'],
-			'Cham Cham': ['Cham Cham', 'Blossom Cham Cham', 'Cham Cham Monochrome', 'Neon Core Cham Cham', 'Pajama Party Cham Cham', 'Pajama Party Cham Cham Cotton Candy', 'Pajama Party Cham Cham Aqua Dream', 'Pajama Party Cham Cham Berry Burst', 'Pajama Party Cham Cham Peachy Keen'],
-			'Elphelt': ['Elphelt', 'Cyber Hunter Elphelt', 'Maid Elphelt', 'Summertime Elphelt', 'Schoolgirl Elphelt', 'Goth Elphelt', 'Goth Elphelt Golden', 'Goth Elphelt Crimson Noir', 'Goth Elphelt Midnight Azure', 'Goth Elphelt White'],
-			'Erron Black': ['Erron Black', 'Arctic Hunter Erron Black', 'Country Erron Black', 'Mafia Leader Erron Black', 'Neon Core Erron Black'],
-			'Ibuki': ['Ibuki', 'Cyber Ninja Ibuki', 'Demon Hunter Ibuki', 'DJ Ibuki', 'Professional Athlete Ibuki', 'Infernal Ibuki', 'Infernal Ibuki Greenfire', 'Infernal Ibuki Silver Flame', 'Infernal Ibuki Golden Flame', 'Infernal Ibuki Blue Flame', 'Lady Deadpool Ibuki'],
-			'Juri': ['Primal Warrior Juri','Juri', 'Casual Wear Juri'],
-			'Julia': ['Julia', 'Disco Queen Julia', 'Dragon Tamer Julia', 'River Spirit Julia', 'Infernal Julia', 'Schoolgirl Julia', 'River Spirit Julia Golden'],
-			'Jun': ['Jun', 'Blossom Jun', 'Dragon Tamer Jun', 'Summertime Jun', 'High Elf Jun'],
-			'Kotal Kahn': ['Primal Warrior Kotal Kahn', 'Kotal Kahn', 'Cyber Warrior Kotal Kahn', 'Demon Lord Kotal Kahn', 'Summertime Kotal Kahn', 'Forest Warden Kotal Kahn'],
-			'Morrigan': ['Morrigan', 'Dragon Tamer Morrigan', 'Neon Core Morrigan', 'High Elf Morrigan', 'High Elf Morrigan Jade', 'High Elf Morrigan Ghost', 'High Elf Morrigan Darkness', 'High Elf Morrigan Silver Crimson', 'Forest Guardian Morrigan'],
-			'Nina': ['Nina', 'Arctic Huntress Nina', 'Farmer Nina', 'Summertime Nina'],
-			'Noel': ['Arcade Noel', 'Noel', 'Arctic Huntress Noel', 'Officer Noel', 'Captain Noel', 'High Elf Noel'],
-			'Peacock': ['Peacock', 'Arctic Huntress Peacock', 'Cyber Bomber Peacock', 'Captain Peacock'],
-			'R Mika': ['R Mika', 'Phoenix R Mika', 'Pop Star R Mika', 'Professional Tennis Player R Mika', 'Goth R Mika'],
-			'Raiden': ['Arcade Raiden','Raiden', 'Dragon Tamer Raiden', 'Master of Monks Raiden', 'Infernal Raiden', 'Raiden Red', 'Neon Core Raiden', 'Neon Core Raiden Scarlet', 'Neon Core Raiden Emerald', 'Neon Core Raiden Silver', 'Neon Core Raiden White'],
-			'Reptile': ['Reptile', 'Blood Predator Reptile', 'Cyber Ninja Reptile', 'Cyber Predator Reptile', 'Summertime Reptile', 'Reptile Sand', 'Goth Reptile'],
-			'Scorpion': ['Primal Warrior Scrorpion', 'Scorpion', 'Scorpion Blossom', 'Scorpion Spider', 'Infernal Scorpion', 'Deadpool Scorpion'],
-			'Siegfried': ['Siegfried', 'Professional Footballer Siegfried', 'Schoolboy Siegfried', 'Schoolboy Siegfried Azure', 'Schoolboy Siegfried Crimson', 'Schoolboy Siegfried Obisidan Sapphire', 'Schoolboy Siegfried Regal Midnight', 'High Elf Siegfried'],
-			'Talim': ['Talim', 'Sand Soldier Talim', 'Talim Bloody', 'Captain Talim', 'Windwood Talim'],
-			'Yugo': ['Yugo', 'Arctic Beast Yugo', 'Cyber Predator Yugo', 'Wolverine Yugo'],
-			'Shoma': ['Primal Warrior Shoma', 'Shoma', 'Summertime Shoma', 'Pirate Shoma', 'Pirate Shoma Blue', 'Pirate Shoma Jade', 'Pirate Shoma Monochrome', 'Pirate Shoma Violet', 'Shoma Schoolboy', 'Pajama Party Shoma'],
-			'Sub Zero': ['Arcade Sub Zero', 'Arcade Sub Zero Abyssal Depths', 'Arcade Sub Zero Frosty Forest', 'Arcade Sub Zero Cybernetic Surge', 'Arcade Sub Zero Galactic Void', 'Arcane Sorcerer Sub Zero', 'Neon Core Sub Zero'],
-            'Christie': ['Arcade Christie', 'Christie', 'Chris T', 'Pajama Party Christie'],
-            'Kokoro': ['Kokoro', 'Schoolgirl Kokoro', 'Pajama Party Kokoro'],
-            'Eagle': ['Eagle', 'High Elf Eagle', 'Goth Eagle'],
-            'Sophitia': ['Arcade Sophitia', 'Sophitia', 'Goth Sophitia'],
-            'Shizumaru': ['Shizumaru', 'Samurai Shizumaru'],
-            'Kagome': ['Primal Huntress Kagome', 'Primal Huntress Kagome Bear', 'Primal Huntress Kagome Tiger', 'Primal Huntress Kagome Leaf', 'Primal Huntress Kagome Leopard', 'Kagome', 'Spectral Archer Kagome'],
-            'Kabal': ['Kabal', 'Frosted Kabal'],
-            'Kuma': ['Panda', 'Kuma'],
-		};
-        
-        const skinToBaseCharacterMap = {
-            'Akuma': 'Akuma',
-            'Angel': 'Angel',
-            'Arctic Beast Yugo': 'Yugo',
-            'Arctic Hunter Erron Black': 'Erron Black',
-            'Arctic Huntress Nina': 'Nina',
-            'Arctic Huntress Noel': 'Noel',
-            'Arctic Huntress Peacock': 'Peacock',
-            'Arctic Monster Astaroth': 'Astaroth',
-            'Astaroth': 'Astaroth',
-            'Ayane': 'Ayane',
-            'Birdie': 'Birdie',
-            'Blanka': 'Blanka',
-            'Blood Predator Reptile': 'Reptile',
-            'Blossom Angel': 'Angel',
-            'Blossom Cham Cham': 'Cham Cham',
-            'Blossom Jun': 'Jun',
-            'Scorpion Blossom': 'Scorpion',
-            'Cham Cham': 'Cham Cham',
-            'Country Erron Black': 'Erron Black',
-            'Cyber Bomber Peacock': 'Peacock',
-            'Cyber Hunter Elphelt': 'Elphelt',
-            'Cyber Ninja Reptile': 'Reptile',
-            'Cyber Ninja Ibuki': 'Ibuki',
-            'Cyber Predator Yugo': 'Yugo',
-            'Cyber Predator Reptile': 'Reptile',
-            'Cyber Warrior Kotal Kahn': 'Kotal Kahn',
-            'Demon Hunter Ibuki': 'Ibuki',
-            'Demon Lord Kotal Kahn': 'Kotal Kahn',
-            'Disco Queen Julia': 'Julia',
-            'DJ Ibuki': 'Ibuki',
-            'Dragon Tamer Julia': 'Julia',
-            'Dragon Tamer Jun': 'Jun',
-            'Dragon Tamer Morrigan': 'Morrigan',
-            'Dragon Tamer Raiden': 'Raiden',
-            'Elphelt': 'Elphelt',
-            'Blanka Red': 'Blanka',
-            'Erron Black': 'Erron Black',
-            'Farmer Nina': 'Nina',
-            'Ibuki': 'Ibuki',
-            'Julia': 'Julia',
-            'Jun': 'Jun',
-            'Kotal Kahn': 'Kotal Kahn',
-            'Mafia Leader Erron Black': 'Erron Black',
-            'Maid Elphelt': 'Elphelt',
-            'Master of Monks Raiden': 'Raiden',
-            'Morrigan': 'Morrigan',
-            'Neon Core Morrigan': 'Morrigan',
-            'Nina': 'Nina',
-            'Noel': 'Noel',
-            'Obsidian Wraith Ayane': 'Ayane',
-            'Officer Noel': 'Noel',
-            'Peacock': 'Peacock',
-            'Phoenix R Mika': 'R Mika',
-            'Pop Star R Mika': 'R Mika',
-            'Professional Athlete Ibuki': 'Ibuki',
-            'Professional Weightlifter Birdie': 'Birdie',
-            'Professional Baller Blanka': 'Blanka',
-            'Professional Footballer Siegfried': 'Siegfried',
-            'Professional Tennis Player R Mika': 'R Mika',
-            'R Mika': 'R Mika',
-            'Raiden': 'Raiden',
-            'Ibuki Red': 'Ibuki',
-            'Reptile': 'Reptile',
-            'River Spirit Julia': 'Julia',
-            'Rockstar Akuma': 'Akuma',
-            'Rockstar Birdie': 'Birdie',
-            'Royal Guard Astaroth': 'Astaroth',
-            'Sand Soldier Astaroth': 'Astaroth',
-            'Sand Soldier Birdie': 'Birdie',
-            'Reptile Sand': 'Reptile',
-            'Sand Soldier Talim': 'Talim',
-            'Scorpion': 'Scorpion',
-            'Siegfried': 'Siegfried',
-            'Scorpion Spider': 'Scorpion',
-            'Street Fighter Hugo': 'Hugo',
-            'Talim': 'Talim',
-            'Thunder God Akuma': 'Akuma',
-            'Talim Bloody': 'Talim',
-            'Voidborn Angel': 'Angel',
-            'Yugo': 'Yugo',
-            'Summertime Elphelt': 'Elphelt',
-            'Summertime Jun': 'Jun',
-            'Summertime Kotal Kahn': 'Kotal Kahn',
-            'Summertime Nina': 'Nina',
-            'Summertime Reptile': 'Reptile',
-            'Summertime Shoma': 'Shoma',
-            'Shoma': 'Shoma',
-            'Juri': 'Juri',
-            'Casual Wear Juri': 'Juri',
-            'Infernal Raiden': 'Raiden',
-            'Infernal Birdie': 'Birdie',
-            'Infernal Ibuki': 'Ibuki',
-            'Infernal Ibuki Greenfire': 'Ibuki',
-            'Infernal Astaroth': 'Astaroth',
-            'Infernal Scorpion': 'Scorpion',
-            'Cham Cham Monochrome': 'Cham Cham',
-            'Raiden Red': 'Raiden',
-            'Infernal Ibuki Silver Flame': 'Ibuki',
-            'Infernal Ibuki Golden Flame': 'Ibuki',
-            'Infernal Ibuki Blue Flame': 'Ibuki',
-            'Arcane Sorcerer Sub Zero': 'Sub Zero',
-            'Captain Akuma': 'Akuma',
-            'Captain Talim': 'Talim',
-            'Captain Peacock': 'Peacock',
-            'Captain Noel': 'Noel',
-            'Pirate Shoma': 'Shoma',
-            'Pirate Shoma Jade': 'Shoma',
-            'Pirate Shoma Blue': 'Shoma',
-            'Pirate Shoma Monochrome': 'Shoma',
-            'Pirate Shoma Violet': 'Shoma',
-            'Neon Core Angel': 'Angel',
-            'Neon Core Cham Cham': 'Cham Cham',
-            'Neon Core Erron Black': 'Erron Black',
-            'Neon Core Raiden Emerald': 'Raiden',
-            'Neon Core Raiden White': 'Raiden',
-            'Neon Core Raiden Silver': 'Raiden',
-            'Neon Core Raiden Scarlet': 'Raiden',
-            'Neon Core Sub Zero': 'Sub Zero',
-            'Chris T': 'Christie',
-            'Christie': 'Christie',
-            'Kokoro': 'Kokoro',
-            'Schoolgirl Kokoro': 'Kokoro',
-            'Infernal Julia': 'Julia',
-            'Schoolgirl Julia': 'Julia',
-            'Schoolgirl Elphelt': 'Elphelt',
-            'Schoolboy Siegfried': 'Siegfried',
-            'Shoma Schoolboy': 'Shoma',
-            'Schoolgirl Ayane': 'Ayane',
-            'Schoolboy Siegfried Azure': 'Siegfried',
-            'Schoolboy Siegfried Crimson': 'Siegfried',
-            'Schoolboy Siegfried Obisidan Sapphire': 'Siegfried',
-            'Schoolboy Siegfried Regal Midnight': 'Siegfried',
-            'High Elf Siegfried': 'Siegfried',
-            'High Elf Eagle': 'Eagle',
-            'High Elf Morrigan': 'Morrigan',
-            'High Elf Morrigan Jade': 'Morrigan',
-            'High Elf Morrigan Ghost': 'Morrigan',
-            'High Elf Morrigan Darkness': 'Morrigan',
-            'High Elf Morrigan Silver Crimson': 'Morrigan',
-            'High Elf Noel': 'Noel',
-            'High Elf Akuma': 'Akuma',
-            'High Elf Jun': 'Jun',
-            'Goth Sophitia': 'Sophitia',
-            'Goth Elphelt': 'Elphelt',
-            'Goth Elphelt Golden': 'Elphelt',
-            'Goth Elphelt Crimson Noir': 'Elphelt',
-            'Goth Elphelt Midnight Azure': 'Elphelt',
-            'Goth Elphelt White': 'Elphelt',
-            'Goth Eagle': 'Eagle',
-            'Goth Reptile': 'Reptile',
-            'Goth R Mika': 'R Mika',
-            'Sophitia': 'Sophitia',
-            'Deadpool Scorpion': 'Scorpion',
-            'Lady Deadpool Ibuki': 'Ibuki',
-            'Wolverine Yugo': 'Yugo',
-            'Pajama Party Blanka': 'Blanka',
-            'Pajama Party Shoma': 'Shoma',
-            'Pajama Party Kokoro': 'Kokoro',
-            'Pajama Party Cham Cham' : 'Cham Cham',
-            'Pajama Party Cham Cham Cotton Candy': 'Cham Cham',
-            'Pajama Party Cham Cham Aqua Dream': 'Cham Cham',
-            'Pajama Party Cham Cham Berry Burst': 'Cham Cham',
-            'Pajama Party Cham Cham Peachy Keen': 'Cham Cham',
-            'Pajama Party Christie': 'Christie',
-            'Samurai Shizumaru': 'Shizumaru',
-            'Shizumaru': 'Shizumaru',
-            'Spectral Archer Kagome': 'Kagome',
-            'Forest Behemoth Astaroth': 'Astaroth',
-            'Forest Behemoth Astaroth Gilded': 'Astaroth',
-            'Forest Behemoth Astaroth Opulent': 'Astaroth',
-            'Forest Behemoth Astaroth Rosy': 'Astaroth',
-            'Forest Behemoth Astaroth Ashen': 'Astaroth',
-            'Forest Guardian Morrigan': 'Morrigan',
-            'Forest Goddess Angel': 'Angel',
-            'Windwood Talim': 'Talim',
-            'Forest Warden Kotal Kahn': 'Kotal Kahn',
-            'River Spirit Julia Golden': 'Julia',
-            'Frosted Kabal': 'Kabal',
-            'Kabal': 'Kabal',
-            'Arcade Sub Zero Abyssal Depths': 'Sub Zero',
-            'Arcade Sub Zero Frosty Forest': 'Sub Zero',
-            'Arcade Sub Zero Cybernetic Surge': 'Sub Zero',
-            'Arcade Sub Zero Galactic Void': 'Sub Zero',
-            'Arcade Raiden': 'Raiden',
-            'Arcade Sophitia': 'Sophitia',
-            'Arcade Christie': 'Christie',
-            'Arcade Noel': 'Noel',
-            'Primal Huntress Kagome': 'Kagome',
-            'Primal Huntress Kagome Bear': 'Kagome',
-            'Primal Huntress Kagome Tiger': 'Kagome',
-            'Primal Huntress Kagome Leaf': 'Kagome',
-            'Primal Huntress Kagome Leopard': 'Kagome',
-            'Primal Warrior Shoma': 'Shoma',
-            'Primal Warrior Scorpion': 'Scorpion',
-            'Primal Warrior Juri': 'Juri',
-            'Primal Warrior Kotal Kahn': 'Kotal Kahn',
-            'Kuma': 'Kuma',
-            'Panda': 'Kuma',
-            'Arcade Sub Zero': 'Sub Zero',
-        };
 
         window.updateQuestProgress = async function(questId, progressIncrement = 1) {
     const user = auth.currentUser;
@@ -647,6 +409,73 @@ searchInput.addEventListener('input', (e) => {
 
 modal.style.display = 'block';
 }
+
+document.getElementById('sticker-toggle').addEventListener('change', function() {
+            const stickerButtons = document.querySelectorAll('.sticker-button');
+            stickerButtons.forEach(button => {
+                button.style.display = this.checked ? 'none' : 'flex';
+            });
+            console.log(`Sticker buttons are now ${this.checked ? 'hidden' : 'visible'}`);
+        });
+
+        document.querySelectorAll('.sticker-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const playerSlot = this.parentElement;
+                console.log(`Sticker button clicked for player slot: ${playerSlot.id}`);
+                openStickerWindow(playerSlot);
+            });
+        });
+
+        async function openStickerWindow(playerSlot) {
+            const stickerWindow = document.getElementById('sticker-window');
+            stickerWindow.innerHTML = '<button class="close-sticker-window">&times;</button>'; // Clear previous stickers and add close button
+            console.log('Sticker window cleared');
+            
+            // Add event listener for the close button
+            document.querySelector('.close-sticker-window').addEventListener('click', function() {
+                stickerWindow.style.display = 'none';
+                console.log('Sticker window closed');
+            });
+
+            const user = auth.currentUser;
+            if (user) {
+                const userId = user.uid;
+                console.log(`Fetching stickers for user: ${userId}`);
+                const stickersRef = ref(database, `users/${userId}/Stickers`);
+                const snapshot = await get(stickersRef);
+                const ownedStickers = snapshot.val() || {};
+                console.log('Owned stickers:', ownedStickers);
+
+                for (const sticker in ownedStickers) {
+                    const img = document.createElement('img');
+                    img.src = `Stickers/${sticker}.png`;
+                    img.alt = sticker;
+                    img.addEventListener('click', () => {
+                        console.log(`Sticker clicked: ${sticker}`);
+                        playStickerAnimation(playerSlot, sticker);
+                    });
+                    stickerWindow.appendChild(img);
+                }
+
+                stickerWindow.style.display = 'flex';
+                console.log('Sticker window displayed');
+            } else {
+                console.error('User not authenticated');
+            }
+        }
+
+        function playStickerAnimation(playerSlot, sticker) {
+            console.log(`Playing sticker animation for sticker: ${sticker} in player slot: ${playerSlot.id}`);
+            const img = document.createElement('img');
+            img.src = `Stickers/${sticker}.png`;
+            img.className = 'sticker-animation';
+            playerSlot.appendChild(img);
+
+            setTimeout(() => {
+                img.remove();
+                console.log(`Sticker animation removed for sticker: ${sticker}`);
+            }, 2500);
+        }
 
 
 		// Add this to the function where you select a skin
@@ -1196,6 +1025,88 @@ modal.style.display = 'block';
 .reroll-button:hover {
     background-color: #ff8800;
 }
+.sticker-button {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: #ffbb00;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            z-index: 1;
+        }
+
+        .sticker-window {
+            display: none;
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            width: 300px;
+            height: 155px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            overflow-y: auto;
+            padding: 10px;
+            z-index: 1000;
+            flex-wrap: wrap;
+        }
+
+        .sticker-window img {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .sticker-window img:hover {
+            transform: scale(1.1);
+        }
+
+        .sticker-animation {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            animation: stickerAnimation 2.5s forwards;
+            z-index: 2;
+        }
+
+        @keyframes stickerAnimation {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+
+        #sticker-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+
+        .close-sticker-window {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            outline: none;
+            transition: color 0.3s;
+        }
+
+        .close-sticker-window:hover {
+            color: #ff4444;
+        }
     </style>
 <head>	
 <body>
@@ -1213,36 +1124,43 @@ modal.style.display = 'block';
         <a href="Game Modes.html" class="play-button">Play</a>
     </div>
 </div>
+<input type="checkbox" id="sticker-toggle"> 
+
 <div class="team-container" id="team1">
     <div class="player-slot" id="team1-player1">
         <div class="choose-fighter-button">Choose Your Fighter</div>
         <button class="reroll-button" onclick="rerollCharacter(this.parentElement)">Reroll</button>
         <img src="" alt="Player 1 Skin">
         <div class="skin-name"></div>
+        <button class="sticker-button">+</button>
     </div>
     <div class="player-slot" id="team1-player2">
         <div class="choose-fighter-button">Choose Your Fighter</div>
         <button class="reroll-button" onclick="rerollCharacter(this.parentElement)">Reroll</button>
         <img src="" alt="Player 2 Skin">
         <div class="skin-name"></div>
+        <button class="sticker-button">+</button>
     </div>
     <div class="player-slot" id="team1-player3">
         <div class="choose-fighter-button">Choose Your Fighter</div>
         <button class="reroll-button" onclick="rerollCharacter(this.parentElement)">Reroll</button>
         <img src="" alt="Player 3 Skin">
         <div class="skin-name"></div>
+        <button class="sticker-button">+</button>
     </div>
     <div class="player-slot" id="team1-player4">
         <div class="choose-fighter-button">Choose Your Fighter</div>
         <button class="reroll-button" onclick="rerollCharacter(this.parentElement)">Reroll</button>
         <img src="" alt="Player 4 Skin">
         <div class="skin-name"></div>
+        <button class="sticker-button">+</button>
     </div>
     <div class="player-slot" id="team1-player5">
         <div class="choose-fighter-button">Choose Your Fighter</div>
         <button class="reroll-button" onclick="rerollCharacter(this.parentElement)">Reroll</button>
         <img src="" alt="Player 5 Skin">
         <div class="skin-name"></div>
+        <button class="sticker-button">+</button>
     </div>
 </div>
 
@@ -1254,18 +1172,21 @@ modal.style.display = 'block';
         <button class="reroll-button" onclick="rerollCharacter(this.parentElement)">Reroll</button>
         <img src="" alt="Player 6 Skin">
         <div class="skin-name"></div>
+        <button class="sticker-button">+</button>
     </div>
     <div class="player-slot" id="team2-player2">
         <div class="choose-fighter-button">Choose Your Fighter</div>
         <button class="reroll-button" onclick="rerollCharacter(this.parentElement)">Reroll</button>
         <img src="" alt="Player 7 Skin">
         <div class="skin-name"></div>
+        <button class="sticker-button">+</button>
     </div>
     <div class="player-slot" id="team2-player3">
         <div class="choose-fighter-button">Choose Your Fighter</div>
         <button class="reroll-button" onclick="rerollCharacter(this.parentElement)">Reroll</button>
         <img src="" alt="Player 8 Skin">
         <div class="skin-name"></div>
+        <button class="sticker-button">+</button>
     </div>
     <div class="player-slot" id="team2-player4">
         <div class="choose-fighter-button">Choose Your Fighter</div>
@@ -1278,7 +1199,11 @@ modal.style.display = 'block';
         <button class="reroll-button" onclick="rerollCharacter(this.parentElement)">Reroll</button>
         <img src="" alt="Player 10 Skin">
         <div class="skin-name"></div>
+        <button class="sticker-button">+</button>
     </div>
+</div>
+<div class="sticker-window" id="sticker-window">
+    <button class="close-sticker-window">&times;</button>
 </div>
     <div id="decide-game-container">
         <button id="decide-game-button">Decide Game</button>

@@ -110,7 +110,7 @@
         <h1>Cham Cham - The Boomerang Warrior</h1>
         <h2>Stats</h2>
         <ul>
-            <li class="stat"><span class="red">AD:</span> 85 (+8/lvl) -> 277</li>
+            <li class="stat"><span class="red">AD:</span> 75 (+7.25/lvl) -> 248</li>
             <li class="stat"><span class="blue">AP:</span> 0 (+0/lvl) -> 0</li>
             <li class="stat"><span class="green">HP:</span> 623 (+325/lvl) -> 8423</li>
             <li class="stat"><span class="light-blue">Mana:</span> 333 (+20/lvl) -> 673</li>
@@ -126,7 +126,7 @@
             <p>Cham Cham throws her boomerang in the designated direction, dealing <span class="red">[100/200/300/410/610/775]</span> damage to the first enemy hit and then returning to Cham Cham. If she catches it, she gains a bonus [20% MS] towards the hit enemy for [3s].</p>
             <h3>W: Grawr!</h3>
             <p class="mana"><span class="light-blue">[50 Mana]</span> <span class="cd purple">[13s cd]</span></p>
-            <p>Cham Cham's lifesteal increases by <span class="gold">[15%] </span> for [3s].</p>
+            <p>Cham Cham's lifesteal increases by <span class="gold">[8%]</span> for [4s].</p>
             <h3>E: Flicky Trick</h3>
             <p class="mana"><span class="light-blue">[40 Mana]</span> <span class="cd purple">[10s cd]</span></p>
             <p>Cham Cham jumps in the designated direction, able to jump over walls. If her Q ability hits an enemy, she can jump towards that enemy from a great distance.</p>
@@ -171,20 +171,27 @@
 
 	<div class="changes">
 
-    	<h2>Changes 0.4</h2>
-        <ul>
+    	<h2 onclick="toggleChanges('changes-075')">Changes 0.7.5</h2>
+        <ul id="changes-075" style="display: none;">
+            <li>AD: 85 to 75</li>
+            <li>AD/lvl: 8 to 7.25</li>
+            <li>W Lifesteal: 15% to 8% from 3s to 4s</li>
+        </ul>
+
+	<h2 onclick="toggleChanges('changes-04')">Changes 0.4</h2>
+        <ul id="changes-04" style="display: none;">
             <li>W Lifesteal:  [4%/6%/8%/9%/11%/12%]  to  [15%] </li>
             <li>Level 1 Talent a. rework: [0.3/0.4/0.5/0.7/0.9/1.1 AS] to [100] bonus health every level </li>
             <li>Level 1 Talent b. : 30% to [40%] </li>
         </ul>
 
-	<h2>Changes 0.2</h2>
-        <ul>
+	<h2 onclick="toggleChanges('changes-02')">Changes 0.2</h2>
+        <ul id="changes-02" style="display: none;">
             <li>AD/lvl from 5 to 8</li>
 			<li>Base HP: 670, HP/lvl 189</li>
         </ul>
-        <h2>Changes 0.08</h2>
-        <ul>
+        <h2 onclick="toggleChanges('changes-008')">Changes 0.08</h2>
+        <ul id="changes-008" style="display: none;">
             <li>Q damage: [100/190/270/380/500/625] to [100/200/300/410/610/775]</li>
             <li>LVL5 talent a: 10% damage bonus to 18% damage bonus</li>
             <li>LVL5 talent c: 1% to 2%</li>
@@ -192,8 +199,8 @@
             <li>LVL20 talent d: shield amount: 500/750 to 450 </li>
         </ul>
     </div>
-    <h2>Changes 0.06</h2>
-    <ul>
+    <h2 onclick="toggleChanges('changes-006')">Changes 0.06</h2>
+    <ul id="changes-006" style="display: none;">
         <li>AD per level reduced from 9 to 5</li>
         <li>Q mana cost increased from 60 to 65</li>
         <li>Q damage changed from 310/590/770/880/1000/1250 to 100/200/300/410/610/775</li>
@@ -203,6 +210,15 @@
         <li>Level 20 Talent a: Maximum damage reduction decreased from 35% to 20%</li>
     </ul>
 </div>
-
+<script>
+    function toggleChanges(id) {
+        const element = document.getElementById(id);
+        if (element.style.display === "none") {
+            element.style.display = "block";
+        } else {
+            element.style.display = "none";
+        }
+    }
+</script>
 </body>
 </html>

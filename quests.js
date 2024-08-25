@@ -11,43 +11,40 @@ const quests = [
         hoverText: 'Basic Lootbox'
     },
     {
-        id: 'win4gamesAgainstInfernalAttackVol2',
-        title: "Infernal Attack vol.2",
-        description: "Win 4 games against Scorpion, Raiden, Birdie, Julia, Astaroth, Ibuki",
+        id: 'crisisInTheKingdom',
+        title: "Crisis In the Kingdom",
+        description: "Play as Jun, Ayane, Astaroth, Kabal, or Birdie",
         progress: 0,
-        goal: 4,
-        reward: { 'skins/Kagome': 1 },
-        requirement: (userData, opponents) => {
-            const characters = ['Scorpion', 'Raiden', 'Birdie', 'Julia', 'Astaroth', 'Ibuki'];
-            return opponents.some(opponent => characters.includes(opponent));
-        },
-        image: 'Icons/Kagome.png',
-        hoverText: 'Kagome Fighter Unlock'
-    },
-    {
-        id: 'play1gameAsKuma',
-        title: "The Bears Are Coming",
-        description: "Play 1 game as Kuma",
-        progress: 0,
-        goal: 1,
-        reward: { 'Icons/Panda': 1 },
+        goal: 8,
+        reward: { 'Icons/Regal_Julia': 1 },
         requirement: (userData, team) => {
-            const characters = ['Kuma'];
+            const characters = ['Jun', 'Ayane', 'Astaroth', 'Kabal', 'Birdie'];
             return team.some(player => characters.includes(player));
         },
-        image: 'Icons/Profile/Panda.png',
-        hoverText: 'Panda Icon'
+        image: 'Icons/Profile/Regal_Julia.png',
+        hoverText: 'Regal Julia Icon'
     },
     {
-        id: 'play10ARAMGames',
-        title: "Introducing Rerolls",
-        description: "Play 10 ARAM games",
+        id: 'play10DraftModeGames',
+        title: "Bans have arrived",
+        description: "Play 10 Draft Mode games",
         progress: 0,
         goal: 10,
-        reward: { 'FM': 500 },
-        requirement: (userData) => userData.aramGamesPlayed >= 10,
-        image: 'res/img/FM.png',
-        hoverText: '500 FM'
+        reward: { 'freelootbox/basicbox': 1 },
+        requirement: (userData) => userData.draftModeGamesPlayed >= 10,
+        image: 'res/img/basicbox.png',
+        hoverText: 'Basic Lootbox'
+    },
+    {
+        id: 'showWhatYouThink',
+        title: "Show What You Think",
+        description: "Play 2 games",
+        progress: 0,
+        goal: 2,
+        reward: { 'Stickers/ChamCham_V': 1 },
+        requirement: (userData) => userData.gamesPlayed >= 2,
+        image: 'Stickers/ChamCham_V.png',
+        hoverText: 'ChamCham V Sticker'
     },
 ];
 

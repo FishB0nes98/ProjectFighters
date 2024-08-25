@@ -111,7 +111,7 @@
         <ul>
             <li class="stat"><span class="red">AD:</span> 56 (+42/lvl) -> 156</li>
             <li class="stat"><span class="blue">AP:</span> 0</li>
-            <li class="stat"><span class="green">HP:</span> 583 (+230/lvl) -> 6103</li>
+            <li class="stat"><span class="green">HP:</span> 583 (+240/lvl) -> 6343</li>
             <li class="stat"><span class="light-blue">Mana:</span> 441 (+100/lvl) -> 3801</li>
             <li class="stat"><span class="grey">MS:</span> 350 (+2.5/lvl) -> 410</li>
             <li class="stat"><span class="orange">AS:</span> 0.6 (+0.025/lvl) -> 1.025</li>
@@ -119,7 +119,7 @@
         <div class="abilities">
             <h2>Abilities</h2>
             <h3>Passive: Storm's Wrath</h3>
-            <p>Every 10 seconds Raiden's next basic attack deals bonus [45/90/155/325/450 + (20% AP)] and briefly slows the target by [10%] for [1] second. This cooldown is reduced by 1 second for each enemy hit by his abilities and basic attacks.</p>
+            <p>Raiden's next basic attack deals bonus <span class="blue">[45/90/155/325/450 + (35% AP)]</span> and briefly slows the target by <span class="grey">[10%]</span> for <span class="grey">[1]</span> second. This cooldown is reduced by 1 second for each enemy hit by his abilities and basic attacks. The cooldown is <span class="purple">[10s/10s/8s/7s/6s]</span>.</p>
             <h3>Q: Lightning Bolt</h3>
             <p class="mana"><span class="light-blue">[75 Mana]</span> <span class="cd purple">[7s cd]</span></p>
             <p>Raiden hurls a bolt of lightning at a target location [75/160/300/445/700 + (50%AP)] to the first enemy hit and stunning them for 1 second. If the lightning bolt hits an enemy champion it chains to nearby enemies (Max 3) dealing [45% of the original] damage.</p>
@@ -166,15 +166,33 @@
                 <li>d. Lightning's Wrath: Raiden's basic attacks deal [+100%] bonus magic damage</li>
             </ul>
         </div>
-        <h2>Changes (0.6)</h2>
-        <ul>
-            <li>HP/lvl: 140 to 165</li>
-            <li>Base MS: 327 to 350</li>
-            <li>E Mana: 90 to 75</li>
-            <li>E Cooldown: 18s to 14s</li>
-            <li>E Shield: 50% to 100%</li>
-            <li>New LVL20 talent: Lightning's Wrath</li>
-        </ul>
+        <div class="changes">
+            <h2 onclick="toggleChanges('changes-075')">Changelog 0.7.5</h2>
+            <ul id="changes-075" style="display: none;">
+                <li>HP/lvl increased from 230 to 240</li>
+                <li>Passive bonus damage scaling increased from 20% AP to 35% AP</li>
+                <li>Passive cooldown changed from 10s to 10s/10s/8s/7s/6s</li>
+            </ul>
+            <h2 onclick="toggleChanges('changes-06')">Changes (0.6)</h2>
+            <ul id="changes-06" style="display: none;">
+                <li>HP/lvl: 140 to 165</li>
+                <li>Base MS: 327 to 350</li>
+                <li>E Mana: 90 to 75</li>
+                <li>E Cooldown: 18s to 14s</li>
+                <li>E Shield: 50% to 100%</li>
+                <li>New LVL20 talent: Lightning's Wrath</li>
+            </ul>
+        </div>
+        <script>
+            function toggleChanges(id) {
+                const element = document.getElementById(id);
+                if (element.style.display === "none") {
+                    element.style.display = "block";
+                } else {
+                    element.style.display = "none";
+                }
+            }
+        </script>
     </div>
     </div>
 </body>

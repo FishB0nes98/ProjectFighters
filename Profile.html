@@ -205,6 +205,96 @@
         transform: scale(1.05); /* Slightly enlarge the button on hover */
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
     }
+    #bottom-mid-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+        margin-right: 20px;
+    }
+
+    .character-stat {
+        display: flex;
+        align-items: center;
+        background-color: #2c2c2c;
+        border-radius: 10px;
+        padding: 10px;
+        margin: 10px 0;
+        width: 100%;
+        max-width: 300px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .character-stat img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .character-stat h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #fff;
+    }
+
+    .character-stat p {
+        margin: 5px 0 0;
+        font-size: 14px;
+        color: #ccc;
+    }
+    .sticker-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #ffbb00;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .sticker-window {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 1px solid #444;
+            border-radius: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 2;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            padding: 10px;
+        }
+
+        .sticker-window img {
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+
+        .sticker-window img:hover {
+            transform: scale(1.1);
+        }
+
+        .profile-sticker {
+            position: absolute;
+            bottom: 185px;
+            left: 150px;
+            height: 20%;
+            z-index: 1;
+        }
     </style>
 </head>
 <body>
@@ -224,7 +314,11 @@
 </div>
     <video id="background-video" autoplay loop muted></video>
     <div id="profile-page">
-        <div id="main-content">
+        <div id="main-content"> 
+            <button class="sticker-button">+</button>
+            <div class="sticker-window" id="sticker-window"></div>
+            <img id="profile-sticker" class="profile-sticker" src="" alt="Profile Sticker" style="display: none;">
+           
             <div id="left-container">
                 <img id="profile-image" src="" alt="Profile Icon">
                 <h2 id="username-display">Username</h2>
@@ -247,14 +341,19 @@
                         <option value="Pajama Party Event">Pajama Party Event</option>
                         <option value="Mystical Forest Event">Mystical Forest Event</option>
                         <option value="Arcade Event">Arcade Event</option>
+                        <option value="Stone Age Event">Stone Age Event</option>
+                        <option value="Medieval Kingdom Event">Medieval Kingdom Event</option>
                     </select>
 					<div class="color-selection">
                     <label for="color-picker"></label>
                     <input type="color" id="color-picker" value="#007bff">
-                </div>
+                </div>         
                 </div>
             </div>
             <div id="bottom-mid-container">
+                <h2>Top 3 Fighters:</h2>
+                <div id="top-characters"></div>
+            </div>
                 <div class="skin-container">
                     <div class="skin-slot" data-slot="1">
                         <img src="" alt="Skin 1">
@@ -302,11 +401,99 @@
             background: ''
         };
 
+        
+        const stickerButton = document.querySelector('.sticker-button');
+        const stickerWindow = document.getElementById('sticker-window');
+        const profileSticker = document.getElementById('profile-sticker');
+
+        stickerButton.addEventListener('click', () => {
+            stickerWindow.style.display = stickerWindow.style.display === 'none' || !stickerWindow.style.display ? 'block' : 'none';
+            if (stickerWindow.style.display === 'block') {
+                loadStickers();
+            }
+        });
+
+        async function loadStickers() {
+            const userRef = ref(database, 'users/' + auth.currentUser.uid + '/Stickers');
+            const snapshot = await get(userRef);
+            const stickers = snapshot.val() || {};
+
+            stickerWindow.innerHTML = '';
+            Object.keys(stickers).forEach(sticker => {
+                if (stickers[sticker] === 1) { // Check if sticker is owned
+                    const img = document.createElement('img');
+                    img.src = `Stickers/${sticker}.png`;
+                    img.alt = sticker;
+                    img.addEventListener('click', () => {
+                        setProfileSticker(sticker);
+                        stickerWindow.style.display = 'none';
+                    });
+                    stickerWindow.appendChild(img);
+                }
+            });
+        }
+
+        function setProfileSticker(stickerName) {
+            profileSticker.src = `Stickers/${stickerName}.png`;
+            profileSticker.alt = stickerName;
+            profileSticker.style.display = 'block';
+
+            const userRef = ref(database, 'users/' + auth.currentUser.uid + '/profileSticker');
+            set(userRef, stickerName).then(() => {
+                console.log('Profile sticker updated in database');
+            }).catch(error => {
+                console.error('Error updating profile sticker:', error);
+            });
+        }
+
+        async function fetchTopCharacters(userId) {
+    const userRef = ref(database, 'users/' + userId);
+    const snapshot = await get(userRef);
+    const userData = snapshot.val();
+    const characters = userData.characters || {};
+
+    const characterStats = Object.keys(characters).map(character => {
+        const { win, lose } = characters[character];
+        const totalGames = win + lose;
+        const winrate = (win / totalGames) * 100;
+        return { character, winrate, totalGames };
+    });
+
+    characterStats.sort((a, b) => b.winrate - a.winrate);
+    return characterStats.slice(0, 3);
+}
+
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        // ... existing code ...
+        const topCharacters = await fetchTopCharacters(user.uid);
+        const topCharactersContainer = document.getElementById('top-characters');
+        topCharactersContainer.innerHTML = '';
+
+        topCharacters.forEach(character => {
+            const characterElement = document.createElement('div');
+            characterElement.classList.add('character-stat');
+            characterElement.innerHTML = `
+                <img src="Icons/${character.character}.png" alt="${character.character} Icon">
+                <div>
+                    <h3>${character.character}</h3>
+                    <p>Winrate: ${character.winrate.toFixed(2)}%</p>
+                    <p>Total Games: ${character.totalGames}</p>
+                </div>
+            `;
+            topCharactersContainer.appendChild(characterElement);
+        });
+    } else {
+        console.log("User is not authenticated");
+    }
+});
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const userRef = ref(database, 'users/' + user.uid);
                 const snapshot = await get(userRef);
                 const userData = snapshot.val();
+                
                 if (userData) {
                     userProfile.username = userData.username || user.email.split('@')[0];
                     userProfile.icon = userData.icon || 'default-icon.png';
@@ -331,6 +518,13 @@
 					updateProfileColor();
                 } else {
                     console.log("No user data found");
+                }
+
+                const stickerRef = ref(database, 'users/' + user.uid + '/profileSticker');
+                const stickerSnapshot = await get(stickerRef);
+                const stickerName = stickerSnapshot.val();
+                if (stickerName) {
+                    setProfileSticker(stickerName);
                 }
             } else {
                 console.log("User is not authenticated");
