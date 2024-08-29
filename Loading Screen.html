@@ -106,24 +106,27 @@ window.addEventListener('gamepadconnected', (event) => {
 });
 
 function openBanSelectionWindow(banIndex) {
-        const modal = document.getElementById('ban-selection-modal');
-        const skinContainer = document.getElementById('ban-skin-container');
-        const searchInput = document.getElementById('ban-skin-search');
+    const modal = document.getElementById('ban-selection-modal');
+    const skinContainer = document.getElementById('ban-skin-container');
+    const searchInput = document.getElementById('ban-skin-search');
 
-        skinContainer.innerHTML = ''; // Clear previous characters
-        searchInput.value = ''; // Clear search input
+    skinContainer.innerHTML = ''; // Clear previous characters
+    searchInput.value = ''; // Clear search input
 
-        for (const character in characters) {
-            if (bannedCharacters.includes(character)) continue; // Skip banned characters
+    // Sort characters alphabetically
+    const sortedCharacters = Object.keys(characters).sort();
 
-            document.getElementById('close-ban-modal').addEventListener('click', () => {
+    for (const character of sortedCharacters) {
+        if (bannedCharacters.includes(character)) continue; // Skip banned characters
+
+        document.getElementById('close-ban-modal').addEventListener('click', () => {
             modal.style.display = 'none';
         });
         modal.style.display = 'block';
 
-            const characterCard = document.createElement('div');
-            characterCard.classList.add('character-card');
-            characterCard.addEventListener('click', () => {
+        const characterCard = document.createElement('div');
+        characterCard.classList.add('character-card');
+        characterCard.addEventListener('click', () => {
             bannedCharacters.push(character);
             document.getElementById(`ban-icon${banIndex}`).style.backgroundImage = `url(Icons/${encodeURIComponent(character)}.png)`; // Updated line
             modal.style.display = 'none';
@@ -132,33 +135,33 @@ function openBanSelectionWindow(banIndex) {
                 enableChooseFighterButtons();
                 disableBanIcons();
             }
-            });
-
-            const img = document.createElement('img');
-            img.src = `Icons/${character}.png`;
-            img.alt = character;
-            img.classList.add('character-image');
-            characterCard.appendChild(img);
-
-            const characterName = document.createElement('div');
-            characterName.textContent = character;
-            characterName.classList.add('character-name');
-            characterCard.appendChild(characterName);
-
-            skinContainer.appendChild(characterCard);
-        }
-
-        searchInput.addEventListener('input', (e) => {
-            const filter = e.target.value.toLowerCase();
-            const characterCards = skinContainer.getElementsByClassName('character-card');
-            Array.from(characterCards).forEach(card => {
-                const characterName = card.querySelector('.character-name').textContent.toLowerCase();
-                card.style.display = characterName.includes(filter) ? '' : 'none';
-            });
         });
 
-        modal.style.display = 'block';
+        const img = document.createElement('img');
+        img.src = `Icons/${character}.png`;
+        img.alt = character;
+        img.classList.add('character-image');
+        characterCard.appendChild(img);
+
+        const characterName = document.createElement('div');
+        characterName.textContent = character;
+        characterName.classList.add('character-name');
+        characterCard.appendChild(characterName);
+
+        skinContainer.appendChild(characterCard);
     }
+
+    searchInput.addEventListener('input', (e) => {
+        const filter = e.target.value.toLowerCase();
+        const characterCards = skinContainer.getElementsByClassName('character-card');
+        Array.from(characterCards).forEach(card => {
+            const characterName = card.querySelector('.character-name').textContent.toLowerCase();
+            card.style.display = characterName.includes(filter) ? '' : 'none';
+        });
+    });
+
+    modal.style.display = 'block';
+}
 
     function enableChooseFighterButtons() {
         const buttons = document.querySelectorAll('.choose-fighter-button');
@@ -526,86 +529,86 @@ function toggleMenuAndPlayButton() {
 }
 
 document.getElementById('decide-game-button').addEventListener('click', async function() {
-    this.disabled = true; // Disable the button after it's clicked
-    const team1 = [];
-    const team2 = [];
-    const userOnly = document.getElementById('user-only-checkbox').checked;
-    const teamMode = document.getElementById('team-mode-checkbox').checked;
-    const user = auth.currentUser;
+        this.disabled = true; // Disable the button after it's clicked
+        const team1 = [];
+        const team2 = [];
+        const userOnly = document.getElementById('user-only-checkbox').checked;
+        const teamMode = document.getElementById('team-mode-checkbox').checked;
+        const user = auth.currentUser;
 
-    console.log('Decide Game button clicked');
-    console.log('User Only:', userOnly);
-    console.log('Team Mode:', teamMode);
+        console.log('Decide Game button clicked');
+        console.log('User Only:', userOnly);
+        console.log('Team Mode:', teamMode);
 
-    for (let i = 1; i <= 5; i++) {
-        const team1Player = document.getElementById(`team1-player${i}`);
-        const team2Player = document.getElementById(`team2-player${i}`);
+        for (let i = 1; i <= 5; i++) {
+            const team1Player = document.getElementById(`team1-player${i}`);
+            const team2Player = document.getElementById(`team2-player${i}`);
 
-        // Check if the player slots exist
-        if (team1Player) {
-            const team1Skin = team1Player.querySelector('.skin-name').textContent;
-            if (team1Skin) {
-                team1.push(team1Skin);
+            // Check if the player slots exist
+            if (team1Player) {
+                const team1Skin = team1Player.querySelector('.skin-name').textContent;
+                if (team1Skin) {
+                    team1.push(team1Skin);
+                }
+            } else {
+                console.error(`Element with id team1-player${i} not found.`);
             }
-        } else {
-            console.error(`Element with id team1-player${i} not found.`);
+
+            if (team2Player) {
+                const team2Skin = team2Player.querySelector('.skin-name').textContent;
+                if (team2Skin) team2.push(team2Skin);
+            } else {
+                console.error(`Element with id team2-player${i} not found.`);
+            }
         }
 
-        if (team2Player) {
-            const team2Skin = team2Player.querySelector('.skin-name').textContent;
-            if (team2Skin) team2.push(team2Skin);
+        console.log('Team 1:', team1);
+        console.log('Team 2:', team2);
+
+        // Map skins to base characters
+        const team1BaseCharacters = team1.map(skin => skinToBaseCharacterMap[skin] || skin);
+        const team2BaseCharacters = team2.map(skin => skinToBaseCharacterMap[skin] || skin);
+
+        console.log('Team 1 Base Characters:', team1BaseCharacters);
+        console.log('Team 2 Base Characters:', team2BaseCharacters);
+
+        // Determine the winning team (for example, randomly)
+        const winner = Math.random() < 0.5 ? 'team1' : 'team2';
+        const loser = winner === 'team1' ? 'team2' : 'team1';
+
+        console.log('Winner:', winner);
+        console.log('Loser:', loser);
+
+        // Save win/lose data based on mode
+        if (teamMode && user) {
+            console.log('Saving data in Team Mode');
+            await saveTeamModeData(user.uid, team1BaseCharacters, team2BaseCharacters, winner);
+        } else if (userOnly && selectedPlayerSlot) {
+            console.log('Saving data in Solo Mode');
+            const skinName = selectedPlayerSlot.querySelector('.skin-name').textContent;
+            const baseCharacter = skinToBaseCharacterMap[skinName] || skinName;
+            await saveSoloModeData(user.uid, baseCharacter, team1BaseCharacters, team2BaseCharacters, winner);
         } else {
-            console.error(`Element with id team2-player${i} not found.`);
+            console.log('Saving global character stats');
+            await saveGlobalCharacterStats(team1BaseCharacters, team2BaseCharacters, winner);
         }
-    }
 
-    console.log('Team 1:', team1);
-    console.log('Team 2:', team2);
+        await rewardPlayer(); // Call the rewardPlayer function here
+        await rewardCharacterMoney(); // Call the rewardCharacterMoney function here
+        displayResult(winner, loser);
 
-    // Map skins to base characters
-    const team1BaseCharacters = team1.map(skin => skinToBaseCharacterMap[skin] || skin);
-    const team2BaseCharacters = team2.map(skin => skinToBaseCharacterMap[skin] || skin);
+        // Update quest progress for playing a game
+        await updateQuestProgress('play3games');
 
-    console.log('Team 1 Base Characters:', team1BaseCharacters);
-    console.log('Team 2 Base Characters:', team2BaseCharacters);
+        // Update quest progress for character-specific quests
+        await updateCharacterSpecificQuests(team1BaseCharacters, team2BaseCharacters);
 
-    // Determine the winning team (for example, randomly)
-    const winner = Math.random() < 0.5 ? 'team1' : 'team2';
-    const loser = winner === 'team1' ? 'team2' : 'team1';
+        // Save the number of bans for each character
+        await saveBansToDatabase(bannedCharacters);
 
-    console.log('Winner:', winner);
-    console.log('Loser:', loser);
-
-    // Save win/lose data based on mode
-    if (teamMode && user) {
-        console.log('Saving data in Team Mode');
-        await saveTeamModeData(user.uid, team1BaseCharacters, team2BaseCharacters, winner);
-    } else if (userOnly && selectedPlayerSlot) {
-        console.log('Saving data in Solo Mode');
-        const skinName = selectedPlayerSlot.querySelector('.skin-name').textContent;
-        const baseCharacter = skinToBaseCharacterMap[skinName] || skinName;
-        await saveSoloModeData(user.uid, baseCharacter, team1BaseCharacters, team2BaseCharacters, winner);
-    } else {
-        console.log('Saving global character stats');
-        await saveGlobalCharacterStats(team1BaseCharacters, team2BaseCharacters, winner);
-    }
-
-    await rewardPlayer(); // Call the rewardPlayer function here
-    await rewardCharacterMoney(); // Call the rewardCharacterMoney function here
-    displayResult(winner, loser);
-
-    // Update quest progress for playing a game
-    await updateQuestProgress('play3games');
-
-    // Update quest progress for character-specific quests
-    await updateCharacterSpecificQuests(team1BaseCharacters, team2BaseCharacters);
-
-    // Save the number of bans for each character
-    await saveBansToDatabase(bannedCharacters);
-
-    // Update quest progress for playing Draft Mode games
-    await updateQuestProgress('play10DraftModeGames'); // Add this line
-});
+        // Update quest progress for playing Draft Mode games
+        await updateQuestProgress('play10DraftModeGames'); // Add this line
+    });
 
 // ... existing code ...
 
@@ -800,36 +803,60 @@ window.updateQuestProgress = async function(questId, progressIncrement = 1) {
 
     
 
+    async function updateQuestProgress(questId, progressIncrement = 1) {
+        const user = auth.currentUser;
+        if (user) {
+            const userId = user.uid;
+            const userRef = ref(database, `users/${userId}/quests/${questId}`);
+            const snapshot = await get(userRef);
+            const questData = snapshot.val() || { progress: 0, completed: false, claimed: false };
+            if (!questData.completed) {
+                const newProgress = (questData.progress || 0) + progressIncrement;
+                if (newProgress >= quests.find(q => q.id === questId).goal) {
+                    await update(userRef, { progress: newProgress, completed: true });
+                    console.log(`Quest ${questId} completed.`);
+                } else {
+                    await update(userRef, { progress: newProgress });
+                    console.log(`Quest ${questId} progress updated to ${newProgress}.`);
+                }
+            } else {
+                console.log(`Quest ${questId} already completed.`);
+            }
+        } else {
+            console.error('User not authenticated');
+        }
+    }
+
     async function updateCharacterSpecificQuests(team1, team2) {
-     const user = auth.currentUser;
-     if (!user) {
-         console.error('User not authenticated');
-         return;
-     }
- 
-     const userId = user.uid;
-     const userRef = ref(database, `users/${userId}`);
-     const snapshot = await get(userRef);
-     const userData = snapshot.val();
- 
-     if (!userData) {
-         console.error('User data not found');
-         return;
-     }
- 
-     console.log('Checking quests for team1:', team1);
-     console.log('Checking quests for team2:', team2);
- 
-     for (const quest of quests) {
-         console.log(`Checking quest: ${quest.id}`);
-         if (quest.requirement(userData, team1) || quest.requirement(userData, team2)) {
-             console.log(`Quest ${quest.id} requirement met.`);
-             await updateQuestProgress(quest.id);
-         } else {
-             console.log(`Quest ${quest.id} requirement not met.`);
-         }
-     }
- }
+        const user = auth.currentUser;
+        if (!user) {
+            console.error('User not authenticated');
+            return;
+        }
+
+        const userId = user.uid;
+        const userRef = ref(database, `users/${userId}`);
+        const snapshot = await get(userRef);
+        const userData = snapshot.val();
+
+        if (!userData) {
+            console.error('User data not found');
+            return;
+        }
+
+        console.log('Checking quests for team1:', team1);
+        console.log('Checking quests for team2:', team2);
+
+        for (const quest of quests) {
+            console.log(`Checking quest: ${quest.id}`);
+            if (quest.requirement(userData, team1) || quest.requirement(userData, team2)) {
+                console.log(`Quest ${quest.id} requirement met.`);
+                await updateQuestProgress(quest.id);
+            } else {
+                console.log(`Quest ${quest.id} requirement not met.`);
+            }
+        }
+    }
 
 function populateCharacterButtons(characters) {
         console.log('Populating character buttons with characters:', characters);

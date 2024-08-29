@@ -385,61 +385,75 @@
     });
 
     async function loadUserProfile(username) {
-        const usersRef = ref(database, 'users');
-        const snapshot = await get(usersRef);
-        let userId = null;
+    const usersRef = ref(database, 'users');
+    const snapshot = await get(usersRef);
+    let userId = null;
 
-        snapshot.forEach(childSnapshot => {
-            const userData = childSnapshot.val();
-            if (userData.username === username) {
-                userId = childSnapshot.key;
-            }
-        });
+    snapshot.forEach(childSnapshot => {
+        const userData = childSnapshot.val();
+        if (userData.username === username) {
+            userId = childSnapshot.key;
+        }
+    });
 
-        if (userId) {
-            const userRef = ref(database, 'users/' + userId);
-            const userSnapshot = await get(userRef);
-            const userData = userSnapshot.val();
-            if (userData) {
-                userProfile.username = userData.username || username;
-                userProfile.icon = userData.icon || 'default-icon.png';
-                userProfile.skins = typeof userData.skins === 'object' ? userData.skins : {};
-                userProfile.selectedSkins = userData.selectedSkins || {};
-                userProfile.background = userData.background || '';
-                userProfile.profileColor = userData.profileColor || '#007bff';
+    if (userId) {
+        const userRef = ref(database, 'users/' + userId);
+        const userSnapshot = await get(userRef);
+        const userData = userSnapshot.val();
+        if (userData) {
+            userProfile.username = userData.username || username;
+            userProfile.icon = userData.icon || 'default-icon.png';
+            userProfile.skins = typeof userData.skins === 'object' ? userData.skins : {};
+            userProfile.selectedSkins = userData.selectedSkins || {};
+            userProfile.background = userData.background || '';
+            userProfile.profileColor = userData.profileColor || '#007bff';
 
-                document.getElementById('username-display').textContent = userProfile.username;
-                document.getElementById('profile-image').src = `Icons/Profile/${userProfile.icon}`;
-                document.getElementById('profile-image').alt = 'Profile Icon';
+            document.getElementById('username-display').textContent = userProfile.username;
+            document.getElementById('profile-image').src = `Icons/Profile/${userProfile.icon}`;
+            document.getElementById('profile-image').alt = 'Profile Icon';
 
-                updateSkinSlots();
-                updateBackgroundSelection();
-                updateProfileColor();
+            updateSkinSlots();
+            updateBackgroundSelection();
+            updateProfileColor();
 
-                const topCharacters = await fetchTopCharacters(userId);
-                const topCharactersContainer = document.getElementById('top-characters');
-                topCharactersContainer.innerHTML = '';
+            const topCharacters = await fetchTopCharacters(userId);
+            const topCharactersContainer = document.getElementById('top-characters');
+            topCharactersContainer.innerHTML = '';
 
-                topCharacters.forEach(character => {
-                    const characterElement = document.createElement('div');
-                    characterElement.classList.add('character-stat');
-                    characterElement.innerHTML = `
-                        <img src="Icons/${character.character}.png" alt="${character.character} Icon">
-                        <div>
-                            <h3>${character.character}</h3>
-                            <p>Winrate: ${character.winrate.toFixed(2)}%</p>
-                            <p>Total Games: ${character.totalGames}</p>
-                        </div>
-                    `;
-                    topCharactersContainer.appendChild(characterElement);
-                });
-            } else {
-                console.log("No user data found");
+            topCharacters.forEach(character => {
+                const characterElement = document.createElement('div');
+                characterElement.classList.add('character-stat');
+                characterElement.innerHTML = `
+                    <img src="Icons/${character.character}.png" alt="${character.character} Icon">
+                    <div>
+                        <h3>${character.character}</h3>
+                        <p>Winrate: ${character.winrate.toFixed(2)}%</p>
+                        <p>Total Games: ${character.totalGames}</p>
+                    </div>
+                `;
+                topCharactersContainer.appendChild(characterElement);
+            });
+
+            // Fetch and display the profile sticker
+            const stickerRef = ref(database, 'users/' + userId + '/profileSticker');
+            const stickerSnapshot = await get(stickerRef);
+            const stickerName = stickerSnapshot.val();
+            if (stickerName) {
+                setProfileSticker(stickerName);
             }
         } else {
-            console.log("Username not found");
+            console.log("No user data found");
         }
+    } else {
+        console.log("Username not found");
     }
+}
+
+function setProfileSticker(stickerName) {
+    const profileSticker = document.getElementById('profile-sticker');
+    profileSticker.src = `Stickers/${stickerName}.png`;
+    profileSticker.style.display = 'block';
+}
 
     function updateSkinSlots() {
         Object.keys(userProfile.selectedSkins).forEach(slot => {

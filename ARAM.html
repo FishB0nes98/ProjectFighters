@@ -166,19 +166,24 @@ window.rerollCharacter = function(playerSlot) {
     this.disabled = true; // Disable the button after it's clicked
     const team1 = [];
     const team2 = [];
- 
+    const user = auth.currentUser;
+
+    console.log('Decide Game button clicked');
+
     for (let i = 1; i <= 5; i++) {
         const team1Player = document.getElementById(`team1-player${i}`);
         const team2Player = document.getElementById(`team2-player${i}`);
- 
+
         // Check if the player slots exist
         if (team1Player) {
             const team1Skin = team1Player.querySelector('.skin-name').textContent;
-            if (team1Skin) team1.push(team1Skin);
+            if (team1Skin) {
+                team1.push(team1Skin);
+            }
         } else {
             console.error(`Element with id team1-player${i} not found.`);
         }
- 
+
         if (team2Player) {
             const team2Skin = team2Player.querySelector('.skin-name').textContent;
             if (team2Skin) team2.push(team2Skin);
@@ -186,23 +191,32 @@ window.rerollCharacter = function(playerSlot) {
             console.error(`Element with id team2-player${i} not found.`);
         }
     }
- 
+
+    console.log('Team 1:', team1);
+    console.log('Team 2:', team2);
+
     // Map skins to base characters
     const team1BaseCharacters = team1.map(skin => skinToBaseCharacterMap[skin] || skin);
     const team2BaseCharacters = team2.map(skin => skinToBaseCharacterMap[skin] || skin);
- 
+
+    console.log('Team 1 Base Characters:', team1BaseCharacters);
+    console.log('Team 2 Base Characters:', team2BaseCharacters);
+
     // Determine the winning team (for example, randomly)
     const winner = Math.random() < 0.5 ? 'team1' : 'team2';
     const loser = winner === 'team1' ? 'team2' : 'team1';
- 
+
+    console.log('Winner:', winner);
+    console.log('Loser:', loser);
+
     await updateDatabase(team1, team2, winner);
     await rewardPlayer(); // Call the rewardPlayer function here
     await rewardCharacterMoney(); // Call the rewardCharacterMoney function here
     displayResult(winner, loser);
- 
+
     // Update quest progress for playing a game
     await updateQuestProgress('play10ARAMGames'); // Increment ARAM game count
- 
+
     // Update quest progress for character-specific quests
     await updateCharacterSpecificQuests(team1BaseCharacters, team2BaseCharacters);
 });
@@ -236,35 +250,35 @@ async function onGamePlayed() {
 }
 // ... existing code ...
 async function updateCharacterSpecificQuests(team1, team2) {
-     const user = auth.currentUser;
-     if (!user) {
-         console.error('User not authenticated');
-         return;
-     }
- 
-     const userId = user.uid;
-     const userRef = ref(database, `users/${userId}`);
-     const snapshot = await get(userRef);
-     const userData = snapshot.val();
- 
-     if (!userData) {
-         console.error('User data not found');
-         return;
-     }
- 
-     console.log('Checking quests for team1:', team1);
-     console.log('Checking quests for team2:', team2);
- 
-     for (const quest of quests) {
-         console.log(`Checking quest: ${quest.id}`);
-         if (quest.requirement(userData, team1) || quest.requirement(userData, team2)) {
-             console.log(`Quest ${quest.id} requirement met.`);
-             await updateQuestProgress(quest.id);
-         } else {
-             console.log(`Quest ${quest.id} requirement not met.`);
-         }
-     }
- }
+    const user = auth.currentUser;
+    if (!user) {
+        console.error('User not authenticated');
+        return;
+    }
+
+    const userId = user.uid;
+    const userRef = ref(database, `users/${userId}`);
+    const snapshot = await get(userRef);
+    const userData = snapshot.val();
+
+    if (!userData) {
+        console.error('User data not found');
+        return;
+    }
+
+    console.log('Checking quests for team1:', team1);
+    console.log('Checking quests for team2:', team2);
+
+    for (const quest of quests) {
+        console.log(`Checking quest: ${quest.id}`);
+        if (quest.requirement(userData, team1) || quest.requirement(userData, team2)) {
+            console.log(`Quest ${quest.id} requirement met.`);
+            await updateQuestProgress(quest.id);
+        } else {
+            console.log(`Quest ${quest.id} requirement not met.`);
+        }
+    }
+}
 
 		function closeSkinSelectionWindow() {
             document.getElementById('skin-selection-modal').style.display = 'none';

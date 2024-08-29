@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Shizumaru - Character Page</title>
+    <title>Shinnok - Character Page</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background: url('../Default Splash/Shizumaru.png') no-repeat center center fixed;
+            background: url('../Default Splash/Shinnok.jpeg') no-repeat center center fixed;
             background-size: cover;
             color: white;
             font-family: Arial, sans-serif;
@@ -74,7 +74,6 @@
         transform: scale(1.05); /* Slightly enlarge the button on hover */
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
     }
-
 
         .content {
             display: flex;
@@ -271,30 +270,30 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        async function fetchBestShizumaruPlayers() {
+        async function fetchBestShinnokPlayers() {
             const usersRef = ref(database, 'users');
             const snapshot = await get(usersRef);
             const users = snapshot.val();
-            const ShizumaruPlayers = [];
+            const ShinnokPlayers = [];
 
             for (const userId in users) {
                 const user = users[userId];
-                if (user.characters && user.characters['Shizumaru']) {
-                    const { win, lose } = user.characters['Shizumaru'];
+                if (user.characters && user.characters['Shinnok']) {
+                    const { win, lose } = user.characters['Shinnok'];
                     const totalGames = win + lose;
                     if (totalGames >= 15) {
                         const winrate = (win / totalGames) * 100;
-                        ShizumaruPlayers.push({ username: user.username, winrate });
+                        ShinnokPlayers.push({ username: user.username, winrate });
                     }
                 }
             }
 
-            ShizumaruPlayers.sort((a, b) => b.winrate - a.winrate);
-            return ShizumaruPlayers.slice(0, 5);
+            ShinnokPlayers.sort((a, b) => b.winrate - a.winrate);
+            return ShinnokPlayers.slice(0, 5);
         }
 
-        async function displayBestShizumaruPlayers() {
-            const bestPlayers = await fetchBestShizumaruPlayers();
+        async function displayBestShinnokPlayers() {
+            const bestPlayers = await fetchBestShinnokPlayers();
             const bestPlayersList = document.getElementById('best-players-list');
             bestPlayersList.innerHTML = '';
 
@@ -308,14 +307,14 @@
         window.onload = function() {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    displayBestShizumaruPlayers();
+                    displayBestShinnokPlayers();
                 }
             });
         };
     </script>
 </head>
 <body>
-    <!-- Menu -->
+
     <!-- Menu -->
     <div class="menu">
         <div class="menu-items">
@@ -336,19 +335,19 @@
     <div class="content">
     <!-- Left Panel -->
     <div class="left-panel">
-        <h1>Shizumaru</h1>
-        <div class="role">Role: Assassin/Mid</div>
+        <h1>Shinnok</h1>
+        <div class="role">Role: Mid/Mage/Control</div>
         <p id="story">
-            Shizumaru is a character from the Samurai Shodown series. <span id="more" style="display: none;">He is a wandering swordsman with a tragic past, having lost his family to bandits. Shizumaru wields a large umbrella and a short sword, using a unique fighting style that combines both weapons. Throughout the series, he is depicted as a quiet and introspective young man, haunted by his past and seeking to find his place in the world. Shizumaru's journey is one of self-discovery and redemption as he faces numerous challenges and adversaries.</span> <span id="more-link" class="more-link" onclick="toggleStory()">more</span>
+            Shinnok is a character from the Mortal Kombat series. <span id="more" style="display: none;">He is one of the most iconic characters in the franchise, known for his deadly skills and fiery vengeance. Shinnok was once an Elder God who fell from grace and was banished to the Netherrealm. He seeks to conquer all realms and exact revenge on those who wronged him. With his powerful magic and manipulative nature, Shinnok is a formidable adversary. Despite his malevolent intentions, he has a complex history that includes moments of cunning strategy and ruthless ambition.</span> <span id="more-link" class="more-link" onclick="toggleStory()">more</span>
         </p>
-        <button class="bio-button" onclick="window.location.href='../characters/Shizumaru Page.html'">Check Bio</button>
+        <button class="bio-button" onclick="window.location.href='../characters/Shinnok Page.html'">Check Bio</button>
     </div>
 </div>
     <div class="content">
         <!-- Right Panel -->
         <div class="right-panel">
             <div class="best-players">
-                <h2>Best Shizumaru Players</h2>
+                <h2>Best Shinnok Players</h2>
                 <ul id="best-players-list"></ul>
             </div>
         </div>
@@ -359,8 +358,7 @@
         <label style="position: absolute; top: 10px; left: 10px; color: white;">
             <input type="checkbox" id="hide-recolors" onclick="toggleRecolors()"> Hide Recolors
         </label>
-        <img src="../Skins/Rainy Day Shizumaru.jfif" alt="Rainy Day Shizumaru" class="skin-image" onclick="openLightbox(0)">
-        <img src="../Skins/Samurai Shizumaru.jpeg" alt="Goth Shizumaru" class="skin-image" onclick="openLightbox(1)">
+        <img src="../Skins/Rainy Day Shinnok.jpeg" alt="Primal Warrior Shinnok" class="skin-image" onclick="openLightbox(0)">
     </div>
 
     <!-- Lightbox -->
@@ -373,8 +371,7 @@
 
     <script>
         const skins = [
-                        '../Skins/Rainy Day Shizumaru.jfif',
-                        '../Skins/Samurai Shizumaru.jpeg',
+                        '../Skins/Rainy Day Shinnok.jpeg',
         ];
         let currentIndex = 0;
 

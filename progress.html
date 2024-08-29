@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Progress</title>
+    <style>
+        #progress-bar {
+            width: 100%;
+            background-color: #f3f3f3;
+        }
+        #progress {
+            width: 0%;
+            height: 30px;
+            background-color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <h1>Downloading Update...</h1>
+    <div id="progress-bar">
+        <div id="progress"></div>
+    </div>
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        ipcRenderer.on('download_progress', (event, percent) => {
+            document.getElementById('progress').style.width = percent + '%';
+        });
+
+        ipcRenderer.on('update_downloaded', () => {
+            document.body.innerHTML = '<h1>Update Downloaded. Restarting...</h1>';
+        });
+    </script>
+</body>
+</html>
