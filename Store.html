@@ -239,9 +239,9 @@
             const bundleName = item.dataset.bundleName;
             const button = item.querySelector('button');
             if (Bundles[bundleName] || 
-                (bundleName === 'InfernalIbuki' && skins['Infernal Ibuki'] === 1) ||
-                (bundleName === 'GothElpheltCMSale' && skins['Goth Elphelt'] === 1) ||
-                (bundleName === 'RandomRecolorDuoPack' && skins['Schoolboy Siegfried Azure'] === 1 && skins['Primal Huntress Kagome Tiger'] === 1)) {
+                (bundleName === 'ArcticMonsterAstaroth' && skins['Arctic Monster Astaroth'] === 1) ||
+                (bundleName === 'DragonTamerMorriganCMSale' && skins['Dragon Tamer Morrigan'] === 1) ||
+                (bundleName === 'RandomRecolorDuoPack3' && skins['Pajama Party Cham Cham Berry Burst'] === 1 && skins['Neon Core Raiden White'] === 1)) {
                 button.disabled = true;
                 button.textContent = 'Owned';
             }
@@ -277,28 +277,28 @@
         const userCurrency = currencyType === 'FM' ? window.userFM : window.userCM;
         const userCurrencyElement = document.getElementById(`${currencyType.toLowerCase()}-amount`);
 
-        // Check if the user already owns the Infernal Ibuki skin
-        if (bundleName === 'InfernalIbuki') {
-            const skinSnapshot = await get(ref(window.userRef, 'skins/Infernal Ibuki'));
+        // Check if the user already owns the Arctic Monster Astaroth skin
+        if (bundleName === 'ArcticMonsterAstaroth') {
+            const skinSnapshot = await get(ref(window.userRef, 'skins/Arctic Monster Astaroth'));
             if (skinSnapshot.exists() && skinSnapshot.val() === 1) {
-                alert('You already own the Infernal Ibuki skin.');
+                alert('You already own the Arctic Monster Astaroth skin.');
                 return;
             }
         }
 
-        // Check if the user already owns the Goth Elphelt skin
-        if (bundleName === 'GothElpheltCMSale') {
-            const skinSnapshot = await get(ref(window.userRef, 'skins/Goth Elphelt'));
+        // Check if the user already owns the Dragon Tamer Morrigan skin
+        if (bundleName === 'DragonTamerMorriganCMSale') {
+            const skinSnapshot = await get(ref(window.userRef, 'skins/Dragon Tamer Morrigan'));
             if (skinSnapshot.exists() && skinSnapshot.val() === 1) {
-                alert('You already own the Goth Elphelt skin.');
+                alert('You already own the Dragon Tamer Morrigan skin.');
                 return;
             }
         }
 
         // Check if the user already owns the skins in the Random Recolor Duo Pack
-        if (bundleName === 'RandomRecolorDuoPack') {
-            const skin1Snapshot = await get(ref(window.userRef, 'skins/Primal Huntress Kagome Tiger'));
-            const skin2Snapshot = await get(ref(window.userRef, 'skins/Schoolboy Siegfried Azure'));
+        if (bundleName === 'RandomRecolorDuoPack3') {
+            const skin1Snapshot = await get(ref(window.userRef, 'skins/Neon Core Raiden White'));
+            const skin2Snapshot = await get(ref(window.userRef, 'skins/Pajama Party Cham Cham Berry Burst'));
             if (skin1Snapshot.exists() && skin1Snapshot.val() === 1 && skin2Snapshot.exists() && skin2Snapshot.val() === 1) {
                 alert('You already own the skins in the Random Recolor Duo Pack.');
                 return;
@@ -330,18 +330,18 @@
                 });
             }
 
-            // Add Infernal Ibuki to the Skins database for Bundle 2
-            if (bundleName === 'InfernalIbuki') {
-                updates[`skins/Infernal Ibuki`] = 1; // Adding the skin to the Skins folder with a value of 1
+            // Add Arctic Monster Astaroth to the Skins database for Bundle 2
+            if (bundleName === 'ArcticMonsterAstaroth') {
+                updates[`skins/Arctic Monster Astaroth`] = 1; // Adding the skin to the Skins folder with a value of 1
             }
 
             // Add Medieval Event Bundle skins to the Skins database for Bundle 3
-            if (bundleName === 'RainyDayBundle') {
+            if (bundleName === 'Voidbundle') {
                 const skins = [
-                    'Rainy Day Julia',
-                    'Rainy Day R Mika',
-                    'Rainy Day Reptile',
-                    'Rainy Day Shizumaru',
+                    'Voidborn Nina',
+                    'Voidborn Peacock',
+                    'Voidborn Scorpion',
+                    'Voidborn Blanka',
                     'Rainy Day Noel'
                 ];
                 skins.forEach(skin => {
@@ -349,15 +349,15 @@
                 });
             }
 
-            // Add Goth Elphelt to the Skins database for the CM Sale bundle
-            if (bundleName === 'GothElpheltCMSale') {
-                updates[`skins/Goth Elphelt`] = 1; // Adding the skin to the Skins folder with a value of 1
+            // Add Dragon Tamer Morrigan to the Skins database for the CM Sale bundle
+            if (bundleName === 'DragonTamerMorriganCMSale') {
+                updates[`skins/Dragon Tamer Morrigan`] = 1; // Adding the skin to the Skins folder with a value of 1
             }
 
             // Add Random Recolor Duo Pack skins to the Skins database
-            if (bundleName === 'RandomRecolorDuoPack') {
-                updates[`skins/Schoolboy Siegfried Azure`] = 1; // Adding the skin to the Skins folder with a value of 1
-                updates[`skins/Primal Huntress Kagome Tiger`] = 1; // Adding the skin to the Skins folder with a value of 1
+            if (bundleName === 'RandomRecolorDuoPack3') {
+                updates[`skins/Pajama Party Cham Cham Berry Burst`] = 1; // Adding the skin to the Skins folder with a value of 1
+                updates[`skins/Neon Core Raiden White`] = 1; // Adding the skin to the Skins folder with a value of 1
             }
 
             await update(window.userRef, updates);
@@ -444,10 +444,10 @@
             </div>
             <button onclick="purchaseBundle(this)">Buy</button>
         </div>
-        <div class="bundle-item" data-bundle-name="InfernalIbuki">
-            <div class="bundle-name" style="color: white; font-weight: bold;">Infernal Ibuki 70% SALE</div>
+        <div class="bundle-item" data-bundle-name="ArcticMonsterAstaroth">
+            <div class="bundle-name" style="color: white; font-weight: bold;">Arctic Monster Astaroth 70% SALE</div>
             <div class="image-container">
-                <img src="Skins/Infernal Ibuki.png" alt="Infernal Ibuki" style="margin-top: 10px;">
+                <img src="Skins/Arctic Monster Astaroth.png" alt="Arctic Monster Astaroth" style="margin-top: 10px;">
             </div>
             <div class="price">
                 <img src="res/img/fm.png" alt="FM" style="margin-top: 10px;">
@@ -455,24 +455,24 @@
             </div>
             <button onclick="purchaseBundle(this)">Buy</button>
     </div>
-    <div class="bundle-item" data-bundle-name="RainyDayBundle">
-        <div class="bundle-name" style="color: white; font-weight: bold;">Rainy Day Bundle (5 Skins)</div>
+    <div class="bundle-item" data-bundle-name="Voidbundle">
+        <div class="bundle-name" style="color: white; font-weight: bold;">Void bundle (4 Skins)</div>
         <div class="images-grid">
-            <img src="Loading Screen/Rainy Day Julia.png" alt="Rainy Day Julia" style="width: 80%;">
-            <img src="Loading Screen/Rainy Day R Mika.png" alt="Rainy Day R Mika" style="width: 80%;">
-            <img src="Loading Screen/Rainy Day Reptile.png" alt="Rainy Day Reptile" style="width: 80%;">
-            <img src="Loading Screen/Rainy Day Shizumaru.png" alt="Rainy Day Shizumaru" style="width: 80%;">
+            <img src="Loading Screen/Voidborn Nina.png" alt="Voidborn Nina" style="width: 80%;">
+            <img src="Loading Screen/Voidborn Peacock.png" alt="Voidborn Peacock" style="width: 80%;">
+            <img src="Loading Screen/Voidborn Scorpion.png" alt="Voidborn Scorpion" style="width: 80%;">
+            <img src="Loading Screen/Voidborn Blanka.png" alt="Voidborn Blanka" style="width: 80%;">
         </div>
         <div class="price">
             <img src="res/img/fm.png" alt="FM">
-            <span style="color: white; font-weight: bold;">6350</span>
+            <span style="color: white; font-weight: bold;">6000</span>
         </div>
         <button onclick="purchaseBundle(this)">Buy</button>
     </div>
-    <div class="bundle-item" data-bundle-name="GothElpheltCMSale">
-        <div class="bundle-name" style="color: white; font-weight: bold;">Goth Elphelt CM Sale</div>
+    <div class="bundle-item" data-bundle-name="DragonTamerMorriganCMSale">
+        <div class="bundle-name" style="color: white; font-weight: bold;">Dragon Tamer Morrigan CM Sale</div>
         <div class="image-container">
-            <img src="Skins/Goth Elphelt.png" alt="Goth Elphelt" style="margin-top: 10px;">
+            <img src="Skins/Dragon Tamer Morrigan.jpeg" alt="Dragon Tamer Morrigan" style="margin-top: 10px;">
         </div>
         <div class="price">
             <img src="res/img/cm.png" alt="CM" style="margin-top: 10px;">
@@ -480,11 +480,11 @@
         </div>
         <button onclick="purchaseBundle(this)">Buy</button>
     </div>
-    <div class="bundle-item" data-bundle-name="RandomRecolorDuoPack">
+    <div class="bundle-item" data-bundle-name="RandomRecolorDuoPack3">
         <div class="bundle-name" style="color: white; font-weight: bold;">Random Recolor Duo Pack</div>
         <div class="images-grid">
-            <img src="Loading Screen/Schoolboy Siegfried Azure.png" alt="Schoolboy Siegfried Azure" style="width: 80%;">
-            <img src="Loading Screen/Primal Huntress Kagome Tiger.png" alt="Primal Huntress Kagome Tiger" style="width: 80%;">
+            <img src="Loading Screen/Pajama Party Cham Cham Berry Burst.png" alt="Pajama Party Cham Cham Berry Burst" style="width: 80%;">
+            <img src="Loading Screen/Neon Core Raiden White.png" alt="Neon Core Raiden White" style="width: 80%;">
         </div>
         <div class="price">
             <img src="res/img/fm.png" alt="FM">

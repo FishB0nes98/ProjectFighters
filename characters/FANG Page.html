@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F.A.N.G - The Toxic Alchemist</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@400;700&family=Raleway:wght@400;600&display=swap');
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            background: linear-gradient(135deg, #1e1e1e 30%, #282828 100%);
+            color: #e1e1e1;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: rgba(34, 34, 34, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
+
+        .champion-image {
+            display: block;
+            margin: 0 auto 20px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid #444;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3em;
+            color: #ff6347;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2em;
+            color: #ffa07a;
+            margin-top: 40px;
+        }
+
+        h3, h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5em;
+            color: #ffa07a;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+
+        ul li {
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+
+        .stat, .mana, .cd {
+            font-weight: bold;
+        }
+
+        .stat span, .mana span, .cd span {
+            font-size: 1.2em;
+        }
+
+        .red { color: #ff4500; }
+        .blue { color: #00bfff; }
+        .green { color: #32cd32; }
+        .light-blue { color: #87cefa; }
+        .grey { color: #a9a9a9; }
+        .orange { color: #ffa500; }
+        .purple { color: #800080; }
+
+        p, ul {
+            margin: 10px 20px;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .abilities, .talents, .patch-notes {
+            margin-top: 40px;
+        }
+
+        audio {
+            display: none;
+        }
+    </style>
+    <script>
+        window.onload = function() {
+            var audio = new Audio('Voices/FANGpick.mp3');
+            audio.volume = 0.3;
+            audio.play();
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <img src="../Icons/FANG.png" alt="FANG" class="champion-image">
+        <h1>F.A.N.G - The Toxic Alchemist</h1>
+        <h2>Stats</h2>
+        <ul>
+            <li class="stat"><span class="red">AD:</span> 50 (+3/lvl) <span class="green">-></span> 122</li>
+            <li class="stat"><span class="blue">AP:</span> 0 (+0/lvl) <span class="green">-></span> 0</li>
+            <li class="stat"><span class="green">HP:</span> 570 (+315/lvl) <span class="green">-></span> 8130</li>
+            <li class="stat"><span class="light-blue">Mana:</span> 500 (+36/lvl) <span class="green">-></span> 1364</li>
+            <li class="stat"><span class="grey">MS:</span> 334 (+2/lvl) <span class="green">-></span> 382</li>
+            <li class="stat"><span class="orange">AS:</span> 0.4 (+0.03/lvl) <span class="green">-></span> 1.12</li>
+        </ul>
+        <div class="abilities">
+            <h2>Abilities</h2>
+            <h3>Passive: Toxic Mark</h3>
+            <p>FANG's attacks and spells mark enemies for <span class="green">[4.5s]</span>. If allies autoattack the marked enemy, they heal <span class="green">[4%]</span> of the damage they deal to them back to themselves.</p>
+            <h3>Q: Brewing Potion</h3>
+            <p class="mana"><span class="light-blue">[90 mana]</span> <span class="cd purple">[20s cd]</span></p>
+            <p>Places a health potion to a selected ally nearby or self. By using the potion it restores <span class="green">[205/300/390/505/665]</span> health over <span class="green">[6s]</span>.</p>
+            <h3>W: Poisoned Tube</h3>
+            <p class="mana"><span class="light-blue">[90 Mana]</span> <span class="cd purple">[14/13/10/9/8s cd]</span></p>
+            <p>Throws a tube to the target location which breaks at endpoint or if it hits an enemy. Targets hit are poisoned taking <span class="red">[100/185/255/400/480 + 50%AP]</span> as magic damage in <span class="green">[3s]</span> and also they are slowed by <span class="green">[25%]</span> for <span class="green">[3s]</span>.</p>
+            <h3>E: Push-back</h3>
+            <p class="mana"><span class="light-blue">[80 Mana]</span> <span class="cd purple">[7s cd]</span></p>
+            <p>FANG pushes the enemy behind in a targeted direction.</p>
+            <h3>R: Shattered Glass Path</h3>
+            <p class="mana"><span class="light-blue">[100 Mana]</span> <span class="cd purple">[120s cd]</span></p>
+            <p>Creates a broken glass field for <span class="green">[4s]</span>. When an enemy moves in this field, they are damaged by <span class="red">[80/150/210 + 50%AP]</span> whenever they move (triggers every <span class="green">0.5s</span>). Enemies inside the field can’t use dashes and jumps.</p>
+        </div>
+        <div class="talents">
+            <h2>Talents</h2>
+            <h3>Level 1</h3>
+            <ul>
+                <li>a. Toxic Concoction: Potion now grants an additional <span class="green">[15%]</span> of the target’s missing health as a shield for 2 seconds when used.</li>
+                <li>b. Venomous Aura: FANG’s E ability decreases enemy healing by <span class="green">[15%]</span> for the duration.</li>
+                <li>c. Corrosive Brew: Poisoned Tube now also reduces magic shield by <span class="green">[50%]</span>.</li>
+            </ul>
+            <h3>Level 5</h3>
+            <ul>
+                <li>a. Rapid Recovery: Brewing Potion's cooldown is reduced by 5 seconds, and the healing amount is increased by <span class="green">[10%]</span>.</li>
+                <li>b. Lingering Toxins: Enemies take <span class="green">[10%]</span> additional damage from all sources during the poison duration.</li>
+                <li>c. Shove and Smash: Push-back now stuns enemies for 1 second if they collide with terrain after being pushed.</li>
+            </ul>
+            <h3>Level 10</h3>
+            <ul>
+                <li>a. Glass Shards: Enemies that move within Shattered Glass Path now also receive a stacking <span class="green">[5%]</span> damage taken increase from all sources, up to a maximum of <span class="green">[25%]</span>.</li>
+                <li>b. Jagged Edges: Shattered Glass duration increased by <span class="green">[3s]</span>.</li>
+            </ul>
+            <h3>Level 15</h3>
+            <ul>
+                <li>a. Alchemical Expertise: Brewing Potion now grants an additional <span class="green">[15%]</span> movement speed to the target for the duration of the healing effect.</li>
+                <li>b. Toxic Cloud: Poisoned Tube now leaves a lingering poison cloud at the impact area for 3 seconds, dealing <span class="green">[25%]</span> of the original poison damage per second to enemies who remain within it.</li>
+                <li>c. Forceful Push: Push-back now knocks back enemies 25% further.</li>
+            </ul>
+            <h3>Level 20</h3>
+            <ul>
+                <li>a. Venom Master: F.A.N.G's passive now heals for <span class="green">[7%]</span> of the damage dealt to marked enemies.</li>
+                <li>b. Unstable Mixture: Brewing Potion now instantly heals for <span class="green">[50%]</span> of its total healing amount, with the remaining <span class="green">[50%]</span> applied over 3 seconds. Also Brewing Potion now has 2 charges.</li>
+                <li>c. Deadly Fumes: Poisoned Tube’s poison damage is now true damage, and enemies poisoned by the tube are revealed for its duration.</li>
+                <li>d. Shattered Nightmare: Shattered Glass Path now silences enemies while they are standing inside the field.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

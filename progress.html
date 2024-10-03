@@ -31,6 +31,10 @@
         ipcRenderer.on('update_downloaded', () => {
             document.body.innerHTML = '<h1>Update Downloaded. Restarting...</h1>';
         });
+
+        ipcRenderer.on('error', (event, error) => {
+            document.body.innerHTML = '<h1>Error occurred: ' + error + '</h1>';
+        });
     </script>
 </body>
 </html>

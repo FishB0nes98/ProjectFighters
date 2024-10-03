@@ -2,20 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Akuma - Character Page</title>
+    <title>FANG - Character Page</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background: url('../Default Splash/Akuma.png') no-repeat center center fixed;
+            background: url('../Default Splash/FANG.jpeg') no-repeat center center fixed;
             background-size: cover;
             color: white;
             font-family: Arial, sans-serif;
             position: relative;
             overflow: hidden;
         }
-        /* Transparent Menu */
-        .menu {
+          /* Transparent Menu */
+          .menu {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -269,30 +269,30 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        async function fetchBestAkumaPlayers() {
+        async function fetchBestFANGPlayers() {
             const usersRef = ref(database, 'users');
             const snapshot = await get(usersRef);
             const users = snapshot.val();
-            const AkumaPlayers = [];
+            const FANGPlayers = [];
 
             for (const userId in users) {
                 const user = users[userId];
-                if (user.characters && user.characters['Akuma']) {
-                    const { win, lose } = user.characters['Akuma'];
+                if (user.characters && user.characters['FANG']) {
+                    const { win, lose } = user.characters['FANG'];
                     const totalGames = win + lose;
                     if (totalGames >= 15) {
                         const winrate = (win / totalGames) * 100;
-                        AkumaPlayers.push({ username: user.username, winrate });
+                        FANGPlayers.push({ username: user.username, winrate });
                     }
                 }
             }
 
-            AkumaPlayers.sort((a, b) => b.winrate - a.winrate);
-            return AkumaPlayers.slice(0, 5);
+            FANGPlayers.sort((a, b) => b.winrate - a.winrate);
+            return FANGPlayers.slice(0, 5);
         }
 
-        async function displayBestAkumaPlayers() {
-            const bestPlayers = await fetchBestAkumaPlayers();
+        async function displayBestFANGPlayers() {
+            const bestPlayers = await fetchBestFANGPlayers();
             const bestPlayersList = document.getElementById('best-players-list');
             bestPlayersList.innerHTML = '';
 
@@ -306,7 +306,7 @@
         window.onload = function() {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    displayBestAkumaPlayers();
+                    displayBestFANGPlayers();
                 }
             });
         };
@@ -333,19 +333,19 @@
     <div class="content">
     <!-- Left Panel -->
     <div class="left-panel">
-        <h1>Akuma</h1>
-        <div class="role">Role: Mage/Burst</div>
+        <h1>FANG</h1>
+        <div class="role">Role: Support/Enchanter</div>
         <p id="story">
-            Akuma is a character from the Street Fighter series. <span id="more" style="display: none;">He is a powerful martial artist who has embraced the dark power of the Satsui no Hado, a force that grants him immense strength but at the cost of his humanity. Akuma is the younger brother of Gouken, Ryu and Ken's master, and he is responsible for Gouken's death. Driven by a desire to become the strongest fighter, Akuma constantly seeks worthy opponents to test his abilities. Throughout the series, he is depicted as a relentless and fearsome warrior, consumed by his quest for power.</span> <span id="more-link" class="more-link" onclick="toggleStory()">more</span>
+            FANG is a character from the Street Fighter series. <span id="more" style="display: none;">He is a high-ranking member of the Shadaloo organization, serving directly under M. Bison. FANG is known for his sinister appearance and his mastery of poison techniques. He first appeared in Street Fighter V, where he quickly became one of Bison's most trusted enforcers. FANG's fighting style revolves around poisoning his opponents and controlling the battlefield with his toxic attacks. Despite his villainous nature, he is fiercely loyal to Bison and the Shadaloo cause.</span> <span id="more-link" class="more-link" onclick="toggleStory()">more</span>
         </p>
-        <button class="bio-button" onclick="window.location.href='../characters/Akuma Page.html'">Check Bio</button>
+        <button class="bio-button" onclick="window.location.href='../characters/FANG Page.html'">Check Bio</button>
     </div>
 </div>
     <div class="content">
         <!-- Right Panel -->
         <div class="right-panel">
             <div class="best-players">
-                <h2>Best Akuma Players</h2>
+                <h2>Best FANG Players</h2>
                 <ul id="best-players-list"></ul>
             </div>
         </div>
@@ -356,11 +356,7 @@
         <label style="position: absolute; top: 10px; left: 10px; color: white;">
             <input type="checkbox" id="hide-recolors" onclick="toggleRecolors()"> Hide Recolors
         </label>
-        <img src="../Skins/Voidborn Akuma.jfif" alt="Voidborn Akuma" class="skin-image" onclick="openLightbox(0)">
-        <img src="../Skins/High Elf Akuma.png" alt="High Elf Akuma" class="skin-image" onclick="openLightbox(1)">
-        <img src="../Skins/Captain Akuma.png" alt="Captain Akuma" class="skin-image" onclick="openLightbox(2)">
-        <img src="../Skins/Thunder God Akuma.png" alt="Thunder God Akuma" class="skin-image" onclick="openLightbox(3)">
-        <img src="../Skins/Rockstar Akuma.jpg" alt="Rockstar Akuma" class="skin-image" onclick="openLightbox(4)">
+        <img src="../Skins/Voidborn FANG.jpeg" alt="Forest Goddess FANG" class="skin-image" onclick="openLightbox(0)">
     </div>
 
     <!-- Lightbox -->
@@ -373,11 +369,7 @@
 
     <script>
         const skins = [
-            '../Skins/Voidborn Akuma.jfif',
-            '../Skins/High Elf Akuma.png',
-            '../Skins/Captain Akuma.png',
-            '../Skins/Thunder God Akuma.png',
-            '../Skins/Rockstar Akuma.jpg',
+                        '../Skins/Voidborn FANG.jpeg',
         ];
         let currentIndex = 0;
 

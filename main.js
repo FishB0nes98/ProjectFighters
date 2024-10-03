@@ -31,6 +31,11 @@ function createProgressWindow() {
     });
 
     progressWindow.loadFile('progress.html'); // Create a progress.html file for the progress bar
+
+    // Handle window close
+    progressWindow.on('closed', () => {
+        progressWindow = null;
+    });
 }
 
 // Configure logging
@@ -55,12 +60,16 @@ autoUpdater.on('download-progress', (progressObj) => {
     log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
     log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
     log.info(log_message);
-    progressWindow.webContents.send('download_progress', progressObj.percent);
+    if (progressWindow) {
+        progressWindow.webContents.send('download_progress', progressObj.percent);
+    }
 });
 
 autoUpdater.on('update-downloaded', (info) => {
     log.info('Update downloaded.');
-    progressWindow.webContents.send('update_downloaded');
+    if (progressWindow) {
+        progressWindow.webContents.send('update_downloaded');
+    }
     dialog.showMessageBox({
         type: 'info',
         title: 'Update ready',
@@ -73,6 +82,9 @@ autoUpdater.on('update-downloaded', (info) => {
 
 autoUpdater.on('error', (err) => {
     log.error('Error in auto-updater. ' + err);
+    if (progressWindow) {
+        progressWindow.close();
+    }
 });
 
 app.on('window-all-closed', () => {

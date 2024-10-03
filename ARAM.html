@@ -284,14 +284,43 @@ async function updateCharacterSpecificQuests(team1, team2) {
             document.getElementById('skin-selection-modal').style.display = 'none';
         }
 		
-        function assignRandomCharacters() {
-            const playerSlots = document.querySelectorAll('.player-slot');
-            playerSlots.forEach(slot => {
-                const character = getRandomCharacter();
-                slot.dataset.character = character;
-                slot.querySelector('.skin-name').textContent = character;
-            });
-        }
+        function updateCharacterIcon(playerSlot, character) {
+    const iconContainer = playerSlot.querySelector('.character-icon-container');
+    if (!iconContainer) {
+        const newIconContainer = document.createElement('div');
+        newIconContainer.classList.add('character-icon-container');
+        const icon = document.createElement('img');
+        icon.classList.add('character-icon');
+        newIconContainer.appendChild(icon);
+        playerSlot.appendChild(newIconContainer);
+    }
+    const icon = playerSlot.querySelector('.character-icon');
+    icon.src = `Icons/${character}.png`;
+    icon.alt = character;
+}
+
+function assignRandomCharacters() {
+    const playerSlots = document.querySelectorAll('.player-slot');
+    playerSlots.forEach(slot => {
+        const character = getRandomCharacter();
+        slot.dataset.character = character;
+        slot.querySelector('.skin-name').textContent = character;
+        updateCharacterIcon(slot, character);
+    });
+}
+
+window.rerollCharacter = function(playerSlot) {
+    if (rerollCounts[playerSlot.id] > 0) {
+        const character = getRandomCharacter();
+        playerSlot.dataset.character = character;
+        playerSlot.querySelector('.skin-name').textContent = character;
+        rerollCounts[playerSlot.id] -= 1; // Decrement reroll count
+        updateCharacterIcon(playerSlot, character);
+        openSkinSelectionWindow(window.userData.skins, playerSlot); // Reload the modal for skin selection
+    } else {
+        alert('No rerolls left for this player.');
+    }
+};
 		
 		// JavaScript code to ensure the silver border is added correctly
         function showBorder(playerSlot, borderClass) {
@@ -494,51 +523,39 @@ document.getElementById('sticker-toggle').addEventListener('change', function() 
 
 		// Add this to the function where you select a skin
         function selectSkin(playerSlot, skin) {
-        const img = playerSlot.querySelector('img');
-        const skinNameDiv = playerSlot.querySelector('.skin-name');
+    const img = playerSlot.querySelector('img');
+    const skinNameDiv = playerSlot.querySelector('.skin-name');
 
-        loadImage(img, `Loading Screen/${skin}`);
-        skinNameDiv.textContent = skin;
-        skinNameDiv.style.display = 'block';
+    // Directly set the image source
+    img.src = `Loading Screen/${skin}.png`;
+    img.alt = skin;
+    skinNameDiv.textContent = skin;
+    skinNameDiv.style.display = 'block';
 
-        adjustSkinNameFontSize(skinNameDiv); // Adjust font size based on length
+    adjustSkinNameFontSize(skinNameDiv); // Adjust font size based on length
 
-        playerSlot.querySelector('.choose-fighter-button').style.display = 'none'; // Hide the choose button
-        playerSlot.querySelector('.reroll-button').style.display = 'none'; // Hide the reroll button
+    playerSlot.querySelector('.choose-fighter-button').style.display = 'none'; // Hide the choose button
+    playerSlot.querySelector('.reroll-button').style.display = 'none'; // Hide the reroll button
 
-        const baseCharacter = skinToBaseCharacterMap[skin] || skin;
+    const baseCharacter = skinToBaseCharacterMap[skin] || skin;
 
-        if (charactersWithBorders[baseCharacter]) {
-            showBorder(playerSlot, charactersWithBorders[baseCharacter]);
-        }
-
-        if (charactersWithBanners[baseCharacter]) {
-            showBanner(playerSlot, charactersWithBanners[baseCharacter]);
-        }
-
-        closeSkinSelectionWindow();
-        checkAllSkinsSelected();
+    if (charactersWithBorders[baseCharacter]) {
+        showBorder(playerSlot, charactersWithBorders[baseCharacter]);
     }
 
-        function loadImage(imgElement, basePath) {
-            const extensions = ['.png'];
-            let found = false;
-            for (const ext of extensions) {
-                const img = new Image();
-                img.src = basePath + ext;
-                img.onload = () => {
-                    if (!found) {
-                        imgElement.src = img.src;
-                        found = true;
-                    }
-                };
-                img.onerror = () => {
-                    if (!found) {
-                        imgElement.src = ''; // Clear src if not found
-                    }
-                };
-            }
-        }
+    if (charactersWithBanners[baseCharacter]) {
+        showBanner(playerSlot, charactersWithBanners[baseCharacter]);
+    }
+
+    // Remove the character icon container
+    const iconContainer = playerSlot.querySelector('.character-icon-container');
+    if (iconContainer) {
+        iconContainer.remove();
+    }
+
+    closeSkinSelectionWindow();
+    checkAllSkinsSelected();
+}
 
         function checkAllSkinsSelected() {
             const buttons = document.querySelectorAll('.choose-fighter-button');
@@ -1102,7 +1119,7 @@ document.getElementById('sticker-toggle').addEventListener('change', function() 
             position: absolute;
             top: 10px;
             right: 10px;
-            z-index: 1000;
+            z-index: 10;
         }
 
         .close-sticker-window {
@@ -1121,6 +1138,23 @@ document.getElementById('sticker-toggle').addEventListener('change', function() 
         .close-sticker-window:hover {
             color: #ff4444;
         }
+        .character-icon-container {
+    position: absolute;
+    bottom: 40px;
+    left: 10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: white;
+    border: 2px solid #444;
+}
+
+.character-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
     </style>
 <head>	
 <body>
