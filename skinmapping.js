@@ -230,4 +230,13 @@ export const skinToBaseCharacterMap = {
     'Voidborn Akuma': 'Akuma',
     'Voidborn Peacock': 'Peacock',
     'Voidborn Scorpion': 'Scorpion',
+    'Witch Julia': 'Julia',
+    'Witch Julia Nature': 'Julia',
+    'Witch Julia Wicked': 'Julia',
+    'Witch Julia Scarlet': 'Julia',
+    'Witch Julia Enchanted': 'Julia',
+    'Diablo Erron Black': 'Erron Black',
+    'Zombie Astaroth': 'Astaroth',
+    'Jack O Blanka': 'Blanka',
+    'Spectral Reaper Ayane': 'Ayane',
 };

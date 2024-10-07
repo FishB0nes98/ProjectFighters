@@ -5,7 +5,9 @@
     <title>Event Page</title>
 <link href="https://fonts.googleapis.com/css2?family=Purple+Void&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Purple+Void&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Purple+Void&display=swap" rel="stylesheet"> <!-- Updated font link -->
+<link href="https://fonts.googleapis.com/css2?family=Purple+Void&display=swap" rel="stylesheet"> 
+<link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet"><!-- Updated font link -->
+<link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet"> <!-- Added Bangers font -->
 
 
 <style>
@@ -16,49 +18,70 @@
         background-size: cover;
         color: #4B0082; /* Indigo */
         font-family: 'Purple Void', cursive; /* Updated font family */
+        transition: background-image 0.5s ease-in-out;
     }
-    h1 {
+    h1, h2 {
         text-align: center;
-        font-size: 72px;
         margin-top: 55px;
-        color: #8A2BE2; /* Blue Violet */
         text-shadow: 4px 4px 6px #000000; /* Dark Shadow */
         font-family: 'Purple Void', cursive; /* Updated font family */
     }
-    #skin-gallery {
+    h1 {
+        font-size: 72px;
+        color: #8A2BE2; /* Blue Violet */
+    }
+    h2 {
+        font-size: 60px;
+        color: #FF8C00; /* Dark Orange for Halloween */
+        font-family: 'Creepster', cursive; /* Halloween-themed font */
+        animation: flicker 2s infinite;
+    }
+    #skin-gallery, #halloween-gallery {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
         align-items: center;
-        padding: 2px;
+        padding: 20px;
         max-width: 1920px;
         margin: 0 auto;
     }
     .skin-item {
-        margin: 50px;
+        margin: 30px;
         text-align: center;
+        transition: transform 0.3s;
+    }
+    .skin-item:hover {
+        transform: scale(1.05);
     }
     .skin-item img {
         border: 2px solid #444;
         cursor: pointer;
         transition: transform 0.3s, box-shadow 0.3s;
-        width: 350px; /* 1792 * 5 / 16 */
-        height: 197px; /* 1024 * 5 / 16 */
+        width: 300px; /* Adjusted for better responsiveness */
+        height: auto;
+        border-radius: 10px;
     }
     .skin-item img:hover {
         transform: scale(1.1);
-        box-shadow: 0 0 15px #8A2BE2; /* Blue Violet Glow */
+        box-shadow: 0 0 20px rgba(255, 140, 0, 0.7); /* Orange Glow for Halloween */
     }
     .skin-name {
         margin-top: 10px;
-        font-size: 32px;
+        font-size: 24px;
         color: #9370DB; /* Medium Purple */
         text-shadow: 2px 2px 4px #000000; /* Dark Shadow */
         font-family: 'Purple Void', cursive; /* Updated font family */
     }
-               /* Transparent Menu */
-         /* Transparent Menu */
-         .menu {
+    .skin-name-a2 {
+        margin-top: 10px;
+        font-size: 24px;
+        color: #FF8C00; /* Pumpkin color */
+        text-shadow: 2px 2px 4px #000000; /* Dark Shadow */
+        font-family: 'Creepster', cursive; /* Halloween-themed font */
+    }
+
+    /* Transparent Menu */
+    .menu {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -80,23 +103,38 @@
         font-family: 'Roboto', sans-serif;
         font-size: 16px;
         transition: background-color 0.3s, transform 0.3s;
+        position: relative;
+    }
+
+    .menu a::after {
+        content: '';
+        display: block;
+        width: 0;
+        height: 2px;
+        background: #fff;
+        transition: width .3s;
+        margin: auto;
+    }
+
+    .menu a:hover::after {
+        width: 100%;
     }
 
     .menu a:hover {
         background-color: #111;
-        transform: scale(1.1);
+        transform: scale(1.05);
     }
 
     .play-button-container {
-    display: flex;
-    justify-content: flex-start;
-    padding: 20px;
-    z-index: auto;
-    position: fixed;
-}
+        display: flex;
+        justify-content: flex-start;
+        padding: 20px;
+        z-index: auto;
+        position: fixed;
+    }
 
     .play-button {
-        background-color: #ffbb00; /* Modern blue color */
+        background-color: #ffbb00; /* Modern yellow color */
         color: white;
         border: none;
         border-radius: 25px; /* Slightly less rounded corners for a modern look */
@@ -113,56 +151,68 @@
     }
 
     .play-button:hover {
-        background-color: #ff8800;  /* Slightly darker blue on hover */
+        background-color: #ff8800;  /* Slightly darker on hover */
         transform: scale(1.05); /* Slightly enlarge the button on hover */
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
     }
-        /* Lightbox styles */
-        .lightbox {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
 
-        .lightbox img {
-            max-width: 90%;
-            max-height: 90%;
-            border: 3px solid white;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-            cursor: pointer;
-        }
-        .lightbox .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: white;
-            font-size: 36px;
-            cursor: pointer;
-        }
-        .lightbox .prev, .lightbox .next {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            color: white;
-            font-size: 48px;
-            cursor: pointer;
-        }
-        .lightbox .prev {
-            left: 20px;
-        }
-        .lightbox .next {
-            right: 20px;
-        }
-        .battlepass-button {
+    /* Lightbox styles */
+    .lightbox {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .lightbox img {
+        max-width: 90%;
+        max-height: 90%;
+        border: 3px solid white;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+        cursor: pointer;
+        border-radius: 10px;
+    }
+    .lightbox .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: white;
+        font-size: 36px;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .lightbox .close-btn:hover {
+        transform: rotate(90deg);
+    }
+    .lightbox .prev, .lightbox .next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        color: white;
+        font-size: 48px;
+        cursor: pointer;
+        user-select: none;
+        transition: color 0.2s;
+    }
+    .lightbox .prev:hover, .lightbox .next:hover {
+        color: #FF8C00; /* Orange for Halloween */
+    }
+    .lightbox .prev {
+        left: 20px;
+    }
+    .lightbox .next {
+        right: 20px;
+    }
+
+    .battlepass-button {
         position: fixed;
         top: 125px;
         left: 75px;
@@ -205,7 +255,159 @@
         transform: scale(1.1);
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     }
-    </style>
+
+    /* New Styles for Event Buttons */
+    .event-buttons {
+        display: flex;
+        position: fixed;
+        justify-content: center;
+        margin: 20px 0;
+        z-index: 50;
+        right: 50px;
+    }
+
+    .event-button {
+        background-color: #8A2BE2; /* Blue Violet for Void Event */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 15px 30px;
+        margin: 0 10px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        z-index: 50;
+    }
+
+    .event-button:hover {
+        background-color: #7A1BCD;
+        transform: scale(1.05);
+    }
+
+    .halloween-event {
+        background-color: #FF4500; /* OrangeRed for Halloween Event */
+        color: #fff;
+    }
+
+    .halloween-event:hover {
+        background-color: #E03E00;
+    }
+
+    /* Styles for Event Sections */
+    .event-section {
+        display: none; /* Hidden by default */
+        padding: 20px;
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .active-section {
+        display: block;
+    }
+
+    /* Styles for Halloween Event Section */
+    .halloween-section {
+        background: url('Event/Halloween Event.jpeg') no-repeat center center fixed;
+        background-size: cover;
+        color: #FF8C00; /* Dark Orange */
+        font-family: 'Creepster', cursive; /* Halloween-themed font */
+        position: relative;
+    }
+
+    /* Halloween Specific Styles */
+    .halloween-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+    }
+
+    .halloween-section > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .halloween-section h1 {
+        font-size: 80px;
+        color: #FF8C00;
+        text-shadow: 2px 2px 10px #000;
+        animation: flicker 1.5s infinite;
+    }
+
+    .halloween-gallery .skin-item {
+        margin: 40px;
+    }
+
+    .halloween-gallery .skin-name {
+        color: #FFD700; /* Gold color for names */
+        font-size: 28px;
+        text-shadow: 2px 2px 5px #000;
+        font-family: 'Bangers', cursive;
+        transition: color 0.3s;
+    }
+
+    .halloween-gallery .skin-name:hover {
+        color: #FFA500; /* Orange on hover */
+    }
+
+    /* Animations */
+    @keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    @keyframes flicker {
+        0% { opacity: 1; }
+        50% { opacity: 0.8; }
+        100% { opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .event-buttons {
+            flex-direction: column;
+        }
+
+        .event-button {
+            margin: 10px 0;
+            width: 80%;
+        }
+
+        .skin-item img {
+            width: 80%;
+            height: auto;
+        }
+
+        .battlepass-button img {
+            width: 150px;
+            height: 60px;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-top: 30px;
+        }
+
+        h2 {
+            font-size: 36px;
+        }
+    }
+</style>
 </head>
 <body>
     <!-- Menu -->
@@ -218,6 +420,10 @@
             <a href="statistics.html">Statistics</a>
         </div>
     </div>
+    <div class="event-buttons">
+        <button class="event-button" id="voidEventBtn" aria-controls="voidEventSection" aria-expanded="true">Void Event</button>
+        <button class="event-button halloween-event" id="halloweenEventBtn" aria-controls="halloweenEventSection" aria-expanded="false">Halloween Event</button>
+    </div>
     <div class="play-button-container">
         <a href="Game Modes.html" class="play-button">Play</a>
     </div>
@@ -226,6 +432,7 @@
     <img src="Event/Void Event.jpeg" alt="Battlepass">
     <span>Battlepass</span>
 </button>
+<div id="voidEventSection" class="event-section active-section">
     <h1>Void Event</h1>
     <div id="skin-gallery">
         <!-- Example skin items, add all your skins similarly -->
@@ -272,7 +479,43 @@
             <div class="skin-name">Voidborn Blanka</div>
         </div>
     </div>
-
+</div>
+    <div id="halloweenEventSection" class="event-section halloween-section">
+        <h2>Halloween Event</h2>
+        <div id="halloween-gallery">
+            <!-- Example Halloween skin items -->
+            <div class="skin-item">
+                <a href="Skins/Diablo Erron Black.jpeg" class="lightbox-link" data-caption="Diablo Erron Black">
+                    <img src="Skins/Diablo Erron Black.jpeg" alt="Diablo Erron Black">
+                </a>
+                <div class="skin-name-a2">Diablo Erron Black</div>
+            </div>
+            <div class="skin-item">
+                <a href="Skins/Witch Julia.jpeg" class="lightbox-link" data-caption="Witch Julia">
+                    <img src="Skins/Witch Julia.jpeg" alt="Witch Julia">
+                </a>
+                <div class="skin-name-a2">Witch Julia</div>
+            </div>
+            <div class="skin-item">
+                <a href="Skins/Jack O Blanka.jpeg" class="lightbox-link" data-caption="Jack O Blanka">
+                    <img src="Skins/Jack O Blanka.jpeg" alt="Jack O Blanka">
+                </a>
+                <div class="skin-name-a2">Jack O Blanka</div>
+            </div>
+            <div class="skin-item">
+                <a href="Skins/Zombie Astaroth.jpeg" class="lightbox-link" data-caption="Zombie Astaroth">
+                    <img src="Skins/Zombie Astaroth.jpeg" alt="Zombie Astaroth">
+                </a>
+                <div class="skin-name-a2">Zombie Astaroth</div>
+            </div>
+            <div class="skin-item">
+                <a href="Skins/Spectral Reaper Ayane.jpeg" class="lightbox-link" data-caption="Spectral Reaper Ayane">
+                    <img src="Skins/Spectral Reaper Ayane.jpeg" alt="Spectral Reaper Ayane">
+                </a>
+                <div class="skin-name-a2">Spectral Reaper Ayane</div>
+            </div>
+        </div>
+    </div>
 
     <!-- Lightbox HTML -->
     <div id="lightbox" class="lightbox">
@@ -287,6 +530,8 @@
         const lightboxImage = document.getElementById('lightbox-image');
         let currentImageIndex = 0;
         const lightboxLinks = document.querySelectorAll('.lightbox-link');
+        // Array to hold all lightbox links
+        const lightboxArray = Array.from(lightboxLinks);
 
         // Ensure lightbox is hidden initially
         window.addEventListener('load', () => {
@@ -331,6 +576,25 @@
             const caption = lightboxLinks[currentImageIndex].getAttribute('data-caption');
             openLightbox(imageUrl, caption);
         }
+        // Event Buttons Functionality
+const voidEventBtn = document.getElementById('voidEventBtn');
+const halloweenEventBtn = document.getElementById('halloweenEventBtn');
+const voidEventSection = document.getElementById('voidEventSection');
+const halloweenEventSection = document.getElementById('halloweenEventSection');
+
+voidEventBtn.addEventListener('click', () => {
+    voidEventSection.classList.add('active-section');
+    halloweenEventSection.classList.remove('active-section');
+    // Optionally change background
+    document.body.style.backgroundImage = "url('Event/Void Event.jpeg')";
+});
+
+halloweenEventBtn.addEventListener('click', () => {
+    halloweenEventSection.classList.add('active-section');
+    voidEventSection.classList.remove('active-section');
+    // Optionally change background
+    document.body.style.backgroundImage = "url('Event/Halloween Event.jpeg')";
+});
     </script>
 </body>
 </html>

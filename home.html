@@ -28,7 +28,34 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
+        function createParticles() {
+      const particleContainer = document.querySelector('.particle-container');
+      if (!particleContainer) {
+          const newParticleContainer = document.createElement('div');
+          newParticleContainer.classList.add('particle-container');
+          document.body.appendChild(newParticleContainer);
+      }
+
+      for (let i = 0; i < 60; i++) { // Increase number for more particles
+          const particle = document.createElement('div');
+          particle.classList.add('particle');
+          particle.style.left = `${Math.random() * 100}%`;
+          particle.style.top = `${Math.random() * 100}%`;
+          particle.style.width = `${Math.random() * 6 + 4}px`; // Size between 4px and 10px
+          particle.style.height = particle.style.width;
+          particle.style.background = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.7)`;
+          particle.style.animationDuration = `${Math.random() * 5 + 3}s`; // Duration between 3s and 8s
+          particle.style.animationDelay = `${Math.random() * 5}s`; // Delay between 0s and 5s
+          document.querySelector('.particle-container').appendChild(particle);
+      }
+  }
+
         window.onload = function() {
+            createParticles();
+            initializeAuthState();
+        };
+
+        function initializeAuthState() {
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const userId = user.uid;
@@ -80,7 +107,7 @@
                 'Blanka.png', 'Nina.png', 'Ayane.png', 'Siegfried.png', 'Shoma.png', 
 				'Juri.png', 'Sub Zero.png', 'Christie.png', 'Kokoro.png', 'Eagle.png',
                 'Sophitia.png', 'Shizumaru.png', 'Kagome.png', 'Kabal.png', 'Kuma.png',
-                'Alice.png'
+                'Alice.png', 'Shinnok.png', 'FANG.png',
 				
             ];
 
@@ -176,6 +203,8 @@
             const modal = document.getElementById('change-icon-modal');
             modal.style.display = 'none';
         };
+
+        
 
         window.toggleProfileMenu = function() {
             const profileMenu = document.getElementById('profile-menu');
@@ -407,6 +436,7 @@
                 console.error('Error loading friend icon:', error);
             });
         }
+
 
         function displayFriend(friendName, primaryIconUrl, fallbackIconUrl) {
     const li = document.createElement('li');
@@ -964,140 +994,391 @@
         text-align: center;
         margin-top: 10px;
     }
-        #new-quests-box {
-        position: fixed;
-        bottom: 5px;
-        left: 5px;
-        width: 300px;
-        background-color: rgba(0, 0, 0, 0.9);
-        color: white;
-        border-radius: 15px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-        overflow: hidden;
-        z-index: 1000;
-        font-family: 'Roboto', sans-serif;
+/* Quests Section Styles */
+#new-quests-box {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 300px; /* Reduced width */
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    font-family: 'Roboto', sans-serif;
+    max-height: 400px; /* Reduced max height */
+    overflow-y: auto;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease-in-out;
+}
+
+#new-quests-box .header {
+    background-color: #6200ea;
+    padding: 15px;
+    font-size: 18px; /* Reduced font size */
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+#new-quests-box .header h2 {
+    margin: 0;
+    color: #ffffff;
+}
+
+#toggle-quests {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 20px; /* Reduced font size */
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+#new-quests-box .content {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#new-quests-box .quest {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+#new-quests-box .quest-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#new-quests-box .quest h3 {
+    margin: 0;
+    font-size: 16px; /* Reduced font size */
+    color: #ffeb3b;
+}
+
+.reward-image {
+    width: 30px; /* Smaller image size */
+    height: 30px;
+    border-radius: 50%;
+}
+
+#new-quests-box .quest-description {
+    margin: 5px 0;
+    font-size: 14px; /* Reduced font size */
+    color: #e0e0e0;
+}
+
+#new-quests-box .quest .quest-progress {
+    height: 8px; /* Reduced height */
+    background-color: #9e9e9e;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+#new-quests-box .quest .quest-progress div {
+    height: 100%;
+    background-color: #ff5722;
+    width: 50%;
+    transition: width 0.3s;
+}
+
+#new-quests-box .quest .claim-button {
+    padding: 6px 12px; /* Reduced padding */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px; /* Reduced font size */
+    background-color: #4caf50;
+    color: #ffffff;
+    transition: background-color 0.3s;
+}
+
+#new-quests-box .quest .claim-button:hover {
+    background-color: #43a047;
+}
+    /* ===================== Animated Particle Background ===================== */
+
+/* Container for particles */
+.particle-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: -2; /* Ensure particles are behind all content */
+}
+/* Responsive Styles for Quests Section */
+@media (max-width: 768px) {
+    #new-quests-box {
+        width: 90%;
+        left: 5%;
+        bottom: 10px;
     }
 
-    #new-quests-box .header {
-        background-color: #ff9800;
-        padding: 15px;
-        font-size: 20px;
-        font-weight: bold;
-        text-align: center;
-        border-top-left-radius: 15px;
-        border-top-right-radius: 15px;
-        position: relative;
-    }
-
-    #toggle-quests {
-        position: absolute;
-        right: 15px;
-        top: 15px;
-        cursor: pointer;
+    #new-quests-box .header h2 {
         font-size: 18px;
-    }
-
-    #new-quests-box .content {
-        padding: 15px;
-    }
-
-    #new-quests-box .quest {
-        margin-bottom: 15px;
-        padding: 15px;
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        transition: transform 0.2s, box-shadow 0.3s;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        display: flex;
-        flex-direction: column;
-    }
-
-    #new-quests-box .quest:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     }
 
     #new-quests-box .quest h3 {
-        margin: 0;
         font-size: 18px;
-        color: #ff9800;
     }
 
     #new-quests-box .quest p {
-        margin: 10px 0;
         font-size: 14px;
-        color: #ccc;
-    }
-
-    #new-quests-box .quest .reward-image {
-        width: 30px;
-        height: 30px;
-        transition: transform 0.2s;
-        align-self: flex-end;
-    }
-
-    #new-quests-box .quest .reward-image:hover {
-        transform: scale(1.1);
-    }
-
-    #new-quests-box .quest-progress {
-        height: 20px;
-        background-color: rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-        overflow: hidden;
-        margin-top: 10px;
-        position: relative;
-    }
-
-    #new-quests-box .quest-progress div {
-        height: 100%;
-        background-color: #ff9800;
-        width: 50%; /* Example progress, should be dynamically set */
-        position: absolute;
-        top: 0;
-        left: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        font-weight: bold;
-        color: white;
-    }
-
-    #new-quests-box .quest .button-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 10px;
     }
 
     #new-quests-box .quest button {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        padding: 10px 20px;
-        font-size: 14px;
-        cursor: pointer;
-        transition: background-color 0.3s;
+        font-size: 12px;
+        padding: 6px 12px;
     }
+}
 
-    #new-quests-box .quest button:hover {
-        background-color: #0056b3;
+/* Particle Styles */
+@keyframes particleMove {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
     }
+    100% {
+        transform: translate(100px, 100px) scale(0.5);
+        opacity: 0;
+    }
+}
 
-    #new-quests-box .quest .claim-button {
-        background-color: #28a745;
-    }
+.particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 165, 0, 0.7); /* Orange color with transparency */
+    border-radius: 50%;
+    animation: particleMove linear infinite;
+}
 
-    #new-quests-box .quest .claim-button:hover {
-        background-color: #218838;
-    }
+/* ===================== Menu Slide-In Animation ===================== */
 
-    #new-quests-box .quest button:disabled {
-        background-color: #ccc;
-        cursor: not-allowed;
+@keyframes slideInFromTop {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
     }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.menu {
+    animation: slideInFromTop 1s ease-out forwards;
+}
+
+/* ===================== Button Hover Effects ===================== */
+
+/* Play Button Glowing and Scaling on Hover */
+.play-button {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.play-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 187, 0, 0.8);
+}
+
+/* Battlepass Button Hover Effects */
+.battlepass-button:hover img {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+}
+
+.battlepass-button span:hover {
+    transform: scale(1.1);
+}
+
+/* ===================== Profile Section Animations ===================== */
+
+/* Fade-In Animation for Profile Info */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#profile-info {
+    animation: fadeIn 1s ease-out forwards;
+}
+
+/* ===================== Champion Selector Animations ===================== */
+
+/* Entrance Animation for Champion Images */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.champion-image {
+    animation: fadeInScale 0.5s ease-out forwards;
+    opacity: 0;
+}
+
+/* Add Delay for Staggered Entrance */
+.champion-image:nth-child(odd) {
+    animation-delay: 0.3s;
+}
+
+.champion-image:nth-child(even) {
+    animation-delay: 0.6s;
+}
+
+/* Hover Glow Effect */
+.champion-image:hover {
+    box-shadow: 0 0 15px rgba(255, 165, 0, 0.8);
+    transform: scale(1.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/* ===================== Quests Box Animations ===================== */
+
+/* Quests Box Slide-In from Bottom */
+#new-quests-box {
+    animation: slideInFromBottom 1s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes slideInFromBottom {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Quest Card Hover Effect */
+#new-quests-box .quest:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(255, 165, 0, 0.8);
+}
+
+/* ===================== Glitch Effect for Headers ===================== */
+
+/* Glitch Effect for Profile Menu Headers */
+@keyframes glitch {
+    0% {
+        text-shadow: 2px 2px red;
+    }
+    20% {
+        text-shadow: -2px -2px blue;
+    }
+    40% {
+        text-shadow: 2px -2px green;
+    }
+    60% {
+        text-shadow: -2px 2px yellow;
+    }
+    80% {
+        text-shadow: 2px 2px purple;
+    }
+    100% {
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+}
+
+#profile-menu ul li {
+    position: relative;
+    animation: glitch 2s infinite;
+}
+
+/* ===================== Responsive Enhancements ===================== */
+
+/* Ensure Modal Content Animates Smoothly */
+.modal-content {
+    animation: fadeIn 0.5s ease-out forwards;
+    opacity: 0;
+}
+/* ===================== Enhanced Hover Effects ===================== */
+
+/* Menu Items Hover Effect */
+.menu a:hover {
+    background-color: #ff9800; /* Orange background on hover */
+    color: black; /* Change text color for contrast */
+    transform: translateY(-3px); /* Slight upward movement */
+    box-shadow: 0 4px 8px rgba(255, 152, 0, 0.6); /* Orange shadow */
+}
+
+/* Battlepass Button Hover Effect */
+.battlepass-button:hover img {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+}
+
+.battlepass-button:hover span {
+    color: #ffd700; /* Gold color on hover */
+}
+
+/* Friend List Toggle Hover Effect */
+#toggle-friend-list:hover {
+    color: #ffd700; /* Gold color on hover */
+    text-decoration: underline;
+}
+
+/* Add more hover effects as needed */
+
+/* ===================== Smooth Modal Transition ===================== */
+
+.modal-content {
+    transition: all 0.3s ease-in-out;
+}
+/* ===================== Container Entrance Animations ===================== */
+
+/* Fade-In and Slide-Up Animation for Champion Selector */
+  /* Existing Entrance Animations */
+  #champion-selector-container {
+      animation: fadeInUp 1s ease-out forwards;
+      opacity: 0;
+  }
+
+  /* Ensure Quests Box and Friend List are not hidden */
+  #new-quests-box, #friend-list-container, #champion-selector-container {
+      display: block; /* Ensure they are displayed */
+      opacity: 1; /* Ensure full opacity */
+  }
+/* ===================== Profile Image Glow Effect ===================== */
+
+#profile-image {
+    transition: box-shadow 0.3s, transform 0.3s;
+}
+
+#profile-image:hover {
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+    transform: scale(1.1);
+}
+
 	</style>
 </head>
 <body>
@@ -1213,15 +1494,16 @@
             <a href="ch/Mai.html"><img src="Icons/Mai.png" alt="Mai" class="champion-image gray" onclick="return false;"></a>
         </div>
     </div>
-    <div id="new-quests-box">
+<!-- Quests Section -->
+<div id="new-quests-box">
     <div class="header">
-        Quests
-        <span id="toggle-quests" onclick="toggleQuests()">&#9660;</span> <!-- Down arrow -->
+        <h2>Quests</h2>
+        <button id="toggle-quests" aria-label="Toggle Quests">&#9660;</button> <!-- Down arrow -->
     </div>
     <div class="content">
-            <!-- Quests will be dynamically loaded here -->
-        </div>
+        <!-- Quests will be dynamically loaded here -->
     </div>
+</div>
     <div id="friend-list-container">
         <div id="toggle-friend-list">Toggle Friend List</div>
         <div id="friend-list">
@@ -1244,23 +1526,23 @@
 				video.play(); // Start playing the video
 			}
     });
-    function toggleQuests() {
-        const content = document.querySelector('#new-quests-box .content');
-        const toggleButton = document.getElementById('toggle-quests');
-        if (content.style.display === 'none') {
-            content.style.display = 'block';
-            toggleButton.innerHTML = '&#9660;'; // Down arrow
-        } else {
-            content.style.display = 'none';
-            toggleButton.innerHTML = '&#9650;'; // Up arrow
-        }
+// Toggle Quests Visibility with Smooth Transition
+document.getElementById('toggle-quests').addEventListener('click', function() {
+    const content = document.querySelector('#new-quests-box .content');
+    const toggleButton = document.getElementById('toggle-quests');
+    
+    if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'flex';
+        toggleButton.innerHTML = '&#9650;'; // Up arrow
+    } else {
+        content.style.display = 'none';
+        toggleButton.innerHTML = '&#9660;'; // Down arrow
     }
+});
 
-    document.addEventListener('DOMContentLoaded', () => {
-        // Initially hide the content
-        document.querySelector('#new-quests-box .content').style.display = 'none';
-        document.getElementById('toggle-quests').innerHTML = '&#9650;'; // Up arrow
-    });
+    // ===================== Particle Effect Initialization =====================
+
+
 </script>
 </body>
 </html>

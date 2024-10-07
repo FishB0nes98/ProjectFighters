@@ -155,6 +155,192 @@
                 opacity: 0;
             }
         }
+        /* Add these styles within your existing <style> tag */
+
+/* Animated Background Particles */
+@keyframes particleMove {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(100px, 100px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.particle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: rgba(255, 165, 0, 0.7);
+    border-radius: 50%;
+    animation: particleMove 5s linear infinite;
+}
+
+/* Header Text Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+h1 {
+    animation: fadeInUp 1s ease-out;
+}
+
+/* Menu Slide-In Animation */
+@keyframes slideIn {
+    from {
+        transform: translateY(-100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.menu {
+    animation: slideIn 0.5s ease-out;
+}
+
+/* Play Button Pulse Animation */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(255, 187, 0, 0.7);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(255, 187, 0, 1);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(255, 187, 0, 0.7);
+    }
+}
+
+.play-button {
+    animation: pulse 2s infinite;
+}
+
+/* Game Mode Entrance Animation */
+@keyframes gameModeFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.game-mode {
+    animation: gameModeFadeIn 0.8s ease-out forwards;
+    opacity: 0;
+}
+
+/* Adding a Delay to Each Game Mode for Staggered Animation */
+.game-mode:nth-child(1) {
+    animation-delay: 0.2s;
+}
+.game-mode:nth-child(2) {
+    animation-delay: 0.4s;
+}
+.game-mode:nth-child(3) {
+    animation-delay: 0.6s;
+}
+.game-mode:nth-child(4) {
+    animation-delay: 0.8s;
+}
+
+/* Story Container Animation */
+.containerstory {
+    animation: fadeInUp 1s ease-out 1s forwards;
+    opacity: 0;
+}
+
+/* Particle Initialization (Add these styles at the end of your CSS) */
+body::before, body::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+body::before {
+    /* Container for particles */
+}
+/* Enhanced Hover Effects */
+
+/* Menu Items Shadow on Hover */
+.menu a:hover {
+    background-color: #111;
+    transform: scale(1.1);
+    text-shadow: 0 0 10px rgba(255, 165, 0, 0.7);
+}
+
+/* Game Mode Hover Glow */
+.game-mode:hover {
+    box-shadow: 0 0 20px rgba(255, 165, 0, 0.8);
+}
+
+/* Adding a Slight Rotation on Hover */
+.game-mode:hover img {
+    transform: rotate(10deg);
+    transition: transform 0.3s;
+}
+/* Container Entrance Animation */
+@keyframes containerFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.container, .containerstory {
+    animation: containerFadeIn 1s ease-out forwards;
+    opacity: 0;
+}
+/* Glitch Effect for Header */
+@keyframes glitch {
+    0% {
+        text-shadow: 2px 2px red;
+    }
+    20% {
+        text-shadow: -2px -2px blue;
+    }
+    40% {
+        text-shadow: 2px -2px green;
+    }
+    60% {
+        text-shadow: -2px 2px yellow;
+    }
+    80% {
+        text-shadow: 2px 2px purple;
+    }
+    100% {
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+}
+
+h1 {
+    position: relative;
+    animation: glitch 2s infinite;
+}
     </style>
 </head>
     <!-- Menu -->
@@ -194,7 +380,7 @@
 </div>
 <div class="containerstory">
     <h1>Story</h1>
-<div class="game-mode" style="background-image: url('res/img/raid/background.png'); width: 200px; height:200px; background-size: cover;" onclick="location.href='raid.html'">
+<div class="game-mode" style="background-image: url('res/img/raid/background.png'); width: 200px; height:200px; background-size: cover;" onclick="location.href='Raid.html'">
     <img src="res/img/raid.png" alt="1v1">
     <span>Raids</span>
 </div>
@@ -203,6 +389,22 @@
     <script>
         const video = document.getElementById('video-background');
         video.playbackRate = 0.5; // Set playback rate to 50% (0.5x speed)
+    </script>
+    <script>
+        // Particle Effect
+        const particleContainer = document.createElement('div');
+        particleContainer.classList.add('particle-container');
+        document.body.appendChild(particleContainer);
+        
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            particle.style.animationDelay = `${Math.random() * 5}s`;
+            particleContainer.appendChild(particle);
+        }
     </script>
 </body>
 </html>

@@ -150,6 +150,7 @@
     <div class="box-selection">
         <img id="basicbox" src="res/img/basicbox.png" alt="Basic Lootbox" class="lootbox-image" onclick="selectBox('basicbox')">
         <img id="pajamapartybox" src="res/img/pajamapartybox.png" alt="Pajama Party Lootbox" class="lootbox-image unavailable">
+        <img id="halloweenbox" src="res/img/halloweenbox.png" alt="Halloween Lootbox" class="lootbox-image" onclick="selectBox('halloweenbox')">
     </div>
     <div class="currency">
         <div>
@@ -162,6 +163,9 @@
         </div>
         <div id="free-lootbox-count-container">
             <span id="free-lootbox-count">0</span> Free Lootbox(es)
+        </div>
+        <div id="free-halloweenbox-count-container">
+            <span id="free-halloweenbox-count">0</span> Free Lootbox(es)
         </div>
     </div>
     <!-- Update the button text -->
@@ -192,28 +196,30 @@ const auth = getAuth(app);
 const database = getDatabase(app);
 
 window.onload = function() {
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    userRef = ref(database, 'users/' + user.uid);
-                    const snapshot = await get(userRef);
-                    const userData = snapshot.val();
-                    if (userData) {
-                        userFM = userData.FM || 0;
-                        userCM = userData.CM || 0;
-                        userBasicbox = (userData.freelootbox && userData.freelootbox.basicbox) || 0;
-                        userPajamaPartyBox = (userData.freelootbox && userData.freelootbox.pajamapartybox) || 0;
-                        document.getElementById('fm-amount').textContent = userFM;
-                        document.getElementById('cm-amount').textContent = userCM;
-                        document.getElementById('free-lootbox-count').textContent = userBasicbox;
-                        userSkins = userData.skins || {};
-                        updateLootboxButton();
-                    }
-                } else {
-                    window.location.href = 'index.html';
-                }
-            });
-            selectBox('basicbox'); // Default selection
-        };
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            userRef = ref(database, 'users/' + user.uid);
+            const snapshot = await get(userRef);
+            const userData = snapshot.val();
+            if (userData) {
+                userFM = userData.FM || 0;
+                userCM = userData.CM || 0;
+                userBasicbox = (userData.freelootbox && userData.freelootbox.basicbox) || 0;
+                userPajamaPartyBox = (userData.freelootbox && userData.freelootbox.pajamapartybox) || 0;
+                userHalloweenBox = (userData.freelootbox && userData.freelootbox.halloweenbox) || 0;
+                document.getElementById('fm-amount').textContent = userFM;
+                document.getElementById('cm-amount').textContent = userCM;
+                document.getElementById('free-lootbox-count').textContent = userBasicbox;
+                document.getElementById('free-halloweenbox-count').textContent = userHalloweenBox;
+                userSkins = userData.skins || {};
+                updateLootboxButton();
+            }
+        } else {
+            window.location.href = 'index.html';
+        }
+    });
+    selectBox('basicbox'); // Default selection
+};
 
         let selectedBox = 'basicbox';
         let userSkins = {};
@@ -221,6 +227,7 @@ window.onload = function() {
         let userCM = 0;
         let userBasicbox = 0;
         let userPajamaPartyBox = 0;
+        let userHalloweenBox = 0;
         let userRef = null;
 
         window.selectBox = function selectBox(boxType) {
@@ -233,119 +240,137 @@ window.onload = function() {
     updateLootboxButton();
 }
 
-window.updateLootboxButton = function updateLootboxButton() {
+function updateLootboxButton() {
     const openButton = document.getElementById('open-button');
     const freeLootboxCountContainer = document.getElementById('free-lootbox-count-container');
-    if (selectedBox === 'basicbox' && userBasicbox > 0) {
-        openButton.textContent = 'Open Basic Lootbox for FREE';
-        freeLootboxCountContainer.style.display = 'block';
-        document.getElementById('free-lootbox-count').textContent = userBasicbox;
-    } else if (selectedBox === 'basicbox') {
-        openButton.textContent = 'Open Basic Lootbox for 1000 FM';
-        freeLootboxCountContainer.style.display = 'none';
+    const freeHalloweenBoxCountContainer = document.getElementById('free-halloweenbox-count-container');
+
+    if (selectedBox === 'basicbox') {
+        if (userBasicbox > 0) {
+            openButton.textContent = 'Open Basic Lootbox for FREE';
+            freeLootboxCountContainer.style.display = 'block';
+            document.getElementById('free-lootbox-count').textContent = userBasicbox;
+        } else {
+            openButton.textContent = 'Open Basic Lootbox for 1000 FM';
+            freeLootboxCountContainer.style.display = 'none';
+        }
+    } else if (selectedBox === 'halloweenbox') {
+        if (userHalloweenBox > 0) {
+            openButton.textContent = 'Open Halloween Lootbox for FREE';
+            freeHalloweenBoxCountContainer.style.display = 'block';
+            document.getElementById('free-halloweenbox-count').textContent = userHalloweenBox;
+        } else {
+            openButton.textContent = 'Open Halloween Lootbox for 100.000 CM';
+            freeHalloweenBoxCountContainer.style.display = 'none';
+        }
     } else {
         openButton.textContent = 'Unavailable';
         freeLootboxCountContainer.style.display = 'none';
+        freeHalloweenBoxCountContainer.style.display = 'none';
     }
 }
 
+window.openLootbox = async function openLootbox() {
+    const lootboxType = selectedBox;
+    let userLootboxCount;
 
-        window.openLootbox = async function openLootbox() {
-            const lootboxType = selectedBox;
-            let userLootboxCount = lootboxType === 'basicbox' ? userBasicbox : userPajamaPartyBox;
+    if (lootboxType === 'basicbox') {
+        userLootboxCount = userBasicbox;
+    } else if (lootboxType === 'halloweenbox') {
+        userLootboxCount = userHalloweenBox;
+    } else {
+        // Handle other boxes if added in the future
+        return;
+    }
 
-            if (userLootboxCount > 0) {
-                // Open for free
-                userLootboxCount -= 1;
-                await update(userRef, { [`freelootbox/${lootboxType}`]: userLootboxCount });
-                if (lootboxType === 'basicbox') {
-                    userBasicbox = userLootboxCount;
-                } else {
-                    userPajamaPartyBox = userLootboxCount;
-                }
-                document.getElementById('free-lootbox-count').textContent = userLootboxCount;
-            } else {
-                if (lootboxType === 'basicbox') {
-                    if (userFM < 1000) {
-                        alert("You don't have enough FM to open the lootbox.");
-                        return;
-                    }
-                    // Deduct FM
-                    userFM -= 1000;
-                    await update(userRef, { FM: userFM });
-                    document.getElementById('fm-amount').textContent = userFM;
-                } else {
-                    if (userCM < 50000) {
-                        alert("You don't have enough CM to open the lootbox.");
-                        return;
-                    }
-                    // Deduct CM
-                    userCM -= 50000;
-                    await update(userRef, { CM: userCM });
-                    document.getElementById('cm-amount').textContent = userCM;
-                }
-            }
-
-
-        window.onload = function() {
-            selectBox('basicbox'); // Default selection
-        };
-
-            // Get all possible skins from the selected lootbox
-            const lootboxRef = ref(database, `lootbox/${lootboxType}`);
-            const lootboxSnapshot = await get(lootboxRef);
-            const lootboxSkins = lootboxSnapshot.val();
-
-            if (!lootboxSkins) {
-                alert("No skins available in the lootbox.");
+    if (userLootboxCount > 0) {
+        // Open for free
+        userLootboxCount -= 1;
+        await update(userRef, { [`freelootbox/${lootboxType}`]: userLootboxCount });
+        if (lootboxType === 'basicbox') {
+            userBasicbox = userLootboxCount;
+            document.getElementById('free-lootbox-count').textContent = userBasicbox;
+        } else if (lootboxType === 'halloweenbox') {
+            userHalloweenBox = userLootboxCount;
+            document.getElementById('free-halloweenbox-count').textContent = userHalloweenBox;
+        }
+    } else {
+        if (lootboxType === 'basicbox') {
+            if (userFM < 1000) {
+                alert("You don't have enough FM to open the Basic Lootbox.");
                 return;
             }
-
-            // Filter out skins that the user already owns
-            const availableSkins = {};
-            for (const [skin, weight] of Object.entries(lootboxSkins)) {
-                if (!userSkins[skin]) {
-                    availableSkins[skin] = weight;
-                }
-            }
-
-            if (Object.keys(availableSkins).length === 0) {
-                alert("You already own all skins available in this lootbox.");
+            // Deduct FM
+            userFM -= 1000;
+            await update(userRef, { FM: userFM });
+            document.getElementById('fm-amount').textContent = userFM;
+        } else if (lootboxType === 'halloweenbox') {
+            if (userCM < 100000) {
+                alert("You don't have enough CM to open the Halloween Lootbox.");
                 return;
             }
+            // Deduct CM
+            userCM -= 100000; 
+            await update(userRef, { CM: userCM });
+            document.getElementById('cm-amount').textContent = userCM;
+        }
+    }
 
-            // Randomly select a skin based on weight
-            const randomSkin = getRandomSkin(availableSkins);
-            userSkins[randomSkin] = 1;
+    // Proceed to open the lootbox
+    const lootboxRef = ref(database, `lootbox/${lootboxType}`);
+    const lootboxSnapshot = await get(lootboxRef);
+    const lootboxSkins = lootboxSnapshot.val();
 
-            // Update user's skins in the database
-            await update(userRef, { skins: userSkins });
+    if (!lootboxSkins) {
+        alert("No skins available in this lootbox.");
+        return;
+    }
 
-            // Function to load image from supported formats
-            const loadImage = async (skinName) => {
-                for (let fileType of ['.png', '.jpg', '.jpeg']) {
-                    const imageUrl = `Skins/${skinName}${fileType}`;
-                    try {
-                        const response = await fetch(imageUrl);
-                        if (response.ok) {
-                            document.getElementById('lootbox-result').src = imageUrl;
-                            document.getElementById('lootbox-result').style.display = 'block';
-                            return;
-                        }
-                    } catch (error) {
-                        console.error(`Failed to fetch ${imageUrl}: ${error}`);
-                    }
+    // Filter out skins that the user already owns
+    const availableSkins = {};
+    for (const [skin, weight] of Object.entries(lootboxSkins)) {
+        if (!userSkins[skin]) {
+            availableSkins[skin] = weight;
+        }
+    }
+
+    if (Object.keys(availableSkins).length === 0) {
+        alert("You already own all skins available in this lootbox.");
+        return;
+    }
+
+    // Randomly select a skin based on weight
+    const randomSkin = getRandomSkin(availableSkins);
+    userSkins[randomSkin] = 1;
+
+    // Update user's skins in the database
+    await update(userRef, { skins: userSkins });
+
+    // Function to load image from supported formats
+    const loadImage = async (skinName) => {
+        for (let fileType of ['.png', '.jpg', '.jpeg']) {
+            const imageUrl = `Skins/${skinName}${fileType}`;
+            try {
+                const response = await fetch(imageUrl);
+                if (response.ok) {
+                    document.getElementById('lootbox-result').src = imageUrl;
+                    document.getElementById('lootbox-result').style.display = 'block';
+                    return;
                 }
-                console.error(`No valid image found for skin ${skinName}`);
-            };
+            } catch (error) {
+                console.error(`Failed to fetch ${imageUrl}: ${error}`);
+            }
+        }
+        console.error(`No valid image found for skin ${skinName}`);
+    };
 
-            // Show animation and reveal the skin
-            document.getElementById('lootbox-animation').style.display = 'block';
-            setTimeout(() => {
-                document.getElementById('lootbox-animation').style.display = 'none';
-                loadImage(randomSkin);
-            }, 400);
-        };
+    // Show animation and reveal the skin
+    document.getElementById('lootbox-animation').style.display = 'block';
+    setTimeout(() => {
+        document.getElementById('lootbox-animation').style.display = 'none';
+        loadImage(randomSkin);
+    }, 400);
+};
 
         function getRandomSkin(skins) {
             const totalWeight = Object.values(skins).reduce((acc, val) => acc + val, 0);
