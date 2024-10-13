@@ -9,9 +9,11 @@
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
         import { getDatabase, ref, push, set, get, update, runTransaction } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
         import { quests } from './quests.js';
+        import { roles } from './roles.js'; // Importing roles.js
 
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
@@ -107,7 +109,7 @@
                 'Blanka.png', 'Nina.png', 'Ayane.png', 'Siegfried.png', 'Shoma.png', 
 				'Juri.png', 'Sub Zero.png', 'Christie.png', 'Kokoro.png', 'Eagle.png',
                 'Sophitia.png', 'Shizumaru.png', 'Kagome.png', 'Kabal.png', 'Kuma.png',
-                'Alice.png', 'Shinnok.png', 'FANG.png',
+                'Alice.png', 'Shinnok.png', 'FANG.png', 'Lili.png',
 				
             ];
 
@@ -140,8 +142,6 @@
                 }
             }
         };
-
-        
 
         window.logOut = function() {
         signOut(auth).then(() => {
@@ -492,9 +492,9 @@
             max-width: 1200px;
             margin: 50px auto 20px auto;
             padding: 20px;
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(0, 0, 0, 0.7);
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 10px rgba(255, 235, 59, 0.2);
             z-index: -1;
         }
         #champion-selector {
@@ -561,7 +561,7 @@
 		#profile-info {
 			display: flex;
 			position: fixed;
-			top: 0px;
+			top: 65px;
 			right: 0px;
 			align-items: center;
 			justify-content: flex-end; /* Align content to the right */
@@ -635,6 +635,7 @@
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* More pronounced shadow for a modern effect */
         z-index: 1; /* Ensure it is above other elements */
         top: 5px; /* Adjusted position */
+        right: 10px;
         position: fixed;
     }
 
@@ -650,7 +651,6 @@
         top: 125px;
         left: 75px;
         background-color: transparent;
-        border: none;
         cursor: pointer;
         z-index: 1000;
         display: flex;
@@ -659,6 +659,7 @@
         padding: 10px;
         width: 200px; /* Adjust the width as needed */
         flex-direction: column; /* Stack image and text vertically */
+        border: 2px solid #ffeb3b; /* Orange-yellow border */
     }
 
     .battlepass-button img {
@@ -670,6 +671,7 @@
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Add shadow for a modern effect */
         border-radius: 10px; /* Slightly rounded corners for a modern look */
         animation: float 5s ease-in-out infinite; /* Add floating animation */
+        box-shadow: 0 8px 20px rgba(233, 171, 3, 0.863); /* Add shadow for a modern effect */
     }
 
     .battlepass-button span {
@@ -680,13 +682,13 @@
         transition: transform 0.3s;
         z-index: 1; /* Ensure text is above the image */
         font-family: 'Bangers', cursive; /* MOBA game-like font */
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add shadow for a fancy effect */
+        text-shadow: 2px 2px 4px rgba(233, 171, 3, 0.863);
         animation: float 5s ease-in-out infinite; /* Add floating animation */
     }
 
     .battlepass-button span:hover {
         transform: scale(1.1);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 8px 20px rgba(233, 171, 3, 0.863);
     }
 
         #video-background {
@@ -696,14 +698,14 @@
             min-width: 100%;
             min-height: 100%;
             z-index: -1;
-            filter: brightness(60%) contrast(120%);
+            filter: brightness(40%) contrast(120%);
         }
 
         /* Profile Menu */
         .profile-menu {
             display: none;
             position: absolute;
-            top: 120px;
+            top: 187px;
             right: 10px;
             background-color: rgba(0, 0, 0, 0.8);
             color: white;
@@ -813,7 +815,7 @@
         }
 		.currency-container {
 			position: fixed;
-			top: 115px; /* Adjust top position as needed */
+			top: 220px; /* Adjust top position as needed */
 			right: 3px; /* Align with profile-info */
 			align-items: center;
 			padding: 5px 10px;
@@ -853,7 +855,7 @@
         }
 		.cm-container {
 			position: fixed; /* Fixed position */
-			top: 150px; /* Adjust top position */
+			top: 185px; /* Adjust top position */
 			right: 0px; /* Align with profile-info */
 			align-items: center; /* Align items vertically */
 			padding: 5px 10px; /* Padding around the container */
@@ -910,20 +912,40 @@
 			font-size: 14px;
 		}
         #friend-list-container {
-        position: fixed;
-        bottom: 5px;
-        right: 10px;
-        background-color: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-        width: 300px;
-        max-width: 275px;
-        max-height: 800px;
-        overflow-y: auto;
-    }
+            position: fixed;
+            bottom: 10px;
+            right: 14px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(255, 235, 59, 0.2);
+            z-index: 1000;
+            width: 300px;
+            max-width: 275px;
+            align-items: center;
+            max-height: 800px;
+            overflow-y: auto;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        #friend-list-container .header {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            color: #ffeb3b;
+            text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+            box-shadow: 0 2px 10px rgba(255, 235, 59, 0.2);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
 
     #friend-list {
         display: none;
@@ -1000,7 +1022,7 @@
     bottom: 20px;
     left: 20px;
     width: 300px; /* Reduced width */
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgb(17, 16, 16);
     color: #ffffff;
     border-radius: 10px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
@@ -1013,15 +1035,20 @@
 }
 
 #new-quests-box .header {
-    background-color: #6200ea;
+    background-color: rgba(0, 0, 0, 0.7);
     padding: 15px;
-    font-size: 18px; /* Reduced font size */
+    font-size: 18px;
     font-weight: bold;
     display: flex;
     align-items: center;
     justify-content: space-between;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
+    color: #ffeb3b;
+    text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+    box-shadow: 0 2px 10px rgba(255, 235, 59, 0.2);
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
 }
 
 #new-quests-box .header h2 {
@@ -1032,7 +1059,7 @@
 #toggle-quests {
     background: none;
     border: none;
-    color: #ffffff;
+    color: #f3b01fea;
     font-size: 20px; /* Reduced font size */
     cursor: pointer;
     transition: transform 0.3s;
@@ -1046,7 +1073,7 @@
 }
 
 #new-quests-box .quest {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(0, 0, 0, 0.411);
     border-radius: 8px;
     padding: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -1064,7 +1091,7 @@
 #new-quests-box .quest h3 {
     margin: 0;
     font-size: 16px; /* Reduced font size */
-    color: #ffeb3b;
+    color: #f1b91e;
 }
 
 .reward-image {
@@ -1227,38 +1254,43 @@
 
 /* ===================== Champion Selector Animations ===================== */
 
-/* Entrance Animation for Champion Images */
+/* Enhanced Entrance Animation for Champion Images */
 @keyframes fadeInScale {
-    from {
+    0% {
         opacity: 0;
-        transform: scale(0.8);
+        transform: scale(0.85);
     }
-    to {
+    50% {
+        opacity: 0.5;
+        transform: scale(1.02);
+    }
+    100% {
         opacity: 1;
         transform: scale(1);
     }
 }
 
 .champion-image {
-    animation: fadeInScale 0.5s ease-out forwards;
+    animation: fadeInScale 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
     opacity: 0;
 }
 
-/* Add Delay for Staggered Entrance */
+/* Add Delay for Staggered Entrance with Enhanced Timing */
 .champion-image:nth-child(odd) {
-    animation-delay: 0.3s;
+    animation-delay: 0.2s;
 }
 
 .champion-image:nth-child(even) {
-    animation-delay: 0.6s;
+    animation-delay: 0.4s;
 }
 
-/* Hover Glow Effect */
+/* Smooth Hover Glow and Scale Effect */
 .champion-image:hover {
-    box-shadow: 0 0 15px rgba(255, 165, 0, 0.8);
-    transform: scale(1.1);
-    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 0 20px rgba(255, 165, 0, 0.9);
+    transform: scale(1.15);
+    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
+```
 
 /* ===================== Quests Box Animations ===================== */
 
@@ -1347,6 +1379,47 @@
     text-decoration: underline;
 }
 
+/* Toggle Champion Selector Button Styles */
+#toggle-champion-button {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) rotate(0deg);
+    background-color: rgba(7, 4, 4, 0.589);
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    font-size: 24px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+#toggle-champion-button:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+    transform: translateX(-50%) rotate(180deg);
+}
+
+/* Animation for Rotation */
+@keyframes rotateArrow {
+    from {
+        transform: translateX(-50%) rotate(0deg);
+    }
+    to {
+        transform: translateX(-50%) rotate(180deg);
+    }
+}
+
+#toggle-champion-button.rotated {
+    animation: rotateArrow 0.3s forwards;
+}
+
 /* Add more hover effects as needed */
 
 /* ===================== Smooth Modal Transition ===================== */
@@ -1400,7 +1473,7 @@
     </div>
 
     <button class="battlepass-button" onclick="window.location.href='battlepass.html'">
-        <img src="Event/Void Event.jpeg" alt="Battlepass">
+        <img src="Event/Bistro Event.jpeg" alt="Battlepass">
         <span>Battlepass</span>
     </button>
     
@@ -1408,6 +1481,10 @@
         <a href="Game Modes.html" class="play-button">Play</a>
     </div>
 </div>
+<!-- Toggle Champion Selector Button -->
+<button id="toggle-champion-button" onclick="toggleChampionSelector()">
+    &#9660; <!-- Down Arrow -->
+</button>
 	<!-- User Profile Info -->
     <div id="profile-info" onclick="toggleProfileMenu()">
         <span id="username-display"></span>
@@ -1489,7 +1566,7 @@
             <a href="ch/Alice.html"><img src="Icons/Alice.png" alt="Alice" class="champion-image"></a>
             <a href="ch/Shinnok.html"><img src="Icons/Shinnok.png" alt="Shinnok" class="champion-image"></a>
             <a href="ch/FANG.html"><img src="Icons/FANG.png" alt="FANG" class="champion-image"></a>
-            <a href="ch/Lili.html"><img src="Icons/Lili.png" alt="Lili" class="champion-image gray" onclick="return false;"></a>
+            <a href="ch/Lili.html"><img src="Icons/Lili.png" alt="Lili" class="champion-image"></a>
             <a href="ch/Mega Man.html"><img src="Icons/Mega Man.png" alt="Mega Man" class="champion-image gray" onclick="return false;"></a>
             <a href="ch/Mai.html"><img src="Icons/Mai.png" alt="Mai" class="champion-image gray" onclick="return false;"></a>
         </div>
@@ -1538,6 +1615,29 @@ document.getElementById('toggle-quests').addEventListener('click', function() {
         content.style.display = 'none';
         toggleButton.innerHTML = '&#9660;'; // Down arrow
     }
+});
+
+// Toggle Champion Selector Visibility
+function toggleChampionSelector() {
+    const championSelector = document.getElementById('champion-selector-container');
+    const toggleButton = document.getElementById('toggle-champion-button');
+
+    if (championSelector.style.display === 'none' || championSelector.style.display === '') {
+        championSelector.style.display = 'flex';
+        toggleButton.classList.add('rotated');
+    } else {
+        championSelector.style.display = 'none';
+        toggleButton.classList.remove('rotated');
+    }
+}
+
+// Initialize Toggle Button State on Page Load
+document.addEventListener('DOMContentLoaded', function () {
+    const championSelector = document.getElementById('champion-selector-container');
+    const toggleButton = document.getElementById('toggle-champion-button');
+
+    // Initially show the champion selector
+    championSelector.style.display = 'flex';
 });
 
     // ===================== Particle Effect Initialization =====================

@@ -47,7 +47,18 @@ const quests = [
       requirement: (userData) => userData.oneVOneGamesWon >= 50,
       image: 'res/img/fm.png',
       hoverText: '2,000 FM'
-    }
+    },
+  {
+    id: 'win10Gamescookin',
+    title: "What's cookin'?",
+    description: "Win 10 games",
+    progress: 0,
+    goal: 10,
+    reward: { 'currency/FM': 500 },
+    requirement: (userData) => userData.gamesWon >= 10,
+    image: 'res/img/fm.png', // Assuming FM image
+    hoverText: '500 FM'
+  }
   ];
   
   export { quests };

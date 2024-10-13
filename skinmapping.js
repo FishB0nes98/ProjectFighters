@@ -239,4 +239,15 @@ export const skinToBaseCharacterMap = {
     'Zombie Astaroth': 'Astaroth',
     'Jack O Blanka': 'Blanka',
     'Spectral Reaper Ayane': 'Ayane',
+    'Battle Bistro Kuma': 'Kuma',
+    'Battle Bistro Sophitia': 'Sophitia',
+    'Battle Bistro Akuma': 'Akuma',
+    'Battle Bistro Shizumaru': 'Shizumaru',
+    'Battle Bistro Lili': 'Lili',
+    'Lili': 'Lili',
+    'Battle Bistro Shizumaru Sweet': 'Shizumaru',
+    'Battle Bistro Shizumaru Fast Food': 'Shizumaru',
+    'Battle Bistro Shizumaru Blackberry': 'Shizumaru',
+    'Battle Bistro Shizumaru Frosted Whisk': 'Shizumaru',
+
 };

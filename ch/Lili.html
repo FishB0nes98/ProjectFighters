@@ -2,20 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Akuma - Character Page</title>
+    <title>Lili - Character Page</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background: url('../Default Splash/Akuma.png') no-repeat center center fixed;
+            background: url('../Default Splash/Lili.jpeg') no-repeat center center fixed;
             background-size: cover;
             color: white;
             font-family: Arial, sans-serif;
             position: relative;
             overflow: hidden;
         }
-        /* Transparent Menu */
-        .menu {
+         /* Transparent Menu */
+         .menu {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -74,6 +74,8 @@
         transform: scale(1.05); /* Slightly enlarge the button on hover */
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
     }
+
+
         .content {
             display: flex;
             flex-direction: row;
@@ -269,30 +271,30 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        async function fetchBestAkumaPlayers() {
+        async function fetchBestLiliPlayers() {
             const usersRef = ref(database, 'users');
             const snapshot = await get(usersRef);
             const users = snapshot.val();
-            const AkumaPlayers = [];
+            const LiliPlayers = [];
 
             for (const userId in users) {
                 const user = users[userId];
-                if (user.characters && user.characters['Akuma']) {
-                    const { win, lose } = user.characters['Akuma'];
+                if (user.characters && user.characters['Lili']) {
+                    const { win, lose } = user.characters['Lili'];
                     const totalGames = win + lose;
                     if (totalGames >= 15) {
                         const winrate = (win / totalGames) * 100;
-                        AkumaPlayers.push({ username: user.username, winrate });
+                        LiliPlayers.push({ username: user.username, winrate });
                     }
                 }
             }
 
-            AkumaPlayers.sort((a, b) => b.winrate - a.winrate);
-            return AkumaPlayers.slice(0, 5);
+            LiliPlayers.sort((a, b) => b.winrate - a.winrate);
+            return LiliPlayers.slice(0, 5);
         }
 
-        async function displayBestAkumaPlayers() {
-            const bestPlayers = await fetchBestAkumaPlayers();
+        async function displayBestLiliPlayers() {
+            const bestPlayers = await fetchBestLiliPlayers();
             const bestPlayersList = document.getElementById('best-players-list');
             bestPlayersList.innerHTML = '';
 
@@ -306,13 +308,14 @@
         window.onload = function() {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    displayBestAkumaPlayers();
+                    displayBestLiliPlayers();
                 }
             });
         };
     </script>
 </head>
 <body>
+    <!-- Menu -->
     <!-- Menu -->
     <div class="menu">
         <div class="menu-items">
@@ -333,19 +336,19 @@
     <div class="content">
     <!-- Left Panel -->
     <div class="left-panel">
-        <h1>Akuma</h1>
-        <div class="role">Role: Mage/Burst</div>
+        <h1>Lili</h1>
+        <div class="role">Role: Fighter/Top</div>
         <p id="story">
-            Akuma is a character from the Street Fighter series. <span id="more" style="display: none;">He is a powerful martial artist who has embraced the dark power of the Satsui no Hado, a force that grants him immense strength but at the cost of his humanity. Akuma is the younger brother of Gouken, Ryu and Ken's master, and he is responsible for Gouken's death. Driven by a desire to become the strongest fighter, Akuma constantly seeks worthy opponents to test his abilities. Throughout the series, he is depicted as a relentless and fearsome warrior, consumed by his quest for power.</span> <span id="more-link" class="more-link" onclick="toggleStory()">more</span>
+            Lili is a character from the Tekken series. <span id="more" style="display: none;">Her full name is Emilie De Rochefort, and she is the only daughter of a wealthy oil magnate in Monaco. Lili is a skilled fighter who uses a unique fighting style that combines street fighting with gymnastics. Despite her privileged upbringing, she has a rebellious streak and a strong desire to prove herself in combat. Throughout the series, Lili is depicted as a confident and somewhat spoiled young woman, but she also shows a caring side, especially towards her father. Her journey in the Tekken series is driven by her rivalry with Asuka Kazama and her desire to gain her father's approval.</span> <span id="more-link" class="more-link" onclick="toggleStory()">more</span>
         </p>
-        <button class="bio-button" onclick="window.location.href='../characters/Akuma Page.html'">Check Bio</button>
+        <button class="bio-button" onclick="window.location.href='../characters/Lili Page.html'">Check Bio</button>
     </div>
 </div>
     <div class="content">
         <!-- Right Panel -->
         <div class="right-panel">
             <div class="best-players">
-                <h2>Best Akuma Players</h2>
+                <h2>Best Lili Players</h2>
                 <ul id="best-players-list"></ul>
             </div>
         </div>
@@ -356,12 +359,7 @@
         <label style="position: absolute; top: 10px; left: 10px; color: white;">
             <input type="checkbox" id="hide-recolors" onclick="toggleRecolors()"> Hide Recolors
         </label>
-        <img src="../Skins/Battle Bistro Akuma.jpeg" alt="Battle Bistro Akuma" class="skin-image" onclick="openLightbox(0)">
-        <img src="../Skins/Voidborn Akuma.jfif" alt="Voidborn Akuma" class="skin-image" onclick="openLightbox(1)">
-        <img src="../Skins/High Elf Akuma.png" alt="High Elf Akuma" class="skin-image" onclick="openLightbox(2)">
-        <img src="../Skins/Captain Akuma.png" alt="Captain Akuma" class="skin-image" onclick="openLightbox(3)">
-        <img src="../Skins/Thunder God Akuma.png" alt="Thunder God Akuma" class="skin-image" onclick="openLightbox(4)">
-        <img src="../Skins/Rockstar Akuma.jpg" alt="Rockstar Akuma" class="skin-image" onclick="openLightbox(5)">
+        <img src="../Skins/Battle Bistro Lili.jpeg" alt="Battle Bistro Lili" class="skin-image" onclick="openLightbox(0)">
     </div>
 
     <!-- Lightbox -->
@@ -374,12 +372,7 @@
 
     <script>
         const skins = [
-            '../Skins/Battle Bistro Akuma.jpeg',
-            '../Skins/Voidborn Akuma.jfif',
-            '../Skins/High Elf Akuma.png',
-            '../Skins/Captain Akuma.png',
-            '../Skins/Thunder God Akuma.png',
-            '../Skins/Rockstar Akuma.jpg',
+            '../Skins/Battle Bistro Lili.jpeg',
         ];
         let currentIndex = 0;
 
