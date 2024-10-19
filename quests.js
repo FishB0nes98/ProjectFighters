@@ -59,6 +59,34 @@ const quests = [
     image: 'res/img/fm.png', // Assuming FM image
     hoverText: '500 FM'
   }
+  ,
+  {
+    id: 'play10Gamesopen',
+    title: "Let the game begin",
+    description: "Play 10 games",
+    progress: 0,
+    goal: 10,
+    reward: { 'lootbox/FreeLootbox': 1 },
+    requirement: (userData) => userData.gamesPlayed >= 10,
+    image: 'res/img/basicbox.png', // Ensure this image exists
+    hoverText: 'Free Lootbox'
+  }
+  ,
+  {
+    id: 'unlockBattlepass',
+    title: "Welcome to Project Fighters",
+    description: "Play a game",
+    progress: 0,
+    goal: 1,
+    reward: { 'battlepass': true },
+    requirement: (userData) => userData.gamesPlayed >= 1,
+    image: 'Icons/Profile/Jade_Panda.png', // Ensure this image exists
+    hoverText: 'Battlepass Unlock',
+    onComplete: (userData) => {
+      userData.hasBattlepass = true;
+      // Note: You'll need to implement the actual database update logic elsewhere
+    }
+  }
   ];
   
   export { quests };

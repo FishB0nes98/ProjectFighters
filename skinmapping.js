@@ -249,5 +249,15 @@ export const skinToBaseCharacterMap = {
     'Battle Bistro Shizumaru Fast Food': 'Shizumaru',
     'Battle Bistro Shizumaru Blackberry': 'Shizumaru',
     'Battle Bistro Shizumaru Frosted Whisk': 'Shizumaru',
-
+    'Jade Siegfried': 'Siegfried',
+    'Jade Ayane': 'Ayane',
+    'Jade Yugo': 'Yugo',
+    'Jade Scorpion': 'Scorpion',
+    'Jade Panda': 'Panda',
+    'Jade Scorpion Bloodstone': 'Scorpion',
+    'Jade Scorpion Topaz': 'Scorpion',
+    'Jade Scorpion Rose Quartz': 'Scorpion',
+    'Jade Scorpion Agate': 'Scorpion',
+    'Mega Man': 'Mega Man',
+    'Pyromancer Mega Man': 'Mega Man',
 };

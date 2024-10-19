@@ -109,7 +109,7 @@
                 'Blanka.png', 'Nina.png', 'Ayane.png', 'Siegfried.png', 'Shoma.png', 
 				'Juri.png', 'Sub Zero.png', 'Christie.png', 'Kokoro.png', 'Eagle.png',
                 'Sophitia.png', 'Shizumaru.png', 'Kagome.png', 'Kabal.png', 'Kuma.png',
-                'Alice.png', 'Shinnok.png', 'FANG.png', 'Lili.png',
+                'Alice.png', 'Shinnok.png', 'FANG.png', 'Lili.png', 'Mega Man.png',
 				
             ];
 
@@ -494,7 +494,7 @@
             padding: 20px;
             background-color: rgba(0, 0, 0, 0.7);
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(255, 235, 59, 0.2);
+            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.2), 0 2px 10px rgba(0, 163, 108, 0.2); /* White and Jade */
             z-index: -1;
         }
         #champion-selector {
@@ -535,7 +535,7 @@
             box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
         }
         .selected {
-            border-color: gold !important;
+            border-color: #00A36C; /* Jade */
         }
         .gray {
         filter: grayscale(100%);
@@ -610,7 +610,7 @@
     }
 
     .menu a:hover {
-        background-color: #111;
+        background-color: #007B5F; /* Jade shade */
         transform: scale(1.1);
     }
 
@@ -623,7 +623,7 @@
 }
 
     .play-button {
-        background-color: #ffbb00; /* Modern blue color */
+        background-color: #00A36C; /* Jade */
         color: white;
         border: none;
         border-radius: 25px; /* Slightly less rounded corners for a modern look */
@@ -640,7 +640,7 @@
     }
 
     .play-button:hover {
-        background-color: #ff8800;  /* Slightly darker blue on hover */
+        background-color: #008B6A; /* Darker Jade */
         transform: scale(1.05); /* Slightly enlarge the button on hover */
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
     }
@@ -659,7 +659,7 @@
         padding: 10px;
         width: 200px; /* Adjust the width as needed */
         flex-direction: column; /* Stack image and text vertically */
-        border: 2px solid #ffeb3b; /* Orange-yellow border */
+        border: 2px solid #00A36C; /* Jade */
     }
 
     .battlepass-button img {
@@ -671,7 +671,7 @@
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Add shadow for a modern effect */
         border-radius: 10px; /* Slightly rounded corners for a modern look */
         animation: float 5s ease-in-out infinite; /* Add floating animation */
-        box-shadow: 0 8px 20px rgba(233, 171, 3, 0.863); /* Add shadow for a modern effect */
+        box-shadow: 0 8px 20px #00A36C; /* Jade */
     }
 
     .battlepass-button span {
@@ -682,13 +682,19 @@
         transition: transform 0.3s;
         z-index: 1; /* Ensure text is above the image */
         font-family: 'Bangers', cursive; /* MOBA game-like font */
-        text-shadow: 2px 2px 4px rgba(233, 171, 3, 0.863);
+        text-shadow: 2px 2px 4px #00A36C; /* Jade */
         animation: float 5s ease-in-out infinite; /* Add floating animation */
     }
 
     .battlepass-button span:hover {
+        color: #00FFB2; /* Light Jade */
         transform: scale(1.1);
-        box-shadow: 0 8px 20px rgba(233, 171, 3, 0.863);
+        box-shadow: 0 8px 20px #00A36C; /* Jade */
+    }
+
+    .battlepass-button:hover img {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(0, 123, 95, 0.7); /* Jade shadow */
     }
 
         #video-background {
@@ -729,7 +735,7 @@
         }
 
         .profile-menu ul li:hover {
-            background-color: #555;
+            background-color: #007B5F; /* Jade shade */
         }
 
         .profile-menu ul li:last-child {
@@ -919,7 +925,7 @@
             color: white;
             padding: 15px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(255, 235, 59, 0.2);
+            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.2), 0 2px 10px rgba(0, 163, 108, 0.2); /* White and Jade */
             z-index: 1000;
             width: 300px;
             max-width: 275px;
@@ -981,6 +987,47 @@
     cursor: pointer; /* Change cursor to pointer */
 }
 
+/* Toggle Champion Selector Button Styles */
+#toggle-champion-button {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) rotate(0deg);
+    background-color: rgba(7, 4, 4, 0.589);
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    font-size: 24px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+#toggle-champion-button:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+    transform: translateX(-50%) rotate(180deg);
+}
+
+/* Animation for Rotation */
+@keyframes rotateArrow {
+    from {
+        transform: translateX(-50%) rotate(0deg);
+    }
+    to {
+        transform: translateX(-50%) rotate(180deg);
+    }
+}
+
+#toggle-champion-button.rotated {
+    animation: rotateArrow 0.3s forwards;
+}
+
 .friend-name:hover {
     text-decoration: underline; /* Optional: Add underline on hover */
 }
@@ -998,7 +1045,7 @@
     #add-friend-button {
         margin-top: 10px;
         padding: 10px;
-        background-color: #ffae00;
+        background-color: #00A36C; /* Jade */
         color: white;
         border: none;
         border-radius: 5px;
@@ -1007,14 +1054,19 @@
     }
 
     #add-friend-button:hover {
-        background-color: #ffae00;
+        background-color: #008B6A; /* Darker Jade */
     }
 
     #toggle-friend-list {
         cursor: pointer;
-        color: #ffae00;
+        color: #00A36C; /* Jade */
         text-align: center;
         margin-top: 10px;
+    }
+
+    #toggle-friend-list:hover {
+        color: #00FFB2; /* Light Jade */
+        text-decoration: underline;
     }
 /* Quests Section Styles */
 #new-quests-box {
@@ -1044,9 +1096,9 @@
     justify-content: space-between;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    color: #ffeb3b;
-    text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
-    box-shadow: 0 2px 10px rgba(255, 235, 59, 0.2);
+    color: #00FFB2; /* Light Jade */
+    text-shadow: 0 0 10px rgba(0, 255, 178, 0.5); /* Jade shadow */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(5px);
     transition: all 0.3s ease;
 }
@@ -1059,7 +1111,7 @@
 #toggle-quests {
     background: none;
     border: none;
-    color: #f3b01fea;
+    color: #00A36C; /* Jade */
     font-size: 20px; /* Reduced font size */
     cursor: pointer;
     transition: transform 0.3s;
@@ -1091,7 +1143,7 @@
 #new-quests-box .quest h3 {
     margin: 0;
     font-size: 16px; /* Reduced font size */
-    color: #f1b91e;
+    color: #008B6A; /* Dark Jade */
 }
 
 .reward-image {
@@ -1116,7 +1168,7 @@
 
 #new-quests-box .quest .quest-progress div {
     height: 100%;
-    background-color: #ff5722;
+    background-color: #00A36C; /* Jade */
     width: 50%;
     transition: width 0.3s;
 }
@@ -1127,13 +1179,18 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 12px; /* Reduced font size */
-    background-color: #4caf50;
+    background-color: #00A36C; /* Jade */
     color: #ffffff;
     transition: background-color 0.3s;
 }
 
 #new-quests-box .quest .claim-button:hover {
-    background-color: #43a047;
+    background-color: #008B6A; /* Darker Jade */
+}
+
+#new-quests-box .quest:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 123, 95, 0.8); /* Jade shadow */
 }
     /* ===================== Animated Particle Background ===================== */
 
@@ -1190,7 +1247,7 @@
     position: absolute;
     width: 8px;
     height: 8px;
-    background: rgba(255, 165, 0, 0.7); /* Orange color with transparency */
+    background: rgba(0, 163, 108, 0.7); /* Jade color with transparency */
     border-radius: 50%;
     animation: particleMove linear infinite;
 }
@@ -1221,7 +1278,7 @@
 
 .play-button:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(255, 187, 0, 0.8);
+    box-shadow: 0 0 20px rgba(0, 123, 95, 0.8);
 }
 
 /* Battlepass Button Hover Effects */
@@ -1286,174 +1343,14 @@
 
 /* Smooth Hover Glow and Scale Effect */
 .champion-image:hover {
-    box-shadow: 0 0 20px rgba(255, 165, 0, 0.9);
+    box-shadow: 0 0 20px #00A36C; /* Jade */
     transform: scale(1.15);
     transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
-```
 
-/* ===================== Quests Box Animations ===================== */
+</stYle>
 
-/* Quests Box Slide-In from Bottom */
-#new-quests-box {
-    animation: slideInFromBottom 1s ease-out forwards;
-    opacity: 0;
-}
-
-@keyframes slideInFromBottom {
-    from {
-        transform: translateY(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-/* Quest Card Hover Effect */
-#new-quests-box .quest:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(255, 165, 0, 0.8);
-}
-
-/* ===================== Glitch Effect for Headers ===================== */
-
-/* Glitch Effect for Profile Menu Headers */
-@keyframes glitch {
-    0% {
-        text-shadow: 2px 2px red;
-    }
-    20% {
-        text-shadow: -2px -2px blue;
-    }
-    40% {
-        text-shadow: 2px -2px green;
-    }
-    60% {
-        text-shadow: -2px 2px yellow;
-    }
-    80% {
-        text-shadow: 2px 2px purple;
-    }
-    100% {
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    }
-}
-
-#profile-menu ul li {
-    position: relative;
-    animation: glitch 2s infinite;
-}
-
-/* ===================== Responsive Enhancements ===================== */
-
-/* Ensure Modal Content Animates Smoothly */
-.modal-content {
-    animation: fadeIn 0.5s ease-out forwards;
-    opacity: 0;
-}
-/* ===================== Enhanced Hover Effects ===================== */
-
-/* Menu Items Hover Effect */
-.menu a:hover {
-    background-color: #ff9800; /* Orange background on hover */
-    color: black; /* Change text color for contrast */
-    transform: translateY(-3px); /* Slight upward movement */
-    box-shadow: 0 4px 8px rgba(255, 152, 0, 0.6); /* Orange shadow */
-}
-
-/* Battlepass Button Hover Effect */
-.battlepass-button:hover img {
-    transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
-}
-
-.battlepass-button:hover span {
-    color: #ffd700; /* Gold color on hover */
-}
-
-/* Friend List Toggle Hover Effect */
-#toggle-friend-list:hover {
-    color: #ffd700; /* Gold color on hover */
-    text-decoration: underline;
-}
-
-/* Toggle Champion Selector Button Styles */
-#toggle-champion-button {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) rotate(0deg);
-    background-color: rgba(7, 4, 4, 0.589);
-    border: none;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    cursor: pointer;
-    font-size: 24px;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease, background-color 0.3s ease;
-    z-index: 1000;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-#toggle-champion-button:hover {
-    background-color: rgba(255, 255, 255, 0.4);
-    transform: translateX(-50%) rotate(180deg);
-}
-
-/* Animation for Rotation */
-@keyframes rotateArrow {
-    from {
-        transform: translateX(-50%) rotate(0deg);
-    }
-    to {
-        transform: translateX(-50%) rotate(180deg);
-    }
-}
-
-#toggle-champion-button.rotated {
-    animation: rotateArrow 0.3s forwards;
-}
-
-/* Add more hover effects as needed */
-
-/* ===================== Smooth Modal Transition ===================== */
-
-.modal-content {
-    transition: all 0.3s ease-in-out;
-}
-/* ===================== Container Entrance Animations ===================== */
-
-/* Fade-In and Slide-Up Animation for Champion Selector */
-  /* Existing Entrance Animations */
-  #champion-selector-container {
-      animation: fadeInUp 1s ease-out forwards;
-      opacity: 0;
-  }
-
-  /* Ensure Quests Box and Friend List are not hidden */
-  #new-quests-box, #friend-list-container, #champion-selector-container {
-      display: block; /* Ensure they are displayed */
-      opacity: 1; /* Ensure full opacity */
-  }
-/* ===================== Profile Image Glow Effect ===================== */
-
-#profile-image {
-    transition: box-shadow 0.3s, transform 0.3s;
-}
-
-#profile-image:hover {
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-    transform: scale(1.1);
-}
-
-	</style>
-</head>
+</head> 
 <body>
     <!-- Video Background -->
     <video id="video-background" autoplay muted loop>
@@ -1473,7 +1370,7 @@
     </div>
 
     <button class="battlepass-button" onclick="window.location.href='battlepass.html'">
-        <img src="Event/Bistro Event.jpeg" alt="Battlepass">
+        <img src="Event/Jade Event.jpeg" alt="Battlepass">
         <span>Battlepass</span>
     </button>
     
@@ -1567,8 +1464,8 @@
             <a href="ch/Shinnok.html"><img src="Icons/Shinnok.png" alt="Shinnok" class="champion-image"></a>
             <a href="ch/FANG.html"><img src="Icons/FANG.png" alt="FANG" class="champion-image"></a>
             <a href="ch/Lili.html"><img src="Icons/Lili.png" alt="Lili" class="champion-image"></a>
-            <a href="ch/Mega Man.html"><img src="Icons/Mega Man.png" alt="Mega Man" class="champion-image gray" onclick="return false;"></a>
-            <a href="ch/Mai.html"><img src="Icons/Mai.png" alt="Mai" class="champion-image gray" onclick="return false;"></a>
+            <a href="ch/Mega Man.html"><img src="Icons/Mega Man.png" alt="Mega Man" class="champion-image"></a>
+            <a href="ch/Mai.html" style="display: none;"><img src="Icons/Mai.png" alt="Mai" class="champion-image gray" onclick="return false;"></a>
         </div>
     </div>
 <!-- Quests Section -->
@@ -1582,7 +1479,7 @@
     </div>
 </div>
     <div id="friend-list-container">
-        <div id="toggle-friend-list">Toggle Friend List</div>
+        <div id="toggle-friend-list">Friend List</div>
         <div id="friend-list">
             <ul id="friend-list-ul"></ul>
             <input type="text" id="friend-name-input" placeholder="Enter friend's username">
@@ -1602,20 +1499,34 @@
 				video.playbackRate = 1.0; // Set playback speed to 50%
 				video.play(); // Start playing the video
 			}
+
+            // Initialize Toggle Button State on Page Load
+            const championSelector = document.getElementById('champion-selector-container');
+        const toggleButton = document.getElementById('toggle-champion-button');
+
+        // Initially show the champion selector
+        championSelector.style.display = 'flex';
+
+        // Close the quest container on page load
+        const questContent = document.querySelector('#new-quests-box .content');
+        const questToggleButton = document.getElementById('toggle-quests');
+        questContent.style.display = 'none';
+        questToggleButton.innerHTML = '&#9660;'; // Down arrow
     });
-// Toggle Quests Visibility with Smooth Transition
-document.getElementById('toggle-quests').addEventListener('click', function() {
-    const content = document.querySelector('#new-quests-box .content');
-    const toggleButton = document.getElementById('toggle-quests');
-    
-    if (content.style.display === 'none' || content.style.display === '') {
-        content.style.display = 'flex';
-        toggleButton.innerHTML = '&#9650;'; // Up arrow
-    } else {
-        content.style.display = 'none';
-        toggleButton.innerHTML = '&#9660;'; // Down arrow
-    }
-});
+
+    // Toggle Quests Visibility with Smooth Transition
+    document.getElementById('toggle-quests').addEventListener('click', function() {
+        const content = document.querySelector('#new-quests-box .content');
+        const toggleButton = document.getElementById('toggle-quests');
+        
+        if (content.style.display === 'none' || content.style.display === '') {
+            content.style.display = 'flex';
+            toggleButton.innerHTML = '&#9650;'; // Up arrow
+        } else {
+            content.style.display = 'none';
+            toggleButton.innerHTML = '&#9660;'; // Down arrow
+        }
+    });
 
 // Toggle Champion Selector Visibility
 function toggleChampionSelector() {

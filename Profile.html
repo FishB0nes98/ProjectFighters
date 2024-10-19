@@ -347,6 +347,7 @@
                         <option value="Void Event">Void Event</option>
 						<option value="Halloween Event 2024">Halloween Event 2024</option>
                         <option value="Bistro Event">Bistro Event</option>
+                        <option value="Jade Event">Jade Event</option>
                     </select>
 					<div class="color-selection">
                     <label for="color-picker"></label>
@@ -355,6 +356,7 @@
                 </div>
             </div>
             <div id="bottom-mid-container">
+                <p id="rank-points-display">Rank Points: 0</p> <!-- New element for rank points -->
                 <h2>Top 3 Fighters:</h2>
                 <div id="top-characters"></div>
             </div>
@@ -492,19 +494,25 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const userRef = ref(database, 'users/' + user.uid);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val();
-                
-                if (userData) {
-                    userProfile.username = userData.username || user.email.split('@')[0];
-                    userProfile.icon = userData.icon || 'default-icon.png';
-                    userProfile.skins = typeof userData.skins === 'object' ? userData.skins : {};
-                    userProfile.selectedSkins = userData.selectedSkins || {};
-                    userProfile.background = userData.background || '';
-					userProfile.profileColor = userData.profileColor || '#007bff';
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        const userRef = ref(database, 'users/' + user.uid);
+        const snapshot = await get(userRef);
+        const userData = snapshot.val();
+        
+        if (userData) {
+            userProfile.username = userData.username || user.email.split('@')[0];
+            userProfile.icon = userData.icon || 'default-icon.png';
+            userProfile.skins = typeof userData.skins === 'object' ? userData.skins : {};
+            userProfile.selectedSkins = userData.selectedSkins || {};
+            userProfile.background = userData.background || '';
+            userProfile.profileColor = userData.profileColor || '#007bff';
+            userProfile.rankPoints = userData.rankPoints || 0; // Fetch rank points
+
+            const rankPointsRef = ref(database, `users/${user.uid}/Rank points/Rank points`);
+            const rankPointsSnapshot = await get(rankPointsRef);
+            const rankPoints = rankPointsSnapshot.val() || 0;
+            document.getElementById('rank-points-display').textContent = `Rank Points: ${rankPoints}`;
 
                     document.getElementById('username-display').textContent = userProfile.username;
                     // Check if userProfile.icon exists

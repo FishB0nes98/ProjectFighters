@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Icon Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        document.getElementById('currency-amount').textContent = userData.CM || 0;
+                        document.getElementById('fm-amount').textContent = userData.FM || 0;
+                        window.userFM = userData.FM || 0;
+                        window.userRef = userRef;
+                        updateIconButtons(userData.Icons || {});
+                    }
+                }
+            });
+        };
+
+        window.purchaseIcon = async function(button) {
+            const iconItem = button.closest('.icon-item');
+            const iconName = iconItem.dataset.iconName;
+            const iconPrice = 250;
+
+            if (window.userFM >= iconPrice) {
+                const newFM = window.userFM - iconPrice;
+                const updates = {};
+                updates['FM'] = newFM;
+                updates[`Icons/${iconName}`] = 1; // Adding the icon to the Icons folder with a value of 1
+                await update(window.userRef, updates);
+                document.getElementById('fm-amount').textContent = newFM;
+                window.userFM = newFM;
+                button.disabled = true;
+                button.textContent = 'Owned';
+                alert(`You have successfully purchased ${iconName}!`);
+            } else {
+                alert("You don't have enough FM to purchase this icon.");
+            }
+        };
+
+        function updateIconButtons(Icons) {
+            const iconItems = document.querySelectorAll('.icon-item');
+            iconItems.forEach(item => {
+                const iconName = item.dataset.iconName;
+                const button = item.querySelector('button');
+                if (Icons[iconName]) {
+                    button.disabled = true;
+                    button.textContent = 'Owned';
+                }
+            });
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+        }
+        .menu {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 0;
+        }
+        .menu-items {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 16px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+        .currency {
+            position: fixed;
+            text-align: right;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            color: #e0e0e0;
+        }
+        .icon-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+            margin-top: 70px;
+        }
+        .icon-item {
+            background: #1f1f1f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            margin: 10px;
+            padding: 15px;
+            width: 200px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s;
+        }
+        .icon-item:hover {
+            transform: translateY(-5px);
+        }
+        .icon-item img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .icon-item p {
+            margin: 10px 0;
+            font-size: 1.1em;
+            color: #b0b0b0;
+        }
+        .icon-item .price {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon-item .price img {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+        .icon-item .price span {
+            font-size: 0.9em;
+        }
+        .icon-item button {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .icon-item button:disabled {
+            background: #444;
+            cursor: not-allowed;
+        }
+        .icon-item button:not(:disabled):hover {
+            background: linear-gradient(45deg, #ff4b2b, #ff416c);
+        }
+        .currency img {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu -->
+    <div class="menu">
+        <div class="menu-items">
+            <a href="home.html">Home</a>
+            <a href="Store.html">Store</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+            <a href="statistics.html">Statistics</a>
+        </div>
+    </div>
+    <div class="currency">
+        <div>
+            <img src="res/img/cm.png" alt="CM">
+            <span id="currency-amount">0</span>
+        </div>
+        <div>
+            <img src="res/img/fm.png" alt="FM">
+            <span id="fm-amount">0</span>
+        </div>
+    </div>
+
+    <div class="icon-list">
+        <!-- Repeat this block for each icon -->
+        <div class="icon-item" data-icon-name="Jade_Panda">
+            <img src="Icons/Profile/Jade_Panda.png" alt="Jade Panda">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Jade_Yugo">
+            <img src="Icons/Profile/Jade_Yugo.png" alt="Jade Yugo">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Jade_Claws">
+            <img src="Icons/Profile/Jade_Claws.png" alt="Jade Claws">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Arcade_Raiden">
+            <img src="Icons/Profile/Arcade_Raiden.png" alt="Arcade Raiden">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Arcade_Sub_Zero">
+            <img src="Icons/Profile/Arcade_Sub_Zero.png" alt="Arcade Sub Zero">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Ayane_Blade">
+            <img src="Icons/Profile/Ayane_Blade.png" alt="Ayane Blade">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Bistro_Kuma">
+            <img src="Icons/Profile/Bistro_Kuma.png" alt="Bistro Kuma">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Bistro_Shizumaru">
+            <img src="Icons/Profile/Bistro_Shizumaru.png" alt="Bistro Shizumaru">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Captain_Akuma">
+            <img src="Icons/Profile/Captain_Akuma.png" alt="Captain Akuma">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Elphelt_Heart">
+            <img src="Icons/Profile/Elphelt_Heart.png" alt="Elphelt Heart">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Forest_Goddess_Angel">
+            <img src="Icons/Profile/Forest_Goddess_Angel.png" alt="Forest Goddess Angel">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Goth_Shield">
+            <img src="Icons/Profile/Goth_Shield.png" alt="Goth Shield">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Infernal_Birdie">
+            <img src="Icons/Profile/Infernal_Birdie.png" alt="Infernal Birdie">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Infernal_Ibuki">
+            <img src="Icons/Profile/Infernal_Ibuki.png" alt="Infernal Ibuki">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Infernal_Raiden">
+            <img src="Icons/Profile/Infernal_Raiden.png" alt="Infernal Raiden">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Kokoro_Butterfly">
+            <img src="Icons/Profile/Kokoro_Butterfly.png" alt="Kokoro Butterfly">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Morrigan_Darkness">
+            <img src="Icons/Morrigan_Darkness.png" alt="Morrigan Darkness">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Neoncore_ErronBlack">
+            <img src="Icons/Profile/Neoncore_ErronBlack.png" alt="Neoncore Erron Black">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Neoncore_SubZero">
+            <img src="Icons/Profile/Neoncore_SubZero.png" alt="Neoncore Sub Zero">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Pajama_ChamCham">
+            <img src="Icons/Profile/Pajama_ChamCham.png" alt="Pajama Cham Cham">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Pajama_Shoma">
+            <img src="Icons/Profile/Pajama_Shoma.png" alt="Pajama Shoma">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Pirate_Shoma">
+            <img src="Icons/Pirate_Shoma.png" alt="Pirate Shoma">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Primal_kid_Shoma">
+            <img src="Icons/Profile/Primal_kid_Shoma.png" alt="Primal Kid Shoma">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Primal_Scorpion">
+            <img src="Icons/Profile/Primal_Scorpion.png" alt="Primal Scorpion">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Rainy_Day_Shinnok">
+            <img src="Icons/Profile/Rainy_Day_Shinnok.png" alt="Rainy Day Shinnok">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Regal_Ayane_Emerald">
+            <img src="Icons/Profile/Regal_Ayane_Emerald.png" alt="Regal Ayane Emerald">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Regal_Julia">
+            <img src="Icons/Profile/Regal_Julia.png" alt="Regal Julia">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Root">
+            <img src="Icons/Profile/Root.png" alt="Root">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Schoolgirl_Julia">
+            <img src="Icons/Profile/Schoolgirl_Julia.png" alt="Schoolgirl Julia">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Summertime_Nina">
+            <img src="Icons/Profile/Summertime_Nina.png" alt="Summertime Nina">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Summertime_Shoma">
+            <img src="Icons/Profile/Summertime_Shoma.png" alt="Summertime Shoma">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Void_Akuma">
+            <img src="Icons/Profile/Void_Akuma.png" alt="Void Akuma">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Void_Blanka">
+            <img src="Icons/Profile/Void_Blanka.png" alt="Void Blanka">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>250</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Buy</button>
+        </div>
+        <div class="icon-item" data-icon-name="Panda">
+            <img src="Icons/Profile/Panda.png" alt="Panda">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>0</span>
+            </div>
+            <button onclick="purchaseIcon(this)">Free</button>
+        </div>
+    </div>
+</body>
+</html>

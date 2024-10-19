@@ -41,31 +41,36 @@
         let bansCompleted = 0;
 
         window.onload = function() {
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                console.log("User is logged in:", user.uid);
-                const userRef = ref(database, 'users/' + user.uid);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val();
-                if (userData) {
-                    window.userRef = userRef;
+       onAuthStateChanged(auth, async (user) => {
+           if (user) {
+               console.log("User is logged in:", user.uid);
+               const userRef = ref(database, 'users/' + user.uid);
+               const snapshot = await get(userRef);
+               const userData = snapshot.val();
+               if (userData) {
+                   window.userRef = userRef;
 
-                    if (userData.skins) {
-                        populateCharacterButtons(characters);
-                    } else {
-                        console.log("No skins available.");
-                    }
-                    await checkCharacterGames(userData.characters);  // Check character games
-                } else {
-                    console.log("User data not found in database.");
-                }
-            } else {
-                console.log("User is not logged in.");
-            }
-                    // Add event listeners for ban icons
-        document.getElementById('ban-icon1').addEventListener('click', () => openBanSelectionWindow(1));
-        document.getElementById('ban-icon2').addEventListener('click', () => openBanSelectionWindow(2));
-        });
+                   if (userData.skins) {
+                       populateCharacterButtons(characters);
+                   } else {
+                       console.log("No skins available.");
+                   }
+                   await checkCharacterGames(userData.characters);  // Check character games
+
+                   // Initialize player data toggles if all players are selected
+                   await initializePlayerDataToggle();
+               } else {
+                   console.log("User data not found in database.");
+               }
+           } else {
+               console.log("User is not logged in.");
+           }
+
+           // Add event listeners for ban icons
+           document.getElementById('ban-icon1').addEventListener('click', () => openBanSelectionWindow(1));
+           document.getElementById('ban-icon2').addEventListener('click', () => openBanSelectionWindow(2));
+       });
+
 
         document.addEventListener('keydown', (event) => {
     if (event.key === 'P' || event.key === 'p') {
@@ -85,9 +90,120 @@
     }
 });
 
+// Function to initialize event listeners for player data toggling
+async function initializePlayerDataToggle() {
+        const allSelected = await areAllPlayersSelected();
+        if (!allSelected) return;
+
+        const playerSlots = document.querySelectorAll('.player-slot');
+        playerSlots.forEach(slot => {
+            const imgElement = slot.querySelector('img');
+            imgElement.style.cursor = 'pointer';
+            imgElement.addEventListener('click', () => togglePlayerData(slot));
+        });
+    }
+
+    // Function to toggle player data display
+    async function togglePlayerData(playerSlot) {
+        const imgElement = playerSlot.querySelector('img');
+        const isDarkened = imgElement.classList.contains('darkened');
+
+        if (isDarkened) {
+            // Remove darkening and hide data
+            imgElement.classList.remove('darkened');
+            const dataContainer = playerSlot.querySelector('.player-data');
+            if (dataContainer) {
+                dataContainer.remove();
+            }
+        } else {
+            // Darken the image
+            imgElement.classList.add('darkened');
+
+            // Create a container to display data
+            const dataContainer = document.createElement('div');
+            dataContainer.classList.add('player-data');
+
+            // Append the data container to the player slot
+            playerSlot.appendChild(dataContainer);
+
+            // Fetch and display data
+            const user = auth.currentUser;
+            if (!user) {
+                console.error('User not authenticated');
+                return;
+            }
+
+            const userId = user.uid;
+            const skinName = playerSlot.querySelector('.skin-name').textContent;
+            const characterName = characters[skinName] || skinName;
+
+            try {
+                // Fetch Ranked Win/Lose
+                const rankedWinRef = ref(database, `users/${userId}/ranked win`);
+                const rankedLoseRef = ref(database, `users/${userId}/ranked lose`);
+                const [rankedWinSnap, rankedLoseSnap] = await Promise.all([
+                    get(rankedWinRef),
+                    get(rankedLoseRef)
+                ]);
+                const rankedWin = rankedWinSnap.val() || 0;
+                const rankedLose = rankedLoseSnap.val() || 0;
+                const rankedWinRate = rankedWin + rankedLose > 0 ? ((rankedWin / (rankedWin + rankedLose)) * 100).toFixed(2) : 'N/A';
+
+                // Fetch Character Win/Lose
+                const charWinRef = ref(database, `users/${userId}/characters/${characterName}/win`);
+                const charLoseRef = ref(database, `users/${userId}/characters/${characterName}/lose`);
+                const [charWinSnap, charLoseSnap] = await Promise.all([
+                    get(charWinRef),
+                    get(charLoseRef)
+                ]);
+                const charWin = charWinSnap.val() || 0;
+                const charLose = charLoseSnap.val() || 0;
+                const charWinRate = charWin + charLose > 0 ? ((charWin / (charWin + charLose)) * 100).toFixed(2) : 'N/A';
+
+                // Fetch Rank Points
+                const rankPointsRef = ref(database, `users/${userId}/Rank points/Rank points`);
+                const rankPointsSnap = await get(rankPointsRef);
+                const rankPoints = rankPointsSnap.val() || 0;
+
+                // Max Games with Character
+                const maxGames = charWin + charLose;
+
+                // Populate data container
+                dataContainer.innerHTML = `
+                    <p><strong>Player Ranked Winrate (%):</strong> ${rankedWinRate}</p>
+                    <p><strong>Player Character Winrate (%):</strong> ${charWinRate}</p>
+                    <p><strong>Player Rank Points:</strong> ${rankPoints}</p>
+                    <p><strong>Max Games with this Character:</strong> ${maxGames}</p>
+                `;
+            } catch (error) {
+                console.error('Error fetching player data:', error);
+                dataContainer.innerHTML = `<p>Error fetching data.</p>`;
+            }
+        }
+    }
+
+    // Function to check if all skins are selected and initialize toggles
+    function checkAllSkinsSelected() {
+        areAllPlayersSelected().then(allSelected => {
+            if (allSelected) {
+                initializePlayerDataToggle();
+            }
+        });
+    }
+
 let gamepadDebounce = false;
 
-
+   // Function to check if all players are selected
+   async function areAllPlayersSelected() {
+        const playerSlots = document.querySelectorAll('.player-slot');
+        for (const slot of playerSlots) {
+            const skinName = slot.querySelector('.skin-name').textContent;
+            if (!skinName) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 window.addEventListener('gamepadconnected', (event) => {
     const gamepad = navigator.getGamepads()[event.gamepad.index];
@@ -398,6 +514,8 @@ function toggleMenuAndPlayButton() {
     loadImage(img, `Loading Screen/${skin}`);
     skinNameDiv.textContent = skin;
     skinNameDiv.style.display = 'block';
+    await checkAllSkinsSelected();
+    await initializePlayerDataToggle();
 
     adjustSkinNameFontSize(skinNameDiv); // Adjust font size based on length
 
@@ -528,89 +646,158 @@ function toggleMenuAndPlayButton() {
     checkAllSkinsSelected();
 }
 
+// Existing event listener for the decide game button
 document.getElementById('decide-game-button').addEventListener('click', async function() {
-        this.disabled = true; // Disable the button after it's clicked
-        const team1 = [];
-        const team2 = [];
-        const userOnly = document.getElementById('user-only-checkbox').checked;
-        const teamMode = document.getElementById('team-mode-checkbox').checked;
-        const user = auth.currentUser;
+    this.disabled = true; // Disable the button after it's clicked
+    const team1 = [];
+    const team2 = [];
+    const userOnly = document.getElementById('user-only-checkbox').checked;
+    const teamMode = document.getElementById('team-mode-checkbox').checked;
+    const user = auth.currentUser;
 
-        console.log('Decide Game button clicked');
-        console.log('User Only:', userOnly);
-        console.log('Team Mode:', teamMode);
+    console.log('Decide Game button clicked');
+    console.log('User Only:', userOnly);
+    console.log('Team Mode:', teamMode);
 
-        for (let i = 1; i <= 5; i++) {
-            const team1Player = document.getElementById(`team1-player${i}`);
-            const team2Player = document.getElementById(`team2-player${i}`);
+    for (let i = 1; i <= 5; i++) {
+        const team1Player = document.getElementById(`team1-player${i}`);
+        const team2Player = document.getElementById(`team2-player${i}`);
 
-            // Check if the player slots exist
-            if (team1Player) {
-                const team1Skin = team1Player.querySelector('.skin-name').textContent;
-                if (team1Skin) {
-                    team1.push(team1Skin);
-                }
-            } else {
-                console.error(`Element with id team1-player${i} not found.`);
+        // Check if the player slots exist
+        if (team1Player) {
+            const team1Skin = team1Player.querySelector('.skin-name').textContent;
+            if (team1Skin) {
+                team1.push(team1Skin);
             }
-
-            if (team2Player) {
-                const team2Skin = team2Player.querySelector('.skin-name').textContent;
-                if (team2Skin) team2.push(team2Skin);
-            } else {
-                console.error(`Element with id team2-player${i} not found.`);
-            }
-        }
-
-        console.log('Team 1:', team1);
-        console.log('Team 2:', team2);
-
-        // Map skins to base characters
-        const team1BaseCharacters = team1.map(skin => skinToBaseCharacterMap[skin] || skin);
-        const team2BaseCharacters = team2.map(skin => skinToBaseCharacterMap[skin] || skin);
-
-        console.log('Team 1 Base Characters:', team1BaseCharacters);
-        console.log('Team 2 Base Characters:', team2BaseCharacters);
-
-        // Determine the winning team (for example, randomly)
-        const winner = Math.random() < 0.5 ? 'team1' : 'team2';
-        const loser = winner === 'team1' ? 'team2' : 'team1';
-
-        console.log('Winner:', winner);
-        console.log('Loser:', loser);
-
-        // Save win/lose data based on mode
-        if (teamMode && user) {
-            console.log('Saving data in Team Mode');
-            await saveTeamModeData(user.uid, team1BaseCharacters, team2BaseCharacters, winner);
-        } else if (userOnly && selectedPlayerSlot) {
-            console.log('Saving data in Solo Mode');
-            const skinName = selectedPlayerSlot.querySelector('.skin-name').textContent;
-            const baseCharacter = skinToBaseCharacterMap[skinName] || skinName;
-            await saveSoloModeData(user.uid, baseCharacter, team1BaseCharacters, team2BaseCharacters, winner);
         } else {
-            console.log('Saving global character stats');
-            await saveGlobalCharacterStats(team1BaseCharacters, team2BaseCharacters, winner);
+            console.error(`Element with id team1-player${i} not found.`);
         }
 
-        await rewardPlayer(); // Call the rewardPlayer function here
-        await rewardCharacterMoney(); // Call the rewardCharacterMoney function here
-        displayResult(winner, loser);
+        if (team2Player) {
+            const team2Skin = team2Player.querySelector('.skin-name').textContent;
+            if (team2Skin) team2.push(team2Skin);
+        } else {
+            console.error(`Element with id team2-player${i} not found.`);
+        }
+    }
 
-        // Update quest progress for playing a game
-        await updateQuestProgress('play3games');
+    console.log('Team 1:', team1);
+    console.log('Team 2:', team2);
 
-        // Update quest progress for character-specific quests
-        await updateCharacterSpecificQuests(team1BaseCharacters, team2BaseCharacters);
+    // Map skins to base characters
+    const team1BaseCharacters = team1.map(skin => skinToBaseCharacterMap[skin] || skin);
+    const team2BaseCharacters = team2.map(skin => skinToBaseCharacterMap[skin] || skin);
 
-        // Save the number of bans for each character
-        await saveBansToDatabase(bannedCharacters);
+    console.log('Team 1 Base Characters:', team1BaseCharacters);
+    console.log('Team 2 Base Characters:', team2BaseCharacters);
 
-        // Update quest progress for playing Draft Mode games
-        await updateQuestProgress('play10DraftModeGames'); // Add this line
-    });
+    // Determine the winning team (for example, randomly)
+    const winner = Math.random() < 0.5 ? 'team1' : 'team2';
+    const loser = winner === 'team1' ? 'team2' : 'team1';
 
-// ... existing code ...
+    console.log('Winner:', winner);
+    console.log('Loser:', loser);
+
+    // Save win/lose data based on mode
+    if (teamMode && user) {
+        console.log('Saving data in Team Mode');
+        await saveTeamModeData(user.uid, team1BaseCharacters, team2BaseCharacters, winner);
+    } else if (userOnly && selectedPlayerSlot) {
+        console.log('Saving data in Solo Mode');
+        const skinName = selectedPlayerSlot.querySelector('.skin-name').textContent;
+        const baseCharacter = skinToBaseCharacterMap[skinName] || skinName;
+        await saveSoloModeData(user.uid, baseCharacter, team1BaseCharacters, team2BaseCharacters, winner);
+
+        // Implement Ranked System for Solo Mode
+        await updateRankPoints(user, winner === 'team1');
+    } else {
+        console.log('Saving global character stats');
+        await saveGlobalCharacterStats(team1BaseCharacters, team2BaseCharacters, winner);
+    }
+
+    await rewardPlayer(); // Call the rewardPlayer function here
+    await rewardCharacterMoney(); // Call the rewardCharacterMoney function here
+    displayResult(winner, loser);
+
+    // Update quest progress for playing a game
+    await updateQuestProgress('play3games');
+
+    // Update quest progress for character-specific quests
+    await updateCharacterSpecificQuests(team1BaseCharacters, team2BaseCharacters);
+
+    // Update quest progress for playing Draft Mode games
+    await updateQuestProgress('play10DraftModeGames'); // Add this line
+});
+
+// Function to update rank points in Solo Mode
+async function updateRankPoints(user, isWin) {
+    try {
+        const userId = user.uid;
+        const rankRef = ref(database, `users/${userId}/Rank points`);
+        const snapshot = await get(rankRef);
+        const currentRank = snapshot.val() || 0;
+
+        // Calculate random rank change
+        let rankChange;
+        if (isWin) {
+            rankChange = getRandomInt(15, 28);
+        } else {
+            rankChange = -getRandomInt(12, 34);
+        }
+
+        const newRank = currentRank + rankChange;
+
+        // Update the database
+        await update(rankRef, { 
+            'Rank points': newRank 
+        });
+
+        console.log(`Rank points updated: ${currentRank} -> ${newRank}`);
+
+        // Show the pop-up window
+        showRankUpdateModal(currentRank, rankChange, newRank);
+    } catch (error) {
+        console.error('Error updating rank points:', error);
+    }
+}
+
+// Utility function to get a random integer between min and max (inclusive)
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Function to display the rank update modal
+function showRankUpdateModal(originalRank, rankChange, newRank) {
+    const modal = document.getElementById('rank-update-modal');
+    const message = document.getElementById('rank-update-message');
+    const closeModal = modal.querySelector('.close-modal');
+
+    // Determine the sign for the rank change
+    const sign = rankChange >= 0 ? '+' : '';
+
+    // Set the message
+    message.innerHTML = `
+        <strong>Rank Points Updated!</strong><br>
+        Original: ${originalRank}<br>
+        Change: ${sign}${rankChange}<br>
+        New Rank Points: ${newRank}
+    `;
+
+    // Display the modal
+    modal.style.display = 'block';
+
+    // Event listener to close the modal
+    closeModal.onclick = function() {
+        modal.style.display = 'none';
+    }
+
+    // Close the modal when clicking outside the content
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+}
 
 async function saveTeamModeData(userId, team1BaseCharacters, team2BaseCharacters, winner) {
     const updates = {};
@@ -1887,6 +2074,58 @@ document.getElementById('sticker-toggle').addEventListener('change', function() 
     font-size: 16px;
     color: #fff;
 }
+/* Rank Update Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 2000; /* Above other elements */
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    background-color: rgba(0, 0, 0, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.modal-content {
+    position: relative;
+    padding: 20px;
+    color: white;
+    text-align: center;
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: #fff;
+}
+.player-data {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 10px;
+        border-radius: 10px;
+        text-align: center;
+        z-index: 1;
+    }
+
+    .darkened {
+        filter: brightness(50%);
+    }
     </style>
 </head>
 <body>
@@ -1998,6 +2237,13 @@ document.getElementById('sticker-toggle').addEventListener('change', function() 
     </div>
     <div id="decide-game-container">
         <button id="decide-game-button">Decide Game</button>
+    </div>
+
+    <div id="rank-update-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <p id="rank-update-message"></p>
+        </div>
     </div>
 
     <div id="game-result" style="display:none;"></div>

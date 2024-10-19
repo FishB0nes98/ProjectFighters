@@ -81,7 +81,7 @@
         }
         .container {
             text-align: center;
-            margin-top: 100px;
+            margin-top: 50px;
             bottom: 0
         }
         h2 {
@@ -209,6 +209,106 @@
             height: 100%;
             object-fit: cover;
         }
+       .buy-fm-container {
+            text-align: center;
+            margin: 15px;
+            z-index: 1000;
+        }
+
+        .buy-fm-button {
+            background-color: #ffbb00;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 22px;
+            font-weight: bold;
+            padding: 15px 40px;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .buy-fm-button:hover {
+            background-color: #ff8800;
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .buy-fm-window {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            height: auto;
+            overflow: auto;
+            background-color: rgba(30, 30, 30, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.5s;
+        }
+
+        .buy-fm-content {
+            padding: 30px;
+            background-image: 
+                linear-gradient(rgba(50, 50, 50, 0.8) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(50, 50, 50, 0.8) 1px, transparent 1px);
+            background-size: 30px 30px;
+            border: 2px solid #444;
+            border-radius: 15px;
+        }
+
+        .close {
+            color: #888;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #fff;
+        }
+
+        .fm-options button {
+            display: block;
+            width: 100%;
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            transition: background-color 0.3s, transform 0.3s;
+            cursor: pointer;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .fm-options button:hover {
+            background-color: #555;
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .buy-fm-window h2 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
@@ -239,9 +339,9 @@
             const bundleName = item.dataset.bundleName;
             const button = item.querySelector('button');
             if (Bundles[bundleName] || 
-                (bundleName === 'InfernalScorpion' && skins['Infernal Scorpion'] === 1) ||
-                (bundleName === 'ArcadeChristieCMSale' && skins['Arcade Christie'] === 1) ||
-                (bundleName === 'RandomRecolorDuoPack4' && skins['High Elf Morrigan Silver Crimson'] === 1 && skins['Arcade Sub Zero Galactic Void'] === 1)) {
+                (bundleName === 'ArcadeSubZero' && skins['Arcade Sub Zero'] === 1) ||
+                (bundleName === 'CyberNinjaReptileCMSale' && skins['Cyber Ninja Reptile'] === 1) ||
+                (bundleName === 'RandomRecolorDuoPack5' && skins['Pirate Shoma Jade'] === 1 && skins['High Elf Morrigan Jade'] === 1)) {
                 button.disabled = true;
                 button.textContent = 'Owned';
             }
@@ -266,6 +366,8 @@
         });
     };
 
+
+
     window.purchaseBundle = async function(button) {
         const bundleItem = button.closest('.bundle-item');
         const bundleName = bundleItem.dataset.bundleName;
@@ -277,28 +379,28 @@
         const userCurrency = currencyType === 'FM' ? window.userFM : window.userCM;
         const userCurrencyElement = document.getElementById(`${currencyType.toLowerCase()}-amount`);
 
-        // Check if the user already owns the Infernal Scorpion skin
-        if (bundleName === 'InfernalScorpion') {
-            const skinSnapshot = await get(ref(window.userRef, 'skins/Infernal Scorpion'));
+        // Check if the user already owns the Arcade Sub Zero skin
+        if (bundleName === 'ArcadeSubZero') {
+            const skinSnapshot = await get(ref(window.userRef, 'skins/Arcade Sub Zero'));
             if (skinSnapshot.exists() && skinSnapshot.val() === 1) {
-                alert('You already own the Infernal Scorpion skin.');
+                alert('You already own the Arcade Sub Zero skin.');
                 return;
             }
         }
 
-        // Check if the user already owns the Arcade Christie skin
-        if (bundleName === 'ArcadeChristieCMSale') {
-            const skinSnapshot = await get(ref(window.userRef, 'skins/Arcade Christie'));
+        // Check if the user already owns the Cyber Ninja Reptile skin
+        if (bundleName === 'CyberNinjaReptileCMSale') {
+            const skinSnapshot = await get(ref(window.userRef, 'skins/Cyber Ninja Reptile'));
             if (skinSnapshot.exists() && skinSnapshot.val() === 1) {
-                alert('You already own the Arcade Christie skin.');
+                alert('You already own the Cyber Ninja Reptile skin.');
                 return;
             }
         }
 
         // Check if the user already owns the skins in the Random Recolor Duo Pack
-        if (bundleName === 'RandomRecolorDuoPack4') {
-            const skin1Snapshot = await get(ref(window.userRef, 'skins/Arcade Sub Zero Galactic Void'));
-            const skin2Snapshot = await get(ref(window.userRef, 'skins/High Elf Morrigan Silver Crimson'));
+        if (bundleName === 'RandomRecolorDuoPack5') {
+            const skin1Snapshot = await get(ref(window.userRef, 'skins/High Elf Morrigan Jade'));
+            const skin2Snapshot = await get(ref(window.userRef, 'skins/Pirate Shoma Jade'));
             if (skin1Snapshot.exists() && skin1Snapshot.val() === 1 && skin2Snapshot.exists() && skin2Snapshot.val() === 1) {
                 alert('You already own the skins in the Random Recolor Duo Pack.');
                 return;
@@ -330,33 +432,34 @@
                 });
             }
 
-            // Add Infernal Scorpion to the Skins database for Bundle 2
-            if (bundleName === 'InfernalScorpion') {
-                updates[`skins/Infernal Scorpion`] = 1; // Adding the skin to the Skins folder with a value of 1
+            // Add Arcade Sub Zero to the Skins database for Bundle 2
+            if (bundleName === 'ArcadeSubZero') {
+                updates[`skins/Arcade Sub Zero`] = 1; // Adding the skin to the Skins folder with a value of 1
             }
 
             // Add Medieval Event Bundle skins to the Skins database for Bundle 3
-            if (bundleName === 'Bistrobundle') {
+            if (bundleName === 'Jadebundle') {
                 const skins = [
-                    'Battle Bistro Shizumaru',
-                    'Battle Bistro Akuma',
-                    'Battle Bistro Kuma',
-                    'Battle Bistro Sophitia',
+                    'Jade Ayane',
+                    'Jade Scorpion',
+                    'Jade Yugo',
+                    'Jade Panda',
+                    'Jade Siegfried'
                 ];
                 skins.forEach(skin => {
                     updates[`skins/${skin}`] = 1; // Adding each skin to the Skins folder with a value of 1
                 });
             }
 
-            // Add Arcade Christie to the Skins database for the CM Sale bundle
-            if (bundleName === 'ArcadeChristieCMSale') {
-                updates[`skins/Arcade Christie`] = 1; // Adding the skin to the Skins folder with a value of 1
+            // Add Cyber Ninja Reptile to the Skins database for the CM Sale bundle
+            if (bundleName === 'CyberNinjaReptileCMSale') {
+                updates[`skins/Cyber Ninja Reptile`] = 1; // Adding the skin to the Skins folder with a value of 1
             }
 
             // Add Random Recolor Duo Pack skins to the Skins database
-            if (bundleName === 'RandomRecolorDuoPack4') {
-                updates[`skins/High Elf Morrigan Silver Crimson`] = 1; // Adding the skin to the Skins folder with a value of 1
-                updates[`skins/Arcade Sub Zero Galactic Void`] = 1; // Adding the skin to the Skins folder with a value of 1
+            if (bundleName === 'RandomRecolorDuoPack5') {
+                updates[`skins/Pirate Shoma Jade`] = 1; // Adding the skin to the Skins folder with a value of 1
+                updates[`skins/High Elf Morrigan Jade`] = 1; // Adding the skin to the Skins folder with a value of 1
             }
 
             await update(window.userRef, updates);
@@ -372,6 +475,15 @@
         } else {
             alert(`You don't have enough ${currencyType} to purchase this bundle.`);
         }
+    };
+
+    window.purchaseFM = async function(amount) {
+        const newFMAmount = window.userFM + amount;
+        await update(window.userRef, { FM: newFMAmount });
+        document.getElementById('fm-amount').textContent = newFMAmount;
+        window.userFM = newFMAmount;
+        closeBuyFMWindow();
+        alert(`You have successfully purchased ${amount} FM!`);
     };
     </script>
 </head>
@@ -394,6 +506,24 @@
     </div>
     <div class="play-button-container">
         <a href="Game Modes.html" class="play-button">Play</a>
+    </div>
+    <div class="buy-fm-container">
+        <button class="buy-fm-button" onclick="openBuyFMWindow()">Buy FM</button>
+    </div>
+
+    <!-- Buy FM Pop-up Window -->
+    <div id="buy-fm-window" class="buy-fm-window">
+        <div class="buy-fm-content">
+            <span class="close" onclick="closeBuyFMWindow()">&times;</span>
+            <h2>Buy FM</h2>
+            <div class="fm-options">
+                <button onclick="purchaseFM(500)">500 <img src="res/img/fm.png" alt="FM" style="width: 15px; height: 15px; vertical-align: middle; margin-left: 5px;"></button>
+                <button onclick="purchaseFM(1000)">1000 <img src="res/img/fm.png" alt="FM" style="width: 15px; height: 15px; vertical-align: middle; margin-left: 5px;"></button>
+                <button onclick="purchaseFM(2000)">2000 <img src="res/img/fm.png" alt="FM" style="width: 15px; height: 15px; vertical-align: middle; margin-left: 5px;"></button>
+                <button onclick="purchaseFM(5000)">5000 <img src="res/img/fm.png" alt="FM" style="width: 15px; height: 15px; vertical-align: middle; margin-left: 5px;"></button>
+                <button onclick="purchaseFM(10000)">10000 <img src="res/img/fm.png" alt="FM" style="width: 15px; height: 15px; vertical-align: middle; margin-left: 5px;"></button>
+            </div>
+        </div>
     </div>
     <div class="currency">
         <div>
@@ -426,6 +556,10 @@
             <img src="Stickers/ChamCham_V.png" alt="sticker">
             Sticker Shop
         </a>
+        <a href="Icon Store.html" class="button">
+            <img src="Icons/Profile/Root.png" alt="Icon">
+            Icon Store
+        </a>
     </div>
     <h2 style="text-align: center; color: white; font-size: 2em; text-shadow: 0 0 10px yellow;">Bundles and Sales</h2>
     <div class="bundle-container">
@@ -443,10 +577,10 @@
             </div>
             <button onclick="purchaseBundle(this)">Buy</button>
         </div>
-        <div class="bundle-item" data-bundle-name="InfernalScorpion">
-            <div class="bundle-name" style="color: white; font-weight: bold;">Infernal Scorpion 70% SALE</div>
+        <div class="bundle-item" data-bundle-name="ArcadeSubZero">
+            <div class="bundle-name" style="color: white; font-weight: bold;">Arcade Sub Zero 70% SALE</div>
             <div class="image-container">
-                <img src="Skins/Infernal Scorpion.png" alt="Infernal Scorpion" style="margin-top: 10px;">
+                <img src="Skins/Arcade Sub Zero.jpeg" alt="Arcade Sub Zero" style="margin-top: 10px;">
             </div>
             <div class="price">
                 <img src="res/img/fm.png" alt="FM" style="margin-top: 10px;">
@@ -454,24 +588,24 @@
             </div>
             <button onclick="purchaseBundle(this)">Buy</button>
     </div>
-    <div class="bundle-item" data-bundle-name="Bistrobundle">
-        <div class="bundle-name" style="color: white; font-weight: bold;">Bistro bundle (4 Skins)</div>
+    <div class="bundle-item" data-bundle-name="Jadebundle">
+        <div class="bundle-name" style="color: white; font-weight: bold;">Jade bundle (5 Skins)</div>
         <div class="images-grid">
-            <img src="Loading Screen/Battle Bistro Shizumaru.png" alt="Battle Bistro Shizumaru" style="width: 80%;">
-            <img src="Loading Screen/Battle Bistro Akuma.png" alt="Battle Bistro Akuma" style="width: 80%;">
-            <img src="Loading Screen/Battle Bistro Kuma.png" alt="Battle Bistro Kuma" style="width: 80%;">
-            <img src="Loading Screen/Battle Bistro Sophitia.png" alt="Battle Bistro Sophitia" style="width: 80%;">
+            <img src="Loading Screen/Jade Ayane.png" alt="Jade Ayane" style="width: 80%;">
+            <img src="Loading Screen/Jade Scorpion.png" alt="Jade Scorpion" style="width: 80%;">
+            <img src="Loading Screen/Jade Yugo.png" alt="Jade Yugo" style="width: 80%;">
+            <img src="Loading Screen/Jade Panda.png" alt="Jade Panda" style="width: 80%;">
         </div>
         <div class="price">
             <img src="res/img/fm.png" alt="FM">
-            <span style="color: white; font-weight: bold;">5000</span>
+            <span style="color: white; font-weight: bold;">7350</span>
         </div>
         <button onclick="purchaseBundle(this)">Buy</button>
     </div>
-    <div class="bundle-item" data-bundle-name="ArcadeChristieCMSale">
-        <div class="bundle-name" style="color: white; font-weight: bold;">Arcade Christie CM Sale</div>
+    <div class="bundle-item" data-bundle-name="CyberNinjaReptileCMSale">
+        <div class="bundle-name" style="color: white; font-weight: bold;">Cyber Ninja Reptile CM Sale</div>
         <div class="image-container">
-            <img src="Skins/Arcade Christie.jpeg" alt="Arcade Christie" style="margin-top: 10px;">
+            <img src="Skins/Cyber Ninja Reptile.png" alt="Cyber Ninja Reptile" style="margin-top: 10px;">
         </div>
         <div class="price">
             <img src="res/img/cm.png" alt="CM" style="margin-top: 10px;">
@@ -479,11 +613,11 @@
         </div>
         <button onclick="purchaseBundle(this)">Buy</button>
     </div>
-    <div class="bundle-item" data-bundle-name="RandomRecolorDuoPack4">
+    <div class="bundle-item" data-bundle-name="RandomRecolorDuoPack5">
         <div class="bundle-name" style="color: white; font-weight: bold;">Random Recolor Duo Pack</div>
         <div class="images-grid">
-            <img src="Loading Screen/High Elf Morrigan Silver Crimson.png" alt="High Elf Morrigan Silver Crimson" style="width: 80%;">
-            <img src="Loading Screen/Arcade Sub Zero Galactic Void.png" alt="Arcade Sub Zero Galactic Void" style="width: 80%;">
+            <img src="Loading Screen/Pirate Shoma Jade.png" alt="Pirate Shoma Jade" style="width: 80%;">
+            <img src="Loading Screen/High Elf Morrigan Jade.png" alt="High Elf Morrigan Jade" style="width: 80%;">
         </div>
         <div class="price">
             <img src="res/img/fm.png" alt="FM">
@@ -497,6 +631,15 @@
             const video = document.getElementById('video');
             video.playbackRate = 0.75;
         };
+
+        function openBuyFMWindow() {
+            document.getElementById('buy-fm-window').style.display = 'block';
+        }
+
+        function closeBuyFMWindow() {
+            document.getElementById('buy-fm-window').style.display = 'none';
+        }
     </script>
+</script>
 </body>
 </html>

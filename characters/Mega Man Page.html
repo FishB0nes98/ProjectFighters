@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mega Man – Hero of The Cyber World</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@400;700&family=Raleway:wght@400;600&display=swap');
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            background: linear-gradient(135deg, #1e1e1e 30%, #282828 100%);
+            color: #e1e1e1;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: rgba(34, 34, 34, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
+
+        .champion-image {
+            display: block;
+            margin: 0 auto 20px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid #444;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3em;
+            color: #ff6347;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2em;
+            color: #ffa07a;
+            margin-top: 40px;
+        }
+
+        h3, h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5em;
+            color: #ffa07a;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+
+        ul li {
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+
+        .stat, .mana, .cd {
+            font-weight: bold;
+        }
+
+        .stat span, .mana span, .cd span {
+            font-size: 1.2em;
+        }
+
+        .red { color: #ff4500; }
+        .blue { color: #00bfff; }
+        .green { color: #32cd32; }
+        .light-blue { color: #87cefa; }
+        .grey { color: #a9a9a9; }
+        .orange { color: #ffa500; }
+        .purple { color: #800080; }
+
+        p, ul {
+            margin: 10px 20px;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .abilities, .talents, .changes {
+            margin-top: 40px;
+        }
+
+        audio {
+            display: none;
+        }
+    </style>
+    <script>
+        window.onload = function() {
+            var audio = new Audio('Voices/MegaManPick.mp3');
+            audio.volume = 0.3;
+            audio.play();
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <img src="../Icons/Mega Man.png" alt="Mega Man" class="champion-image">
+        <h1>Mega Man – Hero of The Cyber World</h1>
+        <h2>Stats</h2>
+        <ul>
+            <li class="stat"><span class="red">AD:</span> 58 (+6/lvl) -> 202</li>
+            <li class="stat"><span class="green">HP:</span> 592 (+232/lvl) -> 6160</li>
+            <li class="stat"><span class="light-blue">Mana:</span> 444 (+44/lvl) -> 1500</li>
+            <li class="stat"><span class="grey">MS:</span> 333 (+4.2/lvl) -> 434</li>
+            <li class="stat"><span class="orange">AS:</span> 0.56 (+0.023/lvl) -> 1.11</li>
+        </ul>
+        <div class="abilities">
+            <h2>Abilities</h2>
+            <h3>Passive: Loading Boosters</h3>
+            <p>Mega Man gains the following boosters when he reaches different objectives:</p>
+            <ul>
+                <li>Take 100 cs: +50 AD</li>
+                <li>Reach LvL10: Gains an item. When activated, you can choose an ability that loses 2s cooldown.</li>
+                <li>Take 3 towers as a team: Gains 1 level advantage, you can reach lvl 26</li>
+                <li>Kill 10 enemies: Your armor upgrades and you take 5% less damage from all sources</li>
+                <li>Travel 30000 miles: You gain a jetpack. Your movement speed increases by [65]</li>
+            </ul>
+            <h3>Q: Pixel Beam</h3>
+            <p class="mana"><span class="light-blue">[40 Mana]</span> <span class="cd purple">[6s/6s/5s/4s/4s CD]</span></p>
+            <p>Mega Man shoots a beam to the targeted direction which deals <span class="red">[50/110/200/320/415 + Target 3%MaxHP]</span> as magic damage.</p>
+            <h3>W: Upgraded Magic Shooter</h3>
+            <p class="mana"><span class="light-blue">[0 Mana]</span> <span class="cd purple">[20s/18s/17s/17s/15s CD]</span></p>
+            <p>Mega Man gains <span class="red">[0.2/0.25/0.4/0.5/0.55]</span> AS and all of Mega Man’s autoattacks and Q abilities deal bonus <span class="red">[15/25/30/35/50]</span> magic damage with each attack. Duration: <span class="red">[5s]</span></p>
+            <h3>E: Dimension Jump</h3>
+            <p class="mana"><span class="light-blue">[90 Mana]</span> <span class="cd purple">[17s/15s/14s/12s/11s CD]</span></p>
+            <p>Mega Man instantly teleports to the targeted nearby place.</p>
+            <h3>R: Loading: Digital Sword</h3>
+            <p class="mana"><span class="light-blue">[100 Mana]</span> <span class="cd purple">[100s CD]</span></p>
+            <p>Mega Man changes his cannon shooter to a sword, enabling him to attack in melee state. All melee attacks deal <span class="red">[200%AD]</span> magic damage and ignore magic shield. Mega Man also gains <span class="red">[+50]</span> MS for the duration. Duration: <span class="red">15s + [5s/kill during duration]</span></p>
+        </div>
+        <div class="talents">
+            <h2>Talents</h2>
+            <h3>Level 1</h3>
+            <ul>
+                <li>a. Enhanced Pixel Beam: Pixel Beam pierces through enemies, hitting any targets within range</li>
+                <li>b. Rocket Charge: Dimension Jump grants a shield equal to 15% of Mega Man’s maximum HP for 3 seconds after teleporting</li>
+                <li>c. Adaptive Circuitry: Upon reaching 50% HP, Mega Man’s Upgraded Magic Shooter automatically activates without a cooldown, once every 30 seconds.</li>
+            </ul>
+            <h3>Level 5</h3>
+            <ul>
+                <li>a. Energy Recoil: Pixel Beam slows the enemy by 20% for 1.5 seconds if they are hit.</li>
+                <li>b. Overcharged Shooter: The bonus magic damage from Upgraded Magic Shooter is increased to 25%.</li>
+                <li>c. Blink Strike: After using Dimension Jump, Mega Man’s next auto-attack deals bonus 30% magic damage.</li>
+            </ul>
+            <h3>Level 10</h3>
+            <ul>
+                <li>a. Digital Frenzy: While Digital Sword is active, every kill increases attack speed by 15% and extends the duration by 5 seconds.</li>
+                <li>b. Power Slash: Digital Sword now cleaves, dealing 50% of its damage in a small area around the target.</li>
+            </ul>
+            <h3>Level 15</h3>
+            <ul>
+                <li>a. Dimensional Surge: Dimension Jump cooldown is reduced by 3 seconds when you land a kill or assist.</li>
+                <li>b. Overdrive Assault: Upgraded Magic Shooter now also increases Mega Man's movement speed by 20% during its effect.</li>
+                <li>c. Piercing Beam: Pixel Beam deals an additional 5% of the enemy’s missing health as bonus damage.</li>
+            </ul>
+            <h3>Level 20</h3>
+            <ul>
+                <li>a. Digital Ascension: The Loading Boosters passive now includes an additional boost—after taking 1000 more miles, gain immunity to slows and roots.</li>
+                <li>b. Ultimate Upgrade: Digital Sword gains 20% more attack speed, and kills during the ability's duration fully reset its cooldown.</li>
+                <li>c. Dimension Master: Dimension Jump can be used twice within 3 seconds before going on cooldown.</li>
+                <li>d. Master Overclock: Reaching level 26 grants a second ability that can be chosen to benefit from the 2-second cooldown reduction from the Loading Boosters passive. This time it reduces both abilities by 3s instead of 2s</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
