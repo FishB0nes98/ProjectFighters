@@ -150,7 +150,7 @@
     <div class="box-selection">
         <img id="basicbox" src="res/img/basicbox.png" alt="Basic Lootbox" class="lootbox-image" onclick="selectBox('basicbox')">
         <img id="pajamapartybox" src="res/img/pajamapartybox.png" alt="Pajama Party Lootbox" class="lootbox-image unavailable">
-        <img id="halloweenbox" src="res/img/halloweenbox.png" alt="Halloween Lootbox" class="lootbox-image" onclick="selectBox('halloweenbox')">
+        <img id="halloweenbox" src="res/img/halloweenbox.png" alt="Halloween Lootbox" class="lootbox-image unavailable">
     </div>
     <div class="currency">
         <div>
@@ -231,7 +231,9 @@ window.onload = function() {
         let userRef = null;
 
         window.selectBox = function selectBox(boxType) {
-    if (boxType === 'pajamapartybox') return; // Prevent selection of 'pajamapartybox'
+    // Prevent selection of 'pajamapartybox' and 'halloweenbox'
+    if (boxType === 'pajamapartybox' || boxType === 'halloweenbox') return;
+
     selectedBox = boxType;
     document.querySelectorAll('.lootbox-image').forEach(img => {
         img.classList.remove('selected');
@@ -255,14 +257,9 @@ function updateLootboxButton() {
             freeLootboxCountContainer.style.display = 'none';
         }
     } else if (selectedBox === 'halloweenbox') {
-        if (userHalloweenBox > 0) {
-            openButton.textContent = 'Open Halloween Lootbox for FREE';
-            freeHalloweenBoxCountContainer.style.display = 'block';
-            document.getElementById('free-halloweenbox-count').textContent = userHalloweenBox;
-        } else {
-            openButton.textContent = 'Open Halloween Lootbox for 100.000 CM';
-            freeHalloweenBoxCountContainer.style.display = 'none';
-        }
+        // Since Halloween Lootbox is disabled, reflect that in the button
+        openButton.textContent = 'Unavailable';
+        freeHalloweenBoxCountContainer.style.display = 'none';
     } else {
         openButton.textContent = 'Unavailable';
         freeLootboxCountContainer.style.display = 'none';

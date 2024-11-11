@@ -31,26 +31,26 @@
         const database = getDatabase(app);
 
         function createParticles() {
-      const particleContainer = document.querySelector('.particle-container');
-      if (!particleContainer) {
-          const newParticleContainer = document.createElement('div');
-          newParticleContainer.classList.add('particle-container');
-          document.body.appendChild(newParticleContainer);
-      }
+            const particleContainer = document.querySelector('.particle-container');
+            if (!particleContainer) {
+                const newParticleContainer = document.createElement('div');
+                newParticleContainer.classList.add('particle-container');
+                document.body.appendChild(newParticleContainer);
+            }
 
-      for (let i = 0; i < 60; i++) { // Increase number for more particles
-          const particle = document.createElement('div');
-          particle.classList.add('particle');
-          particle.style.left = `${Math.random() * 100}%`;
-          particle.style.top = `${Math.random() * 100}%`;
-          particle.style.width = `${Math.random() * 6 + 4}px`; // Size between 4px and 10px
-          particle.style.height = particle.style.width;
-          particle.style.background = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.7)`;
-          particle.style.animationDuration = `${Math.random() * 5 + 3}s`; // Duration between 3s and 8s
-          particle.style.animationDelay = `${Math.random() * 5}s`; // Delay between 0s and 5s
-          document.querySelector('.particle-container').appendChild(particle);
-      }
-  }
+            for (let i = 0; i < 60; i++) { // Increase number for more particles
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.width = `${Math.random() * 6 + 4}px`; // Size between 4px and 10px
+                particle.style.height = particle.style.width;
+                particle.style.background = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.7)`;
+                particle.style.animationDuration = `${Math.random() * 5 + 3}s`; // Duration between 3s and 8s
+                particle.style.animationDelay = `${Math.random() * 5}s`; // Delay between 0s and 5s
+                document.querySelector('.particle-container').appendChild(particle);
+            }
+        }
 
         window.onload = function() {
             createParticles();
@@ -58,40 +58,40 @@
         };
 
         function initializeAuthState() {
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const userId = user.uid;
-                const userRef = ref(database, `users/${userId}`);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val();
-                if (userData) {
-                    document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
-                    setProfileImage(`Icons/${userData.icon || 'Julia.png'}`, `Icons/Profile/${userData.icon || 'Julia.png'}`);
-                    document.getElementById('currency-amount').textContent = userData.FM || 0;
-                    document.getElementById('cm-amount').textContent = userData.CM || 0;
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const userId = user.uid;
+                    const userRef = ref(database, `users/${userId}`);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
+                        setProfileImage(`Icons/${userData.icon || 'Julia.png'}`, `Icons/Profile/${userData.icon || 'Julia.png'}`);
+                        document.getElementById('currency-amount').textContent = userData.FM || 0;
+                        document.getElementById('cm-amount').textContent = userData.CM || 0;
 
-                    // Initialize quest data if not present
-                    const questsRef = ref(database, `users/${userId}/quests`);
-                    const questsSnapshot = await get(questsRef);
-                    const questsData = questsSnapshot.val() || {};
+                        // Initialize quest data if not present
+                        const questsRef = ref(database, `users/${userId}/quests`);
+                        const questsSnapshot = await get(questsRef);
+                        const questsData = questsSnapshot.val() || {};
 
-                    quests.forEach(quest => {
-                        const questData = questsData[quest.id] || { progress: 0, completed: false, claimed: false };
-                        if (!questData.claimed) {
-                            displayQuest(quest, questData, userData);
-                        }
-                    });
+                        quests.forEach(quest => {
+                            const questData = questsData[quest.id] || { progress: 0, completed: false, claimed: false };
+                            if (!questData.claimed) {
+                                displayQuest(quest, questData, userData);
+                            }
+                        });
+                    } else {
+                        // If no user data is found, display all quests
+                        quests.forEach(quest => {
+                            displayQuest(quest, { progress: 0, completed: false, claimed: false }, {});
+                        });
+                    }
                 } else {
-                    // If no user data is found, display all quests
-                    quests.forEach(quest => {
-                        displayQuest(quest, { progress: 0, completed: false, claimed: false }, {});
-                    });
+                    console.log("User is not authenticated");
                 }
-            } else {
-                console.log("User is not authenticated");
-            }
-        });
-    };
+            });
+        };
 
         window.openChangeIconModal = async function() {
             const modal = document.getElementById('change-icon-modal');
@@ -107,10 +107,10 @@
                 'Scorpion.png', 'Peacock.png', 'Angel.png', 'Astaroth.png', 'Ibuki.png',
                 'R.Mika.png', 'Raiden.png', 'Yugo.png', 'Talim.png', 'Noel.png',
                 'Blanka.png', 'Nina.png', 'Ayane.png', 'Siegfried.png', 'Shoma.png', 
-				'Juri.png', 'Sub Zero.png', 'Christie.png', 'Kokoro.png', 'Eagle.png',
+                'Juri.png', 'Sub Zero.png', 'Christie.png', 'Kokoro.png', 'Eagle.png',
                 'Sophitia.png', 'Shizumaru.png', 'Kagome.png', 'Kabal.png', 'Kuma.png',
                 'Alice.png', 'Shinnok.png', 'FANG.png', 'Lili.png', 'Mega Man.png',
-				
+                
             ];
 
             icons.forEach(icon => {
@@ -144,13 +144,13 @@
         };
 
         window.logOut = function() {
-        signOut(auth).then(() => {
-            console.log('User signed out successfully');
-            window.location.href = 'index.html'; // Redirect to login page after sign out
-        }).catch((error) => {
-            console.error('Error signing out:', error);
-        });
-    };
+            signOut(auth).then(() => {
+                console.log('User signed out successfully');
+                window.location.href = 'index.html'; // Redirect to login page after sign out
+            }).catch((error) => {
+                console.error('Error signing out:', error);
+            });
+        };
 
         function selectIcon(icon) {
             const user = auth.currentUser;
@@ -226,247 +226,247 @@
 
 
         window.updateQuestProgress = async function(questId, progressIncrement = 1) {
-        const user = auth.currentUser;
-        if (user) {
-            const userId = user.uid;
-            const userRef = ref(database, `users/${userId}/quests/${questId}`);
-            const snapshot = await get(userRef);
-            const questData = snapshot.val() || { progress: 0, completed: false, claimed: false };
-            if (!questData.completed) {
-                const newProgress = (questData.progress || 0) + progressIncrement;
-                if (newProgress >= quests.find(q => q.id === questId).goal) {
-                    await update(userRef, { progress: newProgress, completed: true });
-                } else {
-                    await update(userRef, { progress: newProgress });
-                }
-            }
-        } else {
-            console.error('User not authenticated');
-        }
-    };
-
-    function checkCharacterQuestProgress(team) {
-        const user = auth.currentUser;
-        if (user) {
-            const userId = user.uid;
-            const userRef = ref(database, `users/${userId}`);
-            get(userRef).then(snapshot => {
-                const userData = snapshot.val();
-                quests.forEach(quest => {
-                    if (quest.id === 'winAsSpecificCharacter' && quest.requirement(userData)) {
-                        updateQuestProgress(quest.id);
-                    }
-                });
-            });
-        } else {
-            console.error('User not authenticated');
-        }
-    }
-
-    window.claimReward = async function(questId) {
-        const user = auth.currentUser;
-        if (user) {
-            const userId = user.uid;
-            const questRef = ref(database, `users/${userId}/quests/${questId}`);
-            const snapshot = await get(questRef);
-            const questData = snapshot.val();
-
-            if (questData && !questData.claimed) {
-                const quest = quests.find(q => q.id === questId);
-
-                // Increment the reward value
-                for (const rewardKey in quest.reward) {
-                    const rewardRef = ref(database, `users/${userId}/${rewardKey}`);
-                    await runTransaction(rewardRef, (currentValue) => {
-                        return (currentValue || 0) + quest.reward[rewardKey];
-                    });
-                }
-
-                await update(questRef, { completed: true, claimed: true });
-                alert('Reward claimed! You have received a free lootbox.');
-                document.getElementById(`quest-${questId}`).remove();
-            } else {
-                console.log('Reward already claimed or quest data not found.');
-            }
-        } else {
-            console.error('User not authenticated');
-        }
-    };
-
-    function displayQuest(quest, questData, userData, team = []) {
-        const questContainer = document.getElementById('new-quests-box').querySelector('.content');
-        const questElement = document.createElement('div');
-        questElement.classList.add('quest');
-        questElement.dataset.id = quest.id;
-        questElement.id = `quest-${quest.id}`;
-
-        const title = document.createElement('h3');
-        title.textContent = quest.title;
-        questElement.appendChild(title);
-
-        const description = document.createElement('p');
-        description.textContent = quest.description;
-        questElement.appendChild(description);
-
-        const progress = document.createElement('div');
-        progress.classList.add('quest-progress');
-        const progressBar = document.createElement('div');
-        progressBar.style.width = `${(questData.progress / quest.goal) * 100}%`;
-        progressBar.textContent = `${questData.progress}/${quest.goal}`;
-        progress.appendChild(progressBar);
-        questElement.appendChild(progress);
-
-        const buttonContainer = document.createElement('div');
-        buttonContainer.classList.add('button-container');
-
-        const acceptButton = document.createElement('button');
-        acceptButton.id = `accept-quest-button-${quest.id}`;
-        acceptButton.textContent = 'Accept Quest';
-        acceptButton.onclick = () => acceptQuest(quest.id);
-        buttonContainer.appendChild(acceptButton);
-
-        const claimButton = document.createElement('button');
-        claimButton.id = `claim-reward-button-${quest.id}`;
-        claimButton.classList.add('claim-button');
-        claimButton.textContent = 'Claim Reward';
-        claimButton.style.display = questData.progress >= quest.goal ? 'block' : 'none';
-        claimButton.onclick = () => claimReward(quest.id);
-        buttonContainer.appendChild(claimButton);
-
-        questElement.appendChild(buttonContainer);
-
-        // Add reward image
-        const rewardImage = document.createElement('img');
-        rewardImage.src = quest.image;
-        rewardImage.alt = quest.hoverText;
-        rewardImage.title = quest.hoverText;
-        rewardImage.classList.add('reward-image');
-        questElement.appendChild(rewardImage);
-
-        questContainer.appendChild(questElement);
-
-        // Hide the accept button if the quest is already in the user's database
-        if (questData.progress > 0 || userData.quests && userData.quests[quest.id]) {
-            acceptButton.style.display = 'none';
-        }
-
-        if (quest.requirement(userData, team)) {
-            updateQuestProgress(quest.id, questData.progress + 1);
-        }
-    }
-
-    window.acceptQuest = function(questId) {
-        const user = auth.currentUser;
-        if (user) {
-            const userId = user.uid;
-            const userRef = ref(database, `users/${userId}/quests/${questId}`);
-            set(userRef, { progress: 0, completed: false, claimed: false });
-            document.getElementById(`accept-quest-button-${questId}`).style.display = 'none';
-        } else {
-            console.error('User not authenticated');
-        }
-    };
-
-
-    document.addEventListener('DOMContentLoaded', (event) => {
-        const toggleFriendListButton = document.getElementById("toggle-friend-list");
-        const friendList = document.getElementById("friend-list");
-        const addFriendButton = document.getElementById("add-friend-button");
-        const friendNameInput = document.getElementById("friend-name-input");
-        const friendListUL = document.getElementById("friend-list-ul");
-
-        toggleFriendListButton.addEventListener("click", function() {
-            friendList.style.display = friendList.style.display === "none" ? "block" : "none";
-        });
-
-        addFriendButton.addEventListener("click", async function() {
-            const friendName = friendNameInput.value;
-            if (friendName) {
-                const userId = auth.currentUser.uid;
-                const usersRef = ref(database, 'users');
-                const snapshot = await get(usersRef);
-                let friendId = null;
-
-                snapshot.forEach(childSnapshot => {
-                    const userData = childSnapshot.val();
-                    if (userData.username === friendName) {
-                        friendId = childSnapshot.key;
-                    }
-                });
-
-                if (friendId) {
-                    const friendRef = ref(database, 'users/' + userId + '/friends');
-                    const newFriendRef = push(friendRef);
-                    set(newFriendRef, {
-                        id: friendId,
-                        name: friendName
-                    }).then(() => {
-                        friendNameInput.value = '';
-                        loadFriendList(userId);
-                    }).catch((error) => {
-                        console.error('Error adding friend:', error);
-                    });
-                } else {
-                    alert('Username not found');
-                }
-            }
-        });
-
-        function loadFriendList(userId) {
-            const friendRef = ref(database, 'users/' + userId + '/friends');
-            get(friendRef).then(snapshot => {
-                friendListUL.innerHTML = '';
-                snapshot.forEach(childSnapshot => {
-                    const friendData = childSnapshot.val();
-                    loadFriendIcon(friendData.id, friendData.name);
-                });
-            }).catch(error => {
-                console.error('Error loading friend list:', error);
-            });
-        }
-
-        function loadFriendIcon(friendId, friendName) {
-            const friendIconRef = ref(database, 'users/' + friendId + '/icon');
-            get(friendIconRef).then(iconSnapshot => {
-                const iconFilename = iconSnapshot.exists() ? iconSnapshot.val() : 'default-icon.jpg';
-                const primaryIconUrl = `Icons/${iconFilename}`;
-                const fallbackIconUrl = `Icons/Profile/${iconFilename}`;
-                displayFriend(friendName, primaryIconUrl, fallbackIconUrl);
-            }).catch(error => {
-                console.error('Error loading friend icon:', error);
-            });
-        }
-
-
-        function displayFriend(friendName, primaryIconUrl, fallbackIconUrl) {
-    const li = document.createElement('li');
-    li.classList.add('friend-item');
-
-    const img = document.createElement('img');
-    img.src = primaryIconUrl;
-    img.alt = 'Friend Icon';
-    img.classList.add('friend-icon');
-    img.onerror = () => {
-        img.onerror = null; // Remove error handler to avoid infinite loop
-        img.src = fallbackIconUrl;
-    };
-
-    const nameLink = document.createElement('a');
-    nameLink.href = `ProfileVisitor.html?username=${friendName}`;
-    nameLink.textContent = friendName;
-    nameLink.classList.add('friend-name');
-
-    li.appendChild(img);
-    li.appendChild(nameLink);
-    friendListUL.appendChild(li);
-}
-
-        onAuthStateChanged(auth, user => {
+            const user = auth.currentUser;
             if (user) {
-                loadFriendList(user.uid);
+                const userId = user.uid;
+                const userRef = ref(database, `users/${userId}/quests/${questId}`);
+                const snapshot = await get(userRef);
+                const questData = snapshot.val() || { progress: 0, completed: false, claimed: false };
+                if (!questData.completed) {
+                    const newProgress = (questData.progress || 0) + progressIncrement;
+                    if (newProgress >= quests.find(q => q.id === questId).goal) {
+                        await update(userRef, { progress: newProgress, completed: true });
+                    } else {
+                        await update(userRef, { progress: newProgress });
+                    }
+                }
+            } else {
+                console.error('User not authenticated');
             }
+        };
+
+        function checkCharacterQuestProgress(team) {
+            const user = auth.currentUser;
+            if (user) {
+                const userId = user.uid;
+                const userRef = ref(database, `users/${userId}`);
+                get(userRef).then(snapshot => {
+                    const userData = snapshot.val();
+                    quests.forEach(quest => {
+                        if (quest.id === 'winAsSpecificCharacter' && quest.requirement(userData)) {
+                            updateQuestProgress(quest.id);
+                        }
+                    });
+                });
+            } else {
+                console.error('User not authenticated');
+            }
+        }
+
+        window.claimReward = async function(questId) {
+            const user = auth.currentUser;
+            if (user) {
+                const userId = user.uid;
+                const questRef = ref(database, `users/${userId}/quests/${questId}`);
+                const snapshot = await get(questRef);
+                const questData = snapshot.val();
+
+                if (questData && !questData.claimed) {
+                    const quest = quests.find(q => q.id === questId);
+
+                    // Increment the reward value
+                    for (const rewardKey in quest.reward) {
+                        const rewardRef = ref(database, `users/${userId}/${rewardKey}`);
+                        await runTransaction(rewardRef, (currentValue) => {
+                            return (currentValue || 0) + quest.reward[rewardKey];
+                        });
+                    }
+
+                    await update(questRef, { completed: true, claimed: true });
+                    alert('Reward claimed! You have received a free lootbox.');
+                    document.getElementById(`quest-${questId}`).remove();
+                } else {
+                    console.log('Reward already claimed or quest data not found.');
+                }
+            } else {
+                console.error('User not authenticated');
+            }
+        };
+
+        function displayQuest(quest, questData, userData, team = []) {
+            const questContainer = document.getElementById('new-quests-box').querySelector('.content');
+            const questElement = document.createElement('div');
+            questElement.classList.add('quest');
+            questElement.dataset.id = quest.id;
+            questElement.id = `quest-${quest.id}`;
+
+            const title = document.createElement('h3');
+            title.textContent = quest.title;
+            questElement.appendChild(title);
+
+            const description = document.createElement('p');
+            description.textContent = quest.description;
+            questElement.appendChild(description);
+
+            const progress = document.createElement('div');
+            progress.classList.add('quest-progress');
+            const progressBar = document.createElement('div');
+            progressBar.style.width = `${(questData.progress / quest.goal) * 100}%`;
+            progressBar.textContent = `${questData.progress}/${quest.goal}`;
+            progress.appendChild(progressBar);
+            questElement.appendChild(progress);
+
+            const buttonContainer = document.createElement('div');
+            buttonContainer.classList.add('button-container');
+
+            const acceptButton = document.createElement('button');
+            acceptButton.id = `accept-quest-button-${quest.id}`;
+            acceptButton.textContent = 'Accept Quest';
+            acceptButton.onclick = () => acceptQuest(quest.id);
+            buttonContainer.appendChild(acceptButton);
+
+            const claimButton = document.createElement('button');
+            claimButton.id = `claim-reward-button-${quest.id}`;
+            claimButton.classList.add('claim-button');
+            claimButton.textContent = 'Claim Reward';
+            claimButton.style.display = questData.progress >= quest.goal ? 'block' : 'none';
+            claimButton.onclick = () => claimReward(quest.id);
+            buttonContainer.appendChild(claimButton);
+
+            questElement.appendChild(buttonContainer);
+
+            // Add reward image
+            const rewardImage = document.createElement('img');
+            rewardImage.src = quest.image;
+            rewardImage.alt = quest.hoverText;
+            rewardImage.title = quest.hoverText;
+            rewardImage.classList.add('reward-image');
+            questElement.appendChild(rewardImage);
+
+            questContainer.appendChild(questElement);
+
+            // Hide the accept button if the quest is already in the user's database
+            if (questData.progress > 0 || userData.quests && userData.quests[quest.id]) {
+                acceptButton.style.display = 'none';
+            }
+
+            if (quest.requirement(userData, team)) {
+                updateQuestProgress(quest.id, questData.progress + 1);
+            }
+        }
+
+        window.acceptQuest = function(questId) {
+            const user = auth.currentUser;
+            if (user) {
+                const userId = user.uid;
+                const userRef = ref(database, `users/${userId}/quests/${questId}`);
+                set(userRef, { progress: 0, completed: false, claimed: false });
+                document.getElementById(`accept-quest-button-${questId}`).style.display = 'none';
+            } else {
+                console.error('User not authenticated');
+            }
+        };
+
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const toggleFriendListButton = document.getElementById("toggle-friend-list");
+            const friendList = document.getElementById("friend-list");
+            const addFriendButton = document.getElementById("add-friend-button");
+            const friendNameInput = document.getElementById("friend-name-input");
+            const friendListUL = document.getElementById("friend-list-ul");
+
+            toggleFriendListButton.addEventListener("click", function() {
+                friendList.style.display = friendList.style.display === "none" ? "block" : "none";
+            });
+
+            addFriendButton.addEventListener("click", async function() {
+                const friendName = friendNameInput.value;
+                if (friendName) {
+                    const userId = auth.currentUser.uid;
+                    const usersRef = ref(database, 'users');
+                    const snapshot = await get(usersRef);
+                    let friendId = null;
+
+                    snapshot.forEach(childSnapshot => {
+                        const userData = childSnapshot.val();
+                        if (userData.username === friendName) {
+                            friendId = childSnapshot.key;
+                        }
+                    });
+
+                    if (friendId) {
+                        const friendRef = ref(database, 'users/' + userId + '/friends');
+                        const newFriendRef = push(friendRef);
+                        set(newFriendRef, {
+                            id: friendId,
+                            name: friendName
+                        }).then(() => {
+                            friendNameInput.value = '';
+                            loadFriendList(userId);
+                        }).catch((error) => {
+                            console.error('Error adding friend:', error);
+                        });
+                    } else {
+                        alert('Username not found');
+                    }
+                }
+            });
+
+            function loadFriendList(userId) {
+                const friendRef = ref(database, 'users/' + userId + '/friends');
+                get(friendRef).then(snapshot => {
+                    friendListUL.innerHTML = '';
+                    snapshot.forEach(childSnapshot => {
+                        const friendData = childSnapshot.val();
+                        loadFriendIcon(friendData.id, friendData.name);
+                    });
+                }).catch(error => {
+                    console.error('Error loading friend list:', error);
+                });
+            }
+
+            function loadFriendIcon(friendId, friendName) {
+                const friendIconRef = ref(database, 'users/' + friendId + '/icon');
+                get(friendIconRef).then(iconSnapshot => {
+                    const iconFilename = iconSnapshot.exists() ? iconSnapshot.val() : 'default-icon.jpg';
+                    const primaryIconUrl = `Icons/${iconFilename}`;
+                    const fallbackIconUrl = `Icons/Profile/${iconFilename}`;
+                    displayFriend(friendName, primaryIconUrl, fallbackIconUrl);
+                }).catch(error => {
+                    console.error('Error loading friend icon:', error);
+                });
+            }
+
+
+            function displayFriend(friendName, primaryIconUrl, fallbackIconUrl) {
+                const li = document.createElement('li');
+                li.classList.add('friend-item');
+
+                const img = document.createElement('img');
+                img.src = primaryIconUrl;
+                img.alt = 'Friend Icon';
+                img.classList.add('friend-icon');
+                img.onerror = () => {
+                    img.onerror = null; // Remove error handler to avoid infinite loop
+                    img.src = fallbackIconUrl;
+                };
+
+                const nameLink = document.createElement('a');
+                nameLink.href = `ProfileVisitor.html?username=${friendName}`;
+                nameLink.textContent = friendName;
+                nameLink.classList.add('friend-name');
+
+                li.appendChild(img);
+                li.appendChild(nameLink);
+                friendListUL.appendChild(li);
+            }
+
+            onAuthStateChanged(auth, user => {
+                if (user) {
+                    loadFriendList(user.uid);
+                }
+            });
         });
-    });
 
     </script>
 	<script src="quests.js"></script>
@@ -494,7 +494,7 @@
             padding: 20px;
             background-color: rgba(0, 0, 0, 0.7);
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.2), 0 2px 10px rgba(0, 163, 108, 0.2); /* White and Jade */
+            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.2), 0 2px 10px rgba(15, 82, 186, 0.2); /* White and Wedding Blue */
             z-index: -1;
         }
         #champion-selector {
@@ -518,7 +518,7 @@
         }
         .icon-image:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 10px 5px rgba(15, 82, 186, 0.5);
         }
         .champion-image {
             width: 90px;
@@ -532,14 +532,14 @@
         }
         .champion-image:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 10px 5px rgba(15, 82, 186, 0.5);
         }
         .selected {
-            border-color: #00A36C; /* Jade */
+            border-color: #0F52BA; /* Wedding Blue */
         }
         .gray {
-        filter: grayscale(100%);
-    }
+            filter: grayscale(100%);
+        }
         #filter-container, #search-container {
             margin: 20px;
             text-align: center;
@@ -553,149 +553,149 @@
         }
 
         /* New styles for user info */
-		#user-info {
-			position: flex;
-			top: 0px; /* Adjust top position as needed */
-			right: 0px; /* Adjust right position as needed */
-		}
-		#profile-info {
-			display: flex;
-			position: fixed;
-			top: 65px;
-			right: 0px;
-			align-items: center;
-			justify-content: flex-end; /* Align content to the right */
-			background-color: rgba(0, 0, 0, 0.8);
-			padding: 5px 10px;
-			width: calc(100% - 340px);
-			max-width: 275px;
-		}
+        #user-info {
+            position: flex;
+            top: 0px; /* Adjust top position as needed */
+            right: 0px; /* Adjust right position as needed */
+        }
+        #profile-info {
+            display: flex;
+            position: fixed;
+            top: 65px;
+            right: 0px;
+            align-items: center;
+            justify-content: flex-end; /* Align content to the right */
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 5px 10px;
+            width: calc(100% - 340px);
+            max-width: 275px;
+        }
 
-		#username-display {
-			position: center;
-			margin-right: 10px;
-			font-size: 20px;
-			color: white;
-		}
+        #username-display {
+            position: center;
+            margin-right: 10px;
+            font-size: 20px;
+            color: white;
+        }
 
-		#profile-image {
-			width: 85px;
-			height: 85px;
-			border-radius: 50%;
-			margin-left: 10px; /* Adjust margin as needed */
-		}
+        #profile-image {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            margin-left: 10px; /* Adjust margin as needed */
+        }
         /* Transparent Menu */
         .menu {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 10px 20px;
-        background-color: rgba(0, 0, 0, 0.8);
-        z-index: 0;
-    }
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 0;
+        }
 
-    .menu-items {
-        display: flex;
-        justify-content: center;
-        position: relative;
-    }
+        .menu-items {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
 
-    .menu a {
-        color: white;
-        text-decoration: none;
-        padding: 14px 16px;
-        font-family: 'Roboto', sans-serif;
-        font-size: 16px;
-        transition: background-color 0.3s, transform 0.3s;
-    }
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 16px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
 
-    .menu a:hover {
-        background-color: #007B5F; /* Jade shade */
-        transform: scale(1.1);
-    }
+        .menu a:hover {
+            background-color: #0F52BA; /* Wedding Blue */
+            transform: scale(1.1);
+        }
 
-    .play-button-container {
-    display: flex;
-    justify-content: flex-start;
-    padding: 20px;
-    z-index: auto;
-    position: fixed;
-}
+        .play-button-container {
+            display: flex;
+            justify-content: flex-start;
+            padding: 20px;
+            z-index: auto;
+            position: fixed;
+        }
 
-    .play-button {
-        background-color: #00A36C; /* Jade */
-        color: white;
-        border: none;
-        border-radius: 25px; /* Slightly less rounded corners for a modern look */
-        font-size: 22px; /* Slightly larger font size */
-        font-weight: bold;
-        text-decoration: none;
-        padding: 15px 40px; /* Increased padding for a more prominent button */
-        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* More pronounced shadow for a modern effect */
-        z-index: 1; /* Ensure it is above other elements */
-        top: 5px; /* Adjusted position */
-        right: 10px;
-        position: fixed;
-    }
+        .play-button {
+            background-color: #0F52BA; /* Wedding Blue */
+            color: white;
+            border: none;
+            border-radius: 25px; /* Slightly less rounded corners for a modern look */
+            font-size: 22px; /* Slightly larger font size */
+            font-weight: bold;
+            text-decoration: none;
+            padding: 15px 40px; /* Increased padding for a more prominent button */
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* More pronounced shadow for a modern effect */
+            z-index: 1; /* Ensure it is above other elements */
+            top: 5px; /* Adjusted position */
+            right: 10px;
+            position: fixed;
+        }
 
-    .play-button:hover {
-        background-color: #008B6A; /* Darker Jade */
-        transform: scale(1.05); /* Slightly enlarge the button on hover */
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
-    }
+        .play-button:hover {
+            background-color: #0C3A6A; /* Darker Wedding Blue */
+            transform: scale(1.05); /* Slightly enlarge the button on hover */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
+        }
 
 
-    .battlepass-button {
-        position: fixed;
-        top: 125px;
-        left: 75px;
-        background-color: transparent;
-        cursor: pointer;
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 10px;
-        width: 200px; /* Adjust the width as needed */
-        flex-direction: column; /* Stack image and text vertically */
-        border: 2px solid #00A36C; /* Jade */
-    }
+        .battlepass-button {
+            position: fixed;
+            top: 125px;
+            left: 75px;
+            background-color: transparent;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            width: 200px; /* Adjust the width as needed */
+            flex-direction: column; /* Stack image and text vertically */
+            border: 2px solid #0F52BA; /* Wedding Blue */
+        }
 
-    .battlepass-button img {
-        width: 250px; /* Adjust the size as needed */
-        height: 100px;
-        transition: transform 0.3s, box-shadow 0.3s;
-        position: absolute; /* Position image absolutely */
-        z-index: -1; /* Place image behind the text */
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Add shadow for a modern effect */
-        border-radius: 10px; /* Slightly rounded corners for a modern look */
-        animation: float 5s ease-in-out infinite; /* Add floating animation */
-        box-shadow: 0 8px 20px #00A36C; /* Jade */
-    }
+        .battlepass-button img {
+            width: 250px; /* Adjust the size as needed */
+            height: 100px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: absolute; /* Position image absolutely */
+            z-index: -1; /* Place image behind the text */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Add shadow for a modern effect */
+            border-radius: 10px; /* Slightly rounded corners for a modern look */
+            animation: float 5s ease-in-out infinite; /* Add floating animation */
+            box-shadow: 0 8px 20px #0F52BA; /* Wedding Blue */
+        }
 
-    .battlepass-button span {
-        color: #ffffff; /* MOBA game-like gold color */
-        font-size: 24px; /* Slightly larger font size */
-        font-weight: bold;
-        margin-top: 10px; /* Adjust margin to position text */
-        transition: transform 0.3s;
-        z-index: 1; /* Ensure text is above the image */
-        font-family: 'Bangers', cursive; /* MOBA game-like font */
-        text-shadow: 2px 2px 4px #00A36C; /* Jade */
-        animation: float 5s ease-in-out infinite; /* Add floating animation */
-    }
+        .battlepass-button span {
+            color: #ffffff; /* MOBA game-like gold color */
+            font-size: 24px; /* Slightly larger font size */
+            font-weight: bold;
+            margin-top: 10px; /* Adjust margin to position text */
+            transition: transform 0.3s;
+            z-index: 1; /* Ensure text is above the image */
+            font-family: 'Bangers', cursive; /* MOBA game-like font */
+            text-shadow: 2px 2px 4px #0F52BA; /* Wedding Blue */
+            animation: float 5s ease-in-out infinite; /* Add floating animation */
+        }
 
-    .battlepass-button span:hover {
-        color: #00FFB2; /* Light Jade */
-        transform: scale(1.1);
-        box-shadow: 0 8px 20px #00A36C; /* Jade */
-    }
+        .battlepass-button span:hover {
+            color: #4C8BE7; /* Light Wedding Blue */
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px #0F52BA; /* Wedding Blue */
+        }
 
-    .battlepass-button:hover img {
-        transform: scale(1.1);
-        box-shadow: 0 0 15px rgba(0, 123, 95, 0.7); /* Jade shadow */
-    }
+        .battlepass-button:hover img {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0, 123, 95, 0.7); /* Wedding Blue shadow */
+        }
 
         #video-background {
             position: fixed;
@@ -735,15 +735,15 @@
         }
 
         .profile-menu ul li:hover {
-            background-color: #007B5F; /* Jade shade */
+            background-color: #0F52BA; /* Wedding Blue */
         }
 
         .profile-menu ul li:last-child {
             border-bottom: none;
         }
-		.profile-menu.show {
-        display: block;
-		}
+        .profile-menu.show {
+            display: block;
+        }
 
         /* Quests Toggle Button */
         #quests-toggle {
@@ -770,84 +770,84 @@
             font-size: 14px;
             font-weight: bold;
         }
-		.modal {
-			display: none; /* Hidden by default */
-			position: fixed; /* Stay in place */
-			z-index: 1000; /* Sit on top */
-			left: 0;
-			top: 0;
-			width: 100%; /* Full width */
-			height: 100%; /* Full height */
-			overflow: auto; /* Enable scrolling if needed */
-			background-color: rgba(0, 0, 0, 0.5); /* Black with transparency */
-			padding-top: 50px; /* Center modal vertically */
-		}
-
-		.modal-content {
-			background-color: black;
-			margin: auto;
-			padding: 20px;
-			border-radius: 10px;
-			box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
-			max-width: 100%; /* Adjust width as needed */
-			max-height: 80%; /* Adjust height as needed */
-			overflow: auto; /* Enable scrolling if content exceeds dimensions */
-		}
-
-		.modal-content img {
-			border-radius: 50%;
-		}
-
-		.close {
-			color: #aaaaaa;
-			float: right;
-			font-size: 30px;
-			font-weight: bold;
-			line-height: 1;
-		}
-
-		.close:hover,
-		.close:focus {
-			color: #000;
-			text-decoration: none;
-			cursor: pointer;
-		}
-
-		/* Media query for responsiveness */
-		@media (min-width: 1150px) {
-			.modal-content {
-				max-width: 1150px; /* Adjust maximum width for larger screens */
-			}
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scrolling if needed */
+            background-color: rgba(0, 0, 0, 0.5); /* Black with transparency */
+            padding-top: 50px; /* Center modal vertically */
         }
-		.currency-container {
-			position: fixed;
-			top: 220px; /* Adjust top position as needed */
-			right: 3px; /* Align with profile-info */
-			align-items: center;
-			padding: 5px 10px;
-			max-width: 275px;
-			z-index: 1000; /* Ensure it's above other content */
-			display: flex; /* Use flexbox to align items */
-			align-items: center; /* Align items vertically */
-		}
 
-		.currency-icon {
-			width: 25px; /* Adjusted width for better visibility */
-			height: auto; /* Maintain aspect ratio */
-			margin-left: 5px;
-		}
-		.currency-icon img {
-			width: 25px; /* Adjust the width as needed */
-			height: auto; /* Maintain aspect ratio */
-		}
+        .modal-content {
+            background-color: black;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            max-width: 100%; /* Adjust width as needed */
+            max-height: 80%; /* Adjust height as needed */
+            overflow: auto; /* Enable scrolling if content exceeds dimensions */
+        }
 
-		.currency-amount {
-			font-size: 18px;
-			font-weight: bold;
-			color: white;
-			margin-left: 5px; /* Add margin to separate from the icon */
-		}
-		 #unlockButton {
+        .modal-content img {
+            border-radius: 50%;
+        }
+
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 30px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Media query for responsiveness */
+        @media (min-width: 1150px) {
+            .modal-content {
+                max-width: 1150px; /* Adjust maximum width for larger screens */
+            }
+        }
+        .currency-container {
+            position: fixed;
+            top: 220px; /* Adjust top position as needed */
+            right: 3px; /* Align with profile-info */
+            align-items: center;
+            padding: 5px 10px;
+            max-width: 275px;
+            z-index: 1000; /* Ensure it's above other content */
+            display: flex; /* Use flexbox to align items */
+            align-items: center; /* Align items vertically */
+        }
+
+        .currency-icon {
+            width: 25px; /* Adjusted width for better visibility */
+            height: auto; /* Maintain aspect ratio */
+            margin-left: 5px;
+        }
+        .currency-icon img {
+            width: 25px; /* Adjust the width as needed */
+            height: auto; /* Maintain aspect ratio */
+        }
+
+        .currency-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            margin-left: 5px; /* Add margin to separate from the icon */
+        }
+         #unlockButton {
             position: fixed;
             bottom: 20px;
             left: 20px;
@@ -859,64 +859,64 @@
             cursor: pointer;
             display: none; /* Initially hidden */
         }
-		.cm-container {
-			position: fixed; /* Fixed position */
-			top: 185px; /* Adjust top position */
-			right: 0px; /* Align with profile-info */
-			align-items: center; /* Align items vertically */
-			padding: 5px 10px; /* Padding around the container */
-			max-width: 275px; /* Maximum width */
-			z-index: 1000; /* Ensure it's above other content */
-			display: flex; /* Use flexbox to align items */
-		}
+        .cm-container {
+            position: fixed; /* Fixed position */
+            top: 185px; /* Adjust top position */
+            right: 0px; /* Align with profile-info */
+            align-items: center; /* Align items vertically */
+            padding: 5px 10px; /* Padding around the container */
+            max-width: 275px; /* Maximum width */
+            z-index: 1000; /* Ensure it's above other content */
+            display: flex; /* Use flexbox to align items */
+        }
 
-		.cm-icon {
-			width: 25px; /* Adjusted width for the icon */
-			height: auto; /* Maintain aspect ratio */
-			margin-left: 5px; /* Margin between icon and amount */
-		}
+        .cm-icon {
+            width: 25px; /* Adjusted width for the icon */
+            height: auto; /* Maintain aspect ratio */
+            margin-left: 5px; /* Margin between icon and amount */
+        }
 
-		.cm-icon img {
-			width: 25px; /* Adjusted width for the icon image */
-			height: auto; /* Maintain aspect ratio */
-		}
+        .cm-icon img {
+            width: 25px; /* Adjusted width for the icon image */
+            height: auto; /* Maintain aspect ratio */
+        }
 
-		#cm-amount {
-			color: white; /* Text color */
-			margin-left: 5px; /* Add margin to separate from the icon */
-		}
-		#news-feed {
-			position: fixed;
-			top: 55px; /* Adjust based on your layout */
-			left: 0;
-			width: 250px; /* Adjust width as needed */
-			background-color: rgba(0, 0, 0, 0.8);
-			color: white;
-			padding: 10px;
-			box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
-			z-index: 2000; /* Ensure it's above other content */
-			overflow-y: auto;
-			max-height: 90vh;
-		}
+        #cm-amount {
+            color: white; /* Text color */
+            margin-left: 5px; /* Add margin to separate from the icon */
+        }
+        #news-feed {
+            position: fixed;
+            top: 55px; /* Adjust based on your layout */
+            left: 0;
+            width: 250px; /* Adjust width as needed */
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 2000; /* Ensure it's above other content */
+            overflow-y: auto;
+            max-height: 90vh;
+        }
 
-		.news-item {
-			margin-bottom: 20px;
-		}
+        .news-item {
+            margin-bottom: 20px;
+        }
 
-		.news-image {
-			width: 20%;
-			height: auto;
-			border-radius: 5px;
-		}
+        .news-image {
+            width: 20%;
+            height: auto;
+            border-radius: 5px;
+        }
 
-		.news-title {
-			font-size: 18px;
-			margin: 10px 0 5px;
-		}
+        .news-title {
+            font-size: 18px;
+            margin: 10px 0 5px;
+        }
 
-		.news-text {
-			font-size: 14px;
-		}
+        .news-text {
+            font-size: 14px;
+        }
         #friend-list-container {
             position: fixed;
             bottom: 10px;
@@ -925,7 +925,7 @@
             color: white;
             padding: 15px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.2), 0 2px 10px rgba(0, 163, 108, 0.2); /* White and Jade */
+            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.2), 0 2px 10px rgba(15, 82, 186, 0.2); /* White and Wedding Blue */
             z-index: 1000;
             width: 300px;
             max-width: 275px;
@@ -982,55 +982,55 @@
     }
 
     .friend-name {
-    color: inherit; /* Inherit the color from the parent element */
-    text-decoration: none; /* Remove underline */
-    cursor: pointer; /* Change cursor to pointer */
-}
-
-/* Toggle Champion Selector Button Styles */
-#toggle-champion-button {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) rotate(0deg);
-    background-color: rgba(7, 4, 4, 0.589);
-    border: none;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    cursor: pointer;
-    font-size: 24px;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease, background-color 0.3s ease;
-    z-index: 1000;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-#toggle-champion-button:hover {
-    background-color: rgba(255, 255, 255, 0.4);
-    transform: translateX(-50%) rotate(180deg);
-}
-
-/* Animation for Rotation */
-@keyframes rotateArrow {
-    from {
-        transform: translateX(-50%) rotate(0deg);
+        color: inherit; /* Inherit the color from the parent element */
+        text-decoration: none; /* Remove underline */
+        cursor: pointer; /* Change cursor to pointer */
     }
-    to {
+
+    /* Toggle Champion Selector Button Styles */
+    #toggle-champion-button {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%) rotate(0deg);
+        background-color: rgba(7, 4, 4, 0.589);
+        border: none;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        cursor: pointer;
+        font-size: 24px;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.3s ease, background-color 0.3s ease;
+        z-index: 1000;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    #toggle-champion-button:hover {
+        background-color: rgba(255, 255, 255, 0.4);
         transform: translateX(-50%) rotate(180deg);
     }
-}
 
-#toggle-champion-button.rotated {
-    animation: rotateArrow 0.3s forwards;
-}
+    /* Animation for Rotation */
+    @keyframes rotateArrow {
+        from {
+            transform: translateX(-50%) rotate(0deg);
+        }
+        to {
+            transform: translateX(-50%) rotate(180deg);
+        }
+    }
 
-.friend-name:hover {
-    text-decoration: underline; /* Optional: Add underline on hover */
-}
+    #toggle-champion-button.rotated {
+        animation: rotateArrow 0.3s forwards;
+    }
+
+    .friend-name:hover {
+        text-decoration: underline; /* Optional: Add underline on hover */
+    }
 
     #friend-name-input {
         width: calc(100% - 22px);
@@ -1045,7 +1045,7 @@
     #add-friend-button {
         margin-top: 10px;
         padding: 10px;
-        background-color: #00A36C; /* Jade */
+        background-color: #0F52BA; /* Wedding Blue */
         color: white;
         border: none;
         border-radius: 5px;
@@ -1054,301 +1054,301 @@
     }
 
     #add-friend-button:hover {
-        background-color: #008B6A; /* Darker Jade */
+        background-color: #0C3A6A; /* Darker Wedding Blue */
     }
 
     #toggle-friend-list {
         cursor: pointer;
-        color: #00A36C; /* Jade */
+        color: #0F52BA; /* Wedding Blue */
         text-align: center;
         margin-top: 10px;
     }
 
     #toggle-friend-list:hover {
-        color: #00FFB2; /* Light Jade */
+        color: #4C8BE7; /* Light Wedding Blue */
         text-decoration: underline;
     }
-/* Quests Section Styles */
-#new-quests-box {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    width: 300px; /* Reduced width */
-    background-color: rgb(17, 16, 16);
-    color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    font-family: 'Roboto', sans-serif;
-    max-height: 400px; /* Reduced max height */
-    overflow-y: auto;
-    backdrop-filter: blur(8px);
-    transition: all 0.3s ease-in-out;
-}
-
-#new-quests-box .header {
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 15px;
-    font-size: 18px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    color: #00FFB2; /* Light Jade */
-    text-shadow: 0 0 10px rgba(0, 255, 178, 0.5); /* Jade shadow */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(5px);
-    transition: all 0.3s ease;
-}
-
-#new-quests-box .header h2 {
-    margin: 0;
-    color: #ffffff;
-}
-
-#toggle-quests {
-    background: none;
-    border: none;
-    color: #00A36C; /* Jade */
-    font-size: 20px; /* Reduced font size */
-    cursor: pointer;
-    transition: transform 0.3s;
-}
-
-#new-quests-box .content {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-#new-quests-box .quest {
-    background-color: rgba(0, 0, 0, 0.411);
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s, box-shadow 0.3s;
-    display: flex;
-    flex-direction: column;
-}
-
-#new-quests-box .quest-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-#new-quests-box .quest h3 {
-    margin: 0;
-    font-size: 16px; /* Reduced font size */
-    color: #008B6A; /* Dark Jade */
-}
-
-.reward-image {
-    width: 30px; /* Smaller image size */
-    height: 30px;
-    border-radius: 50%;
-}
-
-#new-quests-box .quest-description {
-    margin: 5px 0;
-    font-size: 14px; /* Reduced font size */
-    color: #e0e0e0;
-}
-
-#new-quests-box .quest .quest-progress {
-    height: 8px; /* Reduced height */
-    background-color: #9e9e9e;
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 8px;
-}
-
-#new-quests-box .quest .quest-progress div {
-    height: 100%;
-    background-color: #00A36C; /* Jade */
-    width: 50%;
-    transition: width 0.3s;
-}
-
-#new-quests-box .quest .claim-button {
-    padding: 6px 12px; /* Reduced padding */
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 12px; /* Reduced font size */
-    background-color: #00A36C; /* Jade */
-    color: #ffffff;
-    transition: background-color 0.3s;
-}
-
-#new-quests-box .quest .claim-button:hover {
-    background-color: #008B6A; /* Darker Jade */
-}
-
-#new-quests-box .quest:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 123, 95, 0.8); /* Jade shadow */
-}
-    /* ===================== Animated Particle Background ===================== */
-
-/* Container for particles */
-.particle-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    overflow: hidden;
-    z-index: -2; /* Ensure particles are behind all content */
-}
-/* Responsive Styles for Quests Section */
-@media (max-width: 768px) {
+    /* Quests Section Styles */
     #new-quests-box {
-        width: 90%;
-        left: 5%;
-        bottom: 10px;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        width: 300px; /* Reduced width */
+        background-color: rgb(17, 16, 16);
+        color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        font-family: 'Roboto', sans-serif;
+        max-height: 400px; /* Reduced max height */
+        overflow-y: auto;
+        backdrop-filter: blur(8px);
+        transition: all 0.3s ease-in-out;
+    }
+
+    #new-quests-box .header {
+        background-color: rgba(0, 0, 0, 0.7);
+        padding: 15px;
+        font-size: 18px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        color: #4C8BE7; /* Light Wedding Blue */
+        text-shadow: 0 0 10px rgba(0, 255, 178, 0.5); /* Adjusted shadow */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(5px);
+        transition: all 0.3s ease;
     }
 
     #new-quests-box .header h2 {
-        font-size: 18px;
+        margin: 0;
+        color: #ffffff;
+    }
+
+    #toggle-quests {
+        background: none;
+        border: none;
+        color: #0F52BA; /* Wedding Blue */
+        font-size: 20px; /* Reduced font size */
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+
+    #new-quests-box .content {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    #new-quests-box .quest {
+        background-color: rgba(0, 0, 0, 0.411);
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s, box-shadow 0.3s;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #new-quests-box .quest-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
     #new-quests-box .quest h3 {
-        font-size: 18px;
+        margin: 0;
+        font-size: 16px; /* Reduced font size */
+        color: #0C3A6A; /* Darker Wedding Blue */
     }
 
-    #new-quests-box .quest p {
-        font-size: 14px;
+    .reward-image {
+        width: 30px; /* Smaller image size */
+        height: 30px;
+        border-radius: 50%;
     }
 
-    #new-quests-box .quest button {
-        font-size: 12px;
-        padding: 6px 12px;
+    #new-quests-box .quest-description {
+        margin: 5px 0;
+        font-size: 14px; /* Reduced font size */
+        color: #e0e0e0;
     }
-}
 
-/* Particle Styles */
-@keyframes particleMove {
-    0% {
-        transform: translate(0, 0) scale(1);
-        opacity: 1;
+    #new-quests-box .quest .quest-progress {
+        height: 8px; /* Reduced height */
+        background-color: #9e9e9e;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 8px;
     }
-    100% {
-        transform: translate(100px, 100px) scale(0.5);
+
+    #new-quests-box .quest .quest-progress div {
+        height: 100%;
+        background-color: #0F52BA; /* Wedding Blue */
+        width: 50%;
+        transition: width 0.3s;
+    }
+
+    #new-quests-box .quest .claim-button {
+        padding: 6px 12px; /* Reduced padding */
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 12px; /* Reduced font size */
+        background-color: #0F52BA; /* Wedding Blue */
+        color: #ffffff;
+        transition: background-color 0.3s;
+    }
+
+    #new-quests-box .quest .claim-button:hover {
+        background-color: #0C3A6A; /* Darker Wedding Blue */
+    }
+
+    #new-quests-box .quest:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 123, 95, 0.8); /* Wedding Blue shadow */
+    }
+        /* ===================== Animated Particle Background ===================== */
+
+    /* Container for particles */
+    .particle-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: -2; /* Ensure particles are behind all content */
+    }
+    /* Responsive Styles for Quests Section */
+    @media (max-width: 768px) {
+        #new-quests-box {
+            width: 90%;
+            left: 5%;
+            bottom: 10px;
+        }
+
+        #new-quests-box .header h2 {
+            font-size: 18px;
+        }
+
+        #new-quests-box .quest h3 {
+            font-size: 18px;
+        }
+
+        #new-quests-box .quest p {
+            font-size: 14px;
+        }
+
+        #new-quests-box .quest button {
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+    }
+
+    /* Particle Styles */
+    @keyframes particleMove {
+        0% {
+            transform: translate(0, 0) scale(1);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(100px, 100px) scale(0.5);
+            opacity: 0;
+        }
+    }
+
+    .particle {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: rgba(15, 82, 186, 0.7); /* Wedding Blue color with transparency */
+        border-radius: 50%;
+        animation: particleMove linear infinite;
+    }
+
+    /* ===================== Menu Slide-In Animation ===================== */
+
+    @keyframes slideInFromTop {
+        from {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .menu {
+        animation: slideInFromTop 1s ease-out forwards;
+    }
+
+    /* ===================== Button Hover Effects ===================== */
+
+    /* Play Button Glowing and Scaling on Hover */
+    .play-button {
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .play-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(0, 123, 95, 0.8);
+    }
+
+    /* Battlepass Button Hover Effects */
+    .battlepass-button:hover img {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+    }
+
+    .battlepass-button span:hover {
+        transform: scale(1.1);
+    }
+
+    /* ===================== Profile Section Animations ===================== */
+
+    /* Fade-In Animation for Profile Info */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    #profile-info {
+        animation: fadeIn 1s ease-out forwards;
+    }
+
+    /* ===================== Champion Selector Animations ===================== */
+
+    /* Enhanced Entrance Animation for Champion Images */
+    @keyframes fadeInScale {
+        0% {
+            opacity: 0;
+            transform: scale(0.85);
+        }
+        50% {
+            opacity: 0.5;
+            transform: scale(1.02);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .champion-image {
+        animation: fadeInScale 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
         opacity: 0;
     }
-}
 
-.particle {
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    background: rgba(0, 163, 108, 0.7); /* Jade color with transparency */
-    border-radius: 50%;
-    animation: particleMove linear infinite;
-}
-
-/* ===================== Menu Slide-In Animation ===================== */
-
-@keyframes slideInFromTop {
-    from {
-        transform: translateY(-100%);
-        opacity: 0;
+    /* Add Delay for Staggered Entrance with Enhanced Timing */
+    .champion-image:nth-child(odd) {
+        animation-delay: 0.2s;
     }
-    to {
-        transform: translateY(0);
-        opacity: 1;
+
+    .champion-image:nth-child(even) {
+        animation-delay: 0.4s;
     }
-}
 
-.menu {
-    animation: slideInFromTop 1s ease-out forwards;
-}
-
-/* ===================== Button Hover Effects ===================== */
-
-/* Play Button Glowing and Scaling on Hover */
-.play-button {
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.play-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(0, 123, 95, 0.8);
-}
-
-/* Battlepass Button Hover Effects */
-.battlepass-button:hover img {
-    transform: scale(1.1);
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
-}
-
-.battlepass-button span:hover {
-    transform: scale(1.1);
-}
-
-/* ===================== Profile Section Animations ===================== */
-
-/* Fade-In Animation for Profile Info */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
+    /* Smooth Hover Glow and Scale Effect */
+    .champion-image:hover {
+        box-shadow: 0 0 20px #0F52BA; /* Wedding Blue */
+        transform: scale(1.15);
+        transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
-#profile-info {
-    animation: fadeIn 1s ease-out forwards;
-}
-
-/* ===================== Champion Selector Animations ===================== */
-
-/* Enhanced Entrance Animation for Champion Images */
-@keyframes fadeInScale {
-    0% {
-        opacity: 0;
-        transform: scale(0.85);
-    }
-    50% {
-        opacity: 0.5;
-        transform: scale(1.02);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-.champion-image {
-    animation: fadeInScale 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
-    opacity: 0;
-}
-
-/* Add Delay for Staggered Entrance with Enhanced Timing */
-.champion-image:nth-child(odd) {
-    animation-delay: 0.2s;
-}
-
-.champion-image:nth-child(even) {
-    animation-delay: 0.4s;
-}
-
-/* Smooth Hover Glow and Scale Effect */
-.champion-image:hover {
-    box-shadow: 0 0 20px #00A36C; /* Jade */
-    transform: scale(1.15);
-    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-</stYle>
+    </style>
 
 </head> 
 <body>
@@ -1370,7 +1370,7 @@
     </div>
 
     <button class="battlepass-button" onclick="window.location.href='battlepass.html'">
-        <img src="Event/Jade Event.jpeg" alt="Battlepass">
+        <img src="Event/Sacred Ceremony Event.jpeg" alt="Battlepass">
         <span>Battlepass</span>
     </button>
     
@@ -1410,8 +1410,8 @@
 			<li onclick="logOut()">Log Out</li>
 		</ul>
 	</div>
-
 	
+
     <!-- Modal for Changing Profile Icon -->
     <div id="change-icon-modal" class="modal">
         <div class="modal-content">
@@ -1528,28 +1528,28 @@
         }
     });
 
-// Toggle Champion Selector Visibility
-function toggleChampionSelector() {
-    const championSelector = document.getElementById('champion-selector-container');
-    const toggleButton = document.getElementById('toggle-champion-button');
+    // Toggle Champion Selector Visibility
+    function toggleChampionSelector() {
+        const championSelector = document.getElementById('champion-selector-container');
+        const toggleButton = document.getElementById('toggle-champion-button');
 
-    if (championSelector.style.display === 'none' || championSelector.style.display === '') {
-        championSelector.style.display = 'flex';
-        toggleButton.classList.add('rotated');
-    } else {
-        championSelector.style.display = 'none';
-        toggleButton.classList.remove('rotated');
+        if (championSelector.style.display === 'none' || championSelector.style.display === '') {
+            championSelector.style.display = 'flex';
+            toggleButton.classList.add('rotated');
+        } else {
+            championSelector.style.display = 'none';
+            toggleButton.classList.remove('rotated');
+        }
     }
-}
 
-// Initialize Toggle Button State on Page Load
-document.addEventListener('DOMContentLoaded', function () {
-    const championSelector = document.getElementById('champion-selector-container');
-    const toggleButton = document.getElementById('toggle-champion-button');
+    // Initialize Toggle Button State on Page Load
+    document.addEventListener('DOMContentLoaded', function () {
+        const championSelector = document.getElementById('champion-selector-container');
+        const toggleButton = document.getElementById('toggle-champion-button');
 
-    // Initially show the champion selector
-    championSelector.style.display = 'flex';
-});
+        // Initially show the champion selector
+        championSelector.style.display = 'flex';
+    });
 
     // ===================== Particle Effect Initialization =====================
 

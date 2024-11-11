@@ -14,7 +14,7 @@
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
-        import { getDatabase, ref, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { getDatabase, ref, set, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
         import { quests } from './quests.js';
         import { roles } from './roles.js';
         import { characters } from './characterskinref.js'; // Import characters
@@ -103,84 +103,121 @@ async function initializePlayerDataToggle() {
         });
     }
 
-    // Function to toggle player data display
-    async function togglePlayerData(playerSlot) {
-        const imgElement = playerSlot.querySelector('img');
-        const isDarkened = imgElement.classList.contains('darkened');
+// Function to toggle player data display
+async function togglePlayerData(playerSlot) {
+    const imgElement = playerSlot.querySelector('img');
+    const isDarkened = imgElement.classList.contains('darkened');
 
-        if (isDarkened) {
-            // Remove darkening and hide data
-            imgElement.classList.remove('darkened');
-            const dataContainer = playerSlot.querySelector('.player-data');
-            if (dataContainer) {
-                dataContainer.remove();
-            }
-        } else {
-            // Darken the image
-            imgElement.classList.add('darkened');
+    if (isDarkened) {
+        // Remove darkening and hide data
+        imgElement.classList.remove('darkened');
+        const dataContainer = playerSlot.querySelector('.player-data');
+        if (dataContainer) {
+            dataContainer.remove();
+        }
+    } else {
+        // Darken the image
+        imgElement.classList.add('darkened');
 
-            // Create a container to display data
-            const dataContainer = document.createElement('div');
-            dataContainer.classList.add('player-data');
+        // Create a container to display data
+        const dataContainer = document.createElement('div');
+        dataContainer.classList.add('player-data');
 
-            // Append the data container to the player slot
-            playerSlot.appendChild(dataContainer);
+        // Append the data container to the player slot
+        playerSlot.appendChild(dataContainer);
 
-            // Fetch and display data
-            const user = auth.currentUser;
-            if (!user) {
-                console.error('User not authenticated');
-                return;
-            }
+        // Fetch and display data
+        const user = auth.currentUser;
+        if (!user) {
+            console.error('User not authenticated');
+            return;
+        }
 
-            const userId = user.uid;
-            const skinName = playerSlot.querySelector('.skin-name').textContent;
-            const characterName = characters[skinName] || skinName;
+        const userId = user.uid;
+        const skinName = playerSlot.querySelector('.skin-name').textContent;
+        const characterName = skinToBaseCharacterMap[skinName] || skinName; // Map skin to base character
 
-            try {
-                // Fetch Ranked Win/Lose
-                const rankedWinRef = ref(database, `users/${userId}/ranked win`);
-                const rankedLoseRef = ref(database, `users/${userId}/ranked lose`);
-                const [rankedWinSnap, rankedLoseSnap] = await Promise.all([
-                    get(rankedWinRef),
-                    get(rankedLoseRef)
-                ]);
-                const rankedWin = rankedWinSnap.val() || 0;
-                const rankedLose = rankedLoseSnap.val() || 0;
-                const rankedWinRate = rankedWin + rankedLose > 0 ? ((rankedWin / (rankedWin + rankedLose)) * 100).toFixed(2) : 'N/A';
+        try {
+            // Fetch Character Win/Lose
+            const charWinRef = ref(database, `users/${userId}/characters/${characterName}/win`);
+            const charLoseRef = ref(database, `users/${userId}/characters/${characterName}/lose`);
+            const [charWinSnap, charLoseSnap] = await Promise.all([
+                get(charWinRef),
+                get(charLoseRef)
+            ]);
+            const charWin = charWinSnap.val() || 0;
+            const charLose = charLoseSnap.val() || 0;
+            const charWinRate = charWin + charLose > 0 ? ((charWin / (charWin + charLose)) * 100).toFixed(2) : 'N/A';
 
-                // Fetch Character Win/Lose
-                const charWinRef = ref(database, `users/${userId}/characters/${characterName}/win`);
-                const charLoseRef = ref(database, `users/${userId}/characters/${characterName}/lose`);
-                const [charWinSnap, charLoseSnap] = await Promise.all([
-                    get(charWinRef),
-                    get(charLoseRef)
-                ]);
-                const charWin = charWinSnap.val() || 0;
-                const charLose = charLoseSnap.val() || 0;
-                const charWinRate = charWin + charLose > 0 ? ((charWin / (charWin + charLose)) * 100).toFixed(2) : 'N/A';
+            // Max Games with Character
+            const maxGames = charWin + charLose;
 
-                // Fetch Rank Points
-                const rankPointsRef = ref(database, `users/${userId}/Rank points/Rank points`);
-                const rankPointsSnap = await get(rankPointsRef);
-                const rankPoints = rankPointsSnap.val() || 0;
+            // Fetch Rank Points
+            const rankPointsRef = ref(database, `users/${userId}/Rank points`);
+            const rankPointsSnap = await get(rankPointsRef);
+            const rankPoints = Number(rankPointsSnap.val()) || 0;
 
-                // Max Games with Character
-                const maxGames = charWin + charLose;
+            // Fetch Player Ranked Win/Lose
+            const rankedWinRef = ref(database, `users/${userId}/ranked win`);
+            const rankedLoseRef = ref(database, `users/${userId}/ranked lose`);
+            const [rankedWinSnap, rankedLoseSnap] = await Promise.all([
+                get(rankedWinRef),
+                get(rankedLoseRef)
+            ]);
+            const rankedWins = rankedWinSnap.val() || 0;
+            const rankedLosses = rankedLoseSnap.val() || 0;
+            const playerRankedWinRate = rankedWins + rankedLosses > 0 ? ((rankedWins / (rankedWins + rankedLosses)) * 100).toFixed(2) : 'N/A';
 
-                // Populate data container
-                dataContainer.innerHTML = `
-                    <p><strong>Player Ranked Winrate (%):</strong> ${rankedWinRate}</p>
-                    <p><strong>Player Character Winrate (%):</strong> ${charWinRate}</p>
-                    <p><strong>Player Rank Points:</strong> ${rankPoints}</p>
-                    <p><strong>Max Games with this Character:</strong> ${maxGames}</p>
-                `;
-            } catch (error) {
-                console.error('Error fetching player data:', error);
-                dataContainer.innerHTML = `<p>Error fetching data.</p>`;
-            }
+            // Populate data container
+            dataContainer.innerHTML = `
+                <p><strong>Player Character Winrate (%):</strong> ${charWinRate}</p>
+                <p><strong>Player Rank Points:</strong> ${rankPoints}</p>
+                <p><strong>Max Games with this Character:</strong> ${maxGames}</p>
+                <p><strong>Player Ranked Winrate (%):</strong> ${playerRankedWinRate}</p>
+            `;
+        } catch (error) {
+            console.error('Error fetching player data:', error);
+            dataContainer.innerHTML = `<p>Error fetching data.</p>`;
         }
     }
+}
+    // Calculate win probability
+    async function calculateWinProbability(team1, team2) {
+    const meta = await loadMeta(); // Load meta.json
+    let team1Score = 0;
+    let team2Score = 0;
+
+    team1.forEach(character => {
+        const baseCharacter = skinToBaseCharacterMap[character] || character;
+        team1Score += meta[baseCharacter] || 0;
+    });
+
+    team2.forEach(character => {
+        const baseCharacter = skinToBaseCharacterMap[character] || character;
+        team2Score += meta[baseCharacter] || 0;
+    });
+
+    // Apply a 15% advantage to the team with the lower score
+    const advantage = 0.15;
+    if (team1Score < team2Score) {
+        team1Score *= (1 + advantage);
+    } else if (team2Score < team1Score) {
+        team2Score *= (1 + advantage);
+    }
+
+    return team1Score > team2Score ? 'team1' : 'team2';
+}
+
+    async function loadMeta() {
+    try {
+        const response = await fetch('meta.json');
+        const meta = await response.json();
+        return meta;
+    } catch (error) {
+        console.error('Error loading meta.json:', error);
+        return {};
+    }
+}
 
     // Function to check if all skins are selected and initialize toggles
     function checkAllSkinsSelected() {
@@ -646,9 +683,55 @@ function toggleMenuAndPlayButton() {
     checkAllSkinsSelected();
 }
 
-// Existing event listener for the decide game button
+// Function to update win/loss in the database
+async function updatePlayerWinLoss(userId, isWin) {
+    try {
+        const winRef = ref(database, `users/${userId}/ranked win`);
+        const loseRef = ref(database, `users/${userId}/ranked lose`);
+
+        const [winSnap, loseSnap] = await Promise.all([get(winRef), get(loseRef)]);
+        let wins = winSnap.exists() ? winSnap.val() : 0;
+        let losses = loseSnap.exists() ? loseSnap.val() : 0;
+
+        if (isWin) {
+            wins += 1;
+            await set(winRef, wins);
+        } else {
+            losses += 1;
+            await set(loseRef, losses);
+        }
+
+        console.log(`Updated wins: ${wins}, losses: ${losses}`);
+    } catch (error) {
+        console.error('Error updating win/loss:', error);
+    }
+}
+
+// Function to calculate win rate
+function calculateWinRate(wins, losses) {
+    const totalGames = wins + losses;
+    return totalGames > 0 ? ((wins / totalGames) * 100).toFixed(2) : 'N/A';
+}
+
+// Example usage after a match
+async function handleMatchResult(userId, isWin) {
+    await updatePlayerWinLoss(userId, isWin);
+
+    // Fetch updated win/loss data
+    const winRef = ref(database, `users/${userId}/ranked win`);
+    const loseRef = ref(database, `users/${userId}/ranked lose`);
+    const [winSnap, loseSnap] = await Promise.all([get(winRef), get(loseRef)]);
+    const wins = winSnap.val() || 0;
+    const losses = loseSnap.val() || 0;
+
+    // Calculate win rate
+    const winRate = calculateWinRate(wins, losses);
+    console.log(`Player Win Rate: ${winRate}%`);
+}
+
+// Modify the decide game button event listener
 document.getElementById('decide-game-button').addEventListener('click', async function() {
-    this.disabled = true; // Disable the button after it's clicked
+    this.disabled = true;
     const team1 = [];
     const team2 = [];
     const userOnly = document.getElementById('user-only-checkbox').checked;
@@ -691,12 +774,19 @@ document.getElementById('decide-game-button').addEventListener('click', async fu
     console.log('Team 1 Base Characters:', team1BaseCharacters);
     console.log('Team 2 Base Characters:', team2BaseCharacters);
 
-    // Determine the winning team (for example, randomly)
-    const winner = Math.random() < 0.5 ? 'team1' : 'team2';
+    // Calculate the winner based on character impact
+    const winner = await calculateWinProbability(team1, team2);
     const loser = winner === 'team1' ? 'team2' : 'team1';
 
     console.log('Winner:', winner);
     console.log('Loser:', loser);
+
+    // Update player win/loss record
+    if (user) {
+        const userId = user.uid;
+        const isWin = (winner === 'team1'); // Assuming the user is on team1
+        await handleMatchResult(userId, isWin);
+    }
 
     // Save win/lose data based on mode
     if (teamMode && user) {
@@ -729,13 +819,13 @@ document.getElementById('decide-game-button').addEventListener('click', async fu
     await updateQuestProgress('play10DraftModeGames'); // Add this line
 });
 
-// Function to update rank points in Solo Mode
+// ... existing code ...
 async function updateRankPoints(user, isWin) {
     try {
         const userId = user.uid;
         const rankRef = ref(database, `users/${userId}/Rank points`);
         const snapshot = await get(rankRef);
-        const currentRank = snapshot.val() || 0;
+        const currentRank = Number(snapshot.val()) || 0; // Ensure it's a number
 
         // Calculate random rank change
         let rankChange;
@@ -745,12 +835,15 @@ async function updateRankPoints(user, isWin) {
             rankChange = -getRandomInt(12, 34);
         }
 
-        const newRank = currentRank + rankChange;
+        let newRank = currentRank + rankChange;
+
+        // Ensure rank points do not go below zero
+        if (newRank < 0) {
+            newRank = 0;
+        }
 
         // Update the database
-        await update(rankRef, { 
-            'Rank points': newRank 
-        });
+        await update(ref(database, `users/${userId}`), { "Rank points": newRank });
 
         console.log(`Rank points updated: ${currentRank} -> ${newRank}`);
 
@@ -760,6 +853,7 @@ async function updateRankPoints(user, isWin) {
         console.error('Error updating rank points:', error);
     }
 }
+// ... existing code ...
 
 // Utility function to get a random integer between min and max (inclusive)
 function getRandomInt(min, max) {

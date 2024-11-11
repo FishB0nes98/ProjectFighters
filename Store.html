@@ -339,9 +339,9 @@
             const bundleName = item.dataset.bundleName;
             const button = item.querySelector('button');
             if (Bundles[bundleName] || 
-                (bundleName === 'ArcadeSubZero' && skins['Arcade Sub Zero'] === 1) ||
-                (bundleName === 'CyberNinjaReptileCMSale' && skins['Cyber Ninja Reptile'] === 1) ||
-                (bundleName === 'RandomRecolorDuoPack5' && skins['Pirate Shoma Jade'] === 1 && skins['High Elf Morrigan Jade'] === 1)) {
+                (bundleName === 'SandSoldierTalim' && skins['Sand Soldier Talim'] === 1) ||
+                (bundleName === 'DragonTamerRaidenCMSale' && skins['Dragon Tamer Raiden'] === 1) ||
+                (bundleName === 'RandomRecolorDuoPack6' && skins['Goth Elphelt White'] === 1 && skins['Infernal Ibuki Silver Flame'] === 1)) {
                 button.disabled = true;
                 button.textContent = 'Owned';
             }
@@ -379,28 +379,28 @@
         const userCurrency = currencyType === 'FM' ? window.userFM : window.userCM;
         const userCurrencyElement = document.getElementById(`${currencyType.toLowerCase()}-amount`);
 
-        // Check if the user already owns the Arcade Sub Zero skin
-        if (bundleName === 'ArcadeSubZero') {
-            const skinSnapshot = await get(ref(window.userRef, 'skins/Arcade Sub Zero'));
+        // Check if the user already owns the Sand Soldier Talim skin
+        if (bundleName === 'SandSoldierTalim') {
+            const skinSnapshot = await get(ref(window.userRef, 'skins/Sand Soldier Talim'));
             if (skinSnapshot.exists() && skinSnapshot.val() === 1) {
-                alert('You already own the Arcade Sub Zero skin.');
+                alert('You already own the Sand Soldier Talim skin.');
                 return;
             }
         }
 
-        // Check if the user already owns the Cyber Ninja Reptile skin
-        if (bundleName === 'CyberNinjaReptileCMSale') {
-            const skinSnapshot = await get(ref(window.userRef, 'skins/Cyber Ninja Reptile'));
+        // Check if the user already owns the Dragon Tamer Raiden skin
+        if (bundleName === 'DragonTamerRaidenCMSale') {
+            const skinSnapshot = await get(ref(window.userRef, 'skins/Dragon Tamer Raiden'));
             if (skinSnapshot.exists() && skinSnapshot.val() === 1) {
-                alert('You already own the Cyber Ninja Reptile skin.');
+                alert('You already own the Dragon Tamer Raiden skin.');
                 return;
             }
         }
 
         // Check if the user already owns the skins in the Random Recolor Duo Pack
-        if (bundleName === 'RandomRecolorDuoPack5') {
-            const skin1Snapshot = await get(ref(window.userRef, 'skins/High Elf Morrigan Jade'));
-            const skin2Snapshot = await get(ref(window.userRef, 'skins/Pirate Shoma Jade'));
+        if (bundleName === 'RandomRecolorDuoPack6') {
+            const skin1Snapshot = await get(ref(window.userRef, 'skins/Infernal Ibuki Silver Flame'));
+            const skin2Snapshot = await get(ref(window.userRef, 'skins/Goth Elphelt White'));
             if (skin1Snapshot.exists() && skin1Snapshot.val() === 1 && skin2Snapshot.exists() && skin2Snapshot.val() === 1) {
                 alert('You already own the skins in the Random Recolor Duo Pack.');
                 return;
@@ -432,18 +432,18 @@
                 });
             }
 
-            // Add Arcade Sub Zero to the Skins database for Bundle 2
-            if (bundleName === 'ArcadeSubZero') {
-                updates[`skins/Arcade Sub Zero`] = 1; // Adding the skin to the Skins folder with a value of 1
+            // Add Sand Soldier Talim to the Skins database for Bundle 2
+            if (bundleName === 'SandSoldierTalim') {
+                updates[`skins/Sand Soldier Talim`] = 1; // Adding the skin to the Skins folder with a value of 1
             }
 
             // Add Medieval Event Bundle skins to the Skins database for Bundle 3
-            if (bundleName === 'Jadebundle') {
+            if (bundleName === 'SacredCeremonyBundle') {
                 const skins = [
-                    'Jade Ayane',
-                    'Jade Scorpion',
-                    'Jade Yugo',
-                    'Jade Panda',
+                    'Sacred Ceremony Julia',
+                    'Sacred Ceremony Birdie',
+                    'Sacred Ceremony Morrigan',
+                    'Sacred Ceremony Shoma',
                     'Jade Siegfried'
                 ];
                 skins.forEach(skin => {
@@ -451,15 +451,15 @@
                 });
             }
 
-            // Add Cyber Ninja Reptile to the Skins database for the CM Sale bundle
-            if (bundleName === 'CyberNinjaReptileCMSale') {
-                updates[`skins/Cyber Ninja Reptile`] = 1; // Adding the skin to the Skins folder with a value of 1
+            // Add Dragon Tamer Raiden to the Skins database for the CM Sale bundle
+            if (bundleName === 'DragonTamerRaidenCMSale') {
+                updates[`skins/Dragon Tamer Raiden`] = 1; // Adding the skin to the Skins folder with a value of 1
             }
 
             // Add Random Recolor Duo Pack skins to the Skins database
-            if (bundleName === 'RandomRecolorDuoPack5') {
-                updates[`skins/Pirate Shoma Jade`] = 1; // Adding the skin to the Skins folder with a value of 1
-                updates[`skins/High Elf Morrigan Jade`] = 1; // Adding the skin to the Skins folder with a value of 1
+            if (bundleName === 'RandomRecolorDuoPack6') {
+                updates[`skins/Goth Elphelt White`] = 1; // Adding the skin to the Skins folder with a value of 1
+                updates[`skins/Infernal Ibuki Silver Flame`] = 1; // Adding the skin to the Skins folder with a value of 1
             }
 
             await update(window.userRef, updates);
@@ -577,10 +577,10 @@
             </div>
             <button onclick="purchaseBundle(this)">Buy</button>
         </div>
-        <div class="bundle-item" data-bundle-name="ArcadeSubZero">
-            <div class="bundle-name" style="color: white; font-weight: bold;">Arcade Sub Zero 70% SALE</div>
+        <div class="bundle-item" data-bundle-name="SandSoldierTalim">
+            <div class="bundle-name" style="color: white; font-weight: bold;">Sand Soldier Talim 70% SALE</div>
             <div class="image-container">
-                <img src="Skins/Arcade Sub Zero.jpeg" alt="Arcade Sub Zero" style="margin-top: 10px;">
+                <img src="Skins/Sand Soldier Talim.jpg" alt="Sand Soldier Talim" style="margin-top: 10px;">
             </div>
             <div class="price">
                 <img src="res/img/fm.png" alt="FM" style="margin-top: 10px;">
@@ -588,24 +588,24 @@
             </div>
             <button onclick="purchaseBundle(this)">Buy</button>
     </div>
-    <div class="bundle-item" data-bundle-name="Jadebundle">
-        <div class="bundle-name" style="color: white; font-weight: bold;">Jade bundle (5 Skins)</div>
+    <div class="bundle-item" data-bundle-name="SacredCeremonyBundle">
+        <div class="bundle-name" style="color: white; font-weight: bold;">Sacred Ceremony Bundle (5 Skins)</div>
         <div class="images-grid">
-            <img src="Loading Screen/Jade Ayane.png" alt="Jade Ayane" style="width: 80%;">
-            <img src="Loading Screen/Jade Scorpion.png" alt="Jade Scorpion" style="width: 80%;">
-            <img src="Loading Screen/Jade Yugo.png" alt="Jade Yugo" style="width: 80%;">
-            <img src="Loading Screen/Jade Panda.png" alt="Jade Panda" style="width: 80%;">
+            <img src="Loading Screen/Sacred Ceremony Julia.png" alt="Sacred Ceremony Julia" style="width: 80%;">
+            <img src="Loading Screen/Sacred Ceremony Birdie.png" alt="Sacred Ceremony Birdie" style="width: 80%;">
+            <img src="Loading Screen/Sacred Ceremony Morrigan.png" alt="Sacred Ceremony Morrigan" style="width: 80%;">
+            <img src="Loading Screen/Sacred Ceremony Shoma.png" alt="Sacred Ceremony Shoma" style="width: 80%;">
         </div>
         <div class="price">
             <img src="res/img/fm.png" alt="FM">
-            <span style="color: white; font-weight: bold;">7350</span>
+            <span style="color: white; font-weight: bold;">4885</span>
         </div>
         <button onclick="purchaseBundle(this)">Buy</button>
     </div>
-    <div class="bundle-item" data-bundle-name="CyberNinjaReptileCMSale">
-        <div class="bundle-name" style="color: white; font-weight: bold;">Cyber Ninja Reptile CM Sale</div>
+    <div class="bundle-item" data-bundle-name="DragonTamerRaidenCMSale">
+        <div class="bundle-name" style="color: white; font-weight: bold;">Dragon Tamer Raiden CM Sale</div>
         <div class="image-container">
-            <img src="Skins/Cyber Ninja Reptile.png" alt="Cyber Ninja Reptile" style="margin-top: 10px;">
+            <img src="Skins/Dragon Tamer Raiden.png" alt="Dragon Tamer Raiden" style="margin-top: 10px;">
         </div>
         <div class="price">
             <img src="res/img/cm.png" alt="CM" style="margin-top: 10px;">
@@ -613,11 +613,11 @@
         </div>
         <button onclick="purchaseBundle(this)">Buy</button>
     </div>
-    <div class="bundle-item" data-bundle-name="RandomRecolorDuoPack5">
+    <div class="bundle-item" data-bundle-name="RandomRecolorDuoPack6">
         <div class="bundle-name" style="color: white; font-weight: bold;">Random Recolor Duo Pack</div>
         <div class="images-grid">
-            <img src="Loading Screen/Pirate Shoma Jade.png" alt="Pirate Shoma Jade" style="width: 80%;">
-            <img src="Loading Screen/High Elf Morrigan Jade.png" alt="High Elf Morrigan Jade" style="width: 80%;">
+            <img src="Loading Screen/Goth Elphelt White.png" alt="Goth Elphelt White" style="width: 80%;">
+            <img src="Loading Screen/Infernal Ibuki Silver Flame.png" alt="Infernal Ibuki Silver Flame" style="width: 80%;">
         </div>
         <div class="price">
             <img src="res/img/fm.png" alt="FM">

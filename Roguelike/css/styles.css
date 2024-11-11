@@ -1,0 +1,1283 @@
+/* styles.css */
+
+/* General Styles */
+body {
+    background-color: #1e1e1e;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    /* Add a top margin to push everything down */
+    margin-top: 20px; /* Adjust this value as needed */
+}
+
+/* Selection Screen */
+#selection-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    /* Add a top margin to push the selection screen down */
+    margin-top: 20px; /* Adjust this value as needed */
+}
+
+#selection-screen h2 {
+    margin-bottom: 20px;
+}
+
+#selection-screen button {
+    margin: 10px;
+    padding: 12px 24px;
+    font-size: 18px;
+    cursor: pointer;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+#selection-screen button:hover {
+    background-color: #666;
+}
+
+/* Game Container */
+#game-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 40px;
+    /* Add a top margin to push the game container down */
+    margin-top: 20px; /* Adjust this value as needed */
+}
+
+/* Character Section */
+.character-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 350px; /* Adjust based on image size */
+    /* Add a top margin to push the character section down */
+    margin-top: 20px; /* Adjust this value as needed */
+}
+
+/* HP Text */
+.hp-text {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #fff;
+    text-shadow: 1px 1px 2px #000;
+    font-family: Arial, sans-serif;
+}
+
+/* Character Image */
+.character-image {
+    width: 100%; /* Ensures image fills the container width */
+    max-width: 220px; /* Maintains alignment with HP bar */
+    height: auto; /* Maintains aspect ratio */
+    border: 4px solid #fff; /* White border for contrast */
+    border-radius: 15px; /* Rounded corners */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6), 0 0 20px rgba(76, 175, 80, 0.5); /* Shadow and glow effect */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.character-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.8), 0 0 25px rgba(76, 175, 80, 0.7);
+}
+
+/* Responsive Design for Character Images */
+@media (max-width: 1200px) {
+    .character-section {
+        width: 300px;
+    }
+}
+
+@media (max-width: 800px) {
+    .character-section {
+        width: 250px;
+    }
+}
+
+@media (max-width: 500px) {
+    .character-section {
+        width: 200px;
+    }
+}
+
+/* Ability Icons Container */
+.abilities {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Ability Button */
+.ability-button {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border: 2px solid #555;
+    border-radius: 12px;
+    background: #222;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ability-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7);
+}
+
+.ability-button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Ability Icon */
+.ability-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Cooldown Overlay */
+.cooldown {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+    font-size: 18px;
+    transition: width linear;
+}
+
+.cooldown.active {
+    animation: cooldownFill linear forwards;
+}
+
+/* Keyframes for Right-to-Left Fill */
+@keyframes cooldownFill {
+    from {
+        width: 0%;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+/* Countdown Timer Text */
+.cooldown-text {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #fff;
+    pointer-events: none;
+    text-shadow: 1px 1px 2px #000;
+    font-family: Arial, sans-serif;
+}
+
+/* Flashing Animations */
+@keyframes flashGreen {
+    0% { filter: brightness(100%); }
+    50% { filter: brightness(150%) sepia(50%); }
+    100% { filter: brightness(100%); }
+}
+
+@keyframes flashRed {
+    0% { filter: brightness(100%); }
+    50% { filter: brightness(150%) hue-rotate(-50deg); }
+    100% { filter: brightness(100%); }
+}
+
+/* Flash Classes */
+.flash-green {
+    animation: flashGreen 0.25s ease-in-out;
+}
+
+.flash-red {
+    animation: flashRed 0.25s ease-in-out;
+}
+
+/* Damage Indicator */
+.damage-indicator {
+    position: absolute;
+    color: #ff5555;
+    font-size: 20px;
+    font-weight: bold;
+    animation: damageFade 1s forwards;
+    pointer-events: none;
+}
+
+.heal-indicator {
+    position: absolute;
+    color: #55ff55;
+    font-size: 20px;
+    font-weight: bold;
+    animation: healFade 1s forwards;
+    pointer-events: none;
+}
+
+/* Keyframes for Indicators */
+@keyframes damageFade {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+}
+
+@keyframes healFade {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+}
+
+/* Active Buffs Container */
+.active-buffs {
+    position: absolute;
+    top: 50px; /* Adjusted from 10px to 50px to move lower */
+    left: 10px;
+    display: flex;
+    gap: 5px;
+    margin-top: 0px; /* Adjust based on positioning */
+}
+
+/* Buff Icon Styling */
+.buff-icon {
+    width: 32px;
+    height: 32px;
+    border: 2px solid #fff;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.buff-icon:hover {
+    transform: scale(1.1);
+}
+
+/* Tooltip Styling */
+.buff-tooltip {
+    visibility: hidden;
+    width: 180px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Position above the buff icon */
+    left: 50%;
+    margin-left: -90px; /* Center the tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.buff-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+/* Show Tooltip on Hover */
+.buff-icon:hover .buff-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Visual Feedback for Keyboard Activation */
+.keyboard-activated {
+    outline: 3px solid #FFD700; /* Gold outline */
+    box-shadow: 0 0 10px #FFD700;
+    transition: outline 0.2s, box-shadow 0.2s;
+}
+
+/* Active Key Press State */
+.ability-button.active-key {
+    border-color: #FFD700; /* Gold border */
+    box-shadow: 0 0 10px #FFD700;
+    transform: scale(1.1);
+}
+
+/* Stun Debuff Icon Styling */
+.stun-debuff-icon {
+    border-color: #FF0000; /* Red border to indicate stun */
+    background-color: rgba(255, 0, 0, 0.7); /* Semi-transparent red background */
+}
+
+/* Overlay effect when enemy is stunned */
+.stunned-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 0, 0, 0.3); /* Semi-transparent red overlay */
+    border-radius: 15px;
+    pointer-events: none;
+    animation: stunBlink 0.85s infinite;
+}
+
+@keyframes stunBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Key Label Styling (Optional Enhancement) */
+.key-label {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}/* css/styles.css */
+
+/* General Styles */
+body {
+    background-color: #1e1e1e;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    /* Add a top margin to push everything down */
+    margin-top: 20px; /* Adjust this value as needed */
+}
+
+/* Selection Screen */
+#selection-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    /* Add a top margin to push the selection screen down */
+    margin-top: 20px; /* Adjust this value as needed */
+}
+
+#selection-screen h2 {
+    margin-bottom: 20px;
+}
+
+button {
+    /* Reset default styles */
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+
+    /* Custom styles for MOBA-like ability icons */
+    position: relative;
+    width: 80px; /* Size of the button */
+    height: 80px; /* Size of the button */
+    border: 2px solid #555; /* Border color */
+    border-radius: 12px; /* Rounded corners */
+    background: #222; /* Background color */
+    overflow: hidden; /* Ensure content doesn't overflow */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Shadow for depth */
+    transition: transform 0.2s, box-shadow 0.2s; /* Smooth transitions */
+}
+
+button:hover {
+    transform: scale(1.05); /* Slightly enlarge on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* Enhanced shadow on hover */
+}
+
+button img.ability-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the button */
+    border-radius: 10px; /* Match the button's rounded corners */
+}
+
+button .cooldown {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Dark overlay for cooldown */
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+    font-size: 18px;
+    transition: width linear;
+}
+
+button .cooldown-text {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #fff;
+    pointer-events: none;
+    text-shadow: 1px 1px 2px #000;
+}
+
+button .key-label {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+#selection-screen button {
+    margin: 10px;
+    padding: 12px 24px;
+    font-size: 18px;
+    cursor: pointer;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+#selection-screen button:hover {
+    background-color: #666;
+}
+
+/* Game Container */
+#game-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 40px;
+    /* Add a top margin to push the game container down */
+    margin-top: 20px; /* Adjust this value as needed */
+}
+
+/* Character Section */
+.character-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 350px; /* Adjust based on image size */
+    /* Add a top margin to push the character section down */
+    margin-top: 20px; /* Adjust this value as needed */
+}
+
+/* HP Bar Container */
+.hp-bar-container {
+    width: 100%; /* Match the character image width */
+    max-width: 220px;
+    height: 24px;
+    background: #555;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+/* HP Bar */
+.hp-bar {
+    width: 100%;
+    height: 100%;
+    background: #76c7c0;
+    transition: width 0.5s ease-in-out;
+}
+
+/* HP Text */
+.hp-text {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #fff;
+    text-shadow: 1px 1px 2px #000;
+    font-family: Arial, sans-serif;
+}
+
+/* Character Image */
+.character-image {
+    width: 100%; /* Ensures image fills the container width */
+    max-width: 220px; /* Maintains alignment with HP bar */
+    height: auto; /* Maintains aspect ratio */
+    border: 4px solid #fff; /* White border for contrast */
+    border-radius: 15px; /* Rounded corners */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6), 0 0 20px rgba(76, 175, 80, 0.5); /* Shadow and glow effect */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.character-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.8), 0 0 25px rgba(76, 175, 80, 0.7);
+}
+
+/* Responsive Design for Character Images */
+@media (max-width: 1200px) {
+    .character-section {
+        width: 300px;
+    }
+}
+
+@media (max-width: 800px) {
+    .character-section {
+        width: 250px;
+    }
+}
+
+@media (max-width: 500px) {
+    .character-section {
+        width: 200px;
+    }
+}
+
+/* Ability Icons Container */
+.abilities {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    /* Add a top margin to push the abilities section down */
+    margin-top: 20px; /* Adjust this value as needed */
+}
+
+/* Ability Button */
+.ability-button {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border: 2px solid #555;
+    border-radius: 12px;
+    background: #222;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ability-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7);
+}
+
+/* Ability Icon */
+.ability-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Cooldown Overlay */
+.cooldown {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+    font-size: 18px;
+    transition: width linear;
+}
+
+/* Cooldown Active State */
+.cooldown.active {
+    animation: cooldownFill linear forwards;
+}
+
+/* Keyframes for Right-to-Left Fill */
+@keyframes cooldownFill {
+    from {
+        width: 0%;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+/* Countdown Timer Text */
+.cooldown-text {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #fff;
+    pointer-events: none;
+    text-shadow: 1px 1px 2px #000;
+    font-family: Arial, sans-serif;
+}
+
+/* Flashing Animations */
+@keyframes flashGreen {
+    0% { filter: brightness(100%); }
+    50% { filter: brightness(150%) sepia(50%); }
+    100% { filter: brightness(100%); }
+}
+
+@keyframes flashRed {
+    0% { filter: brightness(100%); }
+    50% { filter: brightness(150%) hue-rotate(-50deg); }
+    100% { filter: brightness(100%); }
+}
+
+/* Flash Classes */
+.flash-green {
+    animation: flashGreen 0.25s ease-in-out;
+}
+
+.flash-red {
+    animation: flashRed 0.25s ease-in-out;
+}
+/* Damage Indicator */
+.damage-indicator {
+    position: absolute;
+    color: #ff5555;
+    font-size: 20px;
+    font-weight: bold;
+    animation: damageFade 1s forwards;
+    pointer-events: none;
+}
+
+/* Healing Indicator */
+.heal-indicator {
+    position: absolute;
+    color: #55ff55;
+    font-size: 20px;
+    font-weight: bold;
+    animation: healFade 1s forwards;
+    pointer-events: none;
+}
+
+/* Keyframes for Indicators */
+@keyframes damageFade {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+}
+
+@keyframes healFade {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+}
+/* Active Buffs Container */
+.active-buffs {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    gap: 5px;
+    /* Add a top margin to push the active buffs section down */
+    margin-top: 0px; /* Adjust this value as needed */
+}
+
+/* Buff Icon Styling */
+.buff-icon {
+    width: 32px;
+    height: 32px;
+    border: 2px solid #fff;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.buff-icon:hover {
+    transform: scale(1.1);
+}
+
+/* Tooltip Styling */
+.buff-tooltip {
+    visibility: hidden;
+    width: 180px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Position above the buff icon */
+    left: 50%;
+    margin-left: -90px; /* Center the tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.buff-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+/* Show Tooltip on Hover */
+.buff-icon:hover .buff-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+/* Key Label Styling */
+.key-label {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+/* Active Key Press State */
+.ability-button.active-key {
+    border-color: #FFD700; /* Gold border */
+    box-shadow: 0 0 10px #FFD700;
+    transform: scale(1.1);
+}
+/* Stun Debuff Icon Styling */
+.stun-debuff-icon {
+    border-color: #FF0000; /* Red border to indicate stun */
+    background-color: rgba(255, 0, 0, 0.7); /* Semi-transparent red background */
+}
+
+/* Tooltip Styling for Debuffs */
+.debuff-tooltip {
+    /* Reuse existing .buff-tooltip styling or customize if needed */
+    visibility: hidden;
+    width: 180px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Position above the debuff icon */
+    left: 50%;
+    margin-left: -90px; /* Center the tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.debuff-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+/* Show Tooltip on Hover for Debuffs */
+.buff-icon:hover .debuff-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Visual Feedback for Keyboard Activation */
+.keyboard-activated {
+    outline: 3px solid #FFD700; /* Gold outline */
+    box-shadow: 0 0 10px #FFD700;
+    transition: outline 0.2s, box-shadow 0.2s;
+}
+
+/* Active Key Press State */
+.ability-button.active-key {
+    border-color: #FFD700; /* Gold border */
+    box-shadow: 0 0 10px #FFD700;
+    transform: scale(1.1);
+}
+
+/* Optional: Debuff Tooltip Styling */
+.debuff-tooltip {
+    /* Reuse existing .buff-tooltip styling */
+    visibility: hidden;
+    width: 180px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Position above the debuff icon */
+    left: 50%;
+    margin-left: -90px; /* Center the tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.debuff-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+/* Show Tooltip on Hover for Debuffs */
+.buff-icon:hover .debuff-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Overlay effect when enemy is stunned */
+.stunned-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 0, 0, 0.3); /* Semi-transparent red overlay */
+    border-radius: 15px;
+    pointer-events: none;
+    animation: stunBlink 0.85s infinite;
+}
+
+@keyframes stunBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Additional Styles for Vertical Inventory */
+
+/* Flex Container for Player Content */
+.player-content, .enemy-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px; /* Space between inventory and character image */
+}
+
+/* Vertical Inventory Styling */
+.vertical-inventory .inventory-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Inventory Slot Styling Adjustments */
+.inventory-slot {
+    width: 50px;
+    height: 50px;
+    background-color: #333;
+    border: 2px solid #555;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.inventory-slot.empty {
+    background-color: #444;
+    cursor: not-allowed;
+}
+.item-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the slot */
+}
+
+/* Adjusting the Character Image Container for Alignment */
+.character-image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* styles.css */
+
+/* ... [Existing CSS Above] ... */
+
+/* ... [Existing CSS Above] ... */
+
+/* Stealthed Character Styling */
+.stealthed {
+    opacity: 0.2; /* 80% transparent */
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Stealth Indicator Styling */
+.stealth-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Poison Indicator Styling - Same as Stealth Indicator */
+.poison-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(128, 0, 128, 0.6); /* Purple background for poison */
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Disabled Ability Button Styling */
+.abilities .ability-button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.abilities .ability-button.disabled:hover {
+    background-color: #333; /* Change to a color that indicates it's disabled */
+}
+
+/* Optional: Prevent pointer events entirely */
+.abilities .ability-button.disabled .ability-icon {
+    pointer-events: none;
+}
+
+/* ... [Existing CSS Below] ... */
+
+/* ... [Existing CSS Below] ... */
+/* ... [Existing CSS Below] ... */
+
+/* Generic Overlay Styling */
+.image-container {
+    position: relative;
+    width: 150px; /* Adjust as needed */
+    height: 150px; /* Adjust as needed */
+}
+
+.poison-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Allows clicks to pass through if needed */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.poison-icon {
+    width: 50px; /* Adjust size as needed */
+    height: 50px; /* Adjust size as needed */
+    opacity: 0.8;
+    animation: poisonEffect 1s infinite; /* Optional animation */
+}
+
+/* Optional: Animation for Poison Icon */
+@keyframes poisonEffect {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
+/* Flash Animation for Poison Indicator */
+@keyframes flashPurple {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+}
+
+.poison-indicator {
+    animation: flashPurple 2s infinite;
+}
+
+/* Flash Animation for Poisoned State */
+@keyframes flashPurple {
+    0% {
+        filter: brightness(100%) hue-rotate(0deg);
+    }
+    50% {
+        filter: brightness(120%) hue-rotate(-30deg);
+    }
+    100% {
+        filter: brightness(100%) hue-rotate(0deg);
+    }
+}
+
+/* Poisoned Class for Flashing Effect */
+.poisoned {
+    animation: flashPurple 1s infinite;
+}
+
+.debuff-icon {
+    border: 2px solid #ff5555; /* Red border for debuff */
+}
+
+/* Modifiers Container */
+.modifiers-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 100; /* Ensure it appears above other elements */
+}
+.modifier-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the icon */
+    border-radius: 4px; /* Match the icon's rounded corners */
+}
+
+/* Modifier Icon Styling */
+.modifier-icon {
+    width: 32px;
+    height: 32px;
+    border: 2px solid #fff;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modifier-icon:hover {
+    transform: scale(1.1);
+}
+
+/* Tooltip Styling for Modifiers */
+.modifier-tooltip {
+    visibility: hidden;
+    width: 180px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    top: 125%; /* Position below the modifier icon */
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    white-space: nowrap;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.modifier-icon:hover .modifier-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+.evade-indicator {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 100;
+}
+.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Debuff Icon Styling */
+.debuff-icon {
+    width: 32px;
+    height: 32px;
+    border: 2px solid #ff5555; /* Red border for debuffs */
+    border-radius: 4px;
+    background-color: rgba(255, 0, 0, 0.7); /* Semi-transparent red background */
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s;
+    background-size: cover;
+    background-position: center;
+    margin: 2px;
+}
+
+.debuff-icon:hover {
+    transform: scale(1.1);
+    z-index: 10; /* Ensure it appears above other elements */
+}
+
+/* Tooltip Styling for Debuffs */
+.debuff-tooltip {
+    visibility: hidden;
+    width: 180px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Position above the debuff icon */
+    left: 50%;
+    margin-left: -90px; /* Center the tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.debuff-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+/* Show Tooltip on Hover for Debuffs */
+.debuff-icon:hover .debuff-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Active Debuffs Container */
+.active-debuffs {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+/* Shared Buff and Debuff Icon Styling */
+.buff-icon, .debuff-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s;
+    background-size: cover;
+    background-position: center;
+    margin: 2px;
+}
+
+/* Buff Specific Styling */
+.buff-icon {
+    border: 2px solid #00ff00; /* Green border for buffs */
+    background-color: rgba(0, 255, 0, 0.7); /* Semi-transparent green background */
+}
+
+/* Debuff Specific Styling */
+.debuff-icon {
+    border: 2px solid #ff5555; /* Red border for debuffs */
+    background-color: rgba(255, 0, 0, 0.7); /* Semi-transparent red background */
+}
+
+/* Tooltip Styling (Already Defined in Previous Section) */
+
+/* Hover Effects */
+.buff-icon:hover, .debuff-icon:hover {
+    transform: scale(1.1);
+    z-index: 10; /* Ensure it appears above other elements */
+}
+
+/* Stunned State Styling */
+.stunned {
+    opacity: 0.5; /* Reduce opacity to indicate stunned state */
+    animation: stunBlink 0.85s infinite;
+}

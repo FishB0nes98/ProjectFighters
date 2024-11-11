@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>2D Roguelike Prototype</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Selection Screen -->
+    <div id="selection-screen">
+        <h2>Select Your Character</h2>
+        <button onclick="selectCharacter('julia')">Julia</button>
+        <!-- Add more character buttons as needed -->
+
+        <h2>Select Your Enemy</h2>
+        <button onclick="selectEnemy('reptile')">Reptile</button>
+        <button onclick="selectEnemy('akuma')">Akuma</button>
+        <!-- Add more enemy buttons as needed -->
+
+        <button onclick="startGame()">Start Game</button>
+    </div>
+
+    <!-- Game Container (Hidden Initially) -->
+    <div id="game-container" style="display: none;" tabindex="0">
+        <!-- Modifiers Display -->
+        <div id="modifiers-display" class="modifiers-container"></div>
+        <!-- Player Section -->
+        <div id="player-section" class="character-section">
+            <div class="player-content" style="position: relative;">
+                <!-- Inventory Section for Player (Left Side) -->
+                <div class="inventory-section vertical-inventory" id="player-inventory" style="position: absolute; left: -70px; top: 0; z-index: 10;">
+                    <div class="inventory-slots">
+                        <button class="inventory-slot" data-slot="0">1</button>
+                        <button class="inventory-slot" data-slot="1">2</button>
+                        <button class="inventory-slot" data-slot="2">3</button>
+                        <button class="inventory-slot" data-slot="3">4</button>
+                        <button class="inventory-slot" data-slot="4">5</button>
+                    </div>
+                </div>
+
+                <!-- Character Image and Related Sections -->
+                <div class="character-image-container" style="position: relative;">
+                    <img src="images/characters/julia_resized.png" alt="Julia" id="player-image" class="character-image">
+                    <!-- Stealth Indicator (Optional) -->
+                    <div class="stealth-indicator" id="player-stealth-indicator" style="display: none;">
+                        🕶️ Stealthed
+                    </div>
+                    <!-- Active Buffs Container -->
+                    <div class="active-buffs" id="player-buffs"></div>
+                    <!-- Active Debuffs Container -->
+                    <div class="active-debuffs" id="player-debuffs"></div>
+                    <!-- Stunned Overlay will be appended here dynamically -->
+                    <!-- Poison Indicator (Optional) -->
+                    <div class="poison-indicator" id="player-poison-indicator" style="display: none;">
+                        ☠️ Poisoned
+                    </div>
+                </div>
+            </div>
+            <div class="hp-bar-container">
+                <div class="hp-bar" id="player-hp"></div>
+                <div class="hp-text" id="player-hp-text">1200 / 1200</div>
+            </div>
+            <div class="abilities" id="player-abilities"></div>
+        </div>
+        
+        <!-- Enemy Section -->
+        <div id="enemy-section" class="character-section">
+            <div class="enemy-content" style="position: relative;">
+                <!-- Character Image and Related Sections -->
+                <div class="character-image-container">
+                    <img src="images/characters/reptile.png" alt="Reptile" id="enemy-image" class="character-image">
+                    <!-- Stealth Indicator (Optional) -->
+                    <div class="stealth-indicator" id="enemy-stealth-indicator" style="display: none;">
+                        🕶️ Stealthed
+                    </div>
+                    <!-- Active Buffs Container -->
+                    <div class="active-buffs" id="enemy-buffs"></div>
+                    <!-- Active Debuffs Container -->
+                    <div class="active-debuffs" id="enemy-debuffs"></div>
+                    <!-- Stunned Overlay will be appended here dynamically -->
+                </div>
+
+                <div class="inventory-section vertical-inventory" id="enemy-inventory" style="position: absolute; right: -70px; top: 0; z-index: 10;">
+                    <div class="inventory-slots">
+                        <button class="inventory-slot" data-slot="0">1</button>
+                        <button class="inventory-slot" data-slot="1">2</button>
+                        <button class="inventory-slot" data-slot="2">3</button>
+                        <button class="inventory-slot" data-slot="3">4</button>
+                        <button class="inventory-slot" data-slot="4">5</button>
+                    </div>
+                </div>
+            </div>
+            <div class="hp-bar-container">
+                <div class="hp-bar" id="enemy-hp"></div>
+                <div class="hp-text" id="enemy-hp-text">800 / 800</div>
+            </div>
+            <div class="abilities" id="enemy-abilities"></div>
+        </div>
+    </div>
+
+    <!-- Audio Elements for Sound Effects -->
+    <audio id="ability-sound" src="audio/ability.mp3" preload="auto"></audio>
+    <audio id="damage-sound" src="audio/damage.mp3" preload="auto"></audio>
+    <audio id="heal-sound" src="audio/heal.mp3" preload="auto"></audio>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

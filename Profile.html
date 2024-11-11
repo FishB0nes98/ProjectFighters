@@ -348,6 +348,7 @@
 						<option value="Halloween Event 2024">Halloween Event 2024</option>
                         <option value="Bistro Event">Bistro Event</option>
                         <option value="Jade Event">Jade Event</option>
+                        <option value="Sacred Ceremony Event">Sacred Ceremony Event</option>
                     </select>
 					<div class="color-selection">
                     <label for="color-picker"></label>
@@ -509,7 +510,7 @@ onAuthStateChanged(auth, async (user) => {
             userProfile.profileColor = userData.profileColor || '#007bff';
             userProfile.rankPoints = userData.rankPoints || 0; // Fetch rank points
 
-            const rankPointsRef = ref(database, `users/${user.uid}/Rank points/Rank points`);
+            const rankPointsRef = ref(database, `users/${user.uid}/Rank points`);
             const rankPointsSnapshot = await get(rankPointsRef);
             const rankPoints = rankPointsSnapshot.val() || 0;
             document.getElementById('rank-points-display').textContent = `Rank Points: ${rankPoints}`;
