@@ -7,6 +7,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    
+
+    
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
@@ -14,6 +17,7 @@
         import { getDatabase, ref, push, set, get, update, runTransaction } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
         import { quests } from './quests.js';
         import { roles } from './roles.js'; // Importing roles.js
+        
 
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
@@ -65,7 +69,29 @@
                     const snapshot = await get(userRef);
                     const userData = snapshot.val();
                     if (userData) {
-                        document.getElementById('username-display').textContent = userData.username || user.email.split('@')[0];
+                        // Create a container for username and title
+                        const usernameContainer = document.createElement('div');
+                        usernameContainer.className = 'username-title-container';
+                        
+                        // Set up username
+                        const usernameDisplay = document.createElement('div');
+                        usernameDisplay.id = 'username-display';
+                        usernameDisplay.textContent = userData.username || user.email.split('@')[0];
+                        usernameContainer.appendChild(usernameDisplay);
+                        
+                        // Check for active title
+                        if (userData.activeTitle) {
+                            const titleDisplay = document.createElement('div');
+                            titleDisplay.id = 'title-display';
+                            titleDisplay.textContent = `(${userData.activeTitle})`;
+                            usernameContainer.appendChild(titleDisplay);
+                        }
+                        
+                        // Replace old username display with new container
+                        const oldUsernameDisplay = document.getElementById('username-display');
+                        oldUsernameDisplay.parentNode.replaceChild(usernameContainer, oldUsernameDisplay);
+                        
+                        // Set other user data
                         setProfileImage(`Icons/${userData.icon || 'Julia.png'}`, `Icons/Profile/${userData.icon || 'Julia.png'}`);
                         document.getElementById('currency-amount').textContent = userData.FM || 0;
                         document.getElementById('cm-amount').textContent = userData.CM || 0;
@@ -468,8 +494,16 @@
             });
         });
 
+        // Add event listener for advent calendar button
+        document.addEventListener('DOMContentLoaded', function() {
+            const adventCalendarButton = document.querySelector('.advent-calendar-button');
+            adventCalendarButton.addEventListener('click', async function() {
+                const { openAdventCalendar } = await import('./advent-calendar.js');
+                openAdventCalendar();
+            });
+        });
     </script>
-	<script src="quests.js"></script>
+	<script type="module" src="quests.js"></script>
     <style>
         body {
             margin: 0;
@@ -494,7 +528,7 @@
             padding: 20px;
             background-color: rgba(0, 0, 0, 0.7);
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.2), 0 2px 10px rgba(15, 82, 186, 0.2); /* White and Wedding Blue */
+            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.2), 0 2px 10px rgba(245, 222, 179, 0.2); /* White and Hay */
             z-index: -1;
         }
         #champion-selector {
@@ -518,7 +552,7 @@
         }
         .icon-image:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 10px 5px rgba(15, 82, 186, 0.5);
+            box-shadow: 0 0 10px 5px rgba(245, 222, 179, 0.5); /* Hay */
         }
         .champion-image {
             width: 90px;
@@ -532,10 +566,10 @@
         }
         .champion-image:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 10px 5px rgba(15, 82, 186, 0.5);
+            box-shadow: 0 0 10px 5px rgba(245, 222, 179, 0.5); /* Hay */
         }
         .selected {
-            border-color: #0F52BA; /* Wedding Blue */
+            border-color: #F5DEB3; /* Hay */
         }
         .gray {
             filter: grayscale(100%);
@@ -610,7 +644,7 @@
         }
 
         .menu a:hover {
-            background-color: #0F52BA; /* Wedding Blue */
+            background-color: #F5DEB3; /* Wedding Blue */
             transform: scale(1.1);
         }
 
@@ -623,7 +657,7 @@
         }
 
         .play-button {
-            background-color: #0F52BA; /* Wedding Blue */
+            background-color: #F5DEB3; /* Wedding Blue */
             color: white;
             border: none;
             border-radius: 25px; /* Slightly less rounded corners for a modern look */
@@ -640,8 +674,8 @@
         }
 
         .play-button:hover {
-            background-color: #0C3A6A; /* Darker Wedding Blue */
-            transform: scale(1.05); /* Slightly enlarge the button on hover */
+            background-color: #F5DEB3; /* Darker Wedding Blue */
+            transform: scale(1.05);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
         }
 
@@ -659,7 +693,7 @@
             padding: 10px;
             width: 200px; /* Adjust the width as needed */
             flex-direction: column; /* Stack image and text vertically */
-            border: 2px solid #0F52BA; /* Wedding Blue */
+            border: 2px solid #F5DEB3; /* Hay */
         }
 
         .battlepass-button img {
@@ -671,7 +705,7 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Add shadow for a modern effect */
             border-radius: 10px; /* Slightly rounded corners for a modern look */
             animation: float 5s ease-in-out infinite; /* Add floating animation */
-            box-shadow: 0 8px 20px #0F52BA; /* Wedding Blue */
+            box-shadow: 0 8px 20px #F5DEB3; /* Hay */
         }
 
         .battlepass-button span {
@@ -682,19 +716,19 @@
             transition: transform 0.3s;
             z-index: 1; /* Ensure text is above the image */
             font-family: 'Bangers', cursive; /* MOBA game-like font */
-            text-shadow: 2px 2px 4px #0F52BA; /* Wedding Blue */
+            text-shadow: 2px 2px 4px #F5DEB3; /* Hay */
             animation: float 5s ease-in-out infinite; /* Add floating animation */
         }
 
         .battlepass-button span:hover {
-            color: #4C8BE7; /* Light Wedding Blue */
+            color: #F5DEB3; /* Light Wedding Blue */
             transform: scale(1.1);
-            box-shadow: 0 8px 20px #0F52BA; /* Wedding Blue */
+            box-shadow: 0 8px 20px #F5DEB3; /* Hay */
         }
 
         .battlepass-button:hover img {
             transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(0, 123, 95, 0.7); /* Wedding Blue shadow */
+            box-shadow: 0 0 15px rgba(245, 222, 179, 0.7); /* Hay shadow */
         }
 
         #video-background {
@@ -735,7 +769,7 @@
         }
 
         .profile-menu ul li:hover {
-            background-color: #0F52BA; /* Wedding Blue */
+            background-color: #F5DEB3; /* Hay */
         }
 
         .profile-menu ul li:last-child {
@@ -925,7 +959,7 @@
             color: white;
             padding: 15px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.2), 0 2px 10px rgba(15, 82, 186, 0.2); /* White and Wedding Blue */
+            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.2), 0 2px 10px rgba(245, 222, 179, 0.2); /* White and Hay */
             z-index: 1000;
             width: 300px;
             max-width: 275px;
@@ -1045,7 +1079,7 @@
     #add-friend-button {
         margin-top: 10px;
         padding: 10px;
-        background-color: #0F52BA; /* Wedding Blue */
+        background-color: #F5DEB3; /* Hay */
         color: white;
         border: none;
         border-radius: 5px;
@@ -1054,18 +1088,18 @@
     }
 
     #add-friend-button:hover {
-        background-color: #0C3A6A; /* Darker Wedding Blue */
+        background-color: #F5DEB3; /* Hay */
     }
 
     #toggle-friend-list {
         cursor: pointer;
-        color: #0F52BA; /* Wedding Blue */
+        color: #F5DEB3; /* Hay */
         text-align: center;
         margin-top: 10px;
     }
 
     #toggle-friend-list:hover {
-        color: #4C8BE7; /* Light Wedding Blue */
+        color: #F5DEB3; /* Hay */
         text-decoration: underline;
     }
     /* Quests Section Styles */
@@ -1096,8 +1130,8 @@
         justify-content: space-between;
         border-top-left-radius: 10px;
         border-top-right-radius: 10px;
-        color: #4C8BE7; /* Light Wedding Blue */
-        text-shadow: 0 0 10px rgba(0, 255, 178, 0.5); /* Adjusted shadow */
+        color: #F5DEB3; /* Hay */
+        text-shadow: 0 0 10px rgba(245, 222, 179, 0.5); /* Adjusted shadow */
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         backdrop-filter: blur(5px);
         transition: all 0.3s ease;
@@ -1111,7 +1145,7 @@
     #toggle-quests {
         background: none;
         border: none;
-        color: #0F52BA; /* Wedding Blue */
+        color: #F5DEB3; /* Hay */
         font-size: 20px; /* Reduced font size */
         cursor: pointer;
         transition: transform 0.3s;
@@ -1143,7 +1177,7 @@
     #new-quests-box .quest h3 {
         margin: 0;
         font-size: 16px; /* Reduced font size */
-        color: #0C3A6A; /* Darker Wedding Blue */
+        color: #F5DEB3; /* Darker Wedding Blue */
     }
 
     .reward-image {
@@ -1168,7 +1202,7 @@
 
     #new-quests-box .quest .quest-progress div {
         height: 100%;
-        background-color: #0F52BA; /* Wedding Blue */
+        background-color: #F5DEB3; /* Hay */
         width: 50%;
         transition: width 0.3s;
     }
@@ -1179,18 +1213,18 @@
         border-radius: 5px;
         cursor: pointer;
         font-size: 12px; /* Reduced font size */
-        background-color: #0F52BA; /* Wedding Blue */
+        background-color: #F5DEB3; /* Hay */
         color: #ffffff;
         transition: background-color 0.3s;
     }
 
     #new-quests-box .quest .claim-button:hover {
-        background-color: #0C3A6A; /* Darker Wedding Blue */
+        background-color: #F5DEB3; /* Hay */
     }
 
     #new-quests-box .quest:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 16px rgba(0, 123, 95, 0.8); /* Wedding Blue shadow */
+        box-shadow: 0 8px 16px rgba(245, 222, 179, 0.8); /* Hay shadow */
     }
         /* ===================== Animated Particle Background ===================== */
 
@@ -1247,7 +1281,7 @@
         position: absolute;
         width: 8px;
         height: 8px;
-        background: rgba(15, 82, 186, 0.7); /* Wedding Blue color with transparency */
+        background: rgba(245, 222, 179, 0.7); /* Hay color with transparency */
         border-radius: 50%;
         animation: particleMove linear infinite;
     }
@@ -1343,9 +1377,493 @@
 
     /* Smooth Hover Glow and Scale Effect */
     .champion-image:hover {
-        box-shadow: 0 0 20px #0F52BA; /* Wedding Blue */
+        box-shadow: 0 0 20px #F5DEB3; /* Hay */
         transform: scale(1.15);
         transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .advent-calendar-button {
+        position: fixed;
+        top: 245px; /* Positioned below battlepass button */
+        left: 75px;
+        background-color: transparent;
+        cursor: pointer;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        width: 200px; /* Adjust the width as needed */
+        flex-direction: column; /* Stack image and text vertically */
+        border: 2px solid #F5DEB3; /* Hay */
+    }
+
+    .advent-calendar-button img {
+        width: 250px; /* Adjust the size as needed */
+        height: 100px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        position: absolute; /* Position image absolutely */
+        z-index: -1; /* Place image behind the text */
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Add shadow for a modern effect */
+        border-radius: 10px; /* Slightly rounded corners for a modern look */
+        animation: float 5s ease-in-out infinite; /* Add floating animation */
+        box-shadow: 0 8px 20px #F5DEB3; /* Hay */
+    }
+
+    .advent-calendar-button span {
+        color: #ffffff; /* MOBA game-like gold color */
+        font-size: 24px; /* Slightly larger font size */
+        font-weight: bold;
+        margin-top: 10px; /* Adjust margin to position text */
+        transition: transform 0.3s;
+        z-index: 1; /* Ensure text is above the image */
+        font-family: 'Bangers', cursive; /* MOBA game-like font */
+        text-shadow: 2px 2px 4px #F5DEB3; /* Hay */
+        animation: float 5s ease-in-out infinite; /* Add floating animation */
+    }
+
+    .advent-calendar-button span:hover {
+        color: #F5DEB3; /* Light Wedding Blue */
+        transform: scale(1.1);
+        box-shadow: 0 8px 20px #F5DEB3; /* Hay */
+    }
+
+    .advent-calendar-button:hover img {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(245, 222, 179, 0.7); /* Hay shadow */
+    }
+
+    /* Optional: Add a festive glow animation */
+    @keyframes festiveGlow {
+        0% { box-shadow: 0 0 15px rgba(245, 222, 179, 0.7); }
+        50% { box-shadow: 0 0 25px rgba(245, 222, 179, 0.9); }
+        100% { box-shadow: 0 0 15px rgba(245, 222, 179, 0.7); }
+    }
+
+    .advent-calendar-button:hover {
+        animation: festiveGlow 2s infinite;
+    }
+
+    /* Advent Calendar Window */
+    .modal-window {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 2000;
+    }
+
+    .advent-calendar-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        z-index: 1001;
+        width: 80%;
+        max-width: 600px;
+    }
+
+    .close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .close-button:hover {
+        color: red;
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 15px;
+        padding: 20px;
+        background-color: rgba(17, 16, 16, 0.95);
+        border-radius: 15px;
+        margin: 15px;
+    }
+
+    .calendar-day {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #F5DEB3;
+        color: #333;
+        font-size: 1.5em;
+        font-weight: bold;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 8px rgba(245, 222, 179, 0.3);
+        padding: 15px;
+        min-height: 60px;
+    }
+
+    .calendar-day:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 12px rgba(245, 222, 179, 0.5);
+    }
+
+    .modal-window {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 2000;
+    }
+
+    .advent-calendar-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgb(17, 16, 16);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 0 30px rgba(245, 222, 179, 0.3);
+        color: #fff;
+        width: 70%;
+        max-width: 900px;
+        min-height: 600px;
+    }
+
+    .advent-calendar-content h2 {
+        text-align: center;
+        font-size: 2em;
+        color: #F5DEB3;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .close-button {
+        position: absolute;
+        top: 20px;
+        right: 25px;
+        font-size: 32px;
+        color: #F5DEB3;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        z-index: 2001;
+    }
+
+    .close-button:hover {
+        transform: scale(1.2);
+    }
+
+    .reward-content {
+        width: 40%;
+        max-width: 400px;
+        padding: 30px;
+    }
+
+    #reward-image {
+        max-width: 200px;
+        max-height: 200px;
+    }
+
+    @media (max-width: 768px) {
+        .calendar-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .calendar-day {
+            padding: 20px;
+            font-size: 1.5em;
+            min-height: 80px;
+        }
+
+        .advent-calendar-content {
+            width: 95%;
+            padding: 20px;
+            min-height: auto;
+        }
+    }
+
+    /* Add or update these styles in your <style> section */
+    .modal-window {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 2000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #daily-reward-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgb(17, 16, 16);
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 0 30px rgba(245, 222, 179, 0.3);
+        text-align: center;
+        z-index: 2001;
+        width: 80%;
+        max-width: 600px;
+    }
+
+    #reward-image {
+        width: auto;
+        height: auto;
+        max-width: 400px;
+        max-height: 400px;
+        margin: 20px auto;
+        display: block;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(245, 222, 179, 0.2);
+    }
+
+    #reward-name {
+        font-size: 2em;
+        color: #F5DEB3;
+        margin: 20px 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .close-reward-button {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        font-size: 24px;
+        color: #F5DEB3;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 5px 10px;
+        transition: transform 0.3s ease;
+    }
+
+    .close-reward-button:hover {
+        transform: scale(1.1);
+    }
+
+    /* Animation for reward appearance */
+    @keyframes popIn {
+        0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+        100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+
+    #daily-reward-popup {
+        animation: popIn 0.3s ease-out forwards;
+    }
+
+    /* Update these styles in your <style> section */
+    .reward-display {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 20px;
+    }
+
+    .reward-display h2 {
+        font-size: 2em;
+        color: #F5DEB3;
+        margin-bottom: 30px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    #reward-image {
+        max-width: 80%;
+        max-height: 60vh;
+        border-radius: 10px;
+        box-shadow: 0 0 30px rgba(245, 222, 179, 0.3);
+    }
+
+    /* Animation for the reward appearance */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    .reward-display {
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+
+    /* Update the close button position */
+    .close-button {
+        position: absolute;
+        top: 20px;
+        right: 25px;
+        font-size: 32px;
+        color: #F5DEB3;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        z-index: 2001;
+    }
+
+    .close-button:hover {
+        transform: scale(1.2);
+    }
+
+    /* Update these styles in your <style> section */
+    .modal-window {
+        display: none; /* Hide by default */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 2000;
+    }
+
+    .advent-calendar-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgb(17, 16, 16);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 0 30px rgba(245, 222, 179, 0.3);
+        color: #fff;
+        width: 70%;
+        max-width: 900px;
+        min-height: 600px;
+    }
+
+    #daily-reward-popup {
+        display: none; /* Hide by default */
+    }
+
+    .username-title-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+    }
+
+    #username-display {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+    #title-display {
+        font-size: 0.8em;
+        color: #ffbb00;  /* Gold color for the title */
+        font-style: italic;
+    }
+
+    .patch-button {
+        position: fixed;
+        top: 200px; /* Adjust this value to move the button down */
+        left: 75px;
+        background-color: black;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        width: 250px; /* Adjust width as needed */
+        z-index: 1000;
+    }
+
+    .patch-button a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: white;
+        padding: 10px;
+    }
+
+    .patch-button img {
+        width: 100%;
+        height: auto;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .patch-button:hover img {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+    }
+
+    .patch-text h2, .patch-text p {
+        margin: 0;
+        text-align: center;
+        font-family: 'Bangers', cursive;
+    }
+
+    .patch-text h2 {
+        font-size: 24px;
+        margin-top: 10px;
+    }
+
+    .patch-text p {
+        font-size: 16px;
+    }
+
+    .changelog-button {
+        position: fixed;
+        top: 365px; /* Position it between battlepass and advent calendar buttons */
+        left: 75px;
+        background-color: transparent;
+        cursor: pointer;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        width: 200px;
+        flex-direction: column;
+        border: 2px solid #F5DEB3; /* Hay */
+    }
+
+    .changelog-button img {
+        width: 250px;
+        height: 100px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        position: absolute;
+        z-index: -1;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        animation: float 5s ease-in-out infinite;
+        background-color: black; /* Add black background to the image container */
+    }
+
+    .changelog-button span {
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: bold;
+        margin-top: 10px;
+        transition: transform 0.3s;
+        z-index: 1;
+        font-family: 'Bangers', cursive;
+        text-shadow: 2px 2px 4px #F5DEB3;
+        animation: float 5s ease-in-out infinite;
+    }
+
+    .changelog-button:hover img {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(245, 222, 179, 0.7);
+    }
+
+    .changelog-button:hover span {
+        color: #F5DEB3;
+        transform: scale(1.1);
+        box-shadow: 0 8px 20px #F5DEB3;
     }
 
     </style>
@@ -1370,10 +1888,22 @@
     </div>
 
     <button class="battlepass-button" onclick="window.location.href='battlepass.html'">
-        <img src="Event/Sacred Ceremony Event.jpeg" alt="Battlepass">
+        <img src="Event/Farmer Event.jpeg" alt="Battlepass">
         <span>Battlepass</span>
     </button>
-    
+
+    <!-- Add this after the battlepass button and before the advent calendar button -->
+    <button class="battlepass-button changelog-button" onclick="window.location.href='changelog.html'">
+        <img src="Default Splash/Sophitia.jpeg" alt="Patch Notes">
+        <span>Patch 1.2 Changes</span>
+    </button>
+
+    <!-- Add the new Advent Calendar button -->
+    <button class="advent-calendar-button">
+        <img src="res/img/advent_calendar.jpeg" alt="Advent Calendar">
+        <span>Advent Calendar</span>
+    </button>
+
     <div class="play-button-container">
         <a href="Game Modes.html" class="play-button">Play</a>
     </div>
@@ -1384,7 +1914,10 @@
 </button>
 	<!-- User Profile Info -->
     <div id="profile-info" onclick="toggleProfileMenu()">
-        <span id="username-display"></span>
+        <div class="username-title-container">
+            <div id="username-display"></div>
+            <!-- Title will be dynamically added here if it exists -->
+        </div>
         <img id="profile-image" class="icon-image" src="Icons/Birdie.png" alt="Profile Icon">
     </div>
     
@@ -1404,6 +1937,7 @@
 	<!-- Profile Menu Pop-up -->
 	<div id="profile-menu" class="profile-menu">
 		<ul>
+            <li onclick="window.location.href='character-progression.html'">Character Progression</li>
 			<li onclick="profile()">Profile</li>
 			<li onclick="openChangeIconModal()">Change Icon</li>
 			<li onclick="viewCollection()">Collection</li>
@@ -1465,7 +1999,7 @@
             <a href="ch/FANG.html"><img src="Icons/FANG.png" alt="FANG" class="champion-image"></a>
             <a href="ch/Lili.html"><img src="Icons/Lili.png" alt="Lili" class="champion-image"></a>
             <a href="ch/Mega Man.html"><img src="Icons/Mega Man.png" alt="Mega Man" class="champion-image"></a>
-            <a href="ch/Mai.html" style="display: none;"><img src="Icons/Mai.png" alt="Mai" class="champion-image gray" onclick="return false;"></a>
+            <a href="ch/Mai.html"><img src="Icons/Mai.png" alt="Mai" class="champion-image"></a>
         </div>
     </div>
 <!-- Quests Section -->
@@ -1486,6 +2020,9 @@
             <button id="add-friend-button">Add Friend</button>
         </div>
     </div>
+   <!-- Add these two lines -->
+   <script src="recolor-data.js" type="module"></script>
+   <script src="advent-calendar.js" type="module"></script>
 <script>
     function profile() {
          window.location.href = 'Profile.html';
@@ -1552,8 +2089,39 @@
     });
 
     // ===================== Particle Effect Initialization =====================
+</script>
+<!-- Advent Calendar Window -->
+<div id="advent-calendar-window" class="modal-window" style="display: none;">
+    <div class="advent-calendar-content">
+        <span class="close-button" data-action="closeCalendar">&times;</span>
+        <h2>December 2024</h2>
+        <div class="calendar-grid">
+            <!-- Days will be generated by JavaScript -->
+        </div>
+    </div>
+</div>
 
+<!-- Daily Reward Popup -->
+<div id="daily-reward-popup" style="display: none;">
+    <div class="reward-content">
+        <span class="close-button" data-action="closeReward">&times;</span>
+        <h3>Daily Reward</h3>
+        <img id="reward-image" src="" alt="Reward">
+        <p id="reward-name"></p>
+    </div>
+</div>
 
+<script type="module">
+    import { closeAdventCalendar, closeRewardPopup } from './advent-calendar.js';
+    
+    // Add click handlers for close buttons
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.close-button[data-action="closeCalendar"]')) {
+            closeAdventCalendar();
+        } else if (e.target.closest('.close-button[data-action="closeReward"]')) {
+            closeRewardPopup();
+        }
+    });
 </script>
 </body>
 </html>

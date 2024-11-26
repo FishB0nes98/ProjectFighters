@@ -339,9 +339,9 @@
             const bundleName = item.dataset.bundleName;
             const button = item.querySelector('button');
             if (Bundles[bundleName] || 
-                (bundleName === 'SandSoldierTalim' && skins['Sand Soldier Talim'] === 1) ||
-                (bundleName === 'DragonTamerRaidenCMSale' && skins['Dragon Tamer Raiden'] === 1) ||
-                (bundleName === 'RandomRecolorDuoPack6' && skins['Goth Elphelt White'] === 1 && skins['Infernal Ibuki Silver Flame'] === 1)) {
+                (bundleName === 'HighElfEagle' && skins['High Elf Eagle'] === 1) ||
+                (bundleName === 'GothSophitiaCMSale' && skins['Goth Sophitia'] === 1) ||
+                (bundleName === 'RandomRecolorDuoPack6' && skins['Shadowbane Ayane Red Hood'] === 1 && skins['Voidborn Nina Warlock'] === 1)) {
                 button.disabled = true;
                 button.textContent = 'Owned';
             }
@@ -379,28 +379,28 @@
         const userCurrency = currencyType === 'FM' ? window.userFM : window.userCM;
         const userCurrencyElement = document.getElementById(`${currencyType.toLowerCase()}-amount`);
 
-        // Check if the user already owns the Sand Soldier Talim skin
-        if (bundleName === 'SandSoldierTalim') {
-            const skinSnapshot = await get(ref(window.userRef, 'skins/Sand Soldier Talim'));
+        // Check if the user already owns the High Elf Eagle skin
+        if (bundleName === 'HighElfEagle') {
+            const skinSnapshot = await get(ref(window.userRef, 'skins/High Elf Eagle'));
             if (skinSnapshot.exists() && skinSnapshot.val() === 1) {
-                alert('You already own the Sand Soldier Talim skin.');
+                alert('You already own the High Elf Eagle skin.');
                 return;
             }
         }
 
-        // Check if the user already owns the Dragon Tamer Raiden skin
-        if (bundleName === 'DragonTamerRaidenCMSale') {
-            const skinSnapshot = await get(ref(window.userRef, 'skins/Dragon Tamer Raiden'));
+        // Check if the user already owns the Goth Sophitia skin
+        if (bundleName === 'GothSophitiaCMSale') {
+            const skinSnapshot = await get(ref(window.userRef, 'skins/Goth Sophitia'));
             if (skinSnapshot.exists() && skinSnapshot.val() === 1) {
-                alert('You already own the Dragon Tamer Raiden skin.');
+                alert('You already own the Goth Sophitia skin.');
                 return;
             }
         }
 
         // Check if the user already owns the skins in the Random Recolor Duo Pack
         if (bundleName === 'RandomRecolorDuoPack6') {
-            const skin1Snapshot = await get(ref(window.userRef, 'skins/Infernal Ibuki Silver Flame'));
-            const skin2Snapshot = await get(ref(window.userRef, 'skins/Goth Elphelt White'));
+            const skin1Snapshot = await get(ref(window.userRef, 'skins/Voidborn Nina Warlock'));
+            const skin2Snapshot = await get(ref(window.userRef, 'skins/Shadowbane Ayane Red Hood'));
             if (skin1Snapshot.exists() && skin1Snapshot.val() === 1 && skin2Snapshot.exists() && skin2Snapshot.val() === 1) {
                 alert('You already own the skins in the Random Recolor Duo Pack.');
                 return;
@@ -432,34 +432,35 @@
                 });
             }
 
-            // Add Sand Soldier Talim to the Skins database for Bundle 2
-            if (bundleName === 'SandSoldierTalim') {
-                updates[`skins/Sand Soldier Talim`] = 1; // Adding the skin to the Skins folder with a value of 1
+            // Add High Elf Eagle to the Skins database for Bundle 2
+            if (bundleName === 'HighElfEagle') {
+                updates[`skins/High Elf Eagle`] = 1; // Adding the skin to the Skins folder with a value of 1
             }
 
             // Add Medieval Event Bundle skins to the Skins database for Bundle 3
-            if (bundleName === 'SacredCeremonyBundle') {
+            if (bundleName === 'FarmerBundle') {
                 const skins = [
-                    'Sacred Ceremony Julia',
-                    'Sacred Ceremony Birdie',
-                    'Sacred Ceremony Morrigan',
-                    'Sacred Ceremony Shoma',
-                    'Jade Siegfried'
+                    'Farmer Cham Cham',
+                    'Farmer Alice',
+                    'Farmer FANG',
+                    'Farmer Raiden',
+                    'Farmer Shoma',
+                    'Farmer Nina',
                 ];
                 skins.forEach(skin => {
                     updates[`skins/${skin}`] = 1; // Adding each skin to the Skins folder with a value of 1
                 });
             }
 
-            // Add Dragon Tamer Raiden to the Skins database for the CM Sale bundle
-            if (bundleName === 'DragonTamerRaidenCMSale') {
-                updates[`skins/Dragon Tamer Raiden`] = 1; // Adding the skin to the Skins folder with a value of 1
+            // Add Goth Sophitia to the Skins database for the CM Sale bundle
+            if (bundleName === 'GothSophitiaCMSale') {
+                updates[`skins/Goth Sophitia`] = 1; // Adding the skin to the Skins folder with a value of 1
             }
 
             // Add Random Recolor Duo Pack skins to the Skins database
             if (bundleName === 'RandomRecolorDuoPack6') {
-                updates[`skins/Goth Elphelt White`] = 1; // Adding the skin to the Skins folder with a value of 1
-                updates[`skins/Infernal Ibuki Silver Flame`] = 1; // Adding the skin to the Skins folder with a value of 1
+                updates[`skins/Shadowbane Ayane Red Hood`] = 1; // Adding the skin to the Skins folder with a value of 1
+                updates[`skins/Voidborn Nina Warlock`] = 1; // Adding the skin to the Skins folder with a value of 1
             }
 
             await update(window.userRef, updates);
@@ -577,10 +578,10 @@
             </div>
             <button onclick="purchaseBundle(this)">Buy</button>
         </div>
-        <div class="bundle-item" data-bundle-name="SandSoldierTalim">
-            <div class="bundle-name" style="color: white; font-weight: bold;">Sand Soldier Talim 70% SALE</div>
+        <div class="bundle-item" data-bundle-name="HighElfEagle">
+            <div class="bundle-name" style="color: white; font-weight: bold;">High Elf Eagle 70% SALE</div>
             <div class="image-container">
-                <img src="Skins/Sand Soldier Talim.jpg" alt="Sand Soldier Talim" style="margin-top: 10px;">
+                <img src="Skins/High Elf Eagle.png" alt="High Elf Eagle" style="margin-top: 10px;">
             </div>
             <div class="price">
                 <img src="res/img/fm.png" alt="FM" style="margin-top: 10px;">
@@ -588,24 +589,24 @@
             </div>
             <button onclick="purchaseBundle(this)">Buy</button>
     </div>
-    <div class="bundle-item" data-bundle-name="SacredCeremonyBundle">
-        <div class="bundle-name" style="color: white; font-weight: bold;">Sacred Ceremony Bundle (5 Skins)</div>
+    <div class="bundle-item" data-bundle-name="FarmerBundle">
+        <div class="bundle-name" style="color: white; font-weight: bold;">Farmer Bundle (+Nina and Shoma) (6 Skins)</div>
         <div class="images-grid">
-            <img src="Loading Screen/Sacred Ceremony Julia.png" alt="Sacred Ceremony Julia" style="width: 80%;">
-            <img src="Loading Screen/Sacred Ceremony Birdie.png" alt="Sacred Ceremony Birdie" style="width: 80%;">
-            <img src="Loading Screen/Sacred Ceremony Morrigan.png" alt="Sacred Ceremony Morrigan" style="width: 80%;">
-            <img src="Loading Screen/Sacred Ceremony Shoma.png" alt="Sacred Ceremony Shoma" style="width: 80%;">
+            <img src="Loading Screen/Farmer Cham Cham.png" alt="Farmer Cham Cham" style="width: 80%;">
+            <img src="Loading Screen/Farmer Alice.png" alt="Farmer Alice" style="width: 80%;">
+            <img src="Loading Screen/Farmer FANG.png" alt="Farmer FANG" style="width: 80%;">
+            <img src="Loading Screen/Farmer Raiden.png" alt="Farmer Raiden" style="width: 80%;">
         </div>
         <div class="price">
             <img src="res/img/fm.png" alt="FM">
-            <span style="color: white; font-weight: bold;">4885</span>
+            <span style="color: white; font-weight: bold;">7000</span>
         </div>
         <button onclick="purchaseBundle(this)">Buy</button>
     </div>
-    <div class="bundle-item" data-bundle-name="DragonTamerRaidenCMSale">
-        <div class="bundle-name" style="color: white; font-weight: bold;">Dragon Tamer Raiden CM Sale</div>
+    <div class="bundle-item" data-bundle-name="GothSophitiaCMSale">
+        <div class="bundle-name" style="color: white; font-weight: bold;">Goth Sophitia CM Sale</div>
         <div class="image-container">
-            <img src="Skins/Dragon Tamer Raiden.png" alt="Dragon Tamer Raiden" style="margin-top: 10px;">
+            <img src="Skins/Goth Sophitia.png" alt="Goth Sophitia" style="margin-top: 10px;">
         </div>
         <div class="price">
             <img src="res/img/cm.png" alt="CM" style="margin-top: 10px;">
@@ -616,8 +617,8 @@
     <div class="bundle-item" data-bundle-name="RandomRecolorDuoPack6">
         <div class="bundle-name" style="color: white; font-weight: bold;">Random Recolor Duo Pack</div>
         <div class="images-grid">
-            <img src="Loading Screen/Goth Elphelt White.png" alt="Goth Elphelt White" style="width: 80%;">
-            <img src="Loading Screen/Infernal Ibuki Silver Flame.png" alt="Infernal Ibuki Silver Flame" style="width: 80%;">
+            <img src="Loading Screen/Shadowbane Ayane Red Hood.png" alt="Shadowbane Ayane Red Hood" style="width: 80%;">
+            <img src="Loading Screen/Voidborn Nina Warlock.png" alt="Voidborn Nina Warlock" style="width: 80%;">
         </div>
         <div class="price">
             <img src="res/img/fm.png" alt="FM">

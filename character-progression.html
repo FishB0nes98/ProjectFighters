@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Character Progression</title>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <style>
+        body {
+            background-color: #333;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+
+        .menu-items {
+            display: flex;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .menu-items a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .menu-items a:hover {
+            background-color: #ffbb00;
+        }
+
+        .play-button-container {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            z-index: 1001;
+        }
+
+        .play-button {
+            display: inline-block;
+            padding: 10px 30px;
+            background-color: #ffbb00;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .play-button:hover {
+            background-color: #ff8800;
+            transform: scale(1.05);
+        }
+
+        .character-container {
+            margin-top: 80px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .character-card {
+            background-color: #444;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .character-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: inherit;
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+        .character-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .character-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            border: 3px solid transparent;
+            transition: border-color 0.3s;
+        }
+
+        .character-card:hover .character-image {
+            border-color: white;
+        }
+
+        /* Add tier indicators */
+        .character-card::after {
+            content: attr(data-tier);
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: #444;
+            margin: 2% auto;
+            padding: 30px;
+            width: 90%;
+            max-width: 1200px;
+            border-radius: 10px;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 30px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .rewards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .reward-item {
+            position: relative;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 10px;
+            background: #555;
+            transition: transform 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .reward-item.locked {
+            opacity: 0.5;
+            filter: grayscale(1);
+        }
+
+        .reward-item.claimed {
+            border: 2px solid #4CAF50;
+        }
+
+        .claim-button {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            padding: 5px 15px;
+            background: #4CAF50;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .claimed-text {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .reward-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .reward-info {
+            display: flex;
+            flex-direction: column;
+            margin-left: 20px;
+            flex-grow: 1;
+        }
+
+        .reward-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .reward-type {
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+
+        .reward-xp {
+            color: #ffbb00;
+        }
+
+        .next-reward-info {
+            margin-top: 20px;
+            padding: 10px;
+            background: #666;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu -->
+    <div class="menu">
+        <div class="menu-items">
+            <a href="home.html">Home</a>
+            <a href="Store.html">Store</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+            <a href="statistics.html">Statistics</a>
+        </div>
+    </div>
+    <div class="play-button-container">
+        <a href="Game Modes.html" class="play-button">Play</a>
+    </div>
+
+    <div class="character-container" id="character-container"></div>
+
+    <!-- Modal -->
+    <div id="rewards-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modal-character-name"></h2>
+            <div class="rewards-grid" id="rewards-grid"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        
+        // Your Firebase config here
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+    
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+    
+        // Import Julia's rewards
+        import { characterRewards, getJuliaRewards, getkabalRewards, getLiliRewards, getJuriRewards, getAliceRewards, getkumaRewards, getmegamanRewards, getMaiRewards, getFangRewards, getKagomeRewards, getChristieRewards, getShizumaruRewards, getSophitiaRewards, getsubZeroRewards, getKokoroRewards, getEagleRewards, getShomaRewards, getNinaRewards, getSiegfriedRewards, getIbukiRewards, getAyaneRewards, getBlankaRewards, getNoelRewards, getRaidenRewards, getYugoRewards, getTalimRewards, getAstarothRewards, getAngelRewards, getPeacockRewards, getScorpionRewards, getRMikaRewards, getKotalKahnRewards, getElpheltRewards, getAkumaRewards, getBirdieRewards, getReptileRewards, getErronBlackRewards, getChamChamRewards, getJunRewards, getMorriganRewards, isRewardUnlocked, getNextReward, claimReward } from './character-rewards.js';
+    
+        const XP_TIERS = {
+            LEGENDARY: 75001,
+            EPIC: 25001,
+            RARE: 5001,
+            COMMON: 1001,
+            BASIC: 0
+        };
+    
+        const TIER_COLORS = {
+            LEGENDARY: '#ffa500', // Orange
+            EPIC: '#800080',      // Purple
+            RARE: '#0000ff',      // Blue
+            COMMON: '#008000',    // Green
+            BASIC: '#808080'      // Grey
+        };
+    
+        function getXPTier(xp) {
+            if (xp >= XP_TIERS.LEGENDARY) return 'LEGENDARY';
+            if (xp >= XP_TIERS.EPIC) return 'EPIC';
+            if (xp >= XP_TIERS.RARE) return 'RARE';
+            if (xp >= XP_TIERS.COMMON) return 'COMMON';
+            return 'BASIC';
+        }
+    
+        // Add this right after your existing script imports
+        const DEBUG_CHARACTER_LIST = [
+            'Julia', 'Birdie', 'Erron Black', 'Cham Cham', 'Morrigan',
+            'Jun', 'Reptile', 'Akuma', 'Elphelt', 'Kotal Kahn',
+            'Scorpion', 'Peacock', 'Angel', 'Astaroth', 'Ibuki',
+            'R Mika', 'Raiden', 'Yugo', 'Talim', 'Noel',
+            'Blanka', 'Nina', 'Ayane', 'Siegfried', 'Shoma',
+            'Juri', 'Sub Zero', 'Christie', 'Kokoro', 'Eagle',
+            'Sophitia', 'Shizumaru', 'Kagome', 'Kabal', 'Kuma',
+            'Alice', 'Shinnok', 'FANG', 'Lili', 'Mega Man', 'Mai'
+        ];
+    
+        // Add debug mode handler
+        document.addEventListener('keydown', (event) => {
+            if (event.key === '5') {
+                const container = document.getElementById('character-container');
+                container.innerHTML = ''; // Clear existing characters
+                
+                DEBUG_CHARACTER_LIST.forEach(character => {
+                    const card = document.createElement('div');
+                    card.className = 'character-card';
+                    card.innerHTML = `
+                        <img src="Icons/${character}.png" alt="${character}" class="character-image">
+                        <h3>${character}</h3>
+                        <p>XP: 0</p>
+                    `;
+                    
+                    // Apply default styling
+                    card.style.backgroundColor = '#444';
+                    card.style.border = '2px solid #808080'; // BASIC tier color
+                    
+                    card.onclick = () => showRewardsModal(character, 0);
+                    container.appendChild(card);
+                });
+            }
+        });
+    
+        // Update the onAuthStateChanged function to store the original characters
+        let originalCharacters = null;
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userRef = ref(database, `users/${user.uid}/characters`);
+                const snapshot = await get(userRef);
+                const characters = snapshot.val() || {};
+                
+                // Store the original characters
+                originalCharacters = characters;
+                
+                const container = document.getElementById('character-container');
+                container.innerHTML = ''; // Clear existing characters
+                
+                // Create character cards for owned characters
+                for (const character in characters) {
+                    const characterData = characters[character];
+                    const xp = characterData.xp || 0;
+                    const tier = getXPTier(xp);
+                    
+                    const card = document.createElement('div');
+                    card.className = 'character-card';
+                    card.innerHTML = `
+                        <img src="Icons/${character}.png" alt="${character}" class="character-image">
+                        <h3>${character}</h3>
+                        <p>XP: ${xp}</p>
+                    `;
+                    
+                    card.style.backgroundColor = TIER_COLORS[tier];
+                    card.style.border = `2px solid ${TIER_COLORS[tier]}`;
+                    
+                    card.onclick = () => showRewardsModal(character, xp);
+                    container.appendChild(card);
+                }
+            }
+        });
+    
+        // Add debug mode toggle off (press 6 to return to normal)
+        document.addEventListener('keydown', (event) => {
+            if (event.key === '6' && originalCharacters) {
+                const container = document.getElementById('character-container');
+                container.innerHTML = ''; // Clear debug characters
+                
+                // Recreate original character cards
+                for (const character in originalCharacters) {
+                    const characterData = originalCharacters[character];
+                    const xp = characterData.xp || 0;
+                    const tier = getXPTier(xp);
+                    
+                    const card = document.createElement('div');
+                    card.className = 'character-card';
+                    card.innerHTML = `
+                        <img src="Icons/${character}.png" alt="${character}" class="character-image">
+                        <h3>${character}</h3>
+                        <p>XP: ${xp}</p>
+                    `;
+                    
+                    card.style.backgroundColor = TIER_COLORS[tier];
+                    card.style.border = `2px solid ${TIER_COLORS[tier]}`;
+                    
+                    card.onclick = () => showRewardsModal(character, xp);
+                    container.appendChild(card);
+                }
+            }
+        });
+    
+        async function showRewardsModal(character, xp) {
+            const modal = document.getElementById('rewards-modal');
+            const modalCharacterName = document.getElementById('modal-character-name');
+            const rewardsGrid = document.getElementById('rewards-grid');
+            const tier = getXPTier(xp);
+            const user = auth.currentUser;
+            
+            // Get character-specific rewards
+            let rewards;
+            if (character === 'Julia') {
+                rewards = await getJuliaRewards(user.uid);
+            } else if (character === 'R Mika') {
+                rewards = await getRMikaRewards(user.uid);
+            } else if (character === 'Birdie') {
+                rewards = await getBirdieRewards(user.uid);
+            } else if (character === 'Erron Black') {
+                rewards = await getErronBlackRewards(user.uid);
+            } else if (character === 'Cham Cham') {
+                rewards = await getChamChamRewards(user.uid);
+            } else if (character === 'Morrigan') {
+                rewards = await getMorriganRewards(user.uid);
+            } else if (character === 'Jun') {
+                rewards = await getJunRewards(user.uid);
+            } else if (character === 'Reptile') {
+                rewards = await getReptileRewards(user.uid);
+            } else if (character === 'Akuma') {
+                rewards = await getAkumaRewards(user.uid);
+            } else if (character === 'Elphelt') {
+                rewards = await getElpheltRewards(user.uid);
+            } else if (character === 'Kotal Kahn') {
+                rewards = await getKotalKahnRewards(user.uid);
+            } else if (character === 'Scorpion') {
+                rewards = await getScorpionRewards(user.uid);
+            } else if (character === 'Peacock') {
+                rewards = await getPeacockRewards(user.uid);
+            } else if (character === 'Angel') {
+                rewards = await getAngelRewards(user.uid);
+            } else if (character === 'Astaroth') {
+                rewards = await getAstarothRewards(user.uid);
+            } else if (character === 'Ibuki') {
+                rewards = await getIbukiRewards(user.uid);
+            } else if (character === 'Raiden') {
+                rewards = await getRaidenRewards(user.uid);
+            } else if (character === 'Yugo') {
+                rewards = await getYugoRewards(user.uid);
+            } else if (character === 'Talim') {
+                rewards = await getTalimRewards(user.uid);
+            } else if (character === 'Noel') {
+                rewards = await getNoelRewards(user.uid);
+            } else if (character === 'Blanka') {
+                rewards = await getBlankaRewards(user.uid);
+            } else if (character === 'Nina') {
+                rewards = await getNinaRewards(user.uid);
+            } else if (character === 'Ayane') {
+                rewards = await getAyaneRewards(user.uid);
+            } else if (character === 'Siegfried') {
+                rewards = await getSiegfriedRewards(user.uid);
+            } else if (character === 'Shoma') {
+                rewards = await getShomaRewards(user.uid);
+            } else if (character === 'Sub Zero') {
+                rewards = await getsubZeroRewards(user.uid);
+            } else if (character === 'Kokoro') {
+                rewards = await getKokoroRewards(user.uid);
+            } else if (character === 'Eagle') {
+                rewards = await getEagleRewards(user.uid);
+            } else if (character === 'Sophitia') {
+                rewards = await getSophitiaRewards(user.uid);
+            } else if (character === 'Shizumaru') {
+                rewards = await getShizumaruRewards(user.uid);
+            } else if (character === 'Kagome') {
+                rewards = await getKagomeRewards(user.uid);
+            } else if (character === 'Alice') {
+                rewards = await getAliceRewards(user.uid);
+            } else if (character === 'Shinnok') {
+                rewards = await getShinnokRewards(user.uid);
+            } else if (character === 'Fang') {
+                rewards = await getFangRewards(user.uid);
+            } else if (character === 'Lili') {
+                rewards = await getLiliRewards(user.uid);
+            } else if (character === 'Mega Man') {
+                rewards = await getmegamanRewards(user.uid);
+            } else if (character === 'Mai') {
+                rewards = await getMaiRewards(user.uid);
+            } else if (character === 'Christie') {
+                rewards = await getChristieRewards(user.uid);
+            } else if (character === 'Kuma') {
+                rewards = await getkumaRewards(user.uid);
+            } else if (character === 'Kabal') {
+                rewards = await getkabalRewards(user.uid);
+            } else if (character === 'Juri') {
+                rewards = await getJuriRewards(user.uid);
+            } else {
+                rewards = await characterRewards; // Default rewards for other characters
+            }
+
+            modalCharacterName.textContent = `${character} - ${tier} (${xp} XP)`;
+            rewardsGrid.innerHTML = '';
+
+            // Get claimed rewards for this character
+            const claimedRewardsRef = ref(database, `users/${user.uid}/characters/${character}/claimedRewards`);
+            const claimedRewardsSnap = await get(claimedRewardsRef);
+            const claimedRewards = claimedRewardsSnap.val() || {};
+
+            rewards.forEach(reward => {
+                const isUnlocked = isRewardUnlocked(xp, reward.xpRequired);
+                const isClaimed = claimedRewards[reward.rewardName];
+                
+                const rewardItem = document.createElement('div');
+                rewardItem.className = `reward-item ${isUnlocked ? 'unlocked' : 'locked'} ${isClaimed ? 'claimed' : ''}`;
+                
+                rewardItem.innerHTML = `
+                    <img src="${reward.rewardImage}" class="reward-image" alt="${reward.rewardName}">
+                    <div class="reward-info">
+                        <span class="reward-name">${reward.rewardName}</span>
+                        <span class="reward-type">${reward.rewardType}</span>
+                        <span class="reward-xp">${reward.xpRequired} XP Required</span>
+                    </div>
+                    ${isUnlocked && !isClaimed ? '<button class="claim-button">Claim</button>' : ''}
+                    ${isClaimed ? '<span class="claimed-text">Claimed</span>' : ''}
+                `;
+
+                if (isUnlocked && !isClaimed) {
+                    const claimButton = rewardItem.querySelector('.claim-button');
+                    claimButton.onclick = async () => {
+                        await claimReward(database, user.uid, reward, character);
+                        showRewardsModal(character, xp); // Refresh modal
+                    };
+                }
+
+                rewardsGrid.appendChild(rewardItem);
+            });
+
+            modal.style.display = 'block';
+        }
+    
+        // Close modal when clicking the X
+        document.querySelector('.close-modal').onclick = () => {
+            document.getElementById('rewards-modal').style.display = 'none';
+        }
+    
+        // Close modal when clicking outside
+        window.onclick = (event) => {
+            const modal = document.getElementById('rewards-modal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

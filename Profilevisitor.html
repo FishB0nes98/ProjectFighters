@@ -254,6 +254,26 @@
         font-size: 14px;
         color: #ccc;
     }
+
+    .username-title-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        margin-bottom: 15px;
+    }
+
+    #username-display {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    #title-display {
+        font-size: 0.8em;
+        color: #ffbb00;  /* Gold color for the title */
+        font-style: italic;
+    }
     </style>
 </head>
 <body>
@@ -277,7 +297,10 @@
     <div id="main-content">
         <div id="left-container">
             <img id="profile-image" src="" alt="Profile Icon">
-            <h2 id="username-display">Username</h2>
+            <div class="username-title-container">
+                <h2 id="username-display">Username</h2>
+                <div id="title-display"></div>
+            </div>
             <div class="background-selection">
                 <select id="background-select" disabled>
                     <option value="">Select Background</option>
@@ -305,6 +328,7 @@
                     <option value="Bistro Event">Bistro Event</option>
                     <option value="Jade Event">Jade Event</option>
                     <option value="Sacred Ceremony Event">Sacred Ceremony Event</option>
+                    <option value="Farmer Event">Farmer Event</option>
                 </select>
                 <div class="color-selection">
                     <label for="color-picker"></label>
@@ -453,6 +477,15 @@ document.getElementById('rank-points-display').textContent = `Rank Points: ${ran
             const stickerName = stickerSnapshot.val();
             if (stickerName) {
                 setProfileSticker(stickerName);
+            }
+
+            // Add title display
+            const titleDisplay = document.getElementById('title-display');
+            if (userData.activeTitle) {
+                titleDisplay.textContent = `(${userData.activeTitle})`;
+                titleDisplay.style.display = 'block';
+            } else {
+                titleDisplay.style.display = 'none';
             }
         } else {
             console.log("No user data found");

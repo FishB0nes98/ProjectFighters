@@ -134,6 +134,34 @@
             z-index: -1;
             filter: brightness(60%) contrast(120%);
         }
+        .back-button {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            background-color: #ffbb00;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 12px 30px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            display: none;
+        }
+
+        .back-button:hover {
+            background-color: #ff8800;
+            transform: scale(1.05);
+        }
+
+        #stageSelect {
+            display: none;
+        }
+
+        #raidSelect {
+            display: block;
+        }
     </style>
     <!-- Include Firebase SDK and configuration as module scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
@@ -161,21 +189,41 @@
         const database = getDatabase(app);
 
         window.onload = function() {
+            // Add click handlers
+            document.getElementById('farmRaidButton').addEventListener('click', showFarmStages);
+            document.getElementById('backButton').addEventListener('click', showRaidSelect);
+            document.getElementById('farmStage1').addEventListener('click', () => {
+                window.location.href = 'Raids/Farm Raid/Stage_1_Farm.html';
+            });
+
+            // Check authentication and stages
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
-                    const userRef = ref(database, 'users/' + user.uid + '/Raid');
+                    const userRef = ref(database, 'users/' + user.uid + '/Raid/Farm');
                     const snapshot = await get(userRef);
                     if (snapshot.exists()) {
-                        const raidData = snapshot.val();
+                        const farmRaidData = snapshot.val();
                         for (let i = 1; i <= 5; i++) {
-                            if (raidData[`Stage${i}`] === 1 && i < 5) {
-                                document.getElementById(`stage${i + 1}`).style.display = 'inline-block';
+                            if (farmRaidData[`Stage${i}`] === 1 && i < 5) {
+                                document.getElementById(`farmStage${i + 1}`).style.display = 'inline-block';
                             }
                         }
                     }
                 }
             });
         };
+
+        function showFarmStages() {
+            document.getElementById('raidSelect').style.display = 'none';
+            document.getElementById('stageSelect').style.display = 'block';
+            document.getElementById('backButton').style.display = 'block';
+        }
+
+        function showRaidSelect() {
+            document.getElementById('raidSelect').style.display = 'block';
+            document.getElementById('stageSelect').style.display = 'none';
+            document.getElementById('backButton').style.display = 'none';
+        }
     </script>
 </head>
 <body>
@@ -197,27 +245,37 @@
     <div class="play-button-container">
         <a href="Game Modes.html" class="play-button">Play</a>
     </div>
-</div>
-    <div class="container">
-        <h1>Select Raid Stage</h1>
-        <div id="stage1" class="stage-button" onclick="location.href='Stage_1.html'">
-            <img src="res/img/raid/background.png" alt="Stage 1">
+    <button id="backButton" class="back-button">Back to Raids</button>
+
+    <div id="raidSelect" class="container">
+        <h1>Available Raids</h1>
+        <!-- Farm Raid Button -->
+        <div id="farmRaidButton" class="stage-button">
+            <img src="res/img/farm_background.jpeg" alt="Farm Raid">
+            <span>Farm Raid</span>
+        </div>
+    </div>
+
+    <div id="stageSelect" class="container">
+        <h1>Farm Raid Stages</h1>
+        <div id="farmStage1" class="stage-button" style="cursor: pointer;">
+            <img src="res/img/farm_stage_1_bg.jpeg" alt="Stage 1">
             <span>Stage 1</span>
         </div>
-        <div id="stage2" class="stage-button" style="display: none;" onclick="location.href='Stage_2.html'">
-            <img src="res/img/raid/background2.png" alt="Stage 2">
+        <div id="farmStage2" class="stage-button" style="display: none;">
+            <img src="res/img/raid/farm_stage_2_bg.jpeg" alt="Stage 2">
             <span>Stage 2</span>
         </div>
-        <div id="stage3" class="stage-button" style="display: none;" onclick="location.href='Stage_3.html'">
-            <img src="res/img/raid/background3.png" alt="Stage 3">
+        <div id="farmStage3" class="stage-button" style="display: none;">
+            <img src="res/img/raid/farm_stage3.png" alt="Stage 3">
             <span>Stage 3</span>
         </div>
-        <div id="stage4" class="stage-button" style="display: none;" onclick="location.href='Stage_4.html'">
-            <img src="res/img/raid/background4.png" alt="Stage 4">
+        <div id="farmStage4" class="stage-button" style="display: none;">
+            <img src="res/img/raid/farm_stage4.png" alt="Stage 4">
             <span>Stage 4</span>
         </div>
-        <div id="stage5" class="stage-button" style="display: none;" onclick="location.href='Stage_5.html'">
-            <img src="res/img/raid/background.png" alt="Stage 5">
+        <div id="farmStage5" class="stage-button" style="display: none;">
+            <img src="res/img/raid/farm_stage5.png" alt="Stage 5">
             <span>Stage 5</span>
         </div>
     </div>

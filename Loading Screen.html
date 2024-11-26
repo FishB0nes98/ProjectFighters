@@ -14,7 +14,7 @@
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
-        import { getDatabase, ref, set, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { getDatabase, ref, set, get, update, increment } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
         import { quests } from './quests.js';
         import { roles } from './roles.js';
         import { characters } from './characterskinref.js'; // Import characters
@@ -39,6 +39,35 @@
         let charactersWithBorders = {}; // Store characters with their respective borders
         let bannedCharacters = [];
         let bansCompleted = 0;
+
+        async function addCharacterXP(userId, character, isWin) {
+    try {
+        const xpGain = isWin ? 
+            Math.floor(Math.random() * 126) + 200 : // 200-325 for win
+            Math.floor(Math.random() * 111) + 100;  // 100-210 for loss
+
+        const charRef = ref(database, `users/${userId}/characters/${character}`);
+        const snapshot = await get(charRef);
+        
+        if (!snapshot.exists()) {
+            await set(charRef, {
+                xp: xpGain,
+                win: isWin ? 1 : 0,
+                lose: isWin ? 0 : 1
+            });
+        } else {
+            await update(charRef, {
+                xp: increment(xpGain),
+                win: isWin ? increment(1) : increment(0),
+                lose: isWin ? increment(0) : increment(1)
+            });
+        }
+        
+        console.log(`Added ${xpGain} XP to ${character}`);
+    } catch (error) {
+        console.error('Error adding character XP:', error);
+            }
+        }
 
         window.onload = function() {
        onAuthStateChanged(auth, async (user) => {
@@ -729,7 +758,7 @@ async function handleMatchResult(userId, isWin) {
     console.log(`Player Win Rate: ${winRate}%`);
 }
 
-// Modify the decide game button event listener
+// Find this section in your code and update it
 document.getElementById('decide-game-button').addEventListener('click', async function() {
     this.disabled = true;
     const team1 = [];
@@ -737,6 +766,13 @@ document.getElementById('decide-game-button').addEventListener('click', async fu
     const userOnly = document.getElementById('user-only-checkbox').checked;
     const teamMode = document.getElementById('team-mode-checkbox').checked;
     const user = auth.currentUser;
+
+    // Make sure we have a user and get their ID
+    if (!user) {
+        console.error('No user logged in');
+        return;
+    }
+    const userId = user.uid;
 
     console.log('Decide Game button clicked');
     console.log('User Only:', userOnly);
@@ -787,6 +823,7 @@ document.getElementById('decide-game-button').addEventListener('click', async fu
         const isWin = (winner === 'team1'); // Assuming the user is on team1
         await handleMatchResult(userId, isWin);
     }
+    
 
     // Save win/lose data based on mode
     if (teamMode && user) {
@@ -805,18 +842,18 @@ document.getElementById('decide-game-button').addEventListener('click', async fu
         await saveGlobalCharacterStats(team1BaseCharacters, team2BaseCharacters, winner);
     }
 
-    await rewardPlayer(); // Call the rewardPlayer function here
-    await rewardCharacterMoney(); // Call the rewardCharacterMoney function here
+    await rewardPlayer(winner); // Pass the winner parameter here
+    await rewardCharacterMoney();
     displayResult(winner, loser);
 
-    // Update quest progress for playing a game
+    // Update quest progress
     await updateQuestProgress('play3games');
-
-    // Update quest progress for character-specific quests
     await updateCharacterSpecificQuests(team1BaseCharacters, team2BaseCharacters);
-
-    // Update quest progress for playing Draft Mode games
-    await updateQuestProgress('play10DraftModeGames'); // Add this line
+    await updateQuestProgress('play10DraftModeGames');
+    await updateQuestProgress('play5GamesShomaRaiden');
+    await updateQuestProgress('play5GamesAliceNina');
+    await updateQuestProgress('play5GamesChamChamFANG');
+    await updateQuestProgress('play15Games');
 });
 
 // ... existing code ...
@@ -1414,25 +1451,31 @@ function populateCharacterButtons(characters) {
             await update(ref(database), updates);
         }
 
-        async function rewardPlayer() {
+        async function rewardPlayer(winner) {
             const userId = auth.currentUser.uid;
             const userRef = ref(database, `users/${userId}`);
             const snapshot = await get(userRef);
             const userData = snapshot.val();
 
+            // Add XP for the selected character in solo mode
+            if (document.getElementById('user-only-checkbox').checked) {
+                const selectedSlot = document.querySelector('.player-slot.highlight');
+                if (selectedSlot) {
+                    const skinName = selectedSlot.querySelector('.skin-name').textContent;
+                    const characterName = skinToBaseCharacterMap[skinName] || skinName;
+                    await addCharacterXP(userId, characterName, winner === 'team1');
+                }
+            }
+
             if (userData) {
                 const exp = userData.BattlePassExp || 0;
                 const reward = Math.floor(Math.random() * 16) + 30; // Random number between 30 and 45
                 const newExp = exp + reward;
-
-                console.log('Current Exp:', exp);
-                console.log('Reward:', reward);
-                console.log('New Exp:', newExp);
-
                 await update(userRef, { BattlePassExp: newExp });
-                console.log('BattlePassExp updated successfully.');
             }
         }
+
+        
 
         window.updateQuestProgress = async function(questId) {
         const user = auth.currentUser;

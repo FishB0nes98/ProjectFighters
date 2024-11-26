@@ -57,12 +57,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            max-width: 250px;
+            min-width: 300px;
+            max-width: 350px;
             text-align: center;
             background-color: #007bff;
             color: #fff;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 30px;
+            border-radius: 15px;
             margin: 20px;
         }
 
@@ -70,8 +71,14 @@
             border-radius: 50%;
             border: 5px solid #fff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: 100px;
-            height: 100px;
+            width: 150px;
+            height: 150px;
+            margin-bottom: 15px;
+        }
+
+        #left-container h2 {
+            font-size: 1.8em;
+            margin: 15px 0;
         }
 
         #bottom-mid-container {
@@ -138,11 +145,57 @@
         }
 
         .background-selection {
-            margin: 20px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
+
+        #background-select {
+            padding: 8px;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            font-size: 0.9em;
+            min-width: 200px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        #background-select option {
+            background-color: #2a2a2a;
+            color: white;
+            padding: 8px;
+        }
+
+        #background-select:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Color picker styles */
         .color-selection {
-            margin: 20px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+
+        #color-picker {
+            width: 50px;
+            height: 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
         /* Transparent Menu */
         .menu {
         display: flex;
@@ -295,6 +348,87 @@
             height: 20%;
             z-index: 1;
         }
+
+        .title-selector {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .title-selector h3 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        #title-select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+        }
+
+        #title-select option {
+            background-color: #2a2a2a;
+            color: #fff;
+        }
+
+        #title-select:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Fix background selector scrolling */
+        #background-select {
+            padding: 8px;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            font-size: 0.9em;
+            min-width: 200px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        #background-select option {
+            background-color: #2a2a2a;
+            color: white;
+            padding: 8px;
+        }
+
+        /* Adjust sticker position */
+        .profile-sticker {
+            position: absolute;
+            bottom: 650px;  /* Increased to move down */
+            left: 125px;    /* Increased to move left */
+            height: 20%;
+            z-index: 1;
+        }
+
+        /* Add these styles to ensure the dropdown is scrollable */
+        .background-selection select {
+            -webkit-appearance: menulist;
+            -moz-appearance: menulist;
+            appearance: menulist;
+        }
+
+        /* Add custom scrollbar styles for better visibility */
+        #background-select::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #background-select::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        #background-select::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        #background-select::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -321,39 +455,13 @@
            
             <div id="left-container">
                 <img id="profile-image" src="" alt="Profile Icon">
-                <h2 id="username-display">Username</h2>
-                <div class="background-selection">
-                    <select id="background-select">
-                        <option value="">Select Background</option>
-                        <option value="Arctic Hunting Event">Arctic Hunting Event</option>
-                        <option value="Blossom Event">Blossom Event</option>
-                        <option value="Cyber City Event">Cyber City Event</option>
-                        <option value="Desert Wars Event">Desert Wars Event</option>
-                        <option value="Dragonlands Event">Dragonlands Event</option>
-						<option value="MOVE Event">MOVE Event</option>
-						<option value="Summer Event">Summer Event</option>
-						<option value="Infernal Event">Infernal Event</option>
-						<option value="Pirate Event">Pirate Event</option>
-						<option value="Neon Core Event">Neon Core Event</option>
-						<option value="School Event">School Event</option>
-						<option value="High Elf Event">High Elf Event</option>
-                        <option value="Goth Event">Goth Event</option>
-                        <option value="Pajama Party Event">Pajama Party Event</option>
-                        <option value="Mystical Forest Event">Mystical Forest Event</option>
-                        <option value="Arcade Event">Arcade Event</option>
-                        <option value="Stone Age Event">Stone Age Event</option>
-                        <option value="Medieval Kingdom Event">Medieval Kingdom Event</option>
-                        <option value="Rainy Day Event">Rainy Day Event</option>
-                        <option value="Void Event">Void Event</option>
-						<option value="Halloween Event 2024">Halloween Event 2024</option>
-                        <option value="Bistro Event">Bistro Event</option>
-                        <option value="Jade Event">Jade Event</option>
-                        <option value="Sacred Ceremony Event">Sacred Ceremony Event</option>
+                <h2 id="username-display"></h2>
+                <div class="title-selector">
+                    <h3>Active Title</h3>
+                    <select id="title-select">
+                        <option value="">No Title</option>
+                        <!-- Titles will be populated dynamically -->
                     </select>
-					<div class="color-selection">
-                    <label for="color-picker"></label>
-                    <input type="color" id="color-picker" value="#007bff">
-                </div>         
                 </div>
             </div>
             <div id="bottom-mid-container">
@@ -376,6 +484,44 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Move this outside the profile container -->
+    <div class="background-selection">
+        <select id="background-select">
+            <option value="">Select Background</option>
+            <option value="Arcade Event">Arcade Event</option>
+            <option value="Arctic Event">Arctic Event</option>
+            <option value="Arctic Hunting Event">Arctic Hunting Event</option>
+            <option value="Bistro Event">Bistro Event</option>
+            <option value="Blossom Event">Blossom Event</option>
+            <option value="Cyber City Event">Cyber City Event</option>
+            <option value="Desert Wars Event">Desert Wars Event</option>
+            <option value="Dragonlands Event">Dragonlands Event</option>
+            <option value="Farm Event">Farm Event</option>
+            <option value="Goth Event">Goth Event</option>
+            <option value="Halloween Event 2024">Halloween Event 2024</option>
+            <option value="High Elf Event">High Elf Event</option>
+            <option value="Infernal Event">Infernal Event</option>
+            <option value="Jade Event">Jade Event</option>
+            <option value="Medieval Kingdom Event">Medieval Kingdom Event</option>
+            <option value="MOVE Event">MOVE Event</option>
+            <option value="Music Event">Music Event</option>
+            <option value="Mystical Forest Event">Mystical Forest Event</option>
+            <option value="Neon Core Event">Neon Core Event</option>
+            <option value="Pajama Party Event">Pajama Party Event</option>
+            <option value="Pirate Event">Pirate Event</option>
+            <option value="Rainy Day Event">Rainy Day Event</option>
+            <option value="Sacred Ceremony Event">Sacred Ceremony Event</option>
+            <option value="School Event">School Event</option>
+            <option value="Stone Age Event">Stone Age Event</option>
+            <option value="Summer Event">Summer Event</option>
+            <option value="Void Event">Void Event</option>
+        </select>
+        <div class="color-selection">
+            <label for="color-picker"></label>
+            <input type="color" id="color-picker" value="#007bff">
         </div>
     </div>
 
@@ -529,6 +675,40 @@ onAuthStateChanged(auth, async (user) => {
                     updateSkinSlots();
                     updateBackgroundSelection();
 					updateProfileColor();
+
+                    // Handle titles
+                    const titleSelect = document.getElementById('title-select');
+                    const titles = userData.titles || {};
+                    const activeTitle = userData.activeTitle || '';
+
+                    // Clear existing options except the "No Title" option
+                    titleSelect.innerHTML = '<option value="">No Title</option>';
+
+                    // Add owned titles to the select element
+                    Object.keys(titles).forEach(titleKey => {
+                        if (titles[titleKey] === true) {  // Check if title is owned
+                            const option = document.createElement('option');
+                            option.value = titleKey;
+                            option.textContent = titleKey.replace(/_/g, ' ');  // Replace underscores with spaces
+                            option.selected = titleKey === activeTitle;
+                            titleSelect.appendChild(option);
+                        }
+                    });
+
+                    // Add change event listener
+                    titleSelect.addEventListener('change', async (e) => {
+                        const selectedTitle = e.target.value;
+                        const titleRef = ref(database, `users/${user.uid}/activeTitle`);
+                        
+                        try {
+                            await set(titleRef, selectedTitle);
+                            console.log('Title updated successfully');
+                        } catch (error) {
+                            console.error('Error updating title:', error);
+                            // Revert selection if update fails
+                            titleSelect.value = activeTitle;
+                        }
+                    });
                 } else {
                     console.log("No user data found");
                 }

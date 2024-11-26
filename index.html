@@ -2,63 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login and Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Fighters - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
         body {
-            background-color: #333;
+            background-color: #0a0a0a;
             color: white;
-            font-family: Arial, sans-serif;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            position: relative;
+            overflow: hidden;
         }
-        .container {
-            text-align: center;
-            background-color: #444;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-        input {
-            padding: 10px;
-            font-size: 16px;
-            width: 300px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: none;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: none;
-            background-color: orange;
-            color: black;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        button:hover {
-            background-color: darkgoldenrod;
-            transform: scale(1.1);
-        }
-        .tab {
-            margin: 10px;
-            cursor: pointer;
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #555;
-            border-radius: 5px;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        .tab:hover {
-            background-color: #666;
-            transform: scale(1.1);
-        }
-        .active-tab {
-            background-color: #777;
-        }
+
         #video-background {
             position: fixed;
             right: 0;
@@ -66,32 +31,170 @@
             min-width: 100%;
             min-height: 100%;
             z-index: -1;
-            filter: brightness(60%) contrast(120%);
+            filter: brightness(40%) blur(3px);
+        }
+
+        .container {
+            background: rgba(20, 20, 20, 0.95);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            width: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            display: block;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            position: relative;
+            gap: 1rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            color: #888;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            color: #fff;
+            background: linear-gradient(45deg, #ff6b6b, #ffa502);
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.5);
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #ff6b6b, #ffa502);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .social-login {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .social-btn {
+            padding: 0.8rem 1.5rem;
+            margin: 0.5rem;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .social-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: 1rem;
+        }
+
+        .forgot-password a {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #ff6b6b;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
         }
     </style>
 </head>
 <body>
     <video id="video-background" autoplay muted loop>
         <source src="Event/Eventvideo.mp4" type="video/mp4">
-        Your browser does not support the video tag.
     </video>
+
     <div class="container">
-        <div>
-            <span id="login-tab" class="tab active-tab" onclick="showLogin()">Login</span>
-            <span id="register-tab" class="tab" onclick="showRegister()">Register</span>
+        <img src="logo.png" alt="Project Fighters Logo" class="logo">
+        
+        <div class="tabs">
+            <div class="tab active" onclick="showLogin()">Login</div>
+            <div class="tab" onclick="showRegister()">Register</div>
         </div>
+
         <div id="login-form">
-            <h2>Login</h2>
-            <input type="text" id="login-username" placeholder="Username">
-            <input type="password" id="login-password" placeholder="Password">
+            <input type="text" id="login-username" placeholder="Username" autocomplete="username">
+            <input type="password" id="login-password" placeholder="Password" autocomplete="current-password">
+            <div class="error-message" id="login-error"></div>
+            <div class="forgot-password">
+                <a href="#" onclick="forgotPassword()">Forgot Password?</a>
+            </div>
             <button onclick="login()">Login</button>
+            
+            <div class="social-login">
+                <button class="social-btn" onclick="loginWithGoogle()">
+                    Continue with Google
+                </button>
+                <button class="social-btn" onclick="loginWithDiscord()">
+                    Continue with Discord
+                </button>
+            </div>
         </div>
+
         <div id="register-form" style="display: none;">
-            <h2>Register</h2>
-            <input type="email" id="register-email" placeholder="Email">
-            <input type="text" id="register-username" placeholder="Username">
-            <input type="password" id="register-password" placeholder="Password">
-            <button onclick="register()">Register</button>
+            <input type="email" id="register-email" placeholder="Email" autocomplete="email">
+            <input type="text" id="register-username" placeholder="Username" autocomplete="username">
+            <input type="password" id="register-password" placeholder="Password" autocomplete="new-password">
+            <input type="password" id="register-confirm-password" placeholder="Confirm Password" autocomplete="new-password">
+            <div class="error-message" id="register-error"></div>
+            <button onclick="register()">Create Account</button>
         </div>
     </div>
 
@@ -99,8 +202,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database-compat.js"></script>
+    
     <script>
-        // Firebase configuration
+        // Your existing Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
             authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
@@ -117,42 +221,86 @@
         const auth = firebase.auth();
         const database = firebase.database();
 
-        // Function to handle user login
-        async function login() {
-            const username = document.getElementById('login-username').value;
-            const password = document.getElementById('login-password').value;
-
-            const userQuery = firebase.database().ref('users').orderByChild('username').equalTo(username);
-            const snapshot = await userQuery.once('value');
-
-            if (snapshot.exists()) {
-                const userData = Object.values(snapshot.val())[0];
-                const email = userData.email;
-
-                auth.signInWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        const user = userCredential.user;
-                        alert('Login successful');
-                        window.location.href = 'home.html'; // Redirect to home page
-                    })
-                    .catch((error) => {
-                        alert(error.message);
-                    });
-            } else {
-                alert('Username not found');
-            }
+        // Show/Hide form functions
+        function showLogin() {
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('register-form').style.display = 'none';
+            document.querySelector('.tab:nth-child(1)').classList.add('active');
+            document.querySelector('.tab:nth-child(2)').classList.remove('active');
         }
 
-        // Function to handle user registration
+        function showRegister() {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'block';
+            document.querySelector('.tab:nth-child(1)').classList.remove('active');
+            document.querySelector('.tab:nth-child(2)').classList.add('active');
+        }
+
+        // Login function
+        function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            const errorElement = document.getElementById('login-error');
+
+            if (!username || !password) {
+                errorElement.textContent = 'Please fill in all fields';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            // First, get the email associated with the username
+            database.ref('users').orderByChild('username').equalTo(username).once('value')
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        const userKey = Object.keys(userData)[0];
+                        const email = userData[userKey].email;
+                        
+                        // Now sign in with email and password
+                        return auth.signInWithEmailAndPassword(email, password);
+                    } else {
+                        throw new Error('Username not found');
+                    }
+                })
+                .then((userCredential) => {
+                    // Login successful
+                    window.location.href = 'home.html';
+                })
+                .catch((error) => {
+                    errorElement.textContent = error.message;
+                    errorElement.style.display = 'block';
+                });
+        }
+
+        // Register function
         function register() {
             const email = document.getElementById('register-email').value;
             const username = document.getElementById('register-username').value;
             const password = document.getElementById('register-password').value;
-            registerUser(username, email, password);
-        }
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            const errorElement = document.getElementById('register-error');
 
-        function registerUser(username, email, password) {
-            firebase.auth().createUserWithEmailAndPassword(email, password)
+            // Validation
+            if (!email || !username || !password || !confirmPassword) {
+                errorElement.textContent = 'Please fill in all fields';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                errorElement.textContent = 'Passwords do not match';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            // Check if username already exists
+            database.ref('users').orderByChild('username').equalTo(username).once('value')
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        throw new Error('Username already taken');
+                    }
+                    return auth.createUserWithEmailAndPassword(email, password);
+                })
                 .then((userCredential) => {
                     const user = userCredential.user;
 
@@ -191,46 +339,63 @@
                             }
                         };
 
-                        // Update Firebase Realtime Database with user details
-                        firebase.database().ref('users/' + user.uid).set(userData).then(() => {
-                            // Registration successful
-                            alert('Registration successful');
-                            window.location.href = 'home.html'; // Redirect to home page
-                        }).catch((error) => {
-                            alert(error.message);
-                        });
-                    }).catch((error) => {
-                        alert(error.message);
+                        // Store user data in the database
+                        return database.ref('users/' + user.uid).set(userData);
+                    })
+                    .then(() => {
+                        // Registration successful
+                        window.location.href = 'home.html';
                     });
-
                 })
                 .catch((error) => {
-                    alert(error.message);
+                    errorElement.textContent = error.message;
+                    errorElement.style.display = 'block';
                 });
         }
 
-        // Function to show login form
-        function showLogin() {
-            document.getElementById('login-form').style.display = 'block';
-            document.getElementById('register-form').style.display = 'none';
-            document.getElementById('login-tab').classList.add('active-tab');
-            document.getElementById('register-tab').classList.remove('active-tab');
+        // New functions for additional features
+        function forgotPassword() {
+            const email = prompt("Please enter your email address:");
+            if (email) {
+                auth.sendPasswordResetEmail(email)
+                    .then(() => {
+                        alert("Password reset email sent! Please check your inbox.");
+                    })
+                    .catch((error) => {
+                        alert(error.message);
+                    });
+            } else {
+                alert('Username not found');
+            }
         }
 
-        // Function to show register form
-        function showRegister() {
-            document.getElementById('login-form').style.display = 'none';
-            document.getElementById('register-form').style.display = 'block';
-            document.getElementById('login-tab').classList.remove('active-tab');
-            document.getElementById('register-tab').classList.add('active-tab');
+        function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    // Handle new user registration if needed
+                    window.location.href = 'home.html';
+                })
+                .catch((error) => {
+                    document.getElementById('login-error').textContent = error.message;
+                    document.getElementById('login-error').style.display = 'block';
+                });
         }
-		document.addEventListener('DOMContentLoaded', function () {
-        var video = document.getElementById('video-background');
-        if (video) {
-            video.playbackRate = 0.75; // Set playback speed to 50%
-            video.play(); // Start playing the video
+
+        function loginWithDiscord() {
+            // Implement Discord authentication
+            alert("Discord login coming soon!");
         }
-    });
+
+        // Enhance video background
+        document.addEventListener('DOMContentLoaded', function () {
+            const video = document.getElementById('video-background');
+            if (video) {
+                video.playbackRate = 0.75;
+                video.play();
+            }
+        });
     </script>
 </body>
 </html>

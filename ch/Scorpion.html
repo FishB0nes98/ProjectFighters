@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Scorpion - Character Page</title>
-    <style>
-        body {
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Scorpion - Character Page
+  </title>
+  <style>
+   body {
             margin: 0;
             padding: 0;
             background: url('../Default Splash/Scorpion.png') no-repeat center center fixed;
@@ -238,19 +240,22 @@
         .hidden {
             display: none;
         }
-    </style>
-    <!-- Include Firebase SDK and configuration as module scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
-    <script nomodule>
-        // Fallback for non-module browsers (if needed)
+  </style>
+  <!-- Include Firebase SDK and configuration as module scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module">
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module">
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module">
+  </script>
+  <script nomodule="">
+   // Fallback for non-module browsers (if needed)
         document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
         document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
         document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
-    </script>
-    <script type="module">
-        // Initialize Firebase
+  </script>
+  <script type="module">
+   // Initialize Firebase
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
         import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
@@ -311,76 +316,98 @@
                 }
             });
         };
-    </script>
-</head>
-<body>
-
-    <!-- Menu -->
-    <div class="menu">
-        <div class="menu-items">
-            <a href="../home.html">Home</a>
-            <a href="../Store.html">Store</a>
-            <a href="../event.html">Event</a>
-            <a href="../Team Builder.html">Team Builder</a>
-            <a href="../championstats.html">Statistics</a>
-        </div>
+  </script>
+ </head>
+ <body>
+  <!-- Menu -->
+  <div class="menu">
+   <div class="menu-items">
+    <a href="../home.html">
+     Home
+    </a>
+    <a href="../Store.html">
+     Store
+    </a>
+    <a href="../event.html">
+     Event
+    </a>
+    <a href="../Team Builder.html">
+     Team Builder
+    </a>
+    <a href="../championstats.html">
+     Statistics
+    </a>
+   </div>
+  </div>
+  <div class="play-button-container">
+   <a class="play-button" href="../Game Modes.html">
+    Play
+   </a>
+  </div>
+  <!-- Hide UI Button -->
+  <button class="hide-ui-button" onclick="toggleUI()">
+   Hide UI
+  </button>
+  <!-- Content -->
+  <div class="content">
+   <!-- Left Panel -->
+   <div class="left-panel">
+    <p>
+     Scorpion is a character from the Mortal Kombat series. He is one of the most iconic characters in the franchise, known for his deadly skills and fiery vengeance. Scorpion, whose real name is Hanzo Hasashi, was once a member of the Shirai Ryu ninja clan. After his clan and family were slaughtered by the Lin Kuei, he was resurrected as a wraith by the sorcerer Quan Chi. Consumed by rage and a desire for revenge, Scorpion wields hellfire and a deadly spear to hunt down his enemies. Despite his dark past, he occasionally shows a sense of honor and has allied with the forces of good to protect Earthrealm. more
+     <a href="../characters/Scorpion Page.html" class="bio-button">Check Bio</a></p>
+   </div>
+  </div>
+  <div class="content">
+   <!-- Right Panel -->
+   <div class="right-panel">
+    <div class="best-players">
+     <h2>
+      Best Scorpion Players
+     </h2>
+     <ul id="best-players-list">
+     </ul>
     </div>
-        <div class="play-button-container">
-            <a href="../Game Modes.html" class="play-button">Play</a>
-        </div>
-    </div>
-     <!-- Hide UI Button -->
-    <button class="hide-ui-button" onclick="toggleUI()">Hide UI</button>
-    <!-- Content -->
-    <div class="content">
-    <!-- Left Panel -->
-    <div class="left-panel">
-        <h1>Scorpion</h1>
-        <div class="role">Role: Jungler/Assassin</div>
-        <p id="story">
-            Scorpion is a character from the Mortal Kombat series. <span id="more" style="display: none;">He is one of the most iconic characters in the franchise, known for his deadly skills and fiery vengeance. Scorpion, whose real name is Hanzo Hasashi, was once a member of the Shirai Ryu ninja clan. After his clan and family were slaughtered by the Lin Kuei, he was resurrected as a wraith by the sorcerer Quan Chi. Consumed by rage and a desire for revenge, Scorpion wields hellfire and a deadly spear to hunt down his enemies. Despite his dark past, he occasionally shows a sense of honor and has allied with the forces of good to protect Earthrealm.</span> <span id="more-link" class="more-link" onclick="toggleStory()">more</span>
-        </p>
-        <button class="bio-button" onclick="window.location.href='../characters/Scorpion Page.html'">Check Bio</button>
-    </div>
-</div>
-    <div class="content">
-        <!-- Right Panel -->
-        <div class="right-panel">
-            <div class="best-players">
-                <h2>Best Scorpion Players</h2>
-                <ul id="best-players-list"></ul>
-            </div>
-        </div>
-    </div>
-
-    <!-- Skins Container -->
-    <div class="skins-container">
-        <label style="position: absolute; top: 10px; left: 10px; color: white;">
-            <input type="checkbox" id="hide-recolors" onclick="toggleRecolors()"> Hide Recolors
-        </label>
-        <img src="../Skins/Jade Scorpion.jpeg" alt="Jade Scorpion" class="skin-image" onclick="openLightbox(0)">     
-        <img src="../Skins/Jade Scorpion Bloodstone.jpeg" alt="Jade Scorpion Bloodstone" class="skin-image recolor" onclick="openLightbox(1)">
-        <img src="../Skins/Jade Scorpion Topaz.jpeg" alt="Jade Scorpion Topaz" class="skin-image recolor" onclick="openLightbox(2)">
-        <img src="../Skins/Jade Scorpion Rose Quartz.jpeg" alt="Jade Scorpion Rose Quartz" class="skin-image recolor" onclick="openLightbox(3)">
-        <img src="../Skins/Jade Scorpion Agate.jpeg" alt="Jade Scorpion Agate" class="skin-image recolor" onclick="openLightbox(4)">
-        <img src="../Skins/Voidborn Scorpion.jfif" alt="Voidborn Scorpion" class="skin-image" onclick="openLightbox(5)">
-        <img src="../Skins/Primal Warrior Scorpion.jpeg" alt="Primal Warrior Scorpion" class="skin-image" onclick="openLightbox(6)">
-        <img src="../Skins/Deadpool Scorpion.png" alt="Deadpool Scorpion" class="skin-image" onclick="openLightbox(7)">
-        <img src="../Skins/Infernal Scorpion.png" alt="Infernal Scorpion" class="skin-image" onclick="openLightbox(8)">
-        <img src="../Skins/Scorpion Blossom.png" alt="Scorpion Blossom" class="skin-image recolor" onclick="openLightbox(9)">
-        <img src="../Skins/Scorpion Spider.png" alt="Scorpion Spider" class="skin-image recolor" onclick="openLightbox(10)">
-    </div>
-
-    <!-- Lightbox -->
-    <div id="lightbox" class="lightbox">
-        <span class="close" onclick="closeLightbox()">&times;</span>
-        <span class="arrow left" onclick="prevImage()">&#10094;</span>
-        <img id="lightbox-img" src="" alt="Skin Image">
-        <span class="arrow right" onclick="nextImage()">&#10095;</span>
-    </div>
-
-    <script>
-        const skins = [
+   </div>
+  </div>
+  <!-- Skins Container -->
+  <div class="skins-container">
+   <img alt="Scorpion Sand" class="skin-image recolor" onclick="openLightbox(0)" src="../Skins/Scorpion Sand.jpeg"/>
+   <img alt="Scorpion Champion" class="skin-image recolor" onclick="openLightbox(1)" src="../Skins/Scorpion Champion.jpeg"/>
+   <img alt="Scorpion Icy" class="skin-image recolor" onclick="openLightbox(2)" src="../Skins/Scorpion Icy.jpeg"/>
+   <label style="position: absolute; top: 10px; left: 10px; color: white;">
+    <input id="hide-recolors" onclick="toggleRecolors()" type="checkbox"/>
+    Hide Recolors
+   </label>
+   <img alt="Jade Scorpion" class="skin-image" onclick="openLightbox(3)" src="../Skins/Jade Scorpion.jpeg"/>
+   <img alt="Jade Scorpion Bloodstone" class="skin-image recolor" onclick="openLightbox(4)" src="../Skins/Jade Scorpion Bloodstone.jpeg"/>
+   <img alt="Jade Scorpion Topaz" class="skin-image recolor" onclick="openLightbox(5)" src="../Skins/Jade Scorpion Topaz.jpeg"/>
+   <img alt="Jade Scorpion Rose Quartz" class="skin-image recolor" onclick="openLightbox(6)" src="../Skins/Jade Scorpion Rose Quartz.jpeg"/>
+   <img alt="Jade Scorpion Agate" class="skin-image recolor" onclick="openLightbox(7)" src="../Skins/Jade Scorpion Agate.jpeg"/>
+   <img alt="Voidborn Scorpion" class="skin-image" onclick="openLightbox(8)" src="../Skins/Voidborn Scorpion.jfif"/>
+   <img alt="Primal Warrior Scorpion" class="skin-image" onclick="openLightbox(9)" src="../Skins/Primal Warrior Scorpion.jpeg"/>
+   <img alt="Deadpool Scorpion" class="skin-image" onclick="openLightbox(10)" src="../Skins/Deadpool Scorpion.png"/>
+   <img alt="Infernal Scorpion" class="skin-image" onclick="openLightbox(11)" src="../Skins/Infernal Scorpion.png"/>
+   <img alt="Scorpion Blossom" class="skin-image recolor" onclick="openLightbox(12)" src="../Skins/Scorpion Blossom.png"/>
+   <img alt="Scorpion Spider" class="skin-image recolor" onclick="openLightbox(13)" src="../Skins/Scorpion Spider.png"/>
+  </div>
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+   <span class="close" onclick="closeLightbox()">
+    ×
+   </span>
+   <span class="arrow left" onclick="prevImage()">
+    ❮
+   </span>
+   <img alt="Skin Image" id="lightbox-img" src=""/>
+   <span class="arrow right" onclick="nextImage()">
+    ❯
+   </span>
+  </div>
+  <script>
+   const skins = [
+                            '../Skins/Scorpion Sand.jpeg',
+                        '../Skins/Scorpion Champion.jpeg',
+                        '../Skins/Scorpion Icy.jpeg',
                         '../Skins/Jade Scorpion.jpeg',
                         '../Skins/Jade Scorpion Bloodstone.jpeg',
                         '../Skins/Jade Scorpion Topaz.jpeg',
@@ -391,93 +418,92 @@
                         '../Skins/Deadpool Scorpion.png',
                         '../Skins/Infernal Scorpion.png',
                         '../Skins/Scorpion Blossom.png',
-                        '../Skins/Scorpion Spider.png',
-        ];
-        let currentIndex = 0;
+                        '../Skins/Scorpion Spider.png'
+                ];
+            let currentIndex = 0;
 
-        function openLightbox(index) {
-            currentIndex = index;
-            document.getElementById('lightbox-img').src = skins[currentIndex];
-            document.getElementById('lightbox').style.display = 'flex';
-        }
-
-        function closeLightbox() {
-            document.getElementById('lightbox').style.display = 'none';
-        }
-
-        function prevImage() {
-            currentIndex = (currentIndex > 0) ? currentIndex - 1 : skins.length - 1;
-            document.getElementById('lightbox-img').src = skins[currentIndex];
-        }
-
-        function nextImage() {
-            currentIndex = (currentIndex < skins.length - 1) ? currentIndex + 1 : 0;
-            document.getElementById('lightbox-img').src = skins[currentIndex];
-        }
-
-        document.querySelector('.skins-container').addEventListener('mousemove', function(e) {
-            const container = e.currentTarget;
-            const containerWidth = container.offsetWidth;
-            const scrollWidth = container.scrollWidth;
-            const scrollLeft = container.scrollLeft;
-            const mouseX = e.clientX - container.getBoundingClientRect().left;
-
-            if (mouseX < containerWidth * 0.1) {
-                container.scrollLeft = Math.max(0, scrollLeft - 10);
-            } else if (mouseX > containerWidth * 0.9) {
-                container.scrollLeft = Math.min(scrollWidth - containerWidth, scrollLeft + 10);
+            function openLightbox(index) {
+                currentIndex = index;
+                document.getElementById('lightbox-img').src = skins[currentIndex];
+                document.getElementById('lightbox').style.display = 'flex';
             }
-        });
 
-        function toggleUI() {
-            const elementsToHide = document.querySelectorAll('.menu, .content, .skins-container, .lightbox, .play-button-container');
-            const hideUIButton = document.querySelector('.hide-ui-button');
-            elementsToHide.forEach(element => {
-                element.classList.toggle('hidden');
-            });
-            hideUIButton.textContent = hideUIButton.textContent === 'Hide UI' ? 'Show UI' : 'Hide UI';
-        }
-
-        function toggleStory() {
-            const moreText = document.getElementById('more');
-            const moreLink = document.getElementById('more-link');
-            const leftPanel = document.querySelector('.left-panel');
-
-            if (moreText.style.display === 'none' || moreText.style.display === '') {
-                moreText.style.display = 'inline';
-                moreLink.textContent = 'less';
-                leftPanel.style.flex = '2';
-            } else {
-                moreText.style.display = 'none';
-                moreLink.textContent = 'more';
-                leftPanel.style.flex = '1';
+            function closeLightbox() {
+                document.getElementById('lightbox').style.display = 'none';
             }
-        }
 
-        function hideButton() {
-            document.querySelector('.hide-ui-button').classList.add('hidden');
-        }
+            function prevImage() {
+                currentIndex = (currentIndex > 0) ? currentIndex - 1 : skins.length - 1;
+                document.getElementById('lightbox-img').src = skins[currentIndex];
+            }
 
-        function showButton() {
-            document.querySelector('.hide-ui-button').classList.remove('hidden');
-        }
+            function nextImage() {
+                currentIndex = (currentIndex < skins.length - 1) ? currentIndex + 1 : 0;
+                document.getElementById('lightbox-img').src = skins[currentIndex];
+            }
 
-        document.addEventListener('mousemove', () => {
-            showButton();
-            clearTimeout(mouseTimer);
-            mouseTimer = setTimeout(hideButton, 5000);
-        });
+            function toggleRecolors() {
+                const recolorSkins = document.querySelectorAll('.skin-image.recolor');
+                const hideRecolors = document.getElementById('hide-recolors').checked;
+                recolorSkins.forEach(skin => {
+                    skin.style.display = hideRecolors ? 'none' : 'block';
+                });
+            }
 
-        // Initialize the timer to hide the button after 5 seconds of inactivity
-        let mouseTimer = setTimeout(hideButton, 5000); // Added 'let' to declare the variable
+            document.querySelector('.skins-container').addEventListener('mousemove', function(e) {
+                const container = e.currentTarget;
+                const containerWidth = container.offsetWidth;
+                const scrollWidth = container.scrollWidth;
+                const scrollLeft = container.scrollLeft;
+                const mouseX = e.clientX - container.getBoundingClientRect().left;
 
-        function toggleRecolors() {
-            const recolorSkins = document.querySelectorAll('.skin-image.recolor');
-            const hideRecolors = document.getElementById('hide-recolors').checked;
-            recolorSkins.forEach(skin => {
-                skin.style.display = hideRecolors ? 'none' : 'block';
+                if (mouseX < containerWidth * 0.1) {
+                    container.scrollLeft = Math.max(0, scrollLeft - 10);
+                } else if (mouseX > containerWidth * 0.9) {
+                    container.scrollLeft = Math.min(scrollWidth - containerWidth, scrollLeft + 10);
+                }
             });
-        }
-    </script>
-</body>
+
+            function toggleUI() {
+                const elementsToHide = document.querySelectorAll('.menu, .content, .skins-container, .lightbox, .play-button-container');
+                const hideUIButton = document.querySelector('.hide-ui-button');
+                elementsToHide.forEach(element => {
+                    element.classList.toggle('hidden');
+                });
+                hideUIButton.textContent = hideUIButton.textContent === 'Hide UI' ? 'Show UI' : 'Hide UI';
+            }
+
+            function toggleStory() {
+                const moreText = document.getElementById('more');
+                const moreLink = document.getElementById('more-link');
+                const leftPanel = document.querySelector('.left-panel');
+
+                if (moreText.style.display === 'none' || moreText.style.display === '') {
+                    moreText.style.display = 'inline';
+                    moreLink.textContent = 'less';
+                    leftPanel.style.flex = '2';
+                } else {
+                    moreText.style.display = 'none';
+                    moreLink.textContent = 'more';
+                    leftPanel.style.flex = '1';
+                }
+            }
+
+            function hideButton() {
+                document.querySelector('.hide-ui-button').classList.add('hidden');
+            }
+
+            function showButton() {
+                document.querySelector('.hide-ui-button').classList.remove('hidden');
+            }
+
+            document.addEventListener('mousemove', () => {
+                showButton();
+                clearTimeout(mouseTimer);
+                mouseTimer = setTimeout(hideButton, 5000);
+            });
+
+            let mouseTimer = setTimeout(hideButton, 5000);
+  </script>
+ </body>
 </html>

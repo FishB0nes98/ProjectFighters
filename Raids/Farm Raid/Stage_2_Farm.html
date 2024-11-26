@@ -1,0 +1,3676 @@
+<!DOCTYPE html>
+<html lang="en">
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import ITEM_DATABASE from '../../ItemDatabase.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        // Make these available to the global scope
+        window.db = db;
+        window.auth = auth;
+        window.ITEM_DATABASE = ITEM_DATABASE;
+        window.dbRef = ref;
+        window.dbGet = get;
+        window.dbSet = set;      // Add this line
+        window.dbUpdate = update;
+
+        // Initialize game state
+        let activeCharacter = null; // Track which character is currently active
+
+        // Initialize enemy stats
+        const enemies = {
+            MonsterPig: { hp: 7500, maxHp: 7500 },
+            MonsterBull: { hp: 10000, maxHp: 10000 },
+            MonsterChicken: { hp: 5000, maxHp: 5000 }
+        };
+
+        // Initialize player stats
+        const players = {
+            FarmerShoma: { hp: 9000, maxHp: 9000 },
+            FarmerNina: { hp: 7500, maxHp: 7500 }
+        };
+
+        // Update the startGame function
+        window.startGame = async function() {
+            if (window.gameInitialized) {
+                console.log('Game already initialized, skipping...');
+                return;
+            }
+
+            document.getElementById('start-button').style.display = 'none';
+            
+            const user = auth.currentUser;
+            if (!user) {
+                console.error('No user logged in');
+                return;
+            }
+
+            // Clear existing inventory first
+            inventory.slots = new Array(6).fill(null);
+            updateInventoryDisplay();
+
+            // Initialize turn counter
+            turnCounter = 1;
+            document.getElementById('turn-counter').innerText = `Turn: ${turnCounter}`;
+            logEnemyAction(`\n--- Turn ${turnCounter} ---`);
+
+            // Load inventory (similar to Stage 1)
+            try {
+                const inventoryRef = dbRef(db, `users/${user.uid}/RaidInventory/items`);
+                const snapshot = await dbGet(inventoryRef);
+                
+                if (snapshot.exists()) {
+                    const items = snapshot.val();
+                    for (const [itemId, count] of Object.entries(items)) {
+                        if (count > 0 && ITEM_DATABASE[itemId]) {
+                            addItemToInventory({
+                                ...ITEM_DATABASE[itemId],
+                                count: count
+                            }, true);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading inventory:', error);
+            }
+
+            enableAbilities();
+            isPlayerTurn = true;
+            window.gameInitialized = true;
+
+            // Set initial active character
+            setActiveCharacter('FarmerShoma');
+
+            buffs = {
+                FarmerShoma: {},
+                FarmerNina: {},
+                MonsterPig: {},
+                MonsterBull: { damageIncrease: 0 },
+                MonsterChicken: { dodgeChance: 0.10 } // Start with 10% dodge
+            };
+
+            // Clear any existing buff displays
+            document.querySelectorAll('.buff-container').forEach(container => {
+                container.innerHTML = '';
+            });
+        }
+    </script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Raid - Stage 1</title>
+    <style>
+        /* Add this at the top of your CSS */
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+
+        /* Update the base styles */
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
+                         "Helvetica Neue", Arial, "Noto Sans", sans-serif, 
+                         "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            margin: 0;
+            padding: 0;
+            background: url('res/Stage_2_BG.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* Update title positioning without background */
+        h1 {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            margin: 0;
+            font-size: 24px;
+            z-index: 100;
+        }
+
+        /* Update enemy positioning */
+        .enemy {
+            display: inline-block;
+            position: absolute;
+            top: 50px;
+            width: 250px;
+            height: 350px;
+        }
+
+        /* Update character positioning */
+        .character {
+            display: inline-block;
+            position: absolute;
+            bottom: 120px;
+            width: 250px;
+            height: 350px;
+        }
+
+        .farmer-shoma {
+            left: 35%;
+        }
+
+        .farmer-nina {
+            left: 50%;
+        }
+
+        /* Add styles for active character indicator */
+        .character.active {
+            border: 3px solid #ffff00;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 255, 0, 0.5);
+        }
+
+        .character img, .enemy img {
+            width: 250px;
+            height: 350px;
+        }
+
+        /* Restore and update HP bar styling */
+        .status {
+            position: relative;
+            width: 250px;
+            margin-top: 10px;
+        }
+
+        .hp-bar-container {
+            width: 100%;
+            height: 20px;
+            background-color: #333;
+            border: 2px solid #000;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Update HP text positioning */
+        [id$="-status"] {  /* Targets all elements ending with "-status" */
+            position: absolute;
+            width: 100%;
+            height: 20px;  /* Match height of hp-bar-container */
+            top: 2px;        /* Align with top of hp-bar-container */
+            left: 0;       /* Align with left of hp-bar-container */
+            display: flex;
+            align-items: center;     /* Vertical centering */
+            justify-content: center; /* Horizontal centering */
+            text-align: center;
+            z-index: 2;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Ensure HP bar is behind the text */
+        .hp-bar {
+            width: 100%;
+            height: 100%;
+            background-color: #4CAF50;
+            transition: width 0.3s ease-out;
+            position: absolute;
+            z-index: 1;
+        }
+
+        .buff-container {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            display: flex;
+            gap: 5px;
+            z-index: 1000;
+        }
+
+        .buff-icon {
+            width: 50px !important;
+            height: 50px !important;
+            margin: 0 1px;
+            display: inline-block;
+            position: relative;
+            border: 2px solid #ff00ff;
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+        }
+
+        .buff-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .buff-duration {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 1px 3px;
+            font-size: 12px;
+            border-top-left-radius: 3px;
+        }
+
+        .log-container {
+            width: 400px;
+            height: 200px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid #666;
+            border-radius: 10px;
+            padding: 10px;
+            overflow-y: auto;
+            z-index: 1000;
+            font-size: 14px;
+            line-height: 1.5;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #log p {
+            margin: 5px 0;
+            padding: 3px 5px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        #log p:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .turn-counter {
+            position: absolute;
+            top: 5px;
+            right: 925px;
+            z-index: 10;
+            font-size: 18px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        #start-button {
+            position: absolute;
+            top: 48%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .ability-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin-top: 5px;
+        }
+
+        .ability {
+            width: 50px;
+            height: 50px;
+            margin: 6px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .ability img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .cooldown-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: red;
+            font-size: 35px;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 1;
+            text-shadow: 
+                -1px -1px 0 #000,  
+                 1px -1px 0 #000,
+                -1px  1px 0 #000,
+                 1px  1px 0 #000;
+        }
+
+        .disabled {
+            filter: grayscale(100%);
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        #volume-control {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            display: flex;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        #volume-slider {
+            margin-left: 10px;
+        }
+
+        .flash-red {
+            filter: brightness(100%) sepia(100%) saturate(10000%) hue-rotate(0deg) opacity(0.7);
+        }
+
+        .flash-green {
+            filter: brightness(100%) sepia(100%) saturate(10000%) hue-rotate(100deg) opacity(0.7);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spin-effect {
+            animation: spin 1s ease-in-out;
+        }
+
+        .enemy-info {
+            position: fixed;
+            z-index: 1000;
+            background-color: #2a2a2a;
+            min-width: 300px;
+            min-height: 200px;
+            width: 300px;
+            height: 200px;
+            resize: both;
+            overflow: auto;
+            border: 1px solid #888;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .enemy-info-content {
+            padding: 20px;
+            height: calc(100% - 40px);
+            cursor: move;
+            overflow: auto;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .enemy-info-content h2 {
+            font-weight: 700;
+        }
+
+        .enemy-info-content h3 {
+            font-weight: 600;
+        }
+
+        /* Add a visible resize handle */
+        .enemy-info::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 15px;
+            height: 15px;
+            cursor: se-resize;
+            background: 
+                linear-gradient(45deg, transparent 50%, #888 50%),
+                linear-gradient(-45deg, transparent 50%, #888 50%);
+            background-size: 8px 8px;
+            background-position: right bottom;
+            background-repeat: no-repeat;
+        }
+
+        /* Ensure content stays within bounds when resizing */
+        .ability-info {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #3a3a3a;
+            border-radius: 5px;
+            word-wrap: break-word;
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            right: 20px;
+            top: 10px;
+        }
+
+        .close-button:hover {
+            color: #fff;
+        }
+
+        /* Resize handle style */
+        .enemy-info {
+            resize: both;
+        }
+
+        /* Remove the full-screen overlay */
+        .enemy-info {
+            width: 374px;
+            height: 700px;
+        }
+
+        /* Make the enemy image clickable */
+        #AngryCarrot img {
+            cursor: pointer;
+        }
+
+        #WeakerCarrotsContainer {
+            position: absolute;
+            top: 20px;
+            right: 42%;
+            display: flex;
+            gap: 50px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+        }
+
+        .weaker-carrot {
+            animation: fadeIn 0.5s ease-out;
+            position: absolute;
+            top: 50px;  /* Adjust as needed */
+            left: 50%;  /* Center horizontally */
+            transform: translateX(-50%);  /* Center the element */
+        }
+
+        .weaker-carrot.fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .weaker-carrot.fade-out {
+            animation: fadeOut 0.5s ease-in forwards;
+        }
+
+        .weaker-carrot:nth-child(1) {
+            left: 35%;  /* Adjust for horizontal positioning */
+        }
+
+        .weaker-carrot:nth-child(2) {
+            left: 45%;
+        }
+
+        .weaker-carrot:nth-child(3) {
+            left: 55%;
+        }
+
+        #targeting-container {
+            position: absolute;
+            bottom: 20px;
+            left: 45px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        #targeting-container img.target-icon {
+            width: 50px !important;
+            height: 50px !important;
+            cursor: pointer;
+            border: 2px solid #ffd700;
+            border-radius: 5px;
+            transition: transform 0.2s;
+            object-fit: contain;
+        }
+
+        #targeting-container img.target-icon:hover {
+            transform: scale(1.1);
+            border-color: #ff0000;
+        }
+
+        .inventory {
+            position: absolute;
+            left: 35px;
+            bottom: 60px;
+            width: 200px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid #555;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .inventory h3 {
+            color: white;
+            text-align: center;
+            margin: 0 0 10px 0;
+        }
+
+        .inventory-slots {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 5px;
+        }
+
+        .inventory-slot {
+            width: 80px;
+            height: 80px;
+            border: 2px solid #ffd700;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .inventory-slot:hover {
+            border-color: #fff;
+            transform: scale(1.05);
+        }
+
+        .inventory-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .inventory-slot .item-count {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        /* Tooltip for inventory items */
+        .inventory-slot[data-tooltip] {
+            position: relative;
+        }
+
+        .inventory-slot[data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 50%;
+            top: -35px;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            white-space: nowrap;
+            z-index: 1000;
+        }
+
+        #item-targeting-container {
+            position: absolute;
+            top: -60px;  /* Position above the inventory */
+            left: 50%;   /* Center horizontally */
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        #item-targeting-container .target-icon {
+            width: 50px !important;
+            height: 50px !important;
+            cursor: pointer;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            transition: transform 0.2s;
+            object-fit: contain;
+        }
+
+        #item-targeting-container .target-icon:hover {
+            transform: scale(1.1);
+            border-color: #00ffaa;
+        }
+
+        .inventory-slot {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .inventory-slot.usable:hover {
+            border-color: #00ff00;
+        }
+
+        .drop-window {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+        }
+
+        .drop-content {
+            text-align: center;
+        }
+
+        .drop-items {
+            margin: 20px 0;
+        }
+
+        .drop-item {
+            display: flex;
+            align-items: center;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .drop-item img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .rarity-common {
+            background: rgba(200, 200, 200, 0.2);
+        }
+
+        .rarity-rare {
+            background: rgba(0, 112, 221, 0.2);
+            border: 1px solid #0070dd;
+        }
+
+        .rarity-legendary {
+            background: rgba(255, 128, 0, 0.2);
+            border: 1px solid #ff8000;
+        }
+
+        .collect-button {
+            padding: 10px 20px;
+            background: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .collect-button:hover {
+            background: #45a049;
+        }
+
+        .damage-bonus {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #ff4444;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 700;
+            border: 2px solid #ff6666;
+            box-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .damage-bonus::before {
+            content: '⚔️';
+            font-size: 16px;
+        }
+
+        @keyframes damageUpdate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+
+        .damage-update {
+            animation: damageUpdate 0.3s ease-out;
+        }
+
+        /* Update log styles for turn indicator */
+        #log p.turn-indicator {
+            background-color: rgba(255, 255, 0, 0.15);
+            border-left: 3px solid #ffff00;
+            padding-left: 8px;
+            margin: 10px 0;
+        }
+
+        /* Update cooldown text styling */
+        .inventory-slot {
+            position: relative;
+        }
+
+        .inventory-slot.on-cooldown {
+            position: relative;
+        }
+
+        .inventory-slot.on-cooldown::after {
+            content: attr(data-cooldown);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff0000;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 
+                -1px -1px 0 #000,
+                 1px -1px 0 #000,
+                -1px  1px 0 #000,
+                 1px  1px 0 #000;
+            z-index: 2;
+        }
+
+        .inventory-slot.on-cooldown img {
+            opacity: 0.5;
+        }
+
+        /* Add cooldown overlay styling for inventory slots */
+        .inventory-slot {
+            position: relative;
+        }
+
+        @keyframes dodge {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-20px); }
+            75% { transform: translateX(20px); }
+            100% { transform: translateX(0); }
+        }
+
+        .dodge-animation {
+            animation: dodge 0.5s ease-in-out;
+        }
+
+        .cooldown-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .cooldown-text {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .heal-bonus {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #44ff44;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 700;
+            border: 2px solid #66ff66;
+            box-shadow: 0 0 10px rgba(68, 255, 68, 0.5);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .heal-bonus::before {
+            content: 'Last healed:';
+            font-size: 16px;
+        }
+
+        @keyframes healUpdate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .heal-update {
+            animation: healUpdate 0.3s ease-out;
+        }
+
+        .dodge-bonus {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ffff;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 700;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .dodge-bonus::before {
+            content: '💨';
+            font-size: 16px;
+        }
+
+        @keyframes dodgeUpdate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .dodge-update {
+            animation: dodgeUpdate 0.3s ease-out;
+        }
+
+        .ally-target {
+            border: 2px solid #44ff44;
+            box-shadow: 0 0 10px rgba(68, 255, 68, 0.5);
+        }
+
+        .ally-target:hover {
+            border-color: #88ff88;
+        }
+
+        #ally-targeting-container .target-icon {
+            width: 50px !important;
+            height: 50px !important;
+            cursor: pointer;
+            border: 2px solid #44ff44;
+            border-radius: 50%;
+            transition: transform 0.2s, border-color 0.2s;
+            object-fit: contain;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px;
+        }
+
+        #ally-targeting-container .target-icon:hover {
+            transform: scale(1.1);
+            border-color: #88ff88;
+            box-shadow: 0 0 15px rgba(68, 255, 68, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Update the title and enemy container -->
+    <h1 style="position: relative; left: 1%;">Farm Raid - Stage 2</h1>
+    <div id="enemy-area">
+        <div id="MonsterPig" class="enemy" style="right: 65%;">
+            <img src="res/Monster_Pig.jpeg" alt="Monster Pig">
+            <div class="buff-container" id="MonsterPig-buff-container"></div>
+            <div class="status">
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="MonsterPig-hp-bar"></div>
+                </div>
+                <div id="MonsterPig-status">HP: 7500/7500</div>
+            </div>
+            <div class="heal-bonus" id="pig-heal-bonus">+0</div> <!-- Add this line -->
+        </div>
+        <div id="MonsterBull" class="enemy" style="right: 44%;">
+            <img src="res/Monster_Bull.jpeg" alt="Monster Bull">
+            <div class="buff-container" id="MonsterBull-buff-container"></div>
+            <div class="status">
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="MonsterBull-hp-bar"></div>
+                </div>
+                <div id="MonsterBull-status">HP: 10000/10000</div>
+            </div>
+            <div class="damage-bonus" id="bull-damage-bonus">+0%</div> <!-- New element -->
+        </div>
+        <div id="MonsterChicken" class="enemy" style="right: 23%;">
+            <img src="res/Monster_Chicken.jpeg" alt="Monster Chicken">
+            <div class="buff-container" id="MonsterChicken-buff-container"></div>
+            <div class="status">
+                <div class="hp-bar-container">
+                    <div class="hp-bar" id="MonsterChicken-hp-bar"></div>
+                </div>
+                <div id="MonsterChicken-status">HP: 5000/5000</div>
+            </div>
+            <div class="dodge-bonus" id="chicken-dodge-bonus">10%</div> <!-- Add this line -->
+        </div>
+    </div>
+
+    <!-- Update the player characters -->
+    <div class="character farmer-shoma" id="FarmerShoma" style="left: 30%;">
+        <img src="../../Loading Screen/Farmer Shoma.png" alt="Farmer Shoma">
+        <div class="status">
+            <div class="hp-bar-container">
+                <div class="hp-bar" id="FarmerShoma-hp-bar"></div>
+            </div>
+            <div id="FarmerShoma-status">HP: 9000/9000</div>
+        </div>
+        <div class="buff-container" id="FarmerShoma-buff-container"></div>
+        <div class="ability-container" id="FarmerShoma-abilities">
+            <div class="ability">
+                <img id="ShomaAbility1" src="res/Shoma_A1.jpeg" alt="Boink" 
+                    title="Boink: Deals 325 damage with a 45% chance to critically strike for 740 damage instead.">
+                <div id="ShomaAbility1Cooldown" class="cooldown-text" style="display: none;"></div>
+            </div>
+            <div class="ability">
+                <img id="ShomaAbility2" src="res/Shoma_A2.jpeg" alt="Ability 2" 
+                    title="Ability 2">
+                <div id="ShomaAbility2Cooldown" class="cooldown-text" style="display: none;"></div>
+            </div>
+            <div class="ability">
+                <img id="ShomaAbility3" src="res/Shoma_A3.jpeg" alt="Catch the Ball" 
+                    title="Catch the Ball: Increases target ally's dodge chance by 70% for 4 turns. Cooldown: 5 turns.">
+                <div id="ShomaAbility3Cooldown" class="cooldown-text" style="display: none;"></div>
+            </div>
+            <div class="ability">
+                <img id="ShomaAbility4" src="res/Shoma_A4.jpeg" alt="Ability 4" 
+                    title="Ability 4">
+                <div id="ShomaAbility4Cooldown" class="cooldown-text" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="character farmer-nina" id="FarmerNina" style="left: 55%;">
+        <img src="../../Loading Screen/Farmer Nina.png" alt="Farmer Nina">
+        <div class="status">
+            <div class="hp-bar-container">
+                <div class="hp-bar" id="FarmerNina-hp-bar"></div>
+            </div>
+            <div id="FarmerNina-status">HP: 7500/7500</div>
+        </div>
+        <div class="buff-container" id="FarmerNina-buff-container"></div>
+        <div class="ability-container" id="FarmerNina-abilities">
+            <div class="ability">
+                <img id="NinaAbility1" src="res/Nina_A1.jpeg" alt="Ability 1" 
+                    title="Ability 1">
+                <div id="NinaAbility1Cooldown" class="cooldown-text" style="display: none;"></div>
+            </div>
+            <div class="ability">
+                <img id="NinaAbility2" src="res/Nina_A2.jpeg" alt="Change Target" 
+                    title="Change Target: Places a debuff on the target enemy. Nina's abilities deal 50% more damage to the debuffed target. Lasts for 15 turns. Cooldown: 15 turns.">
+                <div id="NinaAbility2Cooldown" class="cooldown-text" style="display: none;"></div>
+            </div>
+            <div class="ability">
+                <img id="NinaAbility3" src="res/Nina_A3.jpeg" alt="Ability 3" 
+                    title="Ability 3">
+                <div id="NinaAbility3Cooldown" class="cooldown-text" style="display: none;"></div>
+            </div>
+            <div class="ability">
+                <img id="NinaAbility4" src="res/Nina_A4.jpeg" alt="Ability 4" 
+                    title="Ability 4">
+                <div id="NinaAbility4Cooldown" class="cooldown-text" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <button id="start-button">Start Stage 2</button>
+    <div class="log-container" id="log"></div>
+    <div class="turn-counter" id="turn-counter">Turn: 0</div>
+    <div id="volume-control">
+        <label for="volume-slider">Volume:</label>
+        <input type="range" id="volume-slider" min="0" max="100" value="20">
+    </div>
+    <div class="inventory">
+        <h3>Inventory</h3>
+        <div class="inventory-slots">
+            <div class="inventory-slot" data-slot="1"></div>
+            <div class="inventory-slot" data-slot="2"></div>
+            <div class="inventory-slot" data-slot="3"></div>
+            <div class="inventory-slot" data-slot="4"></div>
+            <div class="inventory-slot" data-slot="5"></div>
+            <div class="inventory-slot" data-slot="6"></div>
+        </div>
+    </div>    <script>
+
+        let lastUsedAbility = null;
+        let isPlayerTurn = false;
+        let buffs = {
+            FarmerShoma: {},
+            FarmerNina: {},
+            MonsterPig: {},
+            MonsterBull: { damageIncrease: 0 },
+            MonsterChicken: { dodgeChance: 0.10 } // Start with 10% dodge
+        };
+        let turnCounter = 0;
+        let bgAudio = null;
+        let selectedAbility = null;
+        let targetingActive = false;
+        let isUsingItem = false;
+
+        const abilityCooldowns = {
+            'ShomaAbility1': { current: 0, max: 0 }, // 2 turn cooldown for Boink
+            'ShomaAbility2': { current: 0, max: 9 },  // 3 turn cooldown for Apple Ball
+            'NinaAbility1': { current: 0, max: 0 },  // 3 turn cooldown for Sniper Shot
+            'NinaAbility2': { current: 0, max: 15 }, // 15 turn cooldown for Change Target
+            'NinaAbility3': { current: 0, max: 5 }, // Add this line for Hiding ability
+            'NinaAbility4': { current: 0, max: 8 }, // 8 turn cooldown for Multi-Shot
+            'ShomaAbility3': { current: 0, max: 5 }, // 5 turn cooldown for Catch the Ball
+        };
+
+        const inventory = {
+            slots: new Array(6).fill(null),
+            maxStack: 99
+        };
+
+        let activeEnemies = 0; // Tracks the number of enemies that need to act each turn
+
+        // Add a flag to track if weaker carrots have been spawned
+        let weakerCarrotsSpawned = false;
+
+        // Change from const to let for itemCooldowns
+        let itemCooldowns = {};
+
+        // Add this at the top with your other global variables
+        const droppedLoot = new Set();
+
+        async function startGame() {
+            // Prevent double initialization
+            if (window.gameInitialized) {
+                console.log('Game already initialized, skipping...');
+                return;
+            }
+            
+            document.getElementById('start-button').style.display = 'none';
+            
+            // Check if user is logged in
+            const user = auth.currentUser;
+            if (!user) {
+                console.error('No user logged in');
+                return;
+            }
+
+            // Clear existing inventory first
+            inventory.slots = new Array(6).fill(null);
+            updateInventoryDisplay();
+
+            // Initialize turn counter to 1 instead of 0
+            turnCounter = 1;
+            document.getElementById('turn-counter').innerText = `Turn: ${turnCounter}`;
+            logEnemyAction(`\n--- Turn ${turnCounter} ---`);
+
+            // Load user's raid inventory (single load)
+            try {
+                const inventoryRef = dbRef(db, `users/${user.uid}/RaidInventory/items`);
+                const snapshot = await dbGet(inventoryRef);
+                
+                console.log('Loading inventory...'); // Debug log
+                
+                if (snapshot.exists()) {
+                    const items = snapshot.val();
+                    console.log('Inventory data:', items);
+                    
+                    // Add each item to the inventory with its full count
+                    for (const [itemId, count] of Object.entries(items)) {
+                        if (count > 0 && ITEM_DATABASE[itemId]) {
+                            console.log(`Adding item to inventory: ${itemId}, count: ${count}`);
+                            addItemToInventory({
+                                ...ITEM_DATABASE[itemId],
+                                count: count
+                            }, true);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading inventory:', error);
+            }
+
+            enableAbilities();
+            isPlayerTurn = true;
+
+            const volumeSlider = document.getElementById('volume-slider');
+            volumeSlider.addEventListener('input', function() {
+                if (bgAudio) {
+                    bgAudio.volume = this.value / 100;
+                }
+                // Save volume preference
+                localStorage.setItem('gameVolume', this.value / 100);
+            });
+            
+            // Initialize audio with the current volume slider value
+            if (bgAudio) {
+                bgAudio.pause();
+                bgAudio = null;
+            }
+            
+            bgAudio = new Audio('res/Stage_2_Audio.mp3');
+            bgAudio.volume = volumeSlider.value / 100;
+            bgAudio.loop = true;
+            
+            // Play audio after loading
+            bgAudio.addEventListener('canplaythrough', function() {
+                bgAudio.play().catch(function(error) {
+                    console.log("Audio play failed:", error);
+                });
+            }, { once: true });
+
+            // Mark game as initialized
+            window.gameInitialized = true;
+
+            weakerCarrotsSpawned = false; // Reset the flag
+            itemCooldowns = {};  // Reset all cooldowns
+            isFirstTurn = true;
+
+            // Load saved volume when page loads
+            document.addEventListener('DOMContentLoaded', function() {
+                const savedVolume = localStorage.getItem('gameVolume');
+                if (savedVolume !== null) {
+                    volumeSlider.value = savedVolume * 100;
+                    if (bgAudio) {
+                        bgAudio.volume = savedVolume;
+                    }
+                }
+            });
+        }
+
+        function applyFlashEffect(character) {
+            const characterElement = document.getElementById(character);
+            if (characterElement) {
+                const characterImage = characterElement.querySelector('img');
+                if (characterImage) {
+                    // Remove any existing flash classes
+                    characterImage.classList.remove('flash-green');
+                    characterImage.classList.add('flash-red');
+                    setTimeout(() => {
+                        characterImage.classList.remove('flash-red');
+                    }, 200);
+                }
+            }
+        }
+
+        function applyGreenFlashEffect(character) {
+            const characterElement = document.getElementById(character);
+            if (characterElement) {
+                const characterImage = characterElement.querySelector('img');
+                if (characterImage) {
+                    // Remove any existing flash classes
+                    characterImage.classList.remove('flash-red');
+                    characterImage.classList.add('flash-green');
+                    setTimeout(() => {
+                        characterImage.classList.remove('flash-green');
+                    }, 200);
+                }
+            }
+        }
+
+        
+        // Update the updateCharacterStatus function to use flash-red for damage
+        function updateCharacterStatus(characterId, damage) {
+            const statusElement = document.getElementById(`${characterId}-status`);
+            const hpBarElement = document.getElementById(`${characterId}-hp-bar`);
+
+            if (!statusElement || !hpBarElement) {
+                console.error(`Element not found for character: ${characterId}`);
+                return;
+            }
+
+            let currentHp = parseInt(statusElement.innerText.split('/')[0].split(': ')[1]);
+            const maxHp = parseInt(statusElement.innerText.split('/')[1]);
+
+            currentHp -= Math.floor(damage);
+            if (currentHp < 0) currentHp = 0;
+
+            statusElement.innerText = `HP: ${currentHp}/${maxHp}`;
+            const hpPercentage = (currentHp / maxHp) * 100;
+            hpBarElement.style.width = `${hpPercentage}%`;
+
+            // Apply red flash effect for damage
+            applyFlashEffect(characterId);
+
+            // Check if the character is MonsterBull and increment damage bonus
+            if (characterId === 'MonsterBull') {
+                buffs.MonsterBull.damageIncrease += 0.01; // Increase by 1%
+                
+                // Update the damage bonus display
+                const bonusElement = document.getElementById('bull-damage-bonus');
+                if (bonusElement) {
+                    bonusElement.textContent = `+${Math.floor(buffs.MonsterBull.damageIncrease * 100)}%`;
+                    
+                    // Add animation class
+                    bonusElement.classList.add('damage-update');
+                    setTimeout(() => {
+                        bonusElement.classList.remove('damage-update');
+                    }, 300);
+                }
+            }
+
+            // Log the damage
+            const log = document.getElementById('log');
+            const logEntry = document.createElement('p');
+            logEntry.innerHTML = `<span style="color: yellow;">Turn ${turnCounter}:</span> <span style="color: red;">${characterId} took ${Math.floor(damage)} damage!</span>`;
+            log.appendChild(logEntry);
+            scrollToBottom();
+        }
+
+        function updateBullDamageBonusDisplay() {
+            const bonusElement = document.getElementById('bull-damage-bonus');
+            if (bonusElement) {
+                bonusElement.innerText = `+${(buffs.MonsterBull.damageIncrease * 100).toFixed(0)}%`;
+            }
+        }
+
+        // Update the AIturn function to only handle weaker carrots
+        function AIturn() {
+            // Randomly select one enemy to attack
+            const enemies = ['MonsterPig', 'MonsterBull', 'MonsterChicken'];
+            const selectedEnemy = enemies[Math.floor(Math.random() * enemies.length)];
+
+            switch (selectedEnemy) {
+                case 'MonsterPig':
+                    useStomp();
+                    break;
+                case 'MonsterBull':
+                    useHornDrill();
+                    break;
+                case 'MonsterChicken':
+                    useDoubleStab();
+                    break;
+            }
+
+            // End AI turn and start player's turn
+            setTimeout(() => {
+                isPlayerTurn = true;
+                enableAbilities();
+                logPlayerTurn();
+            }, 2000); // Adjust delay as needed
+        }
+
+
+        // Update the enemy attack functions to use the modified damage calculation
+        function useStomp() {
+            let target;
+            // Check if Nina is targetable
+            if (buffs['FarmerNina']?.Hiding) {
+                target = 'FarmerShoma'; // Force target Shoma if Nina is hiding
+            } else {
+                target = Math.random() < 0.5 ? 'FarmerShoma' : 'FarmerNina';
+            }
+            
+            const baseDamage = 500;
+
+            // Calculate final damage considering Splash debuff
+            const finalDamage = calculateDamageWithBuffs(baseDamage, 'MonsterPig', target);
+
+            // Apply damage once
+            updateCharacterStatus(target, finalDamage);
+            logAction('Monster Pig', 'Stomp', target, `deals ${finalDamage} damage`);
+
+            // Remove Splash debuff after attack
+            if (buffs['MonsterPig'] && buffs['MonsterPig']['splash']) {
+                delete buffs['MonsterPig']['splash'];
+                const buffContainer = document.getElementById('MonsterPig-buff-container');
+                if (buffContainer) {
+                    const buffIcon = buffContainer.querySelector(`[data-buff="splash"]`);
+                    if (buffIcon) {
+                        buffIcon.remove();
+                    }
+                }
+                console.log('Splash debuff removed from MonsterPig after Stomp.');
+            }
+        }
+
+        function useHornDrill() {
+            let target;
+            if (buffs['FarmerNina']?.Hiding) {
+                target = 'FarmerShoma';
+            } else {
+                target = Math.random() < 0.5 ? 'FarmerShoma' : 'FarmerNina';
+            }
+            
+            const baseDamage = 250;
+
+            // Calculate final damage considering any buffs/debuffs
+            const preDoubleDamage = calculateDamageWithBuffs(baseDamage, 'MonsterBull', target);
+            const finalDamage = preDoubleDamage * 2; // Horn Drill deals double damage
+            console.log(`Horn Drill pre-double damage: ${preDoubleDamage}, final damage: ${finalDamage}`);
+
+            // Apply damage once
+            updateCharacterStatus(target, finalDamage);
+
+            // Apply Weakened debuff to the target for 3 turns
+            if (!buffs[target]['Weakened']) {
+                applyBuff(target, 'Weakened', 3, 'res/Weakened_Debuff.jpeg', 'Your damage is reduced by 40% for 3 turns');
+                logAction('Monster Bull', 'Horn Drill', target, `deals ${finalDamage} damage and applies Weakened debuff for 3 turns`);
+            } else {
+                logAction('Monster Bull', 'Horn Drill', target, `deals ${finalDamage} damage (Weakened debuff already active)`);
+            }
+
+            // Update the damage bonus display
+            const bonusElement = document.getElementById('bull-damage-bonus');
+            if (bonusElement) {
+                bonusElement.textContent = `+${(buffs.MonsterBull.damageIncrease * 100).toFixed(2)}%`;
+                
+                // Add animation class for visual feedback
+                bonusElement.classList.add('damage-update');
+                setTimeout(() => {
+                    bonusElement.classList.remove('damage-update');
+                }, 300);
+            }
+
+            // Remove Splash debuff after attack if it exists
+            if (buffs['MonsterBull'] && buffs['MonsterBull']['splash']) {
+                delete buffs['MonsterBull']['splash'];
+                const buffContainer = document.getElementById('MonsterBull-buff-container');
+                if (buffContainer) {
+                    const buffIcon = buffContainer.querySelector(`[data-buff="splash"]`);
+                    if (buffIcon) {
+                        buffIcon.remove();
+                    }
+                }
+                console.log('Splash debuff removed from MonsterBull after Horn Drill.');
+            }
+        }
+
+        function useDoubleStab() {
+            const baseDamage = 400;
+            
+            // Only hit visible targets
+            if (buffs['FarmerNina']?.Hiding) {
+                // Only hit Shoma if Nina is hiding
+                const finalDamageShoma = calculateDamageWithBuffs(baseDamage, 'MonsterChicken', 'FarmerShoma');
+                updateCharacterStatus('FarmerShoma', finalDamageShoma);
+                logAction('Monster Chicken', 'Double Stab', 'Shoma', `deals ${finalDamageShoma} damage`);
+            } else {
+                // Hit both if Nina is visible
+                const finalDamageShoma = calculateDamageWithBuffs(baseDamage, 'MonsterChicken', 'FarmerShoma');
+                const finalDamageNina = calculateDamageWithBuffs(baseDamage, 'MonsterChicken', 'FarmerNina');
+                updateCharacterStatus('FarmerShoma', finalDamageShoma);
+                updateCharacterStatus('FarmerNina', finalDamageNina);
+                logAction('Monster Chicken', 'Double Stab', 'both', `deals ${finalDamageShoma} damage to both Shoma and Nina`);
+            }
+            
+            // Remove the Splash debuff after use
+            if (buffs['MonsterChicken'] && buffs['MonsterChicken']['splash']) {
+                delete buffs['MonsterChicken']['splash'];
+                const buffContainer = document.getElementById('MonsterChicken-buff-container');
+                if (buffContainer) {
+                    const buffIcon = buffContainer.querySelector(`[data-buff="splash"]`);
+                    if (buffIcon) {
+                        buffIcon.remove();
+                    }
+                }
+                console.log('Splash debuff removed from MonsterChicken after use.');
+            }
+        }
+
+        function applyDamageReductionBuff(character, reduction, turns) {
+            if (!buffs[character]) {
+                buffs[character] = {};
+            }
+            buffs[character]['damage_reduction'] = { value: reduction, turns: turns };
+            updateBuffDisplay(character);
+        }
+
+        function updateBuffDisplay(character) {
+            const buffContainer = document.querySelector(`.${character} .buff-container`);
+            if (buffContainer) {
+                buffContainer.innerHTML = ''; // Clear existing buffs
+                for (const buff in buffs[character]) {
+                    const buffElement = document.createElement('div');
+                    buffElement.className = 'buff-icon';
+                    buffElement.innerText = `${buff}: ${buffs[character][buff].turns} turns`;
+                    buffContainer.appendChild(buffElement);
+                }
+            }
+        }
+        
+
+        function updateChickenDodge() {
+            buffs.MonsterChicken.dodgeChance += 0.01; // Increase dodge chance by 1%
+            
+            // Update the dodge bonus display
+            const dodgeBonusElement = document.getElementById('chicken-dodge-bonus');
+            if (dodgeBonusElement) {
+                const dodgePercentage = Math.floor(buffs.MonsterChicken.dodgeChance * 100);
+                dodgeBonusElement.textContent = `${dodgePercentage}%`;
+                
+                // Add animation class
+                dodgeBonusElement.classList.add('dodge-update');
+                setTimeout(() => {
+                    dodgeBonusElement.classList.remove('dodge-update');
+                }, 300);
+            }
+        }
+        
+        
+
+        // Function to log player turn
+        function logPlayerTurn() {
+            const log = document.getElementById('log');
+            const logEntry = document.createElement('p');
+            logEntry.innerHTML = `<span style="color: #00ff00;">👉 Your turn!</span>`;
+            log.appendChild(logEntry);
+            scrollToBottom();
+        }
+
+        // Function to log enemy actions (for debugging)
+        function logEnemyAction(message) {
+            const log = document.getElementById('log');
+            const logEntry = document.createElement('p');
+            
+            if (message.includes('Turn')) {
+                logEntry.classList.add('turn-indicator');  // Add class for turn indicator styling
+                logEntry.innerHTML = `<span style="color: #00ffff;">🔄 ${message}</span>`;
+            } else {
+                logEntry.innerHTML = `<span style="color: #ff4444;">⚠️ ${message}</span>`;
+            }
+            
+            log.appendChild(logEntry);
+            scrollToBottom();
+        }
+
+
+        // Function to apply a buff to a character
+        function applyBuff(characterId, buffName, duration, iconPath, description) {
+            if (!buffs[characterId]) {
+                buffs[characterId] = {};
+            }
+
+            buffs[characterId][buffName] = {
+                duration: duration,
+                description: description
+            };
+
+            // Get the buff container for the character
+            const buffContainer = document.getElementById(`${characterId}-buff-container`);
+            if (!buffContainer) {
+                console.error(`Buff container not found for character: ${characterId}`);
+                return;
+            }
+
+            // Create a new buff icon element
+            const buffIcon = document.createElement('div');
+            buffIcon.className = 'buff-icon';
+            buffIcon.dataset.buff = buffName;
+            buffIcon.innerHTML = `
+                <img src="${iconPath}" alt="${buffName}">
+                <div class="buff-duration">${duration}</div>
+            `;
+            buffIcon.title = description;
+
+            // Append the buff icon to the container
+            buffContainer.appendChild(buffIcon);
+        }
+
+        // Function to get or create buff container
+        function getBuffContainer(character) {
+            const containerId = `${character}-buff-container`;
+            let container = document.getElementById(containerId);
+            
+            if (!container) {
+                console.warn(`Buff container not found for ${character}`);
+                return null;
+            }
+            
+            return container;
+        }
+
+        // Function to handle buff updates for a specific character
+        function updateCharacterBuffs(character) {
+            const container = document.getElementById(`${character}-buff-container`);
+            if (!container) {
+                console.warn(`Buff container not found for ${character}`);
+                return false;
+            }
+
+            let hasDormantBuff = false;
+
+            // Skip if no buffs exist for this character
+            if (!buffs[character]) return false;2
+
+            Object.keys(buffs[character]).forEach(buffType => {
+                buffs[character][buffType].duration--;
+
+                if (buffs[character][buffType].duration <= 0) {
+                    // Remove expired buff
+                    const buffIcon = container.querySelector(`[data-buff="${buffType}"]`);
+                    if (buffIcon) {
+                        buffIcon.remove();
+                    }
+
+                    delete buffs[character][buffType];
+                    logAction(character, 'Buff', buffType, '✨ has expired');
+                } else {
+                    // Check for dormant buff
+                    if (buffType === 'dormant') {
+                        hasDormantBuff = true;
+                    }
+
+                    // Update duration display
+                    const buffIcon = container.querySelector(`[data-buff="${buffType}"]`);
+                    if (buffIcon) {
+                        const durationElement = buffIcon.querySelector('.buff-duration');
+                        if (durationElement) {
+                            durationElement.textContent = buffs[character][buffType].duration;
+                        }
+                    }
+                }
+            });
+        }
+        
+
+        // Update the updateBuffs function to properly handle buff durations
+        function updateBuffs() {
+            Object.keys(buffs).forEach(character => {
+                if (!buffs[character]) return;
+
+                // Iterate through all buffs of the character
+                for (const buffName in buffs[character]) {
+                    const buff = buffs[character][buffName];
+
+                    // Only handle buffs with a numeric duration
+                    if (typeof buff.duration === 'number') {
+                        buff.duration--;
+
+                        // Update the buff duration display in the UI
+                        const buffIcon = document.querySelector(`#${character}-buff-container [data-buff="${buffName}"] .buff-duration`);
+                        if (buffIcon) {
+                            buffIcon.textContent = buff.duration;
+                        }
+
+                        // Remove the buff if its duration has expired
+                        if (buff.duration <= 0) {
+                            delete buffs[character][buffName];
+
+                            // Remove the buff icon from the UI
+                            const buffElement = document.querySelector(`#${character}-buff-container [data-buff="${buffName}"]`);
+                            if (buffElement) {
+                                buffElement.remove();
+                            }
+
+                            // Revert any changes caused by the buff
+                            switch(buffName) {
+                                case 'CatchTheBall':
+                                    buffs[character].dodgeChance = character === 'MonsterChicken' ? 0.10 : 0;
+                                    break;
+                                case 'ChangeTarget':
+                                    // Revert ChangeTarget effects here
+                                    // Example: Remove damage vulnerability
+                                    break;
+                                case 'Hiding':
+                                    // Revert Hiding effects here
+                                    const ninaElement = document.querySelector('.farmer-nina img');
+                                    if (ninaElement) {
+                                        ninaElement.style.opacity = '1';
+                                    }
+                                    break;
+                                case 'DamageBonus':
+                                    // Revert DamageBonus effects here
+                                    buffs[character].damageIncrease = 0;
+                                    updateBullDamageBonusDisplay();
+                                    break;
+                                // Add more cases as needed for other buffs
+                            }
+                        }
+                    }
+                }
+
+                // Handle MonsterChicken's passive dodge increase
+                if (character === 'MonsterChicken' && !buffs[character].CatchTheBall) {
+                    buffs[character].dodgeChance = Math.min((buffs[character].dodgeChance || 0.10) + 0.01, 0.99);
+                    updateChickenDodgeDisplay();
+                }
+            });
+        }
+    
+
+        function enableAbilities() {
+            const abilities = document.querySelectorAll('.ability img');
+            abilities.forEach(ability => {
+                if (abilityCooldowns[ability.id] && abilityCooldowns[ability.id].current > 0) {
+                    ability.style.pointerEvents = 'none';
+                    ability.classList.add('disabled');
+                } else {
+                    ability.style.pointerEvents = 'auto';
+                    ability.classList.remove('disabled');
+                }
+            });
+        }
+
+        function disableAbilities() {
+            const abilities = document.querySelectorAll('.ability img');
+            abilities.forEach(ability => {
+                ability.style.pointerEvents = 'none';
+                ability.classList.add('disabled');
+            });
+        }
+
+        // Update the healCharacter function to prevent NaN
+        function healCharacter(characterId, healAmount) {
+            const statusElement = document.getElementById(`${characterId}-status`);
+            if (!statusElement) {
+                console.error('Status element not found for:', characterId);
+                return;
+            }
+
+            // Get the current HP text and parse it carefully
+            const hpText = statusElement.innerText;
+            const hpMatch = hpText.match(/HP: (\d+)\/(\d+)/);
+            
+            if (!hpMatch) {
+                console.error('Invalid HP format:', hpText);
+                return;
+            }
+
+            const currentHp = parseInt(hpMatch[1]);
+            const maxHp = parseInt(hpMatch[2]);
+
+            console.log('Healing calculation:', { characterId, currentHp, maxHp, healAmount });
+
+            if (isNaN(currentHp) || isNaN(maxHp) || isNaN(healAmount)) {
+                console.error('Invalid numbers in heal calculation:', { currentHp, maxHp, healAmount });
+                return;
+            }
+
+            // Calculate new HP
+            const newHp = Math.min(maxHp, currentHp + Math.floor(healAmount));
+            
+            // Update HP text
+            statusElement.innerText = `HP: ${newHp}/${maxHp}`;
+            
+            // Update HP bar
+            const hpBar = document.getElementById(`${characterId}-hp-bar`);
+            if (hpBar) {
+                const percentage = (newHp / maxHp) * 100;
+                hpBar.style.width = `${percentage}%`;
+            }
+
+            // Log the healing
+            const log = document.getElementById('log');
+            const logEntry = document.createElement('p');
+            logEntry.innerHTML = `<span style="color: yellow;">💚 Healing:</span> <span style="color: #00ff00;">${characterId} restored ${Math.floor(healAmount)} HP</span>`;
+            log.appendChild(logEntry);
+            scrollToBottom();
+
+            // Remove duplicate Monster Pig update code
+            // This section was causing double updates
+            if (characterId === 'MonsterPig') {
+                updateHPBar(characterId, newHp, maxHp);
+            }
+        }
+
+        function logAction(actor, action, target, description) {
+            const log = document.getElementById('log');
+            const logEntry = document.createElement('p');
+            
+            // Define emojis for different actions
+            const actionEmojis = {
+                'Scratch': '🐱',
+                'Leap': '⬆️',
+                'Catboomerang': '🌀',
+                'Wild Strike': '️',
+                'Carrot Cannon': '💥',
+                'Anger': '😠',
+                'Dormant': '',
+                'Carrot Bomb': '💣',
+                'Buff': '✨',
+                'default': '➡️'
+            };
+
+            const emoji = actionEmojis[action] || actionEmojis.default;
+            logEntry.innerHTML = `<span style="color: yellow;">${actor} ${emoji} ${action} on ${target}:</span> <span style="color: red;">${description}</span>`;
+            log.appendChild(logEntry);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            const log = document.getElementById('log');
+            log.scrollTop = log.scrollHeight;
+        }
+
+
+
+        function updateCooldowns() {
+            for (const abilityId in abilityCooldowns) {
+                if (abilityCooldowns[abilityId].current > 0) {
+                    abilityCooldowns[abilityId].current--;
+                    
+                    // Update cooldown display
+                    const cooldownElement = document.getElementById(`${abilityId}Cooldown`);
+                    if (cooldownElement) {
+                        if (abilityCooldowns[abilityId].current > 0) {
+                            cooldownElement.style.display = 'block';
+                            cooldownElement.textContent = abilityCooldowns[abilityId].current;
+                            document.getElementById(abilityId).classList.add('disabled');
+                        } else {
+                            cooldownElement.style.display = 'none';
+                            document.getElementById(abilityId).classList.remove('disabled');
+                        }
+                    }
+                }
+            }
+
+            // Also update item cooldowns if they exist
+            for (const itemId in itemCooldowns) {
+                if (itemCooldowns[itemId] > 0) {
+                    itemCooldowns[itemId]--;
+                    updateItemCooldownDisplay(itemId);
+                }
+            }
+        }
+
+        function startCooldown(abilityId) {
+            if (abilityCooldowns[abilityId]) {
+                abilityCooldowns[abilityId].current = abilityCooldowns[abilityId].max;
+                updateCooldownDisplay(abilityId);
+            }
+        }
+
+        function updateCooldownDisplay(abilityId) {
+            const cooldownElement = document.getElementById(`${abilityId}Cooldown`);
+            if (cooldownElement) {
+                const turnsLeft = abilityCooldowns[abilityId].current;
+                if (turnsLeft > 0) {
+                    cooldownElement.style.display = 'block';
+                    cooldownElement.textContent = turnsLeft;
+                } else {
+                    cooldownElement.style.display = 'none';
+                }
+            }
+        }
+
+        function showTargetingIcons() {
+            // Remove any existing targeting icons
+            const existingContainer = document.getElementById('targeting-container');
+            const existingAllyContainer = document.getElementById('ally-targeting-container');
+            if (existingContainer) existingContainer.remove();
+            if (existingAllyContainer) existingAllyContainer.remove();
+
+            // Create separate containers for enemies and allies
+            const enemyContainer = document.createElement('div');
+            enemyContainer.id = 'targeting-container';
+
+            const allyContainer = document.createElement('div');
+            allyContainer.id = 'ally-targeting-container';
+            allyContainer.style.position = 'absolute';
+            allyContainer.style.top = '50%';
+            allyContainer.style.left = '50%';
+            allyContainer.style.transform = 'translate(-50%, -50%)';
+            allyContainer.style.display = 'flex';
+            allyContainer.style.gap = '10px';
+            allyContainer.style.zIndex = '1000';
+            
+            // For Apple Ball (Ability 2), add ally targets
+            if (selectedAbility === 'ShomaAbility2') {
+                const allyIds = ['FarmerShoma', 'FarmerNina'];
+                allyIds.forEach(allyId => {
+                    const allyElement = document.getElementById(allyId);
+                    if (allyElement) {
+                        const targetIcon = createTargetIcon(allyId, true);
+                        allyContainer.appendChild(targetIcon);
+                    }
+                });
+            }
+
+            // Create targeting icons for each enemy
+            const enemyIds = ['MonsterPig', 'MonsterBull', 'MonsterChicken'];
+            enemyIds.forEach(enemyId => {
+                const enemyElement = document.getElementById(enemyId);
+                if (enemyElement && enemyElement.style.display !== 'none') {
+                    const targetIcon = createTargetIcon(enemyId);
+                    enemyContainer.appendChild(targetIcon);
+                }
+            });
+
+            // Append containers to the active character's image container
+            if (activeCharacter) {
+                const activeCharacterElement = document.querySelector(`.${activeCharacter}`);
+                if (activeCharacterElement) {
+                    activeCharacterElement.appendChild(enemyContainer);
+                    activeCharacterElement.appendChild(allyContainer);
+                }
+            }
+        }
+
+        // Function to create a target icon
+        function createTargetIcon(targetId, isAlly = false) {
+            const icon = document.createElement('img');
+            
+            // Use different images for each target type
+            if (isAlly) {
+                switch (targetId) {
+                    case 'FarmerShoma':
+                        icon.src = 'res/Shoma_Portrait.png'; // Shoma's portrait for ally targeting
+                        break;
+                    case 'FarmerNina':
+                        icon.src = 'res/Nina_Portrait.png';  // Nina's portrait for ally targeting
+                        break;
+                }
+                icon.className = 'target-icon ally-target';
+            } else {
+                switch (targetId) {
+                    case 'MonsterPig':
+                        icon.src = 'res/Monster_Pig_Icon.png';
+                        break;
+                    case 'MonsterBull':
+                        icon.src = 'res/Monster_Bull_Icon.png';
+                        break;
+                    case 'MonsterChicken':
+                        icon.src = 'res/Monster_Chicken_Icon.png';
+                        break;
+                }
+                icon.className = 'target-icon';
+            }
+            
+            icon.dataset.targetId = targetId;
+
+            // Add click event listener
+            icon.addEventListener('click', () => {
+                console.log(`Target clicked: ${targetId}`); // Debug log
+                if (selectedAbility === 'NinaAbility1' && !isAlly) {
+                    console.log('Calling useSniperShot'); // Debug log
+                    useSniperShot(targetId); // Call the Sniper Shot function with the selected target
+                } else if (selectedAbility === 'ShomaAbility2') {
+                    console.log('Calling useAppleBall'); // Debug log
+                    useAppleBall(targetId); // Call the Apple Ball function with the selected target
+                } else if (selectedAbility === 'ShomaAbility1' && !isAlly) {
+                    console.log('Calling useBoink'); // Debug log
+                    useBoink(targetId); // Call the Boink function with the selected target
+                } else if (selectedAbility === 'NinaAbility2' && !isAlly) {
+                    console.log('Calling useChangeTarget'); // Debug log
+                    useChangeTarget(targetId); // Call the Change Target function with the selected target
+                    hideTargetingIcons(); // Remove the targeting icons
+                }
+                // Reset targeting state after selection
+                targetingActive = false;
+                selectedAbility = null;
+                hideTargetingIcons(); // Optionally hide targeting icons after selection
+            });
+
+            return icon;
+        }
+
+        function hideTargetingIcons() {
+            const targetingContainer = document.getElementById('targeting-container');
+            const allyTargetingContainer = document.getElementById('ally-targeting-container');
+
+            if (targetingContainer) {
+                targetingContainer.remove();
+            }
+
+            if (allyTargetingContainer) {
+                allyTargetingContainer.remove();
+            }
+        }
+        
+
+        function executeAbility(abilityId, targetId) {
+            switch(abilityId) {
+                case 'ShomaAbility1':
+                    useBoink(targetId);
+                    break;
+                case 'ShomaAbility2':
+                    useAppleBall(targetId);
+                    break;
+                // Add other abilities as needed
+            }
+        }
+
+        document.getElementById('start-button').addEventListener('click', startGame);
+
+        document.getElementById('volume-slider').addEventListener('input', function(e) {
+            if (bgAudio) {
+                const volume = e.target.value / 100;
+                bgAudio.volume = volume;
+                bgAudio.muted = volume === 0;
+            }
+        });
+
+
+
+        // Add cleanup function for when leaving the page
+        window.addEventListener('beforeunload', function() {
+            if (bgAudio) {
+                bgAudio.pause();
+                bgAudio = null;
+            }
+        });
+
+        function addItemToInventory(item, forceCount = false) {
+            console.log(`Adding item ${item.id} with count ${item.count}`);
+            
+            // Get the item template from ITEM_DATABASE
+            const itemTemplate = ITEM_DATABASE[item.id];
+            if (!itemTemplate) {
+                console.error('Item template not found:', item.id);
+                return;
+            }
+            
+            // Find existing stack of same item
+            const existingSlot = inventory.slots.findIndex(slot => 
+                slot && slot.id === item.id
+            );
+            
+            if (existingSlot !== -1) {
+                // Add to existing stack
+                inventory.slots[existingSlot].count += forceCount ? item.count : 1;
+                console.log(`Added to existing stack in slot ${existingSlot}, new count: ${inventory.slots[existingSlot].count}`);
+            } else {
+                // Find empty slot
+                const emptySlot = inventory.slots.findIndex(slot => slot === null);
+                if (emptySlot !== -1) {
+                    inventory.slots[emptySlot] = {
+                        id: item.id,
+                        name: item.name,
+                        image: item.image,
+                        count: forceCount ? item.count : 1,
+                        description: item.description,
+                        usable: itemTemplate.usable, // Copy usable property from template
+                        rarity: item.rarity,
+                        cooldown: itemTemplate.cooldown // Also copy cooldown if it exists
+                    };
+                    console.log(`Created new stack in slot ${emptySlot} with count: ${inventory.slots[emptySlot].count}`);
+                } else {
+                    console.log('Inventory full!');
+                }
+            }
+            
+            updateInventoryDisplay();
+        }
+
+        function updateInventoryDisplay() {
+            console.log('Updating inventory display');
+            console.log('Current inventory slots:', inventory.slots);
+            
+            const slots = document.querySelectorAll('.inventory-slot');
+            slots.forEach((slot, index) => {
+                const item = inventory.slots[index];
+                if (item) {
+                    console.log(`Updating slot ${index} with item:`, item);
+                    
+                    // Clear existing content
+                    slot.innerHTML = '';
+                    
+                    // Add item image
+                    const img = document.createElement('img');
+                    img.src = item.image;
+                    img.alt = item.name;
+                    slot.appendChild(img);
+                    
+                    // Add count if more than 1
+                    if (item.count > 1) {
+                        const countDiv = document.createElement('div');
+                        countDiv.className = 'item-count';
+                        countDiv.textContent = item.count;
+                        slot.appendChild(countDiv);
+                    }
+                    
+                    // Add cooldown overlay if on cooldown
+                    const itemTemplate = ITEM_DATABASE[item.id];
+                    if (itemTemplate && itemTemplate.cooldown && itemCooldowns[item.id] > 0) {
+                        const overlay = document.createElement('div');
+                        overlay.className = 'cooldown-overlay';
+                        
+                        const cooldownText = document.createElement('div');
+                        cooldownText.className = 'cooldown-text';
+                        cooldownText.textContent = itemCooldowns[item.id];
+                        
+                        overlay.appendChild(cooldownText);
+                        slot.appendChild(overlay);
+                        
+                        // Add disabled class
+                        slot.classList.add('disabled');
+                    } else {
+                        slot.classList.remove('disabled');
+                    }
+                    
+                    // Add tooltip
+                    slot.setAttribute('data-tooltip', `${item.name}\n${item.description}`);
+                    
+                    // Add click handler for usable items
+                    if (item.usable) {
+                        slot.onclick = function() {
+                            const itemTemplate = ITEM_DATABASE[item.id];
+                            if (itemTemplate && itemTemplate.cooldown && itemCooldowns[item.id] > 0) {
+                                // Item is on cooldown
+                                const log = document.getElementById('log');
+                                const logEntry = document.createElement('p');
+                                logEntry.innerHTML = `<span style="color: yellow;">⚠️ Cooldown:</span> <span style="color: #ff0000;">${item.name} is on cooldown for ${itemCooldowns[item.id]} turns</span>`;
+                                log.appendChild(logEntry);
+                                scrollToBottom();
+                                return;
+                            }
+                            
+                            if (!isUsingItem) {
+                                isUsingItem = true;
+                                showItemTargeting(item, index);
+                            }
+                        };
+                    }
+                } else {
+                    // Clear empty slots
+                    slot.innerHTML = '';
+                    slot.removeAttribute('data-tooltip');
+                    slot.onclick = null;
+                }
+            });
+        }
+
+        function showItemTargeting(item, slotIndex) {
+            console.log('Showing targeting for:', item); // Debug log
+            
+            // Remove any existing targeting icons
+            const existingContainer = document.getElementById('item-targeting-container');
+            if (existingContainer) {
+                existingContainer.remove();
+            }
+
+            // Create targeting container
+            const container = document.createElement('div');
+            container.id = 'item-targeting-container';
+            
+
+            container.appendChild(targetIcon);
+            
+            // Append to the inventory
+            document.querySelector('.inventory').appendChild(container);
+        }
+
+        async function useItem(item, slotIndex, targetId) {
+            console.log('Using item:', item, 'on target:', targetId);
+            
+            if (!item || !item.usable) return;
+
+            const itemTemplate = ITEM_DATABASE[item.id];
+            if (!itemTemplate) {
+                console.error('Item template not found:', item.id);
+                return;
+            }
+
+            const user = auth.currentUser;
+            if (!user) {
+                console.error('No user logged in');
+                return;
+            }
+
+            try {
+                // Get the stack count before using the item
+                const stackCount = item.count;
+                console.log('Using item with stack count:', stackCount);
+                
+                // Use the effect from the item template
+                const effect = await itemTemplate.effect(targetId, stackCount);
+                
+                if (effect) {
+                    const log = document.getElementById('log');
+                    const logEntry = document.createElement('p');
+
+                    switch(effect.type) {
+                        case 'currency':
+                            logEntry.innerHTML = `<span style="color: yellow;">🎁 Currency:</span> <span style="color: #ffd700;">Added ${effect.value} ${effect.currencyType}</span>`;
+                            // Remove the entire stack immediately for currency items
+                            inventory.slots[slotIndex] = null;
+                            await dbUpdate(dbRef(db, `users/${user.uid}/RaidInventory/items`), {
+                                [item.id]: 0
+                            });
+                            break;
+                        case 'heal':
+                            healCharacter(effect.target, effect.value);
+                            logEntry.innerHTML = `<span style="color: yellow;">💚 Item:</span> <span style="color: #00ff00;">Used ${item.name} to restore ${effect.value} HP</span>`;
+                            await handleSingleUseItem(item, slotIndex);
+                            break;
+                        case 'buff':
+                            logEntry.innerHTML = `<span style="color: yellow;">✨ Item:</span> <span style="color: #00ffff;">Applied ${item.name} buff</span>`;
+                            await handleSingleUseItem(item, slotIndex);
+                            break;
+                        case 'skin':
+                            logEntry.innerHTML = `<span style="color: yellow;"> Skin:</span> <span style="color: #ffd700;">${effect.message}</span>`;
+                            inventory.slots[slotIndex] = null;
+                            await dbUpdate(dbRef(db, `users/${user.uid}/RaidInventory/items`), {
+                                [item.id]: 0
+                            });
+                            break;
+                        case 'duplicate_skin':
+                            logEntry.innerHTML = `<span style="color: yellow;">💰 Duplicate Skin:</span> <span style="color: #ffd700;">${effect.message}</span>`;
+                            inventory.slots[slotIndex] = null;
+                            await dbUpdate(dbRef(db, `users/${user.uid}/RaidInventory/items`), {
+                                [item.id]: 0
+                            });
+                            break;
+                        case 'error':
+                            logEntry.innerHTML = `<span style="color: yellow;">⚠️ Error:</span> <span style="color: #ff0000;">${effect.message}</span>`;
+                            break;
+                    }
+
+                    log.appendChild(logEntry);
+                    scrollToBottom();
+
+                    // Apply cooldown if item has one
+                    if (itemTemplate.cooldown) {
+                        itemCooldowns[item.id] = itemTemplate.cooldown;
+                    }
+
+                    // Update the display
+                    updateInventoryDisplay();
+                }
+            } catch (error) {
+                console.error('Error using item:', error);
+                const log = document.getElementById('log');
+                const logEntry = document.createElement('p');
+                logEntry.innerHTML = `<span style="color: yellow;">⚠️ Error:</span> <span style="color: #ff0000;">Failed to use ${item.name}</span>`;
+                log.appendChild(logEntry);
+                scrollToBottom();
+            }
+        }
+
+        // Helper function for single-use items
+        async function handleSingleUseItem(item, slotIndex) {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const newCount = item.count - 1;
+            if (newCount <= 0) {
+                inventory.slots[slotIndex] = null;
+                await dbUpdate(dbRef(db, `users/${user.uid}/RaidInventory/items`), {
+                    [item.id]: 0
+                });
+            } else {
+                inventory.slots[slotIndex].count = newCount;
+                await dbUpdate(dbRef(db, `users/${user.uid}/RaidInventory/items`), {
+                    [item.id]: newCount
+                });
+            }
+        }
+
+        const STAGE_1_DROPS = {
+            AngryCarrot: {
+                drops: [
+                    {
+                        item: 'health_potion',
+                        chance: 0.80, // 80%
+                        count: 2
+                    },
+                    {
+                        item: 'cm',
+                        chance: 0.10, // 10%
+                        count: 5000
+                    },
+                    {
+                        item: 'fm',
+                        chance: 0.05, // 5%
+                        count: 100
+                    },
+                    {
+                        item: 'farmer_fang_skin',
+                        chance: 0.01, // 1%
+                        count: 1
+                    }
+                ]
+            },
+            WeakAngryCarrot: {
+                drops: [
+                    {
+                        item: 'health_potion',
+                        chance: 0.90, // 90%
+                        count: 2
+                    },
+                    {
+                        item: 'julia_pendant',
+                        chance: 0.09, // 9%
+                        count: 1
+                    },
+                    {
+                        item: 'farmer_fang_skin',
+                        chance: 0.01, // 1%
+                        count: 1
+                    }
+                ]
+            }
+        };
+
+        function handleDrops(enemyType, enemyId) {
+            // Check if this enemy has already dropped loot
+            if (droppedLoot.has(enemyId)) {
+                return;
+            }
+            
+            // Mark this enemy as having dropped loot
+            droppedLoot.add(enemyId);
+
+            // Get the loot table from STAGE_1_DROPS
+            const lootTable = STAGE_1_DROPS[enemyType];
+            if (!lootTable || !lootTable.drops) return;
+
+            // Calculate drops
+            const drops = [];
+            lootTable.drops.forEach(drop => {
+                if (Math.random() < drop.chance) {
+                    // Get item details from ITEM_DATABASE
+                    const itemData = ITEM_DATABASE[drop.item];
+                    drops.push({
+                        id: drop.item,
+                        name: itemData.name,
+                        count: drop.count,
+                        image: itemData.image,
+                        description: itemData.description,
+                        rarity: itemData.rarity
+                    });
+                }
+            });
+
+            if (drops.length === 0) return;
+
+            // Create drop window
+            const dropWindow = document.createElement('div');
+            dropWindow.className = 'drop-window';
+            dropWindow.innerHTML = `
+                <h2 style="color: white; text-align: center; margin-bottom: 15px;">Drops</h2>
+                <div class="drop-items"></div>
+                <button class="collect-button">Collect All</button>
+            `;
+
+            // Style the drop window
+            Object.assign(dropWindow.style, {
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                padding: '20px',
+                borderRadius: '10px',
+                border: '2px solid gold',
+                zIndex: '1000'
+            });
+
+            // Add items to the window
+            const dropItems = dropWindow.querySelector('.drop-items');
+            drops.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = `drop-item rarity-${item.rarity}`;
+                itemElement.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <div class="item-info">
+                        <span class="item-name">${item.name}</span>
+                        <span class="item-count">×${item.count}</span>
+                    </div>
+                `;
+                dropItems.appendChild(itemElement);
+            });
+
+            // Style the collect button
+            const collectButton = dropWindow.querySelector('.collect-button');
+            Object.assign(collectButton.style, {
+                marginTop: '15px',
+                padding: '10px 20px',
+                backgroundColor: '#4CAF50',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                width: '100%'
+            });
+
+            // Add collect button functionality
+            collectButton.onclick = async () => {
+                const user = auth.currentUser;
+                if (!user) return;
+
+                // Add items to inventory
+                for (const drop of drops) {
+                    try {
+                        // Update database
+                        const inventoryRef = dbRef(db, `users/${user.uid}/RaidInventory/items/${drop.id}`);
+                        const snapshot = await dbGet(inventoryRef);
+                        const currentCount = snapshot.exists() ? snapshot.val() : 0;
+                        
+                        await dbUpdate(dbRef(db, `users/${user.uid}/RaidInventory/items`), {
+                            [drop.id]: currentCount + drop.count
+                        });
+
+                        // Update local inventory
+                        const existingSlot = inventory.slots.findIndex(slot => 
+                            slot && slot.id === drop.id
+                        );
+
+                        if (existingSlot !== -1) {
+                            // Add to existing stack
+                            inventory.slots[existingSlot].count += drop.count;
+                            console.log(`Added ${drop.count} ${drop.name} to existing stack`);
+                        } else {
+                            // Create new stack
+                            addItemToInventory({
+                                ...drop,
+                                count: drop.count
+                            }, true);
+                            console.log(`Created new stack for ${drop.count} ${drop.name}`);
+                        }
+                    } catch (error) {
+                        console.error(`Error adding ${drop.name} to inventory:`, error);
+                    }
+                }
+
+                updateInventoryDisplay();
+                dropWindow.remove();
+            };
+
+            // Add to document
+            document.body.appendChild(dropWindow);
+        }
+
+
+        function calculateHealingWithModifiers(baseHealAmount, character) {
+            let healAmount = baseHealAmount;
+
+            // Check for healing amplifier buff
+            if (buffs[character] && buffs[character]['healing_amplifier']) {
+                const amplifier = buffs[character]['healing_amplifier'].value;
+                healAmount *= (1 + amplifier); // Apply the healing bonus
+            }
+
+            // Check for increased damage buff from Leap
+            if (buffs[character] && buffs[character]['increasedDamage']) {
+                const leapBonus = 0.15; // 15% additional healing from Leap
+                healAmount *= (1 + leapBonus);
+            }
+
+            // Add more healing modifiers here as needed
+
+            return healAmount;
+        }
+
+        function doubleCheckAbilities() {
+            // Check if it's the player's turn and abilities should be enabled
+            if (isPlayerTurn) {
+                enableAbilities();
+            } else {
+                disableAbilities();
+            }
+        }
+
+        function checkEndOfEnemyTurn() {
+            console.log(`Active Enemies Remaining: ${activeEnemies}`);
+            if (activeEnemies <= 0) {
+                isPlayerTurn = true;
+                decrementCooldowns(); // Add this line
+                enableAbilities();
+                logPlayerTurn();
+            }
+        }
+
+        function decrementCooldowns() {
+            console.log("Decrementing cooldowns..."); // Debug log
+
+            // Decrement ability cooldowns
+            for (const abilityId in abilityCooldowns) {
+                if (abilityCooldowns[abilityId].current > 0) {
+                    abilityCooldowns[abilityId].current--;
+                    console.log(`Ability ${abilityId} cooldown: ${abilityCooldowns[abilityId].current}`);
+                    
+                    // Update ability display
+                    const abilityElement = document.getElementById(abilityId);
+                    if (abilityElement) {
+                        const cooldownText = document.getElementById(`${abilityId}Cooldown`);
+                        if (abilityCooldowns[abilityId].current > 0) {
+                            cooldownText.style.display = 'block';
+                            cooldownText.textContent = abilityCooldowns[abilityId].current;
+                            abilityElement.classList.add('disabled');
+                        } else {
+                            cooldownText.style.display = 'none';
+                            abilityElement.classList.remove('disabled');
+                        }
+                    }
+                }
+            }
+
+            // Decrement item cooldowns
+            for (const itemId in itemCooldowns) {
+                if (itemCooldowns[itemId] > 0) {
+                    itemCooldowns[itemId]--;
+                    console.log(`Item ${itemId} cooldown: ${itemCooldowns[itemId]}`);
+                }
+            }
+
+            // Decrement buff durations
+            Object.keys(buffs).forEach(character => {
+                if (!buffs[character]) return;
+
+                const buffContainer = document.getElementById(`${character}-buff-container`);
+                if (!buffContainer) return;
+
+                Object.entries(buffs[character]).forEach(([buffType, buffData]) => {
+                    // Skip permanent buffs and special properties
+                    if (buffType === 'dodgeChance' || buffType === 'damageIncrease' || 
+                        !buffData.duration || buffData.duration === 'Infinite') return;
+
+                    buffData.duration--;
+                    console.log(`${character} ${buffType} duration: ${buffData.duration}`);
+
+                    // Update buff display
+                    const buffIcon = buffContainer.querySelector(`[data-buff="${buffType}"]`);
+                    if (buffIcon) {
+                        const durationElement = buffIcon.querySelector('.buff-duration');
+                        if (durationElement) {
+                            if (buffData.duration <= 0) {
+                                // Remove expired buff
+                                buffIcon.remove();
+                                delete buffs[character][buffType];
+                                
+                                // Handle special buff removals
+                                if (buffType === 'CatchTheBall') {
+                                    buffs[character].dodgeChance = character === 'MonsterChicken' ? 
+                                        buffs[character].dodgeChance : 0;
+                                }
+                                
+                                logAction(character, 'Buff', buffType, '✨ has expired');
+                            } else {
+                                // Update the duration display
+                                durationElement.textContent = buffData.duration;
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Update inventory display to reflect cooldown changes
+            updateInventoryDisplay();
+        }
+
+        // Add back the decrementBuffDurations function
+        function decrementBuffDurations() {
+            Object.keys(buffs).forEach(character => {
+                if (!buffs[character]) return;
+
+                const buffContainer = document.getElementById(`${character}-buff-container`);
+                if (!buffContainer) return;
+
+                Object.entries(buffs[character]).forEach(([buffType, buffData]) => {
+                    // Skip permanent buffs and special properties
+                    if (buffType === 'dodgeChance' || buffType === 'damageIncrease' || 
+                        !buffData.duration || buffData.duration === 'Infinite') return;
+
+                    buffData.duration--;
+                    console.log(`${character} ${buffType} duration: ${buffData.duration}`);
+
+                    // Update buff display
+                    const buffIcon = buffContainer.querySelector(`[data-buff="${buffType}"]`);
+                    if (buffIcon) {
+                        const durationElement = buffIcon.querySelector('.buff-duration');
+                        if (durationElement) {
+                            if (buffData.duration <= 0) {
+                                // Remove expired buff
+                                buffIcon.remove();
+                                delete buffs[character][buffType];
+                                
+                                // Handle special buff removals
+                                if (buffType === 'CatchTheBall') {
+                                    buffs[character].dodgeChance = character === 'MonsterChicken' ? 
+                                        buffs[character].dodgeChance : 0;
+                                }
+                                
+                                logAction(character, 'Buff', buffType, '✨ has expired');
+                            } else {
+                                // Update the duration display
+                                durationElement.textContent = buffData.duration;
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        // Update endPlayerTurn to include decrementBuffDurations
+        function endPlayerTurn() {
+            isPlayerTurn = false;
+            
+            // Update buffs first
+            updateBuffs();
+            
+            // Update cooldowns
+            decrementCooldowns();
+            
+            // Decrement buff durations
+            decrementBuffDurations();
+            
+            // Handle Chicken's passive dodge increase
+            if (buffs.MonsterChicken) {
+                buffs.MonsterChicken.dodgeChance = (buffs.MonsterChicken.dodgeChance || 0.10) + 0.01;
+                updateChickenDodgeDisplay();
+            }
+            
+            // Disable abilities during enemy turn
+            disableAbilities();
+            
+            // Increment turn counter
+            turnCounter++;
+            document.getElementById('turn-counter').innerText = `Turn: ${turnCounter}`;
+            logEnemyAction(`\n--- Turn ${turnCounter} ---`);
+            
+            // Start enemy turn
+            setTimeout(() => {
+                AIturn();
+            }, 1000);
+        }
+
+        function calculateDamageWithBuffs(baseDamage, sourceId, targetId, isCrit = false) {
+            let finalDamage = baseDamage;
+            
+            console.log(`Initial damage calculation: ${finalDamage} from ${sourceId} to ${targetId}`);
+
+            // Apply target's defensive buffs/debuffs safely
+            if (buffs[targetId]) {
+                if (buffs[targetId].Weakened) {
+                    finalDamage *= (1 - buffs[targetId].Weakened.value);
+                    console.log(`Target is Weakened. Damage reduced to: ${finalDamage}`);
+                }
+            }
+
+            // Apply source's offensive buffs/debuffs safely
+            if (buffs[sourceId]) {
+                if (buffs[sourceId].damageIncrease) {
+                    finalDamage *= (1 + buffs[sourceId].damageIncrease);
+                    console.log(`Source has damage increase. Damage increased to: ${finalDamage}`);
+                }
+            }
+
+            // Safely apply Change Target bonus if it exists
+            if (buffs[targetId]?.ChangeTarget?.value) {
+                finalDamage += finalDamage * buffs[targetId].ChangeTarget.value;
+                console.log(`Change Target buff applied. Damage increased to: ${finalDamage}`);
+            }
+
+            // Apply critical hit multiplier if applicable
+            if (isCrit) {
+                const critMultiplier = 1.5; // Example critical hit multiplier
+                finalDamage *= critMultiplier;
+                console.log(`Critical hit! Damage after crit multiplier: ${finalDamage}`);
+            }
+
+            console.log(`Final damage after all buffs/debuffs: ${finalDamage}`);
+            return Math.floor(finalDamage);
+        }
+
+        // Update the damage application in enemy attacks
+        function applyDamage(targetId, damage) {
+            const finalDamage = calculateDamageWithBuffs(damage, targetId);
+            const statusElement = document.getElementById(`${targetId}-status`);
+            if (!statusElement) return;
+
+            const [currentHp, maxHp] = statusElement.innerText.split('/').map(hp => parseInt(hp.split(': ')[1]));
+            const newHp = Math.max(0, currentHp - finalDamage);
+            
+            statusElement.innerText = `HP: ${newHp}/${maxHp}`;
+            updateHPBar(targetId, newHp, maxHp);
+
+            // If the target is MonsterBull, increase its damage buff
+            if (targetId === 'MonsterBull') {
+                buffs.MonsterBull.damageIncrease += 0.01; // Increase by 1%
+                console.log(`Monster Bull's damage increased by 1%. Total increase: ${buffs.MonsterBull.damageIncrease * 100}%`);
+
+                // Apply visual buff icon
+                applyBuff('MonsterBull', 'damage_increase', Infinity, 'path/to/damage_increase_icon.png', `Damage increased by ${buffs.MonsterBull.damageIncrease * 100}%`);
+            }
+
+            return newHp;
+        }
+
+        // Update the logAction function to handle damage messages better
+        function logAction(source, action, target, message) {
+            const log = document.getElementById('log');
+            const logEntry = document.createElement('p');
+            
+            // Check if the message includes amplified damage
+            const isAmplified = buffs[target] && buffs[target]['damage_vulnerability'];
+            const damageMessage = isAmplified ? `${message} (Amplified by vulnerability)` : message;
+            
+            logEntry.innerHTML = `<span style="color: yellow;">💥 Attack:</span> <span style="color: #ff0000;">${source} uses ${action} on ${target}: ${damageMessage}</span>`;
+            log.appendChild(logEntry);
+            scrollToBottom();
+        }
+
+        // Add this function to handle stage completion
+        async function handleStageCompletion() {
+            // Disable all abilities
+            disableAbilities();
+            
+            // Create the "Go to Stage Two" button
+            const stageButton = document.createElement('button');
+            stageButton.id = 'next-stage-button';
+            stageButton.innerHTML = 'Go to Stage Two';
+            stageButton.className = 'next-stage-button';
+            
+            // Style the button
+            Object.assign(stageButton.style, {
+                position: 'fixed',
+                top: '30%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                padding: '20px 40px',
+                fontSize: '24px',
+                backgroundColor: '#4CAF50',
+                color: 'white',
+                border: 'none',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+                animation: 'fadeIn 0.5s ease-in'
+            });
+
+            // Add hover effect
+            stageButton.onmouseover = () => {
+                stageButton.style.backgroundColor = '#45a049';
+            };
+            stageButton.onmouseout = () => {
+                stageButton.style.backgroundColor = '#4CAF50';
+            };
+
+            // Add click handler
+            stageButton.onclick = async () => {
+                // Save completion status to database
+                const user = auth.currentUser;
+                if (user) {
+                    try {
+                        await dbSet(dbRef(db, `users/${user.uid}/Raid/Farm/Stage1`), 1);
+                        window.location.href = 'Stage_2_Farm.html';
+                    } catch (error) {
+                        console.error('Error saving completion status:', error);
+                    }
+                }
+            };
+
+            // Add button to the document
+            document.body.appendChild(stageButton);
+
+            // Add CSS animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+                    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                }
+                .next-stage-button:hover {
+                    transform: translate(-50%, -50%) scale(1.05);
+                    transition: all 0.2s ease;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function useBoink(targetId) {
+            if (!isPlayerTurn) return;
+            
+            // Remove targeting containers
+            const enemyContainer = document.getElementById('targeting-container');
+            const allyContainer = document.getElementById('ally-targeting-container');
+            if (enemyContainer) enemyContainer.remove();
+            if (allyContainer) allyContainer.remove();
+            
+            disableAbilities();
+            startCooldown('ShomaAbility1');
+
+            const baseDamage = 285;
+            const isCrit = Math.random() < 0.45; // 45% chance to crit
+            const finalDamage = calculateDamageWithBuffs(baseDamage, 'FarmerShoma', targetId, isCrit);
+
+            applyDamageToEnemy(targetId, finalDamage, isCrit);
+
+            logAction('Farmer Shoma', 'Boink', targetId, 
+                `${isCrit ? 'CRITICAL! ' : ''}deals ${finalDamage} damage`);
+
+            // Reset targeting state
+            targetingActive = false;
+            selectedAbility = null;
+
+            isPlayerTurn = false;
+            endTurn();
+        }
+
+        // New damage handling system
+        function applyDamageToEnemy(targetId, damage, isCrit = false) {
+            // Check for dodge first
+            const dodgeChance = buffs[targetId]?.dodgeChance || 0;
+            const randomValue = Math.random();
+            console.log(`Dodge check for ${targetId}: chance=${dodgeChance}, roll=${randomValue}`);
+            
+            if (randomValue < dodgeChance) {
+                // Attack was dodged
+                const log = document.getElementById('log');
+                const logEntry = document.createElement('p');
+                logEntry.innerHTML = `<span style="color: yellow;">💨 Dodge:</span> <span style="color: #00ffff;">${targetId} dodged the attack!</span>`;
+                log.appendChild(logEntry);
+                scrollToBottom();
+
+                // Add dodge animation
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.classList.add('dodge-animation');
+                    setTimeout(() => {
+                        targetElement.classList.remove('dodge-animation');
+                    }, 500);
+                }
+                return;
+            }
+
+            // If attack wasn't dodged, apply damage
+            const statusElement = document.getElementById(`${targetId}-status`);
+            const hpBarElement = document.getElementById(`${targetId}-hp-bar`);
+
+            if (!statusElement || !hpBarElement) {
+                console.error(`Element not found for enemy: ${targetId}`);
+                return;
+            }
+
+            // Get current HP values
+            const hpText = statusElement.innerText;
+            const hpMatch = hpText.match(/HP: (\d+)\/(\d+)/);
+            
+            if (!hpMatch) {
+                console.error('Invalid HP format:', hpText);
+                return;
+            }
+
+            let currentHp = parseInt(hpMatch[1]);
+            const maxHp = parseInt(hpMatch[2]);
+
+            // Apply damage
+            currentHp = Math.max(0, currentHp - Math.floor(damage));
+
+            // Update HP display
+            statusElement.innerText = `HP: ${currentHp}/${maxHp}`;
+            const hpPercentage = (currentHp / maxHp) * 100;
+            hpBarElement.style.width = `${hpPercentage}%`;
+
+            // Check for death
+            if (currentHp <= 0) {
+                handleEnemyDeath(targetId);
+            }
+
+            // Apply visual effects
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                targetElement.classList.add('flash-red');
+                setTimeout(() => {
+                    targetElement.classList.remove('flash-red');
+                }, 500);
+            }
+
+            return currentHp;
+        }
+
+        // Add new function to handle enemy death
+        function handleEnemyDeath(enemyId) {
+            const enemyElement = document.getElementById(enemyId);
+            if (enemyElement) {
+                // Add death animation class
+                enemyElement.classList.add('death-animation');
+                
+                // Remove the enemy after animation
+                setTimeout(() => {
+                    enemyElement.classList.add('dead');
+                    enemyElement.style.display = 'none';
+                }, 500); // Match this with your animation duration
+
+                // Log the death
+                logAction(enemyId, 'Death', 'self', 'has been defeated! 💀');
+
+                // Check for raid completion
+                checkRaidCompletion();
+            }
+        }
+
+        // Add function to check if all enemies are defeated
+        function checkRaidCompletion() {
+            const enemies = ['MonsterPig', 'MonsterBull', 'MonsterChicken'];
+            const allDefeated = enemies.every(enemyId => {
+                const enemy = document.getElementById(enemyId);
+                return enemy && (enemy.classList.contains('dead') || enemy.style.display === 'none');
+            });
+
+            if (allDefeated) {
+                // Handle raid completion
+                logAction('System', 'Victory', 'all', '🎉 All enemies have been defeated!');
+                // Add any victory handling code here
+            }
+        }
+
+        // Update enemyTurn to skip dead enemies
+        function enemyTurn() {
+            // Disable abilities during enemy attack
+            disableAbilities();
+
+            // Track which enemies are alive for attacking
+            const aliveEnemies = [];
+            ['MonsterPig', 'MonsterBull', 'MonsterChicken'].forEach(enemyId => {
+                const enemyElement = document.getElementById(enemyId);
+                if (enemyElement && !enemyElement.classList.contains('dead') && enemyElement.style.display !== 'none') {
+                    aliveEnemies.push(enemyId);
+                }
+            });
+
+            // If no enemies are alive, enable player turn immediately
+            if (aliveEnemies.length === 0) {
+                isPlayerTurn = true;
+                enableAbilities();
+                return;
+            }
+
+            // Select random enemy from alive enemies
+            const randomEnemy = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
+
+            // Execute the selected enemy's attack
+            setTimeout(() => {
+                switch(randomEnemy) {
+                    case 'MonsterPig':
+                        useStomp();
+                        break;
+                    case 'MonsterBull':
+                        useHornDrill();
+                        break;
+                    case 'MonsterChicken':
+                        useDoubleStab();
+                        break;
+                }
+
+                // Enable player turn after enemy attack
+                setTimeout(() => {
+                    isPlayerTurn = true;
+                    enableAbilities();
+
+                    const log = document.getElementById('log');
+                    const logEntry = document.createElement('p');
+                    logEntry.innerHTML = `<span style="color: #00ff00;">👉 Your turn!</span>`;
+                    log.appendChild(logEntry);
+                    scrollToBottom();
+                }, 1000); // Delay before enabling player turn
+            }, 500); // Delay before enemy attacks
+        }
+
+        // Add event listener for Shoma's Ability 1 (Boink)
+        document.getElementById('ShomaAbility1').addEventListener('click', function() {
+            if (!isPlayerTurn || abilityCooldowns['ShomaAbility1'].current > 0) return;
+            activeCharacter = 'farmer-shoma'; // Set active character
+            selectedAbility = 'ShomaAbility1';
+            targetingActive = true;
+            showTargetingIcons();
+        });
+
+        // Add event listener for Nina's Ability 1 (Sniper Shot) with targeting
+        document.getElementById('NinaAbility1').addEventListener('click', function() {
+            if (!isPlayerTurn || abilityCooldowns['NinaAbility1'].current > 0) return;
+            activeCharacter = 'farmer-nina';
+            selectedAbility = 'NinaAbility1';
+            targetingActive = true;
+            showTargetingIcons(); // Show targeting icons when the ability is clicked
+        });
+
+        function applyRedFlashEffect(targetId) {
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                targetElement.classList.add('flash-red');
+                setTimeout(() => {
+                    targetElement.classList.remove('flash-red');
+                }, 500); // Adjust duration as needed2
+            }
+        }
+        
+
+        function endTurn() {
+            turnCounter++;
+            document.getElementById('turn-counter').innerText = `Turn: ${turnCounter}`;
+            logEnemyAction(`\n--- Turn ${turnCounter} ---`);
+
+            // Handle Nina's Hiding heal at the start of turn
+            if (buffs['FarmerNina'] && buffs['FarmerNina'].Hiding) {
+                const healAmount = 325; // Explicitly set the heal amount
+                console.log('Applying Hiding heal:', healAmount); // Debug log
+                healCharacter('FarmerNina', healAmount);
+            }
+
+            // Update cooldowns
+            decrementCooldowns();
+            
+
+            // Update buffs only once
+            updateBuffs();
+        
+
+            // Special handling for MonsterChicken dodge chance
+            if (buffs.MonsterChicken) {
+                updateChickenDodge();
+            }
+
+            // Update item cooldowns
+            for (const itemId in itemCooldowns) {
+                if (itemCooldowns[itemId] > 0) {
+                    itemCooldowns[itemId]--;
+                    updateItemCooldown(itemId);
+                }
+            }
+
+            // Start enemy turn after a brief delay
+            setTimeout(() => {
+                if (!isPlayerTurn) {
+                    enemyTurn();
+                }
+            }, 1000);
+        }
+
+        function useAppleBall(targetId) {
+            if (!isPlayerTurn) return;
+            // Remove targeting containers if any
+            const enemyContainer = document.getElementById('targeting-container');
+            const allyContainer = document.getElementById('ally-targeting-container');
+            if (enemyContainer) enemyContainer.remove();
+            if (allyContainer) allyContainer.remove();
+
+            // Check if the target is an enemy
+            const isEnemy = ['MonsterPig', 'MonsterBull', 'MonsterChicken'].includes(targetId);
+
+            if (isEnemy) {
+                const baseDamage = 500;
+                const finalDamage = calculateDamageWithBuffs(baseDamage, 'FarmerShoma', targetId);
+                
+                applyDamageToEnemy(targetId, finalDamage);
+
+                // Check if the buff is already applied to prevent duplicate
+                if (!buffs[targetId]['splash']) {
+                    // Apply Splash debuff to the targeted enemy
+                    applyBuff(targetId, 'splash', Infinity, 'res/Splash_Debuff.jpeg', 'Next ability deals 90% less damage');
+
+                    logAction('Farmer Shoma', 'Apple Ball', targetId, 
+                        `deals ${finalDamage} damage and applies Splash debuff`);
+                } else {
+                    logAction('Farmer Shoma', 'Apple Ball', targetId, 
+                        `deals ${finalDamage} damage (Splash debuff already active)`);
+                }
+            } else {
+                // If the target is an ally (Shoma or Nina), heal them
+                const healAmount = 1000;
+                healCharacter(targetId, healAmount);
+                logAction('Farmer Shoma', 'Apple Ball', targetId, 
+                    `restores ${healAmount} HP`);
+            }
+
+            // Start cooldown for Apple Ball
+            abilityCooldowns['ShomaAbility2'].current = abilityCooldowns['ShomaAbility2'].max;
+
+            // Reset targeting state
+            targetingActive = false;
+            selectedAbility = null;
+
+            isPlayerTurn = false;
+            endTurn();
+        }
+
+        document.getElementById('ShomaAbility2').addEventListener('click', function() {
+            if (!isPlayerTurn || abilityCooldowns['ShomaAbility2'].current > 0) return;
+            activeCharacter = 'farmer-shoma';
+            selectedAbility = 'ShomaAbility2';
+            targetingActive = true;
+            showTargetingIcons();
+        });
+
+        function useShomaAbility1(targetId) {
+            const baseDamage = 300; // Example base damage
+            const finalDamage = calculateDamageWithBuffs(baseDamage, 'FarmerShoma', targetId);
+            console.log(`Shoma's Ability1 - Base Damage: ${baseDamage}, Final Damage after buffs: ${finalDamage}`);
+
+            applyDamageToEnemy(targetId, finalDamage);
+            logAction('Farmer Shoma', 'Ability1', targetId, `deals ${finalDamage} damage`);
+            
+            isPlayerTurn = false;
+            endTurn();
+        }
+
+        function useShomaAbility2(targetId) {
+            if (!isPlayerTurn) return;
+
+            // Example: Healing ability
+            const healAmount = 500;
+            const finalHeal = calculateHealWithBuffs(healAmount, 'FarmerShoma');
+            console.log(`Shoma's Ability2 - Base Heal: ${healAmount}, Final Heal after buffs: ${finalHeal}`);
+            
+            healCharacter(targetId, finalHeal);
+            logAction('Farmer Shoma', 'Ability2', targetId, `heals for ${finalHeal} HP`);
+            
+            disableAbilities();
+            startCooldown('ShomaAbility2');
+            
+            isPlayerTurn = false;
+            endTurn();
+        }
+
+        function calculateHealWithBuffs(baseHeal, sourceId) {
+            let finalHeal = baseHeal;
+
+            // Check if the healer (sourceId) has the 'Weakened' debuff to reduce healing effectiveness
+            if (buffs[sourceId] && buffs[sourceId]['Weakened']) {
+                const reductionValue = buffs[sourceId]['Weakened'].value; // 0.4 for 40% reduction
+                finalHeal = Math.floor(finalHeal * (1 - reductionValue)); // 60% of base heal
+                console.log(`Weakened debuff active on ${sourceId}: Reducing heal from ${baseHeal} to ${finalHeal}`);
+            }
+
+            return finalHeal;
+        }
+
+        // Function to use Sniper Shot with targeting
+        function useSniperShot(targetId) {
+            if (!isPlayerTurn) return;
+
+            // Handle breaking out of stealth first
+            if (buffs['FarmerNina'] && buffs['FarmerNina'].Hiding) {
+                delete buffs['FarmerNina'].Hiding;
+                const buffContainer = document.getElementById('FarmerNina-buff-container');
+                const hidingBuff = buffContainer.querySelector('[data-buff="Hiding"]');
+                if (hidingBuff) hidingBuff.remove();
+                
+                const ninaElement = document.querySelector('.farmer-nina img');
+                if (ninaElement) ninaElement.style.opacity = '1';
+                
+                logAction('Nina', 'Hiding', 'self', 'breaks stealth to attack');
+            }
+
+            let damage = 400; // Base damage
+            let damageDescription = [];
+
+            // Apply Ability 4's damage bonus if active
+            if (buffs['FarmerNina']?.DamageBonus) {
+                const bonus = buffs['FarmerNina'].DamageBonus.value;
+                damage *= (1 + bonus);
+                console.log(`Damage increased by Ability 4 bonus (${bonus * 100}%): ${damage}`);
+                damageDescription.push('increased by Damage Bonus');
+            }
+
+            // Apply Horn Drill/Weakened damage reduction
+            if (buffs['FarmerNina']) {
+                if (buffs['FarmerNina'].HornDrill) {
+                    const reduction = buffs['FarmerNina'].HornDrill.value;
+                    damage *= (1 - reduction);
+                    console.log(`Damage reduced by Horn Drill (${reduction * 100}%): ${damage}`);
+                    damageDescription.push('reduced by Horn Drill');
+                }
+                if (buffs['FarmerNina'].Weakened) {
+                    const reduction = buffs['FarmerNina'].Weakened.value;
+                    damage *= (1 - reduction);
+                    console.log(`Damage reduced by Weakened (${reduction * 100}%): ${damage}`);
+                    damageDescription.push('reduced by Weakened');
+                }
+            }
+
+            // Apply Change Target bonus
+            if (buffs[targetId]?.ChangeTarget) {
+                const bonus = buffs[targetId].ChangeTarget.value;
+                damage *= (1 + bonus);
+                console.log(`Damage increased by Change Target (${bonus * 100}%): ${damage}`);
+                damageDescription.push('increased by Change Target');
+            }
+
+            // Round the final damage
+            const finalDamage = Math.floor(damage);
+
+            // Apply the damage
+            applyDamageToEnemy(targetId, finalDamage);
+
+            // Start cooldown
+            startCooldown('NinaAbility1');
+
+            // Log the action with all modifiers
+            const description = damageDescription.length > 0 
+                ? `deals ${finalDamage} damage (${damageDescription.join(', ')})`
+                : `deals ${finalDamage} damage`;
+            logAction('Nina', 'Sniper Shot', targetId, description);
+
+            // End turn
+            hideTargetingIcons();
+            endPlayerTurn();
+        }
+
+        // Update calculateDamageWithBuffs to properly handle Change Target
+        function calculateDamageWithBuffs(baseDamage, sourceId, targetId, isCrit = false) {
+            let finalDamage = baseDamage;
+            
+            console.log(`Initial damage calculation: ${finalDamage} from ${sourceId} to ${targetId}`);
+
+            // Don't apply Change Target buff here since it's already applied in useSniperShot
+            // Only apply other buffs/debuffs
+
+            // Apply target's defensive buffs/debuffs
+            if (buffs[targetId]) {
+                // Apply other defensive buffs/debuffs here
+                if (buffs[targetId].Weakened) {
+                    finalDamage *= (1 - buffs[targetId].Weakened.value);
+                    console.log(`Target is Weakened. Damage reduced to: ${finalDamage}`);
+                }
+                // Add other defensive buff calculations as needed
+            }
+
+            // Apply source's offensive buffs/debuffs
+            if (buffs[sourceId]) {
+                // Apply offensive buffs here
+                if (buffs[sourceId].damageIncrease) {
+                    finalDamage *= (1 + buffs[sourceId].damageIncrease);
+                    console.log(`Source has damage increase. Damage increased to: ${finalDamage}`);
+                }
+                // Add other offensive buff calculations as needed
+            }
+
+            console.log(`Final damage after all buffs/debuffs: ${finalDamage}`);
+            return Math.floor(finalDamage);
+        }
+
+        // Add event listener for Nina's Ability 1 (Sniper Shot) with targeting
+        document.getElementById('NinaAbility1').addEventListener('click', function() {
+            if (!isPlayerTurn || abilityCooldowns['NinaAbility1'].current > 0) return;
+            activeCharacter = 'farmer-nina';
+            selectedAbility = 'NinaAbility1';
+            targetingActive = true;
+            showTargetingIcons();
+        });
+
+        function useChangeTarget(targetId) {
+            if (!isPlayerTurn) return;
+            
+            // Remove existing Change Target buff if present
+            const existingBuff = document.querySelector(`#${targetId}-buff-container [data-buff="ChangeTarget"]`);
+            if (existingBuff) {
+                existingBuff.remove();
+            }
+            
+            // Initialize or update the buff in the buffs object
+            if (!buffs[targetId]) {
+                buffs[targetId] = {};
+            }
+            
+            buffs[targetId].ChangeTarget = {
+                duration: 15,
+                value: 0.5 // 50% damage increase
+            };
+            
+            // Apply the buff icon
+            const targetBuffContainer = document.getElementById(`${targetId}-buff-container`);
+            const buffIcon = document.createElement('div');
+            buffIcon.className = 'buff-icon';
+            buffIcon.dataset.buff = 'ChangeTarget';
+            buffIcon.innerHTML = `
+                <img src="res/Nina_A2.jpeg" alt="Change Target">
+                <div class="buff-duration">${buffs[targetId].ChangeTarget.duration}</div>
+            `;
+            buffIcon.title = 'Takes 50% more damage from Nina';
+            targetBuffContainer.appendChild(buffIcon);
+            
+            // Start the cooldown
+            startCooldown('NinaAbility2');
+            
+            // Log the action
+            logAction('Nina', 'Change Target', targetId, 'Target will take 50% more damage from Nina for 15 turns');
+            
+            // Reset targeting
+            hideTargetingIcons();
+            targetingActive = false;
+            selectedAbility = null;
+            
+        }
+
+        document.getElementById('NinaAbility2').addEventListener('click', function() {
+            if (!isPlayerTurn || abilityCooldowns['NinaAbility2'].current > 0) return;
+            activeCharacter = 'farmer-nina';
+            selectedAbility = 'NinaAbility2';
+            targetingActive = true;
+            showTargetingIcons();
+        });
+
+        // Add the useHiding function
+        function useHiding() {
+            if (!isPlayerTurn) return;
+
+            // Apply the Hiding buff to Nina
+            if (!buffs['FarmerNina']) {
+                buffs['FarmerNina'] = {};
+            }
+            
+            buffs['FarmerNina'].Hiding = {
+                duration: 'Infinite',
+                healPerTurn: 325 // Explicitly set heal amount
+            };
+
+            // Apply visual effects
+            const ninaElement = document.querySelector('.farmer-nina img');
+            if (ninaElement) {
+                ninaElement.style.opacity = '0.7';
+            }
+
+            // Apply buff icon
+            applyBuff('FarmerNina', 'Hiding', 'Infinite', 'res/Nina_A3.jpeg', 'Untargetable and heals 325 HP per turn');
+
+            // Start cooldown
+            startCooldown('NinaAbility3');
+
+            // Log the action
+            logAction('Nina', 'Hiding', 'self', 'becomes untargetable and will heal 325 HP each turn');
+
+            // End turn
+            endPlayerTurn();
+        }
+
+        // Add event listener for Nina's Ability 3
+        document.getElementById('NinaAbility3').addEventListener('click', function() {
+            if (!isPlayerTurn || abilityCooldowns['NinaAbility3'].current > 0) return;
+            useHiding();
+        });
+
+
+        // Function to use Nina's Ability 4
+        function useNinaAbility4() {
+            if (!isPlayerTurn) return;
+
+            // Apply the damage bonus buff
+            if (!buffs['FarmerNina']) {
+                buffs['FarmerNina'] = {};
+            }
+
+            buffs['FarmerNina'].DamageBonus = {
+                duration: 2,
+                value: 1.0 // 100% damage bonus
+            };
+
+            // Get all alive enemies
+            const aliveEnemies = ['MonsterPig', 'MonsterBull', 'MonsterChicken'].filter(enemyId => {
+                const enemy = document.getElementById(enemyId);
+                return enemy && !enemy.classList.contains('dead') && enemy.style.display !== 'none';
+            });
+
+            // Attack each enemy
+            aliveEnemies.forEach(enemyId => {
+                let damage = 400; // Base Sniper Shot damage
+                let damageDescription = ['multi-shot'];
+
+                // Apply Nina's damage bonus from Ability 4
+                damage *= 2; // Double damage from the buff we just applied
+
+                // Apply other damage modifiers
+                if (buffs['FarmerNina']) {
+                    if (buffs['FarmerNina'].HornDrill) {
+                        const reduction = buffs['FarmerNina'].HornDrill.value;
+                        damage *= (1 - reduction);
+                        damageDescription.push('reduced by Horn Drill');
+                    }
+                    if (buffs['FarmerNina'].Weakened) {
+                        const reduction = buffs['FarmerNina'].Weakened.value;
+                        damage *= (1 - reduction);
+                        damageDescription.push('reduced by Weakened');
+                    }
+                }
+
+                // Apply Change Target bonus if present
+                if (buffs[enemyId]?.ChangeTarget) {
+                    const bonus = buffs[enemyId].ChangeTarget.value;
+                    damage *= (1 + bonus);
+                    damageDescription.push('increased by Change Target');
+                }
+
+                // Round the final damage
+                const finalDamage = Math.floor(damage);
+
+                // Apply the damage
+                applyDamageToEnemy(enemyId, finalDamage);
+
+                // Log each hit
+                const description = `deals ${finalDamage} damage (${damageDescription.join(', ')})`;
+                logAction('Nina', 'Multi-Shot', enemyId, description);
+            });
+
+            // Start cooldown
+            startCooldown('NinaAbility4');
+
+            // End turn
+            endPlayerTurn();
+
+            // Ensure Nina's Ability 4 buff icon is displayed
+            applyBuff('FarmerNina', 'DamageBonus', 2, 'res/Nina_A4.jpeg', 'Damage increased by 100%');
+            // Ensure the buff icon is added to the correct container
+            const buffContainer = document.getElementById('FarmerNina-buff-container');
+        }
+
+        // Add event listener for Nina's Ability 4
+        document.getElementById('NinaAbility4').addEventListener('click', function() {
+            if (!isPlayerTurn || abilityCooldowns['NinaAbility4'].current > 0) return;
+            useNinaAbility4();
+        });
+
+        // Add debug buttons functionality
+        document.addEventListener('keydown', function(event) {
+            console.log('Debug key pressed:', event.code); // Debug log to see which key is being pressed
+
+            switch(event.code) {
+                case 'Numpad1':
+                    setEnemyHP('MonsterPig', 1);
+                    console.log('Debug: Set Pig HP to 1');
+                    break;
+                case 'Numpad2':
+                    setEnemyHP('MonsterBull', 1);
+                    console.log('Debug: Set Bull HP to 1');
+                    break;
+                case 'Numpad3':
+                    setEnemyHP('MonsterChicken', 1);
+                    console.log('Debug: Set Chicken HP to 1');
+                    break;
+            }
+        });
+
+        function setEnemyHP(enemyId, hp) {
+            const statusElement = document.getElementById(`${enemyId}-status`);
+            const hpBarElement = document.getElementById(`${enemyId}-hp-bar`);
+            
+            if (!statusElement || !hpBarElement) return;
+
+            // Get max HP from current display
+            const maxHp = parseInt(statusElement.innerText.split('/')[1]);
+            
+            // Update HP display
+            statusElement.innerText = `HP: ${hp}/${maxHp}`;
+            
+            // Update HP bar
+            const percentage = (hp / maxHp) * 100;
+            hpBarElement.style.width = `${percentage}%`;
+
+            // Log the debug action
+            const log = document.getElementById('log');
+            const logEntry = document.createElement('p');
+            logEntry.innerHTML = `<span style="color: yellow;">🔧 Debug:</span> <span style="color: #ff00ff;">Set ${enemyId} HP to ${hp}</span>`;
+            log.appendChild(logEntry);
+            scrollToBottom();
+        }
+
+        // Add the useCatchTheBall function
+        function useCatchTheBall(targetId) {
+            if (!isPlayerTurn) return;
+
+            // Initialize buffs for target if needed
+            if (!buffs[targetId]) {
+                buffs[targetId] = {};
+            }
+
+            // Apply dodge chance buff
+            buffs[targetId].dodgeChance = 0.70; // 70% dodge chance
+            buffs[targetId].CatchTheBall = {
+                duration: 4,
+                value: 0.70
+            };
+
+            // Apply buff icon
+            applyBuff(targetId, 'CatchTheBall', 4, 'res/Shoma_A3.jpeg', 'Dodge chance increased by 70% for 4 turns');
+
+            // Log the action
+            logAction('Shoma', 'Catch the Ball', targetId, 'gains 70% dodge chance for 4 turns');
+
+            // Start cooldown
+            startCooldown('ShomaAbility3');
+
+            // End turn
+            endPlayerTurn();
+        }
+
+        // Add event listener for Shoma's Ability 3
+        document.getElementById('ShomaAbility3').addEventListener('click', function() {
+            if (!isPlayerTurn || abilityCooldowns['ShomaAbility3'].current > 0) return;
+
+            // Create ally targeting container if it doesn't exist
+            let allyTargetingContainer = document.getElementById('ally-targeting-container');
+            if (!allyTargetingContainer) {
+                allyTargetingContainer = document.createElement('div');
+                allyTargetingContainer.id = 'ally-targeting-container';
+                document.body.appendChild(allyTargetingContainer);
+            }
+
+            // Clear existing content
+            allyTargetingContainer.innerHTML = '';
+
+            // Add targeting icons for each ally
+            const allies = ['FarmerShoma', 'FarmerNina'];
+            allies.forEach(allyId => {
+                const targetIcon = document.createElement('img');
+                targetIcon.src = document.getElementById(allyId).querySelector('img').src;
+                targetIcon.classList.add('target-icon');
+                targetIcon.addEventListener('click', () => {
+                    useCatchTheBall(allyId);
+                    allyTargetingContainer.innerHTML = ''; // Clear targeting UI
+                });
+                allyTargetingContainer.appendChild(targetIcon);
+            });
+
+            // Show the targeting container
+            allyTargetingContainer.style.display = 'flex';
+        });
+
+        // Add to your handleAllyTargetSelection function
+        function handleAllyTargetSelection(event) {
+            if (!targetingActive) return;
+
+            const targetId = event.currentTarget.id;
+            
+            // Remove targeting UI
+            document.querySelectorAll('.ally-target').forEach(element => {
+                element.classList.remove('ally-target');
+                element.removeEventListener('click', handleAllyTargetSelection);
+            });
+
+            targetingActive = false;
+
+            // Handle the ability based on selectedAbility
+            if (selectedAbility === 'ShomaAbility3') {
+                useCatchTheBall(targetId);
+            }
+            // ... other ability handling ...
+        }
+
+        // Update the calculateDodge function to include CatchTheBall buff
+        function calculateDodge(characterId) {
+            let dodgeChance = 0;
+
+            // Check for CatchTheBall buff
+            if (buffs[characterId]?.CatchTheBall) {
+                dodgeChance += buffs[characterId].CatchTheBall.value;
+            }
+
+            // Add any other dodge chance calculations here
+            // ... existing dodge calculations ...
+
+            return dodgeChance;
+        }
+
+        // Add this event listener near your other initialization code
+        document.addEventListener('keydown', function(event) {
+            if (event.key === '4') {  // Numpad 4 or regular 4 key
+                // Set chicken dodge chance to 90%
+                if (buffs.MonsterChicken) {
+                    buffs.MonsterChicken.dodgeChance = 0.90;
+                    
+                    // Update the display
+                    const dodgeBonusElement = document.getElementById('chicken-dodge-bonus');
+                    if (dodgeBonusElement) {
+                        dodgeBonusElement.textContent = '90%';
+                        
+                        // Add animation class for visual feedback
+                        dodgeBonusElement.classList.add('dodge-update');
+                        setTimeout(() => {
+                            dodgeBonusElement.classList.remove('dodge-update');
+                        }, 300);
+                    }
+                    
+                    // Log the debug action
+                    const log = document.getElementById('log');
+                    const logEntry = document.createElement('p');
+                    logEntry.innerHTML = `<span style="color: #ff00ff;">🐔 Debug:</span> <span style="color: #00ffff;">Set Monster Chicken dodge chance to 90%</span>`;
+                    log.appendChild(logEntry);
+                    scrollToBottom();
+                }
+            }
+        });
+
+        // Add this to your initialization code where other buffs are initialized
+        function initializeGame() {
+            // ... existing initialization code ...
+            
+            // Initialize Monster Chicken's dodge chance
+            if (!buffs.MonsterChicken) {
+                buffs.MonsterChicken = {
+                    dodgeChance: 0.10  // Start with 10% dodge chance
+                };
+            }
+            
+            // Update the initial dodge display
+            updateChickenDodgeDisplay();
+        }
+
+        // Update the applyDamageToEnemy function to handle dodge chance
+        function applyDamageToEnemy(targetId, damage, isCrit = false) {
+            // Check for dodge first
+            const dodgeChance = buffs[targetId]?.dodgeChance || 0;
+            const randomValue = Math.random();
+            console.log(`Dodge check for ${targetId}: chance=${dodgeChance}, roll=${randomValue}`);
+            
+            if (randomValue < dodgeChance) {
+                // Attack was dodged
+                const log = document.getElementById('log');
+                const logEntry = document.createElement('p');
+                logEntry.innerHTML = `<span style="color: yellow;">💨 Dodge:</span> <span style="color: #00ffff;">${targetId} dodged the attack!</span>`;
+                log.appendChild(logEntry);
+                scrollToBottom();
+
+                // Add dodge animation
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.classList.add('dodge-animation');
+                    setTimeout(() => {
+                        targetElement.classList.remove('dodge-animation');
+                    }, 500);
+                }
+                return;
+            }
+
+            // If attack wasn't dodged, apply damage
+            const statusElement = document.getElementById(`${targetId}-status`);
+            const hpBarElement = document.getElementById(`${targetId}-hp-bar`);
+
+            if (!statusElement || !hpBarElement) {
+                console.error(`Element not found for enemy: ${targetId}`);
+                return;
+            }
+
+            // Get current HP values
+            const hpText = statusElement.innerText;
+            const hpMatch = hpText.match(/HP: (\d+)\/(\d+)/);
+            
+            if (!hpMatch) {
+                console.error('Invalid HP format:', hpText);
+                return;
+            }
+
+            let currentHp = parseInt(hpMatch[1]);
+            const maxHp = parseInt(hpMatch[2]);
+
+            // Apply damage
+            currentHp = Math.max(0, currentHp - Math.floor(damage));
+
+            // Update HP display
+            statusElement.innerText = `HP: ${currentHp}/${maxHp}`;
+            const hpPercentage = (currentHp / maxHp) * 100;
+            hpBarElement.style.width = `${hpPercentage}%`;
+
+            // Check for death
+            if (currentHp <= 0) {
+                handleEnemyDeath(targetId);
+            }
+
+            // Apply visual effects
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                targetElement.classList.add('flash-red');
+                setTimeout(() => {
+                    targetElement.classList.remove('flash-red');
+                }, 500);
+            }
+
+            return currentHp;
+        }
+
+        // Update the useCatchTheBall function
+        function useCatchTheBall(targetId) {
+            if (!isPlayerTurn) return;
+
+            // Initialize buffs for target if needed
+            if (!buffs[targetId]) {
+                buffs[targetId] = {};
+            }
+
+            // Apply dodge chance buff
+            buffs[targetId].dodgeChance = 0.70; // 70% dodge chance
+            buffs[targetId].CatchTheBall = {
+                duration: 4,
+                value: 0.70
+            };
+
+            // Apply buff icon
+            applyBuff(targetId, 'CatchTheBall', 4, 'res/Shoma_A3.jpeg', 'Dodge chance increased by 70% for 4 turns');
+
+            // Log the action
+            logAction('Shoma', 'Catch the Ball', targetId, 'gains 70% dodge chance for 4 turns');
+
+            // Start cooldown
+            startCooldown('ShomaAbility3');
+
+            // End turn
+            endPlayerTurn();
+        }
+
+
+        // Update the updateChickenDodgeDisplay function
+        function updateChickenDodgeDisplay() {
+            const dodgeBonusElement = document.getElementById('chicken-dodge-bonus');
+            if (dodgeBonusElement && buffs.MonsterChicken) {
+                const dodgePercentage = Math.floor(buffs.MonsterChicken.dodgeChance * 100);
+                dodgeBonusElement.textContent = `${dodgePercentage}%`;
+                
+                // Add animation class
+                dodgeBonusElement.classList.add('dodge-update');
+                setTimeout(() => {
+                    dodgeBonusElement.classList.remove('dodge-update');
+                }, 300);
+            }
+        }
+    </script>
+</body>
+</html>
