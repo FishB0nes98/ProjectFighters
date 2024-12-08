@@ -11,14 +11,15 @@
 
     
     <script type="module">
+        // Firebase imports
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
         import { getDatabase, ref, push, set, get, update, runTransaction } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
         import { quests } from './quests.js';
-        import { roles } from './roles.js'; // Importing roles.js
-        
+        import { roles } from './roles.js';
 
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
             authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
@@ -30,441 +31,218 @@
             measurementId: "G-LNEM6HR842"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        function createParticles() {
-            const particleContainer = document.querySelector('.particle-container');
-            if (!particleContainer) {
-                const newParticleContainer = document.createElement('div');
-                newParticleContainer.classList.add('particle-container');
-                document.body.appendChild(newParticleContainer);
-            }
+        // Export Firebase instances for other modules
+        window.firebaseApp = app;
+        window.firebaseAuth = auth;
+        window.firebaseDatabase = database;
 
-            for (let i = 0; i < 60; i++) { // Increase number for more particles
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.top = `${Math.random() * 100}%`;
-                particle.style.width = `${Math.random() * 6 + 4}px`; // Size between 4px and 10px
-                particle.style.height = particle.style.width;
-                particle.style.background = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.7)`;
-                particle.style.animationDuration = `${Math.random() * 5 + 3}s`; // Duration between 3s and 8s
-                particle.style.animationDelay = `${Math.random() * 5}s`; // Delay between 0s and 5s
-                document.querySelector('.particle-container').appendChild(particle);
-            }
+        // Helper functions
+        function capitalizeTitle(title) {
+            if (!title) return '';
+            return title.split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(' ');
         }
 
-        window.onload = function() {
-            createParticles();
-            initializeAuthState();
-        };
 
+        // Auth state initialization
         function initializeAuthState() {
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
-                    const userId = user.uid;
-                    const userRef = ref(database, `users/${userId}`);
-                    const snapshot = await get(userRef);
-                    const userData = snapshot.val();
-                    if (userData) {
-                        // Create a container for username and title
-                        const usernameContainer = document.createElement('div');
-                        usernameContainer.className = 'username-title-container';
-                        
-                        // Set up username
-                        const usernameDisplay = document.createElement('div');
-                        usernameDisplay.id = 'username-display';
-                        usernameDisplay.textContent = userData.username || user.email.split('@')[0];
-                        usernameContainer.appendChild(usernameDisplay);
-                        
-                        // Check for active title
-                        if (userData.activeTitle) {
-                            const titleDisplay = document.createElement('div');
-                            titleDisplay.id = 'title-display';
-                            titleDisplay.textContent = `(${userData.activeTitle})`;
-                            usernameContainer.appendChild(titleDisplay);
-                        }
-                        
-                        // Replace old username display with new container
-                        const oldUsernameDisplay = document.getElementById('username-display');
-                        oldUsernameDisplay.parentNode.replaceChild(usernameContainer, oldUsernameDisplay);
-                        
-                        // Set other user data
-                        setProfileImage(`Icons/${userData.icon || 'Julia.png'}`, `Icons/Profile/${userData.icon || 'Julia.png'}`);
-                        document.getElementById('currency-amount').textContent = userData.FM || 0;
-                        document.getElementById('cm-amount').textContent = userData.CM || 0;
-
-                        // Initialize quest data if not present
-                        const questsRef = ref(database, `users/${userId}/quests`);
-                        const questsSnapshot = await get(questsRef);
-                        const questsData = questsSnapshot.val() || {};
-
-                        quests.forEach(quest => {
-                            const questData = questsData[quest.id] || { progress: 0, completed: false, claimed: false };
-                            if (!questData.claimed) {
-                                displayQuest(quest, questData, userData);
-                            }
-                        });
-                    } else {
-                        // If no user data is found, display all quests
-                        quests.forEach(quest => {
-                            displayQuest(quest, { progress: 0, completed: false, claimed: false }, {});
-                        });
-                    }
-                } else {
-                    console.log("User is not authenticated");
-                }
-            });
-        };
-
-        window.openChangeIconModal = async function() {
-            const modal = document.getElementById('change-icon-modal');
-            modal.style.display = 'block';
-
-            // Load icons dynamically
-            const iconList = document.getElementById('icon-list');
-            iconList.innerHTML = '';
-
-            const icons = [
-                'Julia.png', 'Birdie.png', 'Erron Black.png', 'Cham Cham.png', 'Morrigan.png',
-                'Jun.png', 'Reptile.png', 'Akuma.png', 'Elphelt.png', 'Kotal Kahn.png',
-                'Scorpion.png', 'Peacock.png', 'Angel.png', 'Astaroth.png', 'Ibuki.png',
-                'R.Mika.png', 'Raiden.png', 'Yugo.png', 'Talim.png', 'Noel.png',
-                'Blanka.png', 'Nina.png', 'Ayane.png', 'Siegfried.png', 'Shoma.png', 
-                'Juri.png', 'Sub Zero.png', 'Christie.png', 'Kokoro.png', 'Eagle.png',
-                'Sophitia.png', 'Shizumaru.png', 'Kagome.png', 'Kabal.png', 'Kuma.png',
-                'Alice.png', 'Shinnok.png', 'FANG.png', 'Lili.png', 'Mega Man.png',
-                
-            ];
-
-            icons.forEach(icon => {
-                const img = document.createElement('img');
-                img.src = `Icons/${icon}`;
-                img.alt = icon.replace('.png', '');
-                img.classList.add('icon-image');
-                img.onclick = () => selectIcon(icon);
-                iconList.appendChild(img);
-            });
-
-            // Fetch user-specific icons from the database
-            const user = auth.currentUser;
-            if (user) {
-                const userRef = ref(database, 'users/' + user.uid + '/Icons');
-                const snapshot = await get(userRef);
-                if (snapshot.exists()) {
-                    const userIcons = snapshot.val();
-                    for (const iconName in userIcons) {
-                        if (userIcons[iconName] === 1) { // Check if the value is 1
-                            const img = document.createElement('img');
-                            img.src = `Icons/Profile/${iconName}.png`;
-                            img.alt = iconName.replace('.png', '');
-                            img.classList.add('icon-image');
-                            img.onclick = () => selectIcon(iconName + '.png');
-                            iconList.appendChild(img);
-                        }
-                    }
-                }
-            }
-        };
-
-        window.logOut = function() {
-            signOut(auth).then(() => {
-                console.log('User signed out successfully');
-                window.location.href = 'index.html'; // Redirect to login page after sign out
-            }).catch((error) => {
-                console.error('Error signing out:', error);
-            });
-        };
-
-        function selectIcon(icon) {
-            const user = auth.currentUser;
-            if (user) {
-                updateIcon(icon)
-                    .then(() => {
-                        setProfileImage(`Icons/${icon}`, `Icons/Profile/${icon}`);
-                        closeChangeIconModal();
-                    })
-                    .catch(error => {
-                        console.error('Error updating icon:', error);
-                    });
-            } else {
-                console.error('User not authenticated');
-            }
-        }
-
-        async function updateIcon(icon) {
-            const user = auth.currentUser;
-            if (user) {
-                const userRef = ref(database, 'users/' + user.uid);
-                try {
-                    const snapshot = await get(userRef);
-                    if (snapshot.exists()) {
+                    try {
+                        const userId = user.uid;
+                        const userRef = ref(database, `users/${userId}`);
+                        const snapshot = await get(userRef);
                         const userData = snapshot.val();
-                        userData.icon = icon; // Update the icon field
-                        await set(userRef, userData); // Write back the updated data
-                        console.log('Icon updated successfully');
-                    } else {
-                        console.error('No user data found');
+                        
+                        if (userData) {
+                            // Update username and title
+                            const usernameContainer = document.querySelector('.username-title-container');
+                            if (usernameContainer) {
+                                const usernameDisplay = usernameContainer.querySelector('#username-display');
+                                if (usernameDisplay) {
+                                    usernameDisplay.textContent = userData.username || user.email.split('@')[0];
+                                }
+
+                                // Update title if it exists
+                                let titleDisplay = usernameContainer.querySelector('#title-display');
+                                if (userData.activeTitle) {
+                                    if (!titleDisplay) {
+                                        titleDisplay = document.createElement('div');
+                                        titleDisplay.id = 'title-display';
+                                        usernameContainer.appendChild(titleDisplay);
+                                    }
+                                    titleDisplay.textContent = `(${capitalizeTitle(userData.activeTitle)})`;
+                                } else if (titleDisplay) {
+                                    titleDisplay.remove();
+                                }
+                            }
+
+                            // Update profile image
+                            const profileImage = document.getElementById('profile-image');
+                            if (profileImage) {
+                                setProfileImage(`Icons/${userData.icon || 'Birdie.png'}`, `Icons/Profile/${userData.icon || 'Birdie.png'}`);
+                            }
+
+                            // Update currency displays
+                            const currencyAmount = document.getElementById('currency-amount');
+                            const cmAmount = document.getElementById('cm-amount');
+                            if (currencyAmount) currencyAmount.textContent = userData.FM || 0;
+                            if (cmAmount) cmAmount.textContent = userData.CM || 0;
+
+                            // Initialize quests only if they haven't been initialized yet
+                            const questsContainer = document.querySelector('#new-quests-box .content');
+                            if (questsContainer && !questsContainer.hasAttribute('data-initialized')) {
+                                questsContainer.setAttribute('data-initialized', 'true');
+                                const questsRef = ref(database, `users/${userId}/quests`);
+                                const questsSnapshot = await get(questsRef);
+                                const questsData = questsSnapshot.val() || {};
+
+                                questsContainer.innerHTML = '';
+                                quests.forEach(quest => {
+                                    const questData = questsData[quest.id] || { progress: 0, completed: false, claimed: false };
+                                    if (!questData.claimed) {
+                                        displayQuest(quest, questData, userData);
+                                    }
+                                });
+                            }
+
+                            // Initialize friend list only if it hasn't been initialized yet
+                            const friendListUL = document.getElementById('friend-list-ul');
+                            if (friendListUL && !friendListUL.hasAttribute('data-initialized')) {
+                                friendListUL.setAttribute('data-initialized', 'true');
+                                loadFriendList(userId);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error initializing user data:', error);
                     }
-                } catch (error) {
-                    console.error('Error updating icon:', error);
+                } else {
+                    window.location.href = 'index.html';
                 }
-            } else {
-                console.error('User not authenticated');
-            }
+            });
         }
 
-        function setProfileImage(primaryPath, fallbackPath) {
-            const img = document.getElementById('profile-image');
-            img.onerror = () => {
-                img.onerror = null; // Remove error handler to avoid infinite loop
-                img.src = fallbackPath;
-            };
-            img.src = primaryPath;
-        }
+        // Expose necessary functions to global scope
+        window.initializeAuthState = initializeAuthState;
+        window.createParticles = createParticles;
+        window.capitalizeTitle = capitalizeTitle;
 
-        window.closeChangeIconModal = function() {
-            const modal = document.getElementById('change-icon-modal');
-            modal.style.display = 'none';
-        };
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Firebase auth state
+            initializeAuthState();
 
-        
+            // Create particles
+            createParticles();
 
-        window.toggleProfileMenu = function() {
+            // Initialize click handlers for profile image and container
+            const profileInfo = document.getElementById('profile-info');
+            const profileImage = document.getElementById('profile-image');
             const profileMenu = document.getElementById('profile-menu');
-            profileMenu.classList.toggle('show');
-        };
+            const usernameDisplay = document.getElementById('username-display');
 
-        window.searchChampion = function() {
-            const input = document.getElementById('search-bar').value.toLowerCase();
-            const images = document.getElementsByClassName('champion-image');
-            for (let i = 0; i < images.length; i++) {
-                const altText = images[i].alt.toLowerCase();
-                if (altText.includes(input)) {
-                    images[i].style.display = '';
-                } else {
-                    images[i].style.display = 'none';
+            // Global toggle function for the profile menu
+            window.toggleProfileMenu = function(event) {
+                if (event) {
+                    event.stopPropagation();
+                }
+                if (profileMenu) {
+                    profileMenu.classList.toggle('show');
                 }
             }
-        };
 
-
-        window.updateQuestProgress = async function(questId, progressIncrement = 1) {
-            const user = auth.currentUser;
-            if (user) {
-                const userId = user.uid;
-                const userRef = ref(database, `users/${userId}/quests/${questId}`);
-                const snapshot = await get(userRef);
-                const questData = snapshot.val() || { progress: 0, completed: false, claimed: false };
-                if (!questData.completed) {
-                    const newProgress = (questData.progress || 0) + progressIncrement;
-                    if (newProgress >= quests.find(q => q.id === questId).goal) {
-                        await update(userRef, { progress: newProgress, completed: true });
-                    } else {
-                        await update(userRef, { progress: newProgress });
-                    }
-                }
-            } else {
-                console.error('User not authenticated');
+            // Add click handlers
+            if (profileInfo) {
+                profileInfo.addEventListener('click', toggleProfileMenu);
             }
-        };
-
-        function checkCharacterQuestProgress(team) {
-            const user = auth.currentUser;
-            if (user) {
-                const userId = user.uid;
-                const userRef = ref(database, `users/${userId}`);
-                get(userRef).then(snapshot => {
-                    const userData = snapshot.val();
-                    quests.forEach(quest => {
-                        if (quest.id === 'winAsSpecificCharacter' && quest.requirement(userData)) {
-                            updateQuestProgress(quest.id);
-                        }
-                    });
-                });
-            } else {
-                console.error('User not authenticated');
+            if (profileImage) {
+                profileImage.addEventListener('click', toggleProfileMenu);
             }
-        }
-
-        window.claimReward = async function(questId) {
-            const user = auth.currentUser;
-            if (user) {
-                const userId = user.uid;
-                const questRef = ref(database, `users/${userId}/quests/${questId}`);
-                const snapshot = await get(questRef);
-                const questData = snapshot.val();
-
-                if (questData && !questData.claimed) {
-                    const quest = quests.find(q => q.id === questId);
-
-                    // Increment the reward value
-                    for (const rewardKey in quest.reward) {
-                        const rewardRef = ref(database, `users/${userId}/${rewardKey}`);
-                        await runTransaction(rewardRef, (currentValue) => {
-                            return (currentValue || 0) + quest.reward[rewardKey];
-                        });
-                    }
-
-                    await update(questRef, { completed: true, claimed: true });
-                    alert('Reward claimed! You have received a free lootbox.');
-                    document.getElementById(`quest-${questId}`).remove();
-                } else {
-                    console.log('Reward already claimed or quest data not found.');
-                }
-            } else {
-                console.error('User not authenticated');
-            }
-        };
-
-        function displayQuest(quest, questData, userData, team = []) {
-            const questContainer = document.getElementById('new-quests-box').querySelector('.content');
-            const questElement = document.createElement('div');
-            questElement.classList.add('quest');
-            questElement.dataset.id = quest.id;
-            questElement.id = `quest-${quest.id}`;
-
-            const title = document.createElement('h3');
-            title.textContent = quest.title;
-            questElement.appendChild(title);
-
-            const description = document.createElement('p');
-            description.textContent = quest.description;
-            questElement.appendChild(description);
-
-            const progress = document.createElement('div');
-            progress.classList.add('quest-progress');
-            const progressBar = document.createElement('div');
-            progressBar.style.width = `${(questData.progress / quest.goal) * 100}%`;
-            progressBar.textContent = `${questData.progress}/${quest.goal}`;
-            progress.appendChild(progressBar);
-            questElement.appendChild(progress);
-
-            const buttonContainer = document.createElement('div');
-            buttonContainer.classList.add('button-container');
-
-            const acceptButton = document.createElement('button');
-            acceptButton.id = `accept-quest-button-${quest.id}`;
-            acceptButton.textContent = 'Accept Quest';
-            acceptButton.onclick = () => acceptQuest(quest.id);
-            buttonContainer.appendChild(acceptButton);
-
-            const claimButton = document.createElement('button');
-            claimButton.id = `claim-reward-button-${quest.id}`;
-            claimButton.classList.add('claim-button');
-            claimButton.textContent = 'Claim Reward';
-            claimButton.style.display = questData.progress >= quest.goal ? 'block' : 'none';
-            claimButton.onclick = () => claimReward(quest.id);
-            buttonContainer.appendChild(claimButton);
-
-            questElement.appendChild(buttonContainer);
-
-            // Add reward image
-            const rewardImage = document.createElement('img');
-            rewardImage.src = quest.image;
-            rewardImage.alt = quest.hoverText;
-            rewardImage.title = quest.hoverText;
-            rewardImage.classList.add('reward-image');
-            questElement.appendChild(rewardImage);
-
-            questContainer.appendChild(questElement);
-
-            // Hide the accept button if the quest is already in the user's database
-            if (questData.progress > 0 || userData.quests && userData.quests[quest.id]) {
-                acceptButton.style.display = 'none';
+            if (usernameDisplay) {
+                usernameDisplay.addEventListener('click', toggleProfileMenu);
             }
 
-            if (quest.requirement(userData, team)) {
-                updateQuestProgress(quest.id, questData.progress + 1);
-            }
-        }
-
-        window.acceptQuest = function(questId) {
-            const user = auth.currentUser;
-            if (user) {
-                const userId = user.uid;
-                const userRef = ref(database, `users/${userId}/quests/${questId}`);
-                set(userRef, { progress: 0, completed: false, claimed: false });
-                document.getElementById(`accept-quest-button-${questId}`).style.display = 'none';
-            } else {
-                console.error('User not authenticated');
-            }
-        };
-
-
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const toggleFriendListButton = document.getElementById("toggle-friend-list");
-            const friendList = document.getElementById("friend-list");
-            const addFriendButton = document.getElementById("add-friend-button");
-            const friendNameInput = document.getElementById("friend-name-input");
-            const friendListUL = document.getElementById("friend-list-ul");
-
-            toggleFriendListButton.addEventListener("click", function() {
-                friendList.style.display = friendList.style.display === "none" ? "block" : "none";
-            });
-
-            addFriendButton.addEventListener("click", async function() {
-                const friendName = friendNameInput.value;
-                if (friendName) {
-                    const userId = auth.currentUser.uid;
-                    const usersRef = ref(database, 'users');
-                    const snapshot = await get(usersRef);
-                    let friendId = null;
-
-                    snapshot.forEach(childSnapshot => {
-                        const userData = childSnapshot.val();
-                        if (userData.username === friendName) {
-                            friendId = childSnapshot.key;
-                        }
-                    });
-
-                    if (friendId) {
-                        const friendRef = ref(database, 'users/' + userId + '/friends');
-                        const newFriendRef = push(friendRef);
-                        set(newFriendRef, {
-                            id: friendId,
-                            name: friendName
-                        }).then(() => {
-                            friendNameInput.value = '';
-                            loadFriendList(userId);
-                        }).catch((error) => {
-                            console.error('Error adding friend:', error);
-                        });
-                    } else {
-                        alert('Username not found');
-                    }
+            // Close menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (profileMenu && profileMenu.classList.contains('show') && 
+                    !profileInfo.contains(event.target) &&
+                    !profileMenu.contains(event.target)) {
+                    profileMenu.classList.remove('show');
                 }
             });
 
-            function loadFriendList(userId) {
-                const friendRef = ref(database, 'users/' + userId + '/friends');
-                get(friendRef).then(snapshot => {
-                    friendListUL.innerHTML = '';
-                    snapshot.forEach(childSnapshot => {
-                        const friendData = childSnapshot.val();
-                        loadFriendIcon(friendData.id, friendData.name);
-                    });
-                }).catch(error => {
-                    console.error('Error loading friend list:', error);
+            // Initialize quest container
+            const questContent = document.querySelector('#new-quests-box .content');
+            const questToggleButton = document.getElementById('toggle-quests');
+            if (questContent && questToggleButton) {
+                questContent.style.display = 'none';
+                questToggleButton.innerHTML = '&#9660;';
+            }
+
+            // Quest toggle functionality
+            const toggleQuestsButton = document.getElementById('toggle-quests');
+            if (toggleQuestsButton) {
+                toggleQuestsButton.addEventListener('click', function() {
+                    const content = document.querySelector('#new-quests-box .content');
+                    if (content) {
+                        const isHidden = content.style.display === 'none';
+                        content.style.display = isHidden ? 'block' : 'none';
+                        toggleQuestsButton.innerHTML = isHidden ? '&#9650;' : '&#9660;';
+                    }
                 });
             }
 
-            function loadFriendIcon(friendId, friendName) {
-                const friendIconRef = ref(database, 'users/' + friendId + '/icon');
-                get(friendIconRef).then(iconSnapshot => {
-                    const iconFilename = iconSnapshot.exists() ? iconSnapshot.val() : 'default-icon.jpg';
-                    const primaryIconUrl = `Icons/${iconFilename}`;
-                    const fallbackIconUrl = `Icons/Profile/${iconFilename}`;
-                    displayFriend(friendName, primaryIconUrl, fallbackIconUrl);
-                }).catch(error => {
-                    console.error('Error loading friend icon:', error);
+            // Initialize advent calendar button
+            const adventCalendarButton = document.querySelector('.advent-calendar-button');
+            if (adventCalendarButton) {
+                adventCalendarButton.addEventListener('click', async function() {
+                    const { openAdventCalendar } = await import('./advent-calendar.js');
+                    openAdventCalendar();
                 });
             }
+        });
 
+        // Friend list helper functions
+        function loadFriendList(userId) {
+            const friendRef = ref(database, 'users/' + userId + '/friends');
+            get(friendRef).then(snapshot => {
+                const friendListUL = document.getElementById('friend-list-ul');
+                if (friendListUL) {
+                    friendListUL.innerHTML = ''; // Clear existing entries
+                    if (snapshot.exists()) {
+                        snapshot.forEach(childSnapshot => {
+                            const friendData = childSnapshot.val();
+                            loadFriendIcon(friendData.id, friendData.name);
+                        });
+                    }
+                }
+            }).catch(error => {
+                console.error('Error loading friend list:', error);
+            });
+        }
 
-            function displayFriend(friendName, primaryIconUrl, fallbackIconUrl) {
+        function loadFriendIcon(friendId, friendName) {
+            const friendIconRef = ref(database, 'users/' + friendId + '/icon');
+            get(friendIconRef).then(iconSnapshot => {
+                const iconFilename = iconSnapshot.exists() ? iconSnapshot.val() : 'default-icon.jpg';
+                const primaryIconUrl = `Icons/${iconFilename}`;
+                const fallbackIconUrl = `Icons/Profile/${iconFilename}`;
+                displayFriend(friendName, primaryIconUrl, fallbackIconUrl);
+            }).catch(error => {
+                console.error('Error loading friend icon:', error);
+            });
+        }
+
+        function displayFriend(friendName, primaryIconUrl, fallbackIconUrl) {
+            const friendListUL = document.getElementById('friend-list-ul');
+            if (friendListUL) {
                 const li = document.createElement('li');
                 li.classList.add('friend-item');
 
@@ -473,7 +251,7 @@
                 img.alt = 'Friend Icon';
                 img.classList.add('friend-icon');
                 img.onerror = () => {
-                    img.onerror = null; // Remove error handler to avoid infinite loop
+                    img.onerror = null;
                     img.src = fallbackIconUrl;
                 };
 
@@ -486,30 +264,363 @@
                 li.appendChild(nameLink);
                 friendListUL.appendChild(li);
             }
+        }
 
-            onAuthStateChanged(auth, user => {
-                if (user) {
-                    loadFriendList(user.uid);
-                }
-            });
+        // Initialize event listeners after DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Video background handling
+            const video = document.getElementById('video-background');
+            if (video) {
+                video.playbackRate = 1.0;
+                video.play().catch(function(error) {
+                    console.log("Video autoplay was prevented:", error);
+                });
+            }
+
+            // Initialize Toggle Button State
+            const championSelector = document.getElementById('champion-selector-container');
+            const toggleButton = document.getElementById('toggle-champion-button');
+            if (championSelector && toggleButton) {
+                championSelector.style.display = 'flex';
+            }
+
+            // Single friend list initialization
+            const toggleFriendListButton = document.getElementById("toggle-friend-list");
+            const friendList = document.getElementById("friend-list");
+            const addFriendButton = document.getElementById("add-friend-button");
+            const friendNameInput = document.getElementById("friend-name-input");
+
+            if (toggleFriendListButton && friendList) {
+                toggleFriendListButton.addEventListener("click", function() {
+                    friendList.style.display = friendList.style.display === "none" ? "block" : "none";
+                });
+            }
+
+            if (addFriendButton && friendNameInput) {
+                addFriendButton.addEventListener("click", async function() {
+                    const friendName = friendNameInput.value;
+                    if (friendName) {
+                        try {
+                            const userId = auth.currentUser.uid;
+                            const usersRef = ref(database, 'users');
+                            const snapshot = await get(usersRef);
+                            let friendId = null;
+
+                            snapshot.forEach(childSnapshot => {
+                                const userData = childSnapshot.val();
+                                if (userData.username === friendName) {
+                                    friendId = childSnapshot.key;
+                                }
+                            });
+
+                            if (friendId) {
+                                const friendRef = ref(database, 'users/' + userId + '/friends');
+                                const newFriendRef = push(friendRef);
+                                await set(newFriendRef, {
+                                    id: friendId,
+                                    name: friendName
+                                });
+                                friendNameInput.value = '';
+                                loadFriendList(userId);
+                            } else {
+                                alert('Username not found');
+                            }
+                        } catch (error) {
+                            console.error('Error adding friend:', error);
+                        }
+                    }
+                });
+            }
+        });
+    
+
+    function createParticles() {
+        const particleContainer = document.querySelector('.particle-container');
+        if (!particleContainer) {
+            const newParticleContainer = document.createElement('div');
+            newParticleContainer.classList.add('particle-container');
+            document.body.appendChild(newParticleContainer);
+        }
+
+        for (let i = 0; i < 60; i++) { // Increase number for more particles
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.width = `${Math.random() * 6 + 4}px`; // Size between 4px and 10px
+            particle.style.height = particle.style.width;
+            particle.style.background = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.7)`;
+            particle.style.animationDuration = `${Math.random() * 5 + 3}s`; // Duration between 3s and 8s
+            particle.style.animationDelay = `${Math.random() * 5}s`; // Delay between 0s and 5s
+            document.querySelector('.particle-container').appendChild(particle);
+        }
+    }
+
+    window.openChangeIconModal = async function() {
+        const modal = document.getElementById('change-icon-modal');
+        modal.style.display = 'block';
+
+        // Load icons dynamically
+        const iconList = document.getElementById('icon-list');
+        iconList.innerHTML = '';
+
+        const icons = [
+            'Julia.png', 'Birdie.png', 'Erron Black.png', 'Cham Cham.png', 'Morrigan.png',
+            'Jun.png', 'Reptile.png', 'Akuma.png', 'Elphelt.png', 'Kotal Kahn.png',
+            'Scorpion.png', 'Peacock.png', 'Angel.png', 'Astaroth.png', 'Ibuki.png',
+            'R.Mika.png', 'Raiden.png', 'Yugo.png', 'Talim.png', 'Noel.png',
+            'Blanka.png', 'Nina.png', 'Ayane.png', 'Siegfried.png', 'Shoma.png', 
+            'Juri.png', 'Sub Zero.png', 'Christie.png', 'Kokoro.png', 'Eagle.png',
+            'Sophitia.png', 'Shizumaru.png', 'Kagome.png', 'Kabal.png', 'Kuma.png',
+            'Alice.png', 'Shinnok.png', 'FANG.png', 'Lili.png', 'Mega Man.png',
+            
+        ];
+
+        icons.forEach(icon => {
+            const img = document.createElement('img');
+            img.src = `Icons/${icon}`;
+            img.alt = icon.replace('.png', '');
+            img.classList.add('icon-image');
+            img.onclick = () => selectIcon(icon);
+            iconList.appendChild(img);
         });
 
-        // Add event listener for advent calendar button
-        document.addEventListener('DOMContentLoaded', function() {
-            const adventCalendarButton = document.querySelector('.advent-calendar-button');
+        // Fetch user-specific icons from the database
+        const user = auth.currentUser;
+        if (user) {
+            const userRef = ref(database, 'users/' + user.uid + '/Icons');
+            const snapshot = await get(userRef);
+            if (snapshot.exists()) {
+                const userIcons = snapshot.val();
+                for (const iconName in userIcons) {
+                    if (userIcons[iconName] === 1) { // Check if the value is 1
+                        const img = document.createElement('img');
+                        img.src = `Icons/Profile/${iconName}.png`;
+                        img.alt = iconName.replace('.png', '');
+                        img.classList.add('icon-image');
+                        img.onclick = () => selectIcon(iconName + '.png');
+                        iconList.appendChild(img);
+                    }
+                }
+            }
+        }
+    };
+
+    window.logOut = function() {
+        signOut(auth).then(() => {
+            console.log('User signed out successfully');
+            window.location.href = 'index.html'; // Redirect to login page after sign out
+        }).catch((error) => {
+            console.error('Error signing out:', error);
+        });
+    };
+
+    function selectIcon(icon) {
+        const user = auth.currentUser;
+        if (user) {
+            updateIcon(icon)
+                .then(() => {
+                    setProfileImage(`Icons/${icon}`, `Icons/Profile/${icon}`);
+                    closeChangeIconModal();
+                })
+                .catch(error => {
+                    console.error('Error updating icon:', error);
+                });
+        } else {
+            console.error('User not authenticated');
+        }
+    }
+
+    async function updateIcon(icon) {
+        const user = auth.currentUser;
+        if (user) {
+            const userRef = ref(database, 'users/' + user.uid);
+            try {
+                const snapshot = await get(userRef);
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    userData.icon = icon; // Update the icon field
+                    await set(userRef, userData); // Write back the updated data
+                    console.log('Icon updated successfully');
+                } else {
+                    console.error('No user data found');
+                }
+            } catch (error) {
+                console.error('Error updating icon:', error);
+            }
+        } else {
+            console.error('User not authenticated');
+        }
+    }
+
+    function setProfileImage(primaryPath, fallbackPath) {
+        const img = document.getElementById('profile-image');
+        img.onerror = () => {
+            img.onerror = null; // Remove error handler to avoid infinite loop
+            img.src = fallbackPath;
+        };
+        img.src = primaryPath;
+    }
+
+    window.closeChangeIconModal = function() {
+        const modal = document.getElementById('change-icon-modal');
+        modal.style.display = 'none';
+    };
+
+    
+
+    window.toggleProfileMenu = function() {
+        const profileMenu = document.getElementById('profile-menu');
+        profileMenu.classList.toggle('show');
+    };
+
+    window.searchChampion = function() {
+        const input = document.getElementById('search-bar').value.toLowerCase();
+        const images = document.getElementsByClassName('champion-image');
+        for (let i = 0; i < images.length; i++) {
+            const altText = images[i].alt.toLowerCase();
+            if (altText.includes(input)) {
+                images[i].style.display = '';
+            } else {
+                images[i].style.display = 'none';
+            }
+        }
+    };
+
+
+    window.updateQuestProgress = async function(questId, progressIncrement = 1) {
+        const user = auth.currentUser;
+        if (user) {
+            const userId = user.uid;
+            const userRef = ref(database, `users/${userId}/quests/${questId}`);
+            const snapshot = await get(userRef);
+            const questData = snapshot.val() || { progress: 0, completed: false, claimed: false };
+            if (!questData.completed) {
+                const newProgress = (questData.progress || 0) + progressIncrement;
+                if (newProgress >= quests.find(q => q.id === questId).goal) {
+                    await update(userRef, { progress: newProgress, completed: true });
+                } else {
+                    await update(userRef, { progress: newProgress });
+                }
+            }
+        } else {
+            console.error('User not authenticated');
+        }
+    };
+
+    function checkCharacterQuestProgress(team) {
+        const user = auth.currentUser;
+        if (user) {
+            const userId = user.uid;
+            const userRef = ref(database, `users/${userId}`);
+            get(userRef).then(snapshot => {
+                const userData = snapshot.val();
+                quests.forEach(quest => {
+                    if (quest.id === 'winAsSpecificCharacter' && quest.requirement(userData)) {
+                        updateQuestProgress(quest.id);
+                    }
+                });
+            });
+        } else {
+            console.error('User not authenticated');
+        }
+    }
+
+    window.claimReward = async function(questId) {
+        const user = auth.currentUser;
+        if (user) {
+            const userId = user.uid;
+            const questRef = ref(database, `users/${userId}/quests/${questId}`);
+            const snapshot = await get(questRef);
+            const questData = snapshot.val();
+
+            if (questData && !questData.claimed) {
+                const quest = quests.find(q => q.id === questId);
+
+                // Increment the reward value
+                for (const rewardKey in quest.reward) {
+                    const rewardRef = ref(database, `users/${userId}/${rewardKey}`);
+                    await runTransaction(rewardRef, (currentValue) => {
+                        return (currentValue || 0) + quest.reward[rewardKey];
+                    });
+                }
+
+                await update(questRef, { completed: true, claimed: true });
+                alert('Reward claimed! You have received a free lootbox.');
+                document.getElementById(`quest-${questId}`).remove();
+            } else {
+                console.log('Reward already claimed or quest data not found.');
+            }
+        } else {
+            console.error('User not authenticated');
+        }
+    };
+
+    // Enhanced quest display function with reward images
+    function displayQuest(quest, questData, userData) {
+        const questContainer = document.querySelector('#new-quests-box .content');
+        const questElement = document.createElement('div');
+        questElement.classList.add('quest');
+        questElement.id = `quest-${quest.id}`;
+
+        const questContent = `
+            <div class="quest-header">
+                <div class="quest-info">
+                    <h3>${quest.title}</h3>
+                    <p class="quest-description">${quest.description}</p>
+                </div>
+                <div class="quest-reward" title="${quest.hoverText}">
+                    <div class="reward-item">
+                        <img src="${quest.image}" alt="Reward" class="reward-image">
+                        <span class="reward-amount">+${Object.values(quest.reward)[0]}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="quest-progress-container">
+                <div class="quest-progress">
+                    <div class="progress-bar" style="width: ${(questData.progress / quest.goal) * 100}%"></div>
+                </div>
+                <span class="progress-text">${questData.progress}/${quest.goal}</span>
+            </div>
+            ${questData.completed && !questData.claimed ? 
+                '<button class="quest-button claim-button" onclick="claimReward(\'' + quest.id + '\')">Claim Reward</button>' : 
+                ''}
+        `;
+
+        questElement.innerHTML = questContent;
+        questContainer.appendChild(questElement);
+    }
+
+    window.acceptQuest = function(questId) {
+        const user = auth.currentUser;
+        if (user) {
+            const userId = user.uid;
+            const userRef = ref(database, `users/${userId}/quests/${questId}`);
+            set(userRef, { progress: 0, completed: false, claimed: false });
+            document.getElementById(`accept-quest-button-${questId}`).style.display = 'none';
+        } else {
+            console.error('User not authenticated');
+        }
+    };
+
+    // Add event listener for advent calendar button
+    document.addEventListener('DOMContentLoaded', function() {
+        const adventCalendarButton = document.querySelector('.advent-calendar-button');
+        if (adventCalendarButton) {
             adventCalendarButton.addEventListener('click', async function() {
                 const { openAdventCalendar } = await import('./advent-calendar.js');
                 openAdventCalendar();
             });
-        });
-    </script>
-	<script type="module" src="quests.js"></script>
+        }
+    });
+</script>
+<script type="module" src="quests.js"></script>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background-color: #333333;
-            color: white;
+            background-color: #1a1412; /* Dark wood brown */
+            color: #dcd8c0; /* Aged parchment */
             font-family: Arial, sans-serif;
             position: relative;
             overflow: hidden;
@@ -520,70 +631,96 @@
             margin-top: 100px;
         }
         #champion-selector-container {
+            position: fixed;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             display: flex;
             flex-direction: column;
             align-items: center;
-            max-width: 1200px;
-            margin: 50px auto 20px auto;
+            max-width: 1200px; /* Increased from 900px */
+            width: 95%; /* More responsive width */
             padding: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.2), 0 2px 10px rgba(245, 222, 179, 0.2); /* White and Hay */
-            z-index: -1;
+            background: rgba(26, 20, 18, 0.85);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(184, 115, 51, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(184, 115, 51, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1;
+            max-height: 80vh;
         }
+
+        /* Custom scrollbar for the container */
+        #champion-selector-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #champion-selector-container::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        #champion-selector-container::-webkit-scrollbar-thumb {
+            background: rgba(184, 115, 51, 0.5);
+            border-radius: 4px;
+        }
+
+        #champion-selector-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(184, 115, 51, 0.7);
+        }
+
         #champion-selector {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-            align-items: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* Reduced from 100px */
+            gap: 15px; /* Reduced from 20px */
             width: 100%;
-            max-width: 1140px;
-            margin-top: 20px;
+            padding: 15px;
         }
-        .icon-image {
-            width: 90px;
-            height: 90px;
-            margin: 10px;
-            border: 2px solid #444;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.3s;
+
+        .champion-link {
             position: relative;
+            display: block;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
-        .icon-image:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 10px 5px rgba(245, 222, 179, 0.5); /* Hay */
-        }
+
         .champion-image {
-            width: 90px;
-            height: 90px;
-            margin: 10px;
-            border: 2px solid #444;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.3s;
-            position: relative;
+            width: 80px; /* Add fixed width */
+            height: 80px; /* Add fixed height */
+            aspect-ratio: 1;
+            border-radius: 12px;
+            border: 2px solid rgba(184, 115, 51, 0.3);
+            transition: all 0.3s ease;
+            transform-origin: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            object-fit: cover;
         }
-        .champion-image:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 10px 5px rgba(245, 222, 179, 0.5); /* Hay */
-        }
-        .selected {
-            border-color: #F5DEB3; /* Hay */
-        }
-        .gray {
-            filter: grayscale(100%);
-        }
-        #filter-container, #search-container {
-            margin: 20px;
+
+        .champion-name {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #F5DEB3;
+            font-size: 12px;
+            font-weight: bold;
             text-align: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
         }
-        #search-container input {
-            padding: 10px;
-            font-size: 16px;
-            width: 300px;
-            border-radius: 5px;
-            border: none;
+
+        /* Section title */
+        .section-title {
+            color: #F5DEB3;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         /* New styles for user info */
@@ -593,45 +730,122 @@
             right: 0px; /* Adjust right position as needed */
         }
         #profile-info {
-            display: flex;
             position: fixed;
-            top: 65px;
+            top: 60px;
             right: 0px;
+            display: flex;
             align-items: center;
-            justify-content: flex-end; /* Align content to the right */
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 5px 10px;
-            width: calc(100% - 340px);
-            max-width: 275px;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 8px 15px;
+            border-radius: 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(184, 115, 51, 0.3);
+            z-index: 1001;
+        }
+
+
+        #profile-info:hover {
+            transform: translateY(2px);
+            box-shadow: 0 6px 20px rgba(184, 115, 51, 0.2);
+        }
+
+        .username-title-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
         }
 
         #username-display {
-            position: center;
-            margin-right: 10px;
-            font-size: 20px;
-            color: white;
+            font-size: 1.8em; /* Increased from 1.6em */
+            font-weight: 600;
+            color: #F5DEB3;
+            margin: 0;
+        }
+
+        #title-display {
+            font-size: 0.8em;
+            color: #cd7f32;
+            font-style: italic;
+            margin: 0;
         }
 
         #profile-image {
-            width: 85px;
-            height: 85px;
+            width: 75px; /* Increased from 65px */
+            height: 75px; /* Increased from 65px */
             border-radius: 50%;
-            margin-left: 10px; /* Adjust margin as needed */
+            border: 2px solid #b87333;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
+
+        #profile-image:hover {
+            transform: scale(1.1);
+            border-color: #cd7f32;
+            box-shadow: 0 0 15px rgba(184, 115, 51, 0.4);
+        }
+
+        /* Currency Container Styles */
+        .currency-container {
+            position: fixed;
+            top: 0px; /* Changed from 143px to 0px to position above profile */
+            right: 0px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 10px 15px;
+            border-radius: 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(184, 115, 51, 0.3);
+            border-bottom: none;
+            z-index: 2000;
+        }
+
+        .currency-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .currency-item:hover {
+            transform: translateX(-5px);
+        }
+
+        .currency-icon {
+            width: 24px;
+            height: 24px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .currency-amount {
+            color: #F5DEB3;
+            font-weight: 600;
+            font-size: 0.85em; /* Decreased from 0.9em */
+            min-width: 60px;
+            text-align: right;
+        }
+
         /* Transparent Menu */
         .menu {
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 10px 20px;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(26, 20, 18, 0.9); /* Dark wood with transparency */
             z-index: 0;
         }
 
         .menu-items {
             display: flex;
             justify-content: center;
-            position: relative;
+            gap: 30px;
         }
 
         .menu a {
@@ -644,7 +858,7 @@
         }
 
         .menu a:hover {
-            background-color: #F5DEB3; /* Wedding Blue */
+            background-color: #b87333; /* Copper */
             transform: scale(1.1);
         }
 
@@ -657,8 +871,8 @@
         }
 
         .play-button {
-            background-color: #F5DEB3; /* Wedding Blue */
-            color: white;
+            background-color: #b87333; /* Copper */
+            color: #dcd8c0; /* Aged parchment */
             border: none;
             border-radius: 25px; /* Slightly less rounded corners for a modern look */
             font-size: 22px; /* Slightly larger font size */
@@ -666,23 +880,23 @@
             text-decoration: none;
             padding: 15px 40px; /* Increased padding for a more prominent button */
             transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* More pronounced shadow for a modern effect */
+            box-shadow: 0 8px 20px rgba(184, 115, 51, 0.3); /* Copper shadow */
             z-index: 1; /* Ensure it is above other elements */
             top: 5px; /* Adjusted position */
-            right: 10px;
+            left: 10px;
             position: fixed;
         }
 
         .play-button:hover {
-            background-color: #F5DEB3; /* Darker Wedding Blue */
+            background-color: #cd7f32; /* Lighter copper */
             transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
+            box-shadow: 0 10px 25px rgba(184, 115, 51, 0.4);
         }
 
 
         .battlepass-button {
             position: fixed;
-            top: 125px;
+            top: 145px;
             left: 75px;
             background-color: transparent;
             cursor: pointer;
@@ -691,44 +905,77 @@
             align-items: center;
             justify-content: center;
             padding: 10px;
-            width: 200px; /* Adjust the width as needed */
-            flex-direction: column; /* Stack image and text vertically */
-            border: 2px solid #F5DEB3; /* Hay */
+            width: 200px;
+            flex-direction: column;
+            border: 3px solid #b87333; /* Copper color border */
+            border-radius: 15px;
+            background: linear-gradient(45deg, #2c1810, #4a2511); /* Dark brown steampunk gradient */
+            box-shadow: 0 0 15px rgba(184, 115, 51, 0.5); /* Copper glow */
+            transition: all 0.3s ease;
         }
 
         .battlepass-button img {
-            width: 250px; /* Adjust the size as needed */
+            width: 250px;
             height: 100px;
             transition: transform 0.3s, box-shadow 0.3s;
-            position: absolute; /* Position image absolutely */
-            z-index: -1; /* Place image behind the text */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Add shadow for a modern effect */
-            border-radius: 10px; /* Slightly rounded corners for a modern look */
-            animation: float 5s ease-in-out infinite; /* Add floating animation */
-            box-shadow: 0 8px 20px #F5DEB3; /* Hay */
+            position: absolute;
+            z-index: -1;
+            border-radius: 10px;
+            filter: sepia(50%) hue-rotate(5deg); /* Steampunk color filter */
         }
 
         .battlepass-button span {
-            color: #ffffff; /* MOBA game-like gold color */
-            font-size: 24px; /* Slightly larger font size */
+            color: #b87333; /* Copper text color */
+            font-size: 26px;
             font-weight: bold;
-            margin-top: 10px; /* Adjust margin to position text */
-            transition: transform 0.3s;
-            z-index: 1; /* Ensure text is above the image */
-            font-family: 'Bangers', cursive; /* MOBA game-like font */
-            text-shadow: 2px 2px 4px #F5DEB3; /* Hay */
-            animation: float 5s ease-in-out infinite; /* Add floating animation */
+            margin-top: 10px;
+            font-family: 'Bangers', cursive;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            letter-spacing: 2px;
         }
 
-        .battlepass-button span:hover {
-            color: #F5DEB3; /* Light Wedding Blue */
-            transform: scale(1.1);
-            box-shadow: 0 8px 20px #F5DEB3; /* Hay */
+        .battlepass-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(184, 115, 51, 0.8), 
+                        inset 0 0 15px rgba(184, 115, 51, 0.5);
+            border-color: #cd7f32; /* Lighter copper on hover */
         }
 
         .battlepass-button:hover img {
             transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(245, 222, 179, 0.7); /* Hay shadow */
+            filter: sepia(60%) hue-rotate(10deg) brightness(1.1);
+        }
+
+        .battlepass-button:hover span {
+            color: #cd7f32; /* Lighter copper text on hover */
+            text-shadow: 0 0 10px rgba(184, 115, 51, 0.8);
+        }
+
+        /* Add steampunk gear animation */
+        @keyframes gearRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .battlepass-button::before,
+        .battlepass-button::after {
+            content: '⚙';
+            position: absolute;
+            color: #b87333;
+            font-size: 24px;
+            opacity: 0.6;
+            animation: gearRotate 10s linear infinite;
+        }
+
+        .battlepass-button::before {
+            left: -15px;
+            top: -15px;
+        }
+
+        .battlepass-button::after {
+            right: -15px;
+            bottom: -15px;
+            animation-direction: reverse;
         }
 
         #video-background {
@@ -743,16 +990,27 @@
 
         /* Profile Menu */
         .profile-menu {
-            display: none;
-            position: absolute;
-            top: 187px;
-            right: 10px;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            z-index: 1001;
-            width: 200px;
+            position: fixed;
+            top: 85px; /* Adjusted to account for larger profile image */
+            right: 20px;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(184, 115, 51, 0.3);
+            overflow: hidden;
+            z-index: 1002;
+            transform: translateY(-10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            min-width: 200px; /* Added minimum width */
+        }
+
+        .profile-menu.show {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .profile-menu ul {
@@ -769,14 +1027,11 @@
         }
 
         .profile-menu ul li:hover {
-            background-color: #F5DEB3; /* Hay */
+            background-color: #b87333; /* Copper */
         }
 
         .profile-menu ul li:last-child {
             border-bottom: none;
-        }
-        .profile-menu.show {
-            display: block;
         }
 
         /* Quests Toggle Button */
@@ -818,7 +1073,7 @@
         }
 
         .modal-content {
-            background-color: black;
+            background: linear-gradient(45deg, #2c1810, #4a2511);
             margin: auto;
             padding: 20px;
             border-radius: 10px;
@@ -826,6 +1081,7 @@
             max-width: 100%; /* Adjust width as needed */
             max-height: 80%; /* Adjust height as needed */
             overflow: auto; /* Enable scrolling if content exceeds dimensions */
+            border: 2px solid #b87333;
         }
 
         .modal-content img {
@@ -860,7 +1116,7 @@
             align-items: center;
             padding: 5px 10px;
             max-width: 275px;
-            z-index: 1000; /* Ensure it's above other content */
+            z-index: 2000; /* Ensure it's above other content */
             display: flex; /* Use flexbox to align items */
             align-items: center; /* Align items vertically */
         }
@@ -953,36 +1209,14 @@
         }
         #friend-list-container {
             position: fixed;
-            bottom: 10px;
-            right: 14px;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(26, 20, 18, 0.9);
             color: white;
             padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.2), 0 2px 10px rgba(245, 222, 179, 0.2); /* White and Hay */
+            box-shadow: 0 2px 10px rgba(184, 115, 51, 0.2);
             z-index: 1000;
             width: 300px;
             max-width: 275px;
-            align-items: center;
-            max-height: 800px;
-            overflow-y: auto;
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
-        }
-
-        #friend-list-container .header {
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-            color: #ffeb3b;
-            text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
-            box-shadow: 0 2px 10px rgba(255, 235, 59, 0.2);
+            align-items: left;
             backdrop-filter: blur(5px);
             transition: all 0.3s ease;
         }
@@ -1009,9 +1243,9 @@
     }
 
     .friend-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
         margin-right: 10px;
     }
 
@@ -1023,7 +1257,7 @@
 
     /* Toggle Champion Selector Button Styles */
     #toggle-champion-button {
-        position: fixed;
+            position: fixed;
         bottom: 20px;
         left: 50%;
         transform: translateX(-50%) rotate(0deg);
@@ -1034,9 +1268,9 @@
         height: 60px;
         cursor: pointer;
         font-size: 24px;
-        color: white;
-        display: flex;
-        align-items: center;
+            color: white;
+            display: flex;
+            align-items: center;
         justify-content: center;
         transition: transform 0.3s ease, background-color 0.3s ease;
         z-index: 1000;
@@ -1079,7 +1313,7 @@
     #add-friend-button {
         margin-top: 10px;
         padding: 10px;
-        background-color: #F5DEB3; /* Hay */
+        background-color: #b87333; /* Copper */
         color: white;
         border: none;
         border-radius: 5px;
@@ -1088,84 +1322,51 @@
     }
 
     #add-friend-button:hover {
-        background-color: #F5DEB3; /* Hay */
+        background-color: #cd7f32; /* Brass */
     }
 
     #toggle-friend-list {
         cursor: pointer;
-        color: #F5DEB3; /* Hay */
+        color: #b87333; /* Copper */
         text-align: center;
         margin-top: 10px;
     }
 
     #toggle-friend-list:hover {
-        color: #F5DEB3; /* Hay */
+        color: #b87333; /* Copper */
         text-decoration: underline;
     }
     /* Quests Section Styles */
     #new-quests-box {
         position: fixed;
-        bottom: 20px;
-        left: 20px;
-        width: 300px; /* Reduced width */
-        background-color: rgb(17, 16, 16);
-        color: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+        left: 5px !important;
+        bottom: 5px !important; /* Changed from top: 450px to bottom: 20px */
+        width: 300px;
+        background: none; /* Remove background */
+        border: none; /* Remove border */
+        box-shadow: none; /* Remove shadow */
         z-index: 1000;
-        font-family: 'Roboto', sans-serif;
-        max-height: 400px; /* Reduced max height */
-        overflow-y: auto;
-        backdrop-filter: blur(8px);
-        transition: all 0.3s ease-in-out;
     }
 
+    /* Remove the header styles since we're removing that element */
     #new-quests-box .header {
-        background-color: rgba(0, 0, 0, 0.7);
-        padding: 15px;
-        font-size: 18px;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-        color: #F5DEB3; /* Hay */
-        text-shadow: 0 0 10px rgba(245, 222, 179, 0.5); /* Adjusted shadow */
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        backdrop-filter: blur(5px);
-        transition: all 0.3s ease;
-    }
-
-    #new-quests-box .header h2 {
-        margin: 0;
-        color: #ffffff;
-    }
-
-    #toggle-quests {
-        background: none;
-        border: none;
-        color: #F5DEB3; /* Hay */
-        font-size: 20px; /* Reduced font size */
-        cursor: pointer;
-        transition: transform 0.3s;
+        display: none; /* Hide the header completely */
     }
 
     #new-quests-box .content {
-        padding: 10px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+        max-height: 400px;
+        overflow-y: auto;
+        padding: 15px;
+        display: block !important;
     }
 
     #new-quests-box .quest {
-        background-color: rgba(0, 0, 0, 0.411);
+        background: linear-gradient(145deg, rgba(26, 20, 18, 0.95), rgba(41, 33, 29, 0.95)); /* Add background to individual quests */
         border-radius: 8px;
-        padding: 10px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        transition: transform 0.3s, box-shadow 0.3s;
-        display: flex;
-        flex-direction: column;
+        margin-bottom: 10px;
+        padding: 15px;
+        box-shadow: 0 4px 20px rgba(184, 115, 51, 0.3);
+        border: 1px solid rgba(184, 115, 51, 0.3);
     }
 
     #new-quests-box .quest-header {
@@ -1177,7 +1378,7 @@
     #new-quests-box .quest h3 {
         margin: 0;
         font-size: 16px; /* Reduced font size */
-        color: #F5DEB3; /* Darker Wedding Blue */
+        color: #cd7f32; /* Brass */
     }
 
     .reward-image {
@@ -1194,14 +1395,14 @@
 
     #new-quests-box .quest .quest-progress {
         height: 8px; /* Reduced height */
-        background-color: #9e9e9e;
-        border-radius: 4px;
-        overflow: hidden;
+        background-color: #b87333; /* Copper */
+            border-radius: 4px;
+            overflow: hidden;
         margin-bottom: 8px;
-    }
+        }
 
     #new-quests-box .quest .quest-progress div {
-        height: 100%;
+            height: 100%;
         background-color: #F5DEB3; /* Hay */
         width: 50%;
         transition: width 0.3s;
@@ -1213,20 +1414,125 @@
         border-radius: 5px;
         cursor: pointer;
         font-size: 12px; /* Reduced font size */
-        background-color: #F5DEB3; /* Hay */
+        background-color: #b87333; /* Copper */
         color: #ffffff;
         transition: background-color 0.3s;
     }
 
     #new-quests-box .quest .claim-button:hover {
-        background-color: #F5DEB3; /* Hay */
+        background-color: #cd7f32; /* Brass */
     }
 
     #new-quests-box .quest:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 16px rgba(245, 222, 179, 0.8); /* Hay shadow */
     }
-        /* ===================== Animated Particle Background ===================== */
+
+    /* Modern Profile Container Styles */
+    #profile-info {
+        position: fixed;
+        top: 60px; /* Position it below the menu bar */
+        right: 0px; /* Align to screen edge */
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(10px);
+        padding: 8px 15px;
+        border-radius: 0; /* Remove border radius */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(184, 115, 51, 0.3);
+        border-bottom: none; /* Remove bottom border */
+        z-index: 1001;
+    }
+
+    #profile-info:hover {
+        transform: translateY(2px);
+        box-shadow: 0 6px 20px rgba(184, 115, 51, 0.2);
+    }
+
+    .username-title-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 2px;
+    }
+
+    #username-display {
+        font-size: 1.8em; /* Increased from 1.6em */
+        font-weight: 600;
+        color: #F5DEB3;
+        margin: 0;
+    }
+
+    #title-display {
+        font-size: 0.8em;
+        color: #cd7f32;
+        font-style: italic;
+        margin: 0;
+    }
+
+    #profile-image {
+        width: 75px; /* Increased from 65px */
+        height: 75px; /* Increased from 65px */
+        border-radius: 50%;
+        border: 2px solid #b87333;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    #profile-image:hover {
+        transform: scale(1.1);
+        border-color: #cd7f32;
+        box-shadow: 0 0 15px rgba(184, 115, 51, 0.4);
+    }
+
+    /* Currency Container Styles */
+    .currency-container {
+        position: fixed;
+        top: 143px; /* Adjusted to touch profile-info */
+        right: 0px; /* Align to screen edge */
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(10px);
+        padding: 10px 15px;
+        border-radius: 0; /* Remove border radius */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(184, 115, 51, 0.3);
+        border-top: none; /* Remove top border */
+        z-index: 2000;
+    }
+
+    .currency-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 5px;
+        transition: all 0.3s ease;
+    }
+
+    .currency-item:hover {
+        transform: translateX(-5px);
+    }
+
+    .currency-icon {
+        width: 24px;
+        height: 24px;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+
+    .currency-amount {
+        color: #F5DEB3;
+        font-weight: 600;
+        font-size: 0.85em; /* Decreased from 0.9em */
+        min-width: 60px;
+        text-align: right;
+    }
+
+    /* ===================== Animated Particle Background ===================== */
 
     /* Container for particles */
     .particle-container {
@@ -1281,7 +1587,7 @@
         position: absolute;
         width: 8px;
         height: 8px;
-        background: rgba(245, 222, 179, 0.7); /* Hay color with transparency */
+        background: rgba(184, 115, 51, 0.4); /* Copper with transparency */
         border-radius: 50%;
         animation: particleMove linear infinite;
     }
@@ -1311,7 +1617,7 @@
     }
 
     .play-button:hover {
-        transform: scale(1.05);
+            transform: scale(1.05);
         box-shadow: 0 0 20px rgba(0, 123, 95, 0.8);
     }
 
@@ -1389,8 +1695,8 @@
         background-color: transparent;
         cursor: pointer;
         z-index: 1000;
-        display: flex;
-        align-items: center;
+            display: flex;
+            align-items: center;
         justify-content: center;
         padding: 10px;
         width: 200px; /* Adjust the width as needed */
@@ -1450,22 +1756,22 @@
         position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
+            width: 100%;
         height: 100%;
         background-color: rgba(0, 0, 0, 0.8);
         z-index: 2000;
     }
 
     .advent-calendar-content {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         background-color: white;
         padding: 20px;
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        z-index: 1001;
+            z-index: 1001;
         width: 80%;
         max-width: 600px;
     }
@@ -1494,8 +1800,8 @@
 
     .calendar-day {
         aspect-ratio: 1;
-        display: flex;
-        align-items: center;
+            display: flex;
+            align-items: center;
         justify-content: center;
         background-color: #F5DEB3;
         color: #333;
@@ -1503,7 +1809,7 @@
         font-weight: bold;
         border-radius: 10px;
         cursor: pointer;
-        transition: all 0.3s ease;
+            transition: all 0.3s ease;
         box-shadow: 0 4px 8px rgba(245, 222, 179, 0.3);
         padding: 15px;
         min-height: 60px;
@@ -1594,357 +1900,1339 @@
         }
     }
 
-    /* Add or update these styles in your <style> section */
-    .modal-window {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.8);
-        z-index: 2000;
+        /* Add or update these styles in your <style> section */
+        .modal-window {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #daily-reward-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgb(17, 16, 16);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(245, 222, 179, 0.3);
+            text-align: center;
+            z-index: 2001;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        #reward-image {
+            width: auto;
+            height: auto;
+            max-width: 400px;
+            max-height: 400px;
+            margin: 20px auto;
+            display: block;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(245, 222, 179, 0.2);
+        }
+
+        #reward-name {
+            font-size: 2em;
+            color: #F5DEB3;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .close-reward-button {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            color: #F5DEB3;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .close-reward-button:hover {
+            transform: scale(1.1);
+        }
+
+        /* Animation for reward appearance */
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        #daily-reward-popup {
+            animation: popIn 0.3s ease-out forwards;
+        }
+
+        /* Update these styles in your <style> section */
+        .reward-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 20px;
+        }
+
+        .reward-display h2 {
+            font-size: 2em;
+            color: #F5DEB3;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        #reward-image {
+            max-width: 80%;
+            max-height: 60vh;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(245, 222, 179, 0.3);
+        }
+
+        /* Animation for the reward appearance */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .reward-display {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        /* Update the close button position */
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 32px;
+            color: #F5DEB3;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            z-index: 2001;
+        }
+
+        .close-button:hover {
+            transform: scale(1.2);
+        }
+
+        /* Update these styles in your <style> section */
+        .modal-window {
+            display: none; /* Hide by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+        }
+
+        .advent-calendar-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgb(17, 16, 16);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(245, 222, 179, 0.3);
+            color: #fff;
+            width: 70%;
+            max-width: 900px;
+            min-height: 600px;
+        }
+
+        #daily-reward-popup {
+            display: none; /* Hide by default */
+        }
+
+        .username-title-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        #username-display {
+            font-size: 1.8em; /* Increased from 1.6em */
+            font-weight: 600;
+            color: #F5DEB3;
+            margin: 0;
+        }
+
+        #title-display {
+            font-size: 0.8em;
+            color: #ffbb00;  /* Gold color for the title */
+            font-style: italic;
+        }
+
+        .patch-button {
+            position: fixed;
+            top: 200px; /* Adjust this value to move the button down */
+            left: 75px;
+            background-color: black;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            width: 250px; /* Adjust width as needed */
+            z-index: 1000;
+        }
+
+        .patch-button a {
         display: flex;
-        justify-content: center;
+            flex-direction: column;
         align-items: center;
+            text-decoration: none;
+            color: white;
+            padding: 10px;
+        }
+
+        .patch-button img {
+            width: 100%;
+            height: auto;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .patch-button:hover img {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+        }
+
+        .patch-text h2, .patch-text p {
+            margin: 0;
+            text-align: center;
+            font-family: 'Bangers', cursive;
+        }
+
+        .patch-text h2 {
+            font-size: 24px;
+            margin-top: 10px;
+        }
+
+        .patch-text p {
+            font-size: 16px;
+        }
+
+        .changelog-button {
+            position: fixed;
+            top: 365px; /* Position it between battlepass and advent calendar buttons */
+            left: 75px;
+            background-color: transparent;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            width: 200px;
+            flex-direction: column;
+            border: 2px solid #F5DEB3; /* Hay */
+        }
+
+        .changelog-button img {
+            width: 250px;
+            height: 100px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: absolute;
+            z-index: -1;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            animation: float 5s ease-in-out infinite;
+            background-color: black; /* Add black background to the image container */
+        }
+
+        .changelog-button span {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: transform 0.3s;
+            z-index: 1;
+            font-family: 'Bangers', cursive;
+            text-shadow: 2px 2px 4px #F5DEB3;
+            animation: float 5s ease-in-out infinite;
+        }
+
+        .changelog-button:hover img {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(245, 222, 179, 0.7);
+        }
+
+        .changelog-button:hover span {
+            color: #F5DEB3;
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px #F5DEB3;
+        }
+
+        /* Add smoke container and animation styles */
+        .smoke-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .smoke {
+            position: absolute;
+            bottom: -100px;
+            width: 10px;
+            height: 10px;
+            background: rgba(184, 115, 51, 0.3); /* Copper smoke */
+            border-radius: 50%;
+            animation: smoke-rise 6s infinite;
+            filter: sepia(60%) blur(8px);
+            box-shadow: 0 0 20px rgba(184, 115, 51, 0.4);
+        }
+
+        /* Create multiple smoke particles with different positions and delays */
+        .smoke:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .smoke:nth-child(2) { left: 30%; animation-delay: 1s; }
+        .smoke:nth-child(3) { left: 50%; animation-delay: 2s; }
+        .smoke:nth-child(4) { left: 70%; animation-delay: 3s; }
+        .smoke:nth-child(5) { left: 90%; animation-delay: 4s; }
+        .smoke:nth-child(6) { left: 20%; animation-delay: 2.5s; }
+        .smoke:nth-child(7) { left: 40%; animation-delay: 1.5s; }
+        .smoke:nth-child(8) { left: 60%; animation-delay: 3.5s; }
+        .smoke:nth-child(9) { left: 80%; animation-delay: 0.5s; }
+        .smoke:nth-child(10) { left: 25%; animation-delay: 2.8s; }
+
+        @keyframes smoke-rise {
+            0% {
+                transform: scale(1) translateY(0);
+                opacity: 0.8;
+                filter: blur(5px);
+            }
+            50% {
+                transform: scale(2) translateY(-100px) translateX(20px);
+                opacity: 0.5;
+                filter: blur(10px);
+            }
+            100% {
+                transform: scale(3) translateY(-200px) translateX(-20px);
+                opacity: 0;
+                filter: blur(15px);
+            }
+        }
+
+        /* Add sepia filter to smoke for steampunk feel */
+        .smoke {
+            filter: sepia(50%) blur(5px);
+            background: rgba(184, 115, 51, 0.3); /* Copper tint */
+        }
+
+        /* Enhanced smoke container and animation styles */
+        .smoke-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 300px;
+            z-index: 999;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .smoke {
+            position: absolute;
+            bottom: -10px;
+            width: 20px;
+            height: 20px;
+            background: rgba(184, 115, 51, 0.4); /* More visible copper tint */
+            border-radius: 50%;
+            animation: smoke-rise 8s infinite;
+            filter: blur(8px);
+        }
+
+        /* Create multiple smoke particles with different positions and delays */
+        .smoke:nth-child(1) { left: 5%; animation-delay: 0s; width: 30px; height: 30px; }
+        .smoke:nth-child(2) { left: 25%; animation-delay: 1s; width: 25px; height: 25px; }
+        .smoke:nth-child(3) { left: 45%; animation-delay: 2s; width: 35px; height: 35px; }
+        .smoke:nth-child(4) { left: 65%; animation-delay: 3s; width: 28px; height: 28px; }
+        .smoke:nth-child(5) { left: 85%; animation-delay: 4s; width: 32px; height: 32px; }
+        .smoke:nth-child(6) { left: 15%; animation-delay: 2.5s; width: 40px; height: 40px; }
+        .smoke:nth-child(7) { left: 35%; animation-delay: 1.5s; width: 27px; height: 27px; }
+        .smoke:nth-child(8) { left: 55%; animation-delay: 3.5s; width: 33px; height: 33px; }
+        .smoke:nth-child(9) { left: 75%; animation-delay: 0.5s; width: 38px; height: 38px; }
+        .smoke:nth-child(10) { left: 95%; animation-delay: 2.8s; width: 29px; height: 29px; }
+        .smoke:nth-child(11) { left: 10%; animation-delay: 4.5s; width: 36px; height: 36px; }
+        .smoke:nth-child(12) { left: 30%; animation-delay: 3.8s; width: 31px; height: 31px; }
+        .smoke:nth-child(13) { left: 50%; animation-delay: 5s; width: 34px; height: 34px; }
+        .smoke:nth-child(14) { left: 70%; animation-delay: 4.2s; width: 37px; height: 37px; }
+        .smoke:nth-child(15) { left: 90%; animation-delay: 5.5s; width: 26px; height: 26px; }
+
+        @keyframes smoke-rise {
+            0% {
+                transform: scale(1) translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(3) translateY(-150px) translateX(40px);
+                opacity: 0.5;
+                filter: blur(15px);
+            }
+            100% {
+                transform: scale(4) translateY(-300px) translateX(-40px);
+                opacity: 0;
+                filter: blur(20px);
+            }
+        }
+
+        /* Add sepia and glow to smoke for steampunk feel */
+        .smoke {
+            filter: sepia(60%) blur(8px);
+            box-shadow: 0 0 20px rgba(184, 115, 51, 0.6);
+            mix-blend-mode: screen;
     }
 
-    #daily-reward-popup {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: rgb(17, 16, 16);
-        padding: 40px;
+    /* Modern Header Styles */
+        .modern-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Menu Styles */
+        .menu-items {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .menu-link {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Special styling for the play button */
+        .menu-link.play-button {
+            background: linear-gradient(135deg, #ffbb00, #ff8800);
+            color: white;
+            right: 850px;
+            top: 20px;
+        padding: 12px 30px;
         border-radius: 20px;
-        box-shadow: 0 0 30px rgba(245, 222, 179, 0.3);
-        text-align: center;
-        z-index: 2001;
-        width: 80%;
-        max-width: 600px;
-    }
+            box-shadow: 0 4px 15px rgba(255, 187, 0, 0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        gap: 8px;
+        font-size: 18px;
+        }
 
-    #reward-image {
-        width: auto;
-        height: auto;
-        max-width: 400px;
-        max-height: 400px;
-        margin: 20px auto;
-        display: block;
-        border-radius: 10px;
-        box-shadow: 0 0 20px rgba(245, 222, 179, 0.2);
-    }
+        .menu-link.play-button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 187, 0, 0.4);
+            background: linear-gradient(135deg, #ffc400, #ff9500);
+        }
 
-    #reward-name {
-        font-size: 2em;
-        color: #F5DEB3;
-        margin: 20px 0;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    }
-
-    .close-reward-button {
-        position: absolute;
-        top: 15px;
-        right: 20px;
-        font-size: 24px;
-        color: #F5DEB3;
-        cursor: pointer;
-        background: none;
-        border: none;
-        padding: 5px 10px;
-        transition: transform 0.3s ease;
-    }
-
-    .close-reward-button:hover {
-        transform: scale(1.1);
-    }
-
-    /* Animation for reward appearance */
-    @keyframes popIn {
-        0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
-        100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-    }
-
-    #daily-reward-popup {
-        animation: popIn 0.3s ease-out forwards;
-    }
-
-    /* Update these styles in your <style> section */
-    .reward-display {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        padding: 20px;
-    }
-
-    .reward-display h2 {
-        font-size: 2em;
-        color: #F5DEB3;
-        margin-bottom: 30px;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    }
-
-    #reward-image {
-        max-width: 80%;
-        max-height: 60vh;
-        border-radius: 10px;
-        box-shadow: 0 0 30px rgba(245, 222, 179, 0.3);
-    }
-
-    /* Animation for the reward appearance */
-    @keyframes fadeIn {
-        from { opacity: 0; transform: scale(0.9); }
-        to { opacity: 1; transform: scale(1); }
-    }
-
-    .reward-display {
-        animation: fadeIn 0.3s ease-out forwards;
-    }
-
-    /* Update the close button position */
-    .close-button {
-        position: absolute;
-        top: 20px;
-        right: 25px;
-        font-size: 32px;
-        color: #F5DEB3;
-        cursor: pointer;
-        transition: transform 0.3s ease;
-        z-index: 2001;
-    }
-
-    .close-button:hover {
-        transform: scale(1.2);
-    }
-
-    /* Update these styles in your <style> section */
-    .modal-window {
-        display: none; /* Hide by default */
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.8);
-        z-index: 2000;
-    }
-
-    .advent-calendar-content {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: rgb(17, 16, 16);
-        padding: 30px;
-        border-radius: 20px;
-        box-shadow: 0 0 30px rgba(245, 222, 179, 0.3);
-        color: #fff;
-        width: 70%;
-        max-width: 900px;
-        min-height: 600px;
-    }
-
-    #daily-reward-popup {
-        display: none; /* Hide by default */
-    }
-
-    .username-title-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 2px;
-    }
-
-    #username-display {
+        .menu-link.play-button i {
+        margin-right: 8px;
         font-size: 1.2em;
-        font-weight: bold;
-    }
+        }
 
-    #title-display {
-        font-size: 0.8em;
-        color: #ffbb00;  /* Gold color for the title */
-        font-style: italic;
-    }
+        .menu-link:not(.play-button):hover {
+            background: rgba(255, 187, 0, 0.2);
+            transform: translateY(-2px);
+        }
 
-    .patch-button {
-        position: fixed;
-        top: 200px; /* Adjust this value to move the button down */
-        left: 75px;
-        background-color: black;
-        border-radius: 10px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        overflow: hidden;
-        width: 250px; /* Adjust width as needed */
-        z-index: 1000;
-    }
+        .menu-link.active {
+            background: rgba(255, 187, 0, 0.3);
+            color: #ffbb00;
+        }
 
-    .patch-button a {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-decoration: none;
-        color: white;
-        padding: 10px;
-    }
+        /* Profile Container Styles */
+        .profile-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-left: auto;
+        }
 
-    .patch-button img {
-        width: 100%;
-        height: auto;
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
+        .currency-display {
+            display: flex;
+            gap: 15px;
+        }
 
-    .patch-button:hover img {
-        transform: scale(1.1);
-        box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
-    }
+        .currency-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
 
-    .patch-text h2, .patch-text p {
-        margin: 0;
-        text-align: center;
-        font-family: 'Bangers', cursive;
-    }
+        .currency-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
 
-    .patch-text h2 {
-        font-size: 24px;
-        margin-top: 10px;
-    }
+        .currency-icon {
+            width: 24px;
+            height: 24px;
+        }
 
-    .patch-text p {
-        font-size: 16px;
-    }
+            .profile-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                border: 2px solid #ffbb00;
+                transition: all 0.3s ease;
+            }
 
-    .changelog-button {
-        position: fixed;
-        top: 365px; /* Position it between battlepass and advent calendar buttons */
-        left: 75px;
-        background-color: transparent;
-        cursor: pointer;
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 10px;
-        width: 200px;
-        flex-direction: column;
-        border: 2px solid #F5DEB3; /* Hay */
-    }
+            .profile-icon:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 15px rgba(255, 187, 0, 0.5);
+            }
 
-    .changelog-button img {
-        width: 250px;
-        height: 100px;
-        transition: transform 0.3s, box-shadow 0.3s;
-        position: absolute;
-        z-index: -1;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        border-radius: 10px;
-        animation: float 5s ease-in-out infinite;
-        background-color: black; /* Add black background to the image container */
-    }
+        /* Modern Play Button Styles */
+        .modern-play-button {
+            position: fixed;
+            top: 90px;
+            left: 30px;
+            background: linear-gradient(135deg, #ffbb00, #ff8800);
+            color: white;
+            text-decoration: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 187, 0, 0.3);
+            z-index: 999;
+        }
 
-    .changelog-button span {
-        color: #ffffff;
-        font-size: 24px;
-        font-weight: bold;
-        margin-top: 10px;
-        transition: transform 0.3s;
-        z-index: 1;
-        font-family: 'Bangers', cursive;
-        text-shadow: 2px 2px 4px #F5DEB3;
-        animation: float 5s ease-in-out infinite;
-    }
+        .modern-play-button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(255, 187, 0, 0.4);
+            background: linear-gradient(135deg, #ffc400, #ff9500);
+        }
 
-    .changelog-button:hover img {
-        transform: scale(1.1);
-        box-shadow: 0 0 15px rgba(245, 222, 179, 0.7);
-    }
+        .play-icon {
+            font-size: 24px;
+        }
 
-    .changelog-button:hover span {
-        color: #F5DEB3;
-        transform: scale(1.1);
-        box-shadow: 0 8px 20px #F5DEB3;
-    }
+        .play-text {
+            letter-spacing: 1px;
+        }
 
+        /* Username Container Styles */
+        .username-title-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .username-title-container:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Enhanced Quest Styles */
+        .quest {
+            background: none; /* Remove background */
+            border: none; /* Remove border */
+            box-shadow: none; /* Remove shadow */
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        #new-quests-box {
+            background: none; /* Remove background */
+            border: none; /* Remove border */
+            box-shadow: none; /* Remove shadow */
+        }
+
+        #friend-list-container {
+            position: fixed;
+            right: -20px !important;/* Extend beyond screen edge */
+            top: 90px !important; /* Extend beyond screen edge */
+            width: 320px; /* Increased width to account for negative right position */
+            padding-right: 20px; /* Add padding to offset negative position */
+            padding-bottom: 20px; /* Add padding to offset negative position */
+            background: linear-gradient(145deg, rgba(26, 20, 18, 0.95), rgba(41, 33, 29, 0.95));
+            box-shadow: 0 4px 20px rgba(184, 115, 51, 0.3);
+            z-index: 1000;
+        }
+
+        #toggle-friend-list {
+            padding: 15px 20px;
+            color: #b87333;
+            font-weight: bold;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(184, 115, 51, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        #toggle-friend-list:hover {
+            background: rgba(184, 115, 51, 0.1);
+            color: #cd7f32;
+        }
+
+        #friend-list {
+            padding: 15px;
+        }
+
+        #friend-name-input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(184, 115, 51, 0.3);
+            border-radius: 8px;
+            color: #fff;
+        }
+
+        #add-friend-button {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #b87333, #cd7f32);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #add-friend-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(184, 115, 51, 0.4);
+        }
+
+        .friend-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid rgba(184, 115, 51, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .friend-item:hover {
+            background: rgba(184, 115, 51, 0.1);
+        }
+
+        .friend-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid rgba(184, 115, 51, 0.3);
+        }
+
+        .friend-name {
+            color: #F5DEB3;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .friend-name:hover {
+            color: #cd7f32;
+        }
+
+        .friend-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .friend-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .friend-name {
+            color: #F5DEB3;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4CAF50;
+            margin-right: 5px;
+        }
+
+        .last-seen {
+            font-size: 0.8em;
+            color: #999;
+        }
+
+        .friend-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .friend-action-button {
+            padding: 6px;
+            border: none;
+            border-radius: 4px;
+            background: rgba(184, 115, 51, 0.2);
+            color: #F5DEB3;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .friend-action-button:hover {
+            background: rgba(184, 115, 51, 0.4);
+            transform: scale(1.1);
+        }
+
+        .friend-notification {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            animation: slideDown 0.3s ease, fadeOut 0.3s ease 2.7s;
+        }
+
+        @keyframes slideDown {
+            from { transform: translate(-50%, -20px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        /* Modern Profile Container Styles */
+        #profile-info {
+            position: fixed;
+            top: 0px; /* Position it below the menu bar */
+            right: 0px; /* Align to screen edge */
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 8px 15px;
+            border-radius: 0; /* Remove border radius */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(184, 115, 51, 0.3);
+            border-bottom: 1px solid rgba(184, 115, 51, 0.3);
+            z-index: 1001;
+        }
+
+        #profile-info:hover {
+            transform: translateY(2px);
+            box-shadow: 0 6px 20px rgba(184, 115, 51, 0.2);
+        }
+
+        .username-title-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        #username-display {
+            font-size: 1.8em; /* Increased from 1.6em */
+            font-weight: 600;
+            color: #F5DEB3;
+            margin: 0;
+        }
+
+        #title-display {
+            font-size: 0.8em;
+            color: #cd7f32;
+            font-style: italic;
+            margin: 0;
+        }
+
+        #profile-image {
+            width: 75px; /* Increased from 65px */
+            height: 75px; /* Increased from 65px */
+            border-radius: 50%;
+            border: 2px solid #b87333;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        #profile-image:hover {
+            transform: scale(1.1);
+            border-color: #cd7f32;
+            box-shadow: 0 0 15px rgba(184, 115, 51, 0.4);
+        }
+
+        /* Currency Container Styles */
+        .currency-container {
+            position: fixed;
+            top: 95px; /* Adjusted to touch profile-info */
+            right: 0px; /* Align to screen edge */
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 10px 15px;
+            border-radius: 0; /* Remove border radius */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(184, 115, 51, 0.3);
+            border-top: none; /* Remove top border */
+            z-index: 2000;
+        }
+
+        .currency-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .currency-item:hover {
+            transform: translateX(-5px);
+        }
+
+        .currency-icon {
+            width: 24px;
+            height: 24px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .currency-amount {
+            color: #F5DEB3;
+            font-weight: 600;
+            font-size: 0.85em; /* Decreased from 0.9em */
+            min-width: 60px;
+            text-align: right;
+        }
+
+        /* Profile Menu Styles */
+        .profile-menu {
+            position: fixed;
+            top: 85px; /* Adjusted to account for larger profile image */
+            right: 20px;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(184, 115, 51, 0.3);
+            overflow: hidden;
+            z-index: 5000;
+            transform: translateY(-10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            min-width: 200px; /* Added minimum width */
+        }
+
+        .profile-menu.show {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .profile-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .profile-menu ul li {
+            padding: 12px 25px;
+            color: #F5DEB3;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95em;
+        }
+
+        .profile-menu ul li:hover {
+            background: rgba(184, 115, 51, 0.2);
+            padding-left: 30px;
+        }
+
+        /* Bottom Buttons Container */
+        .bottom-buttons-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
+            z-index: 1000;
+        }
+
+        .bottom-button {
+            width: 280px;
+            height: 160px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(184, 115, 51, 0.3);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .bottom-button:hover {
+            transform: translateY(-10px);
+            border-color: #b87333;
+            box-shadow: 0 10px 25px rgba(184, 115, 51, 0.4);
+        }
+
+        .bottom-button img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .bottom-button:hover img {
+            transform: scale(1.1);
+        }
+
+        .bottom-button .button-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            color: #F5DEB3;
+            text-align: center;
+        }
+
+        .bottom-button .button-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .bottom-button:hover .button-content {
+            background: linear-gradient(to top, rgba(184, 115, 51, 0.9), transparent);
+        }
+
+        /* Add steampunk gear animation */
+        .bottom-button::before,
+        .bottom-button::after {
+            content: '⚙';
+            position: absolute;
+            color: #b87333;
+            font-size: 24px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .bottom-button::before {
+            top: 10px;
+            left: 10px;
+        }
+
+        .bottom-button::after {
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .bottom-button:hover::before,
+        .bottom-button:hover::after {
+            opacity: 0.6;
+            transform: rotate(180deg);
+        }
+
+        /* Add these styles to the existing <style> section */
+
+        /* New Quest Panel Styles */
+        #new-quests-box {
+            position: fixed;
+            left: 20px;
+            bottom: 20px; /* Changed from top: 450px to bottom: 20px */
+            width: 300px;
+            background: none; /* Remove background */
+            border: none; /* Remove border */
+            box-shadow: none; /* Remove shadow */
+            z-index: 1000;
+        }
+
+        /* Remove the header styles since we're removing that element */
+        #new-quests-box .header {
+            display: none; /* Hide the header completely */
+        }
+
+        #new-quests-box .content {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            display: block !important;
+        }
+
+        #friend-list {
+            display: block !important; /* Always visible */
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 15px;
+        }
+
+        #friend-list-ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        /* Custom scrollbar for both panels */
+        #new-quests-box .content::-webkit-scrollbar,
+        #friend-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #new-quests-box .content::-webkit-scrollbar-track,
+        #friend-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        #new-quests-box .content::-webkit-scrollbar-thumb,
+        #friend-list::-webkit-scrollbar-thumb {
+            background: rgba(184, 115, 51, 0.5);
+            border-radius: 4px;
+        }
+
+        #new-quests-box .content::-webkit-scrollbar-thumb:hover,
+        #friend-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(184, 115, 51, 0.7);
+        }
+
+        .quest-reward {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .reward-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(184, 115, 51, 0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+        .reward-image {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        .reward-amount {
+            color: #F5DEB3;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .quest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .quest-reward {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-left: 10px;
+            cursor: help;
+        }
+
+        .reward-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(184, 115, 51, 0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .reward-item:hover {
+            background: rgba(184, 115, 51, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .reward-image {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        .reward-amount {
+            color: #F5DEB3;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .quest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .quest-progress-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quest-progress {
+            flex-grow: 1;
+            height: 8px;
+            background-color: rgba(184, 115, 51, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #b87333, #cd7f32);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            color: #F5DEB3;
+            font-size: 0.9em;
+            font-weight: 600;
+            min-width: 45px;
+            text-align: right;
+        }
+
+        /* Update these styles in the <style> section */
+
+        /* Modal Content Styles */
+        .modal-content {
+            background: linear-gradient(145deg, rgba(26, 20, 18, 0.95), rgba(41, 33, 29, 0.95));
+            margin: auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(184, 115, 51, 0.3);
+            max-width: 1000px; /* Increased from 800px */
+            width: 90%; /* Added to ensure responsiveness */
+            max-height: 85vh; /* Slightly increased */
+            overflow: auto;
+            border: 2px solid #b87333;
+            position: relative; /* For absolute positioning of close button */
+        }
+
+        /* Modal Container */
+        .modal {
+            position: fixed;
+            z-index: 9999; /* Increased z-index to be on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+        }
+
+        /* Icon Grid Styles */
+        #icon-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Increased from 80px */
+            gap: 15px; /* Increased from 10px */
+            padding: 20px;
+        }
+
+        .icon-image {
+            width: 80px; /* Increased from 60px */
+            height: 80px; /* Increased from 60px */
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            margin: auto; /* Center images in grid cells */
+            display: block; /* Ensure proper centering */
+        }
+
+        /* Close Button Style */
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #F5DEB3;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10000; /* Ensure it's above modal content */
+        }
+
+        .close:hover {
+            color: #b87333;
+            transform: scale(1.1);
+        }
+
+        /* Modal Header */
+        .modal-content h2 {
+            color: #F5DEB3;
+            text-align: center;
+            margin: 0 0 30px 0; /* Adjusted margin */
+            font-size: 28px; /* Increased from 24px */
+            padding-top: 10px;
+        }
+
+        /* Scrollbar Styles for Modal */
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: rgba(184, 115, 51, 0.5);
+            border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(184, 115, 51, 0.7);
+        }
     </style>
 
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head> 
 <body>
+    <!-- Add smoke effect container with more particles -->
+    <div class="smoke-container">
+        <div class="smoke"></div>
+        <div class="smoke"></div>
+        <div class="smoke"></div>
+        <div class="smoke"></div>
+        <div class="smoke"></div>
+        <div class="smoke"></div>
+        <div class="smoke"></div>
+        <div class="smoke"></div>
+        <div class="smoke"></div>
+        <div class="smoke"></div>
+        <div class="smoke"></div>
+    </div>
+
     <!-- Video Background -->
     <video id="video-background" autoplay muted loop>
         <source src="Event/Eventvideo.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 
-    <!-- Menu -->
+    <!-- Separate play button -->
+    <a href="Game Modes.html" class="play-button">
+        <i class="fas fa-play"></i>
+        <span>Play</span>
+    </a>
+
+    <!-- Menu without play button -->
     <div class="menu">
         <div class="menu-items">
-            <a href="home.html">Home</a>
-            <a href="Store.html">Store</a>
-            <a href="event.html">Event</a>
-            <a href="Team Builder.html">Team Builder</a>
-            <a href="statistics.html">Statistics</a>
+            <a href="home.html" class="menu-link active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="Store.html" class="menu-link">
+                <i class="fas fa-store"></i>
+                <span>Store</span>
+            </a>
+            <a href="event.html" class="menu-link">
+                <i class="fas fa-calendar"></i>
+                <span>Event</span>
+            </a>
+            <a href="Team Builder.html" class="menu-link">
+                <i class="fas fa-users"></i>
+                <span>Team Builder</span>
+            </a>
+            <a href="statistics.html" class="menu-link">
+                <i class="fas fa-chart-bar"></i>
+                <span>Statistics</span>
+            </a>
         </div>
     </div>
 
-    <button class="battlepass-button" onclick="window.location.href='battlepass.html'">
-        <img src="Event/Farmer Event.jpeg" alt="Battlepass">
-        <span>Battlepass</span>
+    <div class="profile-container">
+        <div id="profile-info">
+            <div class="username-title-container">
+                <div id="username-display"></div>
+                <div id="title-display"></div>
+            </div>
+            <img id="profile-image" src="Icons/Birdie.png" alt="Profile Icon" onclick="toggleProfileMenu(event)">
+        </div>
+        <div class="currency-container">
+            <div class="currency-item">
+                <img src="res/img/fm.png" alt="FM" class="currency-icon">
+                <span id="currency-amount" class="currency-amount">0</span>
+            </div>
+            <div class="currency-item">
+                <img src="res/img/cm.png" alt="CM" class="currency-icon">
+                <span id="cm-amount" class="currency-amount">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toggle Champion Selector Button -->
+    <button id="toggle-champion-button" onclick="toggleChampionSelector()">
+        &#9660; <!-- Down Arrow -->
     </button>
 
-    <!-- Add this after the battlepass button and before the advent calendar button -->
-    <button class="battlepass-button changelog-button" onclick="window.location.href='changelog.html'">
-        <img src="Default Splash/Sophitia.jpeg" alt="Patch Notes">
-        <span>Patch 1.2 Changes</span>
-    </button>
-
-    <!-- Add the new Advent Calendar button -->
-    <button class="advent-calendar-button">
-        <img src="res/img/advent_calendar.jpeg" alt="Advent Calendar">
-        <span>Advent Calendar</span>
-    </button>
-
-    <div class="play-button-container">
-        <a href="Game Modes.html" class="play-button">Play</a>
-    </div>
-</div>
-<!-- Toggle Champion Selector Button -->
-<button id="toggle-champion-button" onclick="toggleChampionSelector()">
-    &#9660; <!-- Down Arrow -->
-</button>
-	<!-- User Profile Info -->
-    <div id="profile-info" onclick="toggleProfileMenu()">
-        <div class="username-title-container">
-            <div id="username-display"></div>
-            <!-- Title will be dynamically added here if it exists -->
-        </div>
-        <img id="profile-image" class="icon-image" src="Icons/Birdie.png" alt="Profile Icon">
-    </div>
-    
-    <div class="currency-container">
-        <div id="currency-amount"></div>
-        <div class="currency-icon">
-            <img src="res/img/fm.png" alt="Currency Icon">
-        </div>
-    </div>
-    <div class="cm-container">
-        <div id="cm-amount"></div>
-        <div class="cm-icon">
-            <img src="res/img/cm.png" alt="CM">
-        </div>
-    </div>
-
-	<!-- Profile Menu Pop-up -->
-	<div id="profile-menu" class="profile-menu">
-		<ul>
+    <!-- Profile Menu Pop-up -->
+    <div id="profile-menu" class="profile-menu">
+        <ul>
             <li onclick="window.location.href='character-progression.html'">Character Progression</li>
-			<li onclick="profile()">Profile</li>
-			<li onclick="openChangeIconModal()">Change Icon</li>
-			<li onclick="viewCollection()">Collection</li>
-			<li onclick="logOut()">Log Out</li>
-		</ul>
-	</div>
-	
+            <li onclick="profile()">Profile</li>
+            <li onclick="openChangeIconModal()">Change Icon</li>
+            <li onclick="viewCollection()">Collection</li>
+            <li onclick="logOut()">Log Out</li>
+        </ul>
+    </div>
 
     <!-- Modal for Changing Profile Icon -->
     <div id="change-icon-modal" class="modal">
@@ -1958,124 +3246,325 @@
     </div>
     <!-- Champion Selector -->
     <div id="champion-selector-container">
+        <!-- Remove these sections -->
+        <!-- <h2 class="section-title">Choose Your Champion</h2>
+        <div id="search-container">
+            <input type="text" id="search-bar" placeholder="Search champions..." oninput="searchChampion()">
+        </div> -->
+
         <div id="champion-selector">
-            <a href="ch/Julia.html"><img src="Icons/Julia.png" alt="Julia" class="champion-image"></a>
-            <a href="ch/Birdie.html"><img src="Icons/Birdie.png" alt="Birdie" class="champion-image"></a>
-            <a href="ch/Erron Black.html"><img src="Icons/Erron Black.png" alt="Erron Black" class="champion-image"></a>
-            <a href="ch/Cham Cham.html"><img src="Icons/Cham Cham.png" alt="Cham Cham" class="champion-image"></a>
-            <a href="ch/Morrigan.html"><img src="Icons/Morrigan.png" alt="Morrigan" class="champion-image"></a>
-            <a href="ch/Jun.html"><img src="Icons/Jun.png" alt="Jun" class="champion-image"></a>
-            <a href="ch/Reptile.html"><img src="Icons/Reptile.png" alt="Reptile" class="champion-image"></a>
-            <a href="ch/Akuma.html"><img src="Icons/Akuma.png" alt="Akuma" class="champion-image"></a>
-            <a href="ch/Elphelt.html"><img src="Icons/Elphelt.png" alt="Elphelt" class="champion-image"></a>
-            <a href="ch/Kotal Kahn.html"><img src="Icons/Kotal Kahn.png" alt="Kotal Kahn" class="champion-image"></a>
-            <a href="ch/Scorpion.html"><img src="Icons/Scorpion.png" alt="Scorpion" class="champion-image"></a>
-            <a href="ch/Peacock.html"><img src="Icons/Peacock.png" alt="Peacock" class="champion-image"></a>
-            <a href="ch/Angel.html"><img src="Icons/Angel.png" alt="Angel" class="champion-image"></a>
-            <a href="ch/Astaroth.html"><img src="Icons/Astaroth.png" alt="Astaroth" class="champion-image"></a>
-            <a href="ch/Ibuki.html"><img src="Icons/Ibuki.png" alt="Ibuki" class="champion-image"></a>
-            <a href="ch/R Mika.html"><img src="Icons/R.Mika.png" alt="R.Mika" class="champion-image"></a>
-            <a href="ch/Raiden.html"><img src="Icons/Raiden.png" alt="Raiden" class="champion-image"></a>
-            <a href="ch/Yugo.html"><img src="Icons/Yugo.png" alt="Yugo" class="champion-image"></a>
-            <a href="ch/Talim.html"><img src="Icons/Talim.png" alt="Talim" class="champion-image"></a>
-            <a href="ch/Noel.html"><img src="Icons/Noel.png" alt="Noel" class="champion-image"></a>
-            <a href="ch/Blanka.html"><img src="Icons/Blanka.png" alt="Blanka" class="champion-image"></a>
-            <a href="ch/Nina.html"><img src="Icons/Nina.png" alt="Nina" class="champion-image"></a>
-            <a href="ch/Ayane.html"><img src="Icons/Ayane.png" alt="Ayane" class="champion-image"></a>
-            <a href="ch/Siegfried.html"><img src="Icons/Siegfried.png" alt="Siegfried" class="champion-image"></a>
-            <a href="ch/Shoma.html"><img src="Icons/Shoma.png" alt="Shoma" class="champion-image"></a>
-			<a href="ch/Juri.html"><img src="Icons/Juri.png" alt="Juri" class="champion-image"></a>
-			<a href="ch/Sub Zero.html"><img src="Icons/Sub Zero.png" alt="Sub Zero" class="champion-image"></a>
-			<a href="ch/Christie.html"><img src="Icons/Christie.png" alt="Christie" class="champion-image"></a>
-			<a href="ch/Kokoro.html"><img src="Icons/Kokoro.png" alt="Kokoro" class="champion-image"></a>
-			<a href="ch/Eagle.html"><img src="Icons/Eagle.png" alt="Eagle" class="champion-image"></a>
-			<a href="ch/Sophitia.html"><img src="Icons/Sophitia.png" alt="default-icon" class="champion-image"></a>
-			<a href="ch/Shizumaru.html"><img src="Icons/Shizumaru.png" alt="default-icon" class="champion-image" ></a>
-			<a href="ch/Kagome.html"><img src="Icons/Kagome.png" alt="default-icon" class="champion-image"></a>
-            <a href="ch/Kabal.html"><img src="Icons/Kabal.png" alt="default-icon" class="champion-image"></a>
-            <a href="ch/Kuma.html"><img src="Icons/Kuma.png" alt="Kuma" class="champion-image"></a>
-            <a href="ch/Alice.html"><img src="Icons/Alice.png" alt="Alice" class="champion-image"></a>
-            <a href="ch/Shinnok.html"><img src="Icons/Shinnok.png" alt="Shinnok" class="champion-image"></a>
-            <a href="ch/FANG.html"><img src="Icons/FANG.png" alt="FANG" class="champion-image"></a>
-            <a href="ch/Lili.html"><img src="Icons/Lili.png" alt="Lili" class="champion-image"></a>
-            <a href="ch/Mega Man.html"><img src="Icons/Mega Man.png" alt="Mega Man" class="champion-image"></a>
-            <a href="ch/Mai.html"><img src="Icons/Mai.png" alt="Mai" class="champion-image"></a>
+            <a href="ch/Julia.html" class="champion-link">
+                <img src="Icons/Julia.png" alt="Julia" class="champion-image">
+                <span class="champion-name">Julia</span>
+            </a>
+            <a href="ch/Birdie.html" class="champion-link">
+                <img src="Icons/Birdie.png" alt="Birdie" class="champion-image">
+                <span class="champion-name">Birdie</span>
+            </a>
+            <a href="ch/Erron Black.html" class="champion-link">
+                <img src="Icons/Erron Black.png" alt="Erron Black" class="champion-image">
+                <span class="champion-name">Erron Black</span>
+            </a>
+            <a href="ch/Cham Cham.html" class="champion-link">
+                <img src="Icons/Cham Cham.png" alt="Cham Cham" class="champion-image">
+                <span class="champion-name">Cham Cham</span>
+            </a>
+            <a href="ch/Morrigan.html" class="champion-link">
+                <img src="Icons/Morrigan.png" alt="Morrigan" class="champion-image">
+                <span class="champion-name">Morrigan</span>
+            </a>
+            <a href="ch/Jun.html" class="champion-link">
+                <img src="Icons/Jun.png" alt="Jun" class="champion-image">
+                <span class="champion-name">Jun</span>
+            </a>
+            <a href="ch/Reptile.html" class="champion-link">
+                <img src="Icons/Reptile.png" alt="Reptile" class="champion-image">
+                <span class="champion-name">Reptile</span>
+            </a>
+            <a href="ch/Akuma.html" class="champion-link">
+                <img src="Icons/Akuma.png" alt="Akuma" class="champion-image">
+                <span class="champion-name">Akuma</span>
+            </a>
+            <a href="ch/Elphelt.html" class="champion-link">
+                <img src="Icons/Elphelt.png" alt="Elphelt" class="champion-image">
+                <span class="champion-name">Elphelt</span>
+            </a>
+            <a href="ch/Kotal Kahn.html" class="champion-link">
+                <img src="Icons/Kotal Kahn.png" alt="Kotal Kahn" class="champion-image">
+                <span class="champion-name">Kotal Kahn</span>
+            </a>
+            <a href="ch/Scorpion.html" class="champion-link">
+                <img src="Icons/Scorpion.png" alt="Scorpion" class="champion-image">
+                <span class="champion-name">Scorpion</span>
+            </a>
+            <a href="ch/Peacock.html" class="champion-link">
+                <img src="Icons/Peacock.png" alt="Peacock" class="champion-image">
+                <span class="champion-name">Peacock</span>
+            </a>
+            <a href="ch/Angel.html" class="champion-link">
+                <img src="Icons/Angel.png" alt="Angel" class="champion-image">
+                <span class="champion-name">Angel</span>
+            </a>
+            <a href="ch/Astaroth.html" class="champion-link">
+                <img src="Icons/Astaroth.png" alt="Astaroth" class="champion-image">
+                <span class="champion-name">Astaroth</span>
+            </a>
+            <a href="ch/Ibuki.html" class="champion-link">
+                <img src="Icons/Ibuki.png" alt="Ibuki" class="champion-image">
+                <span class="champion-name">Ibuki</span>
+            </a>
+            <a href="ch/R Mika.html" class="champion-link">
+                <img src="Icons/R.Mika.png" alt="R.Mika" class="champion-image">
+                <span class="champion-name">R.Mika</span>
+            </a>
+            <a href="ch/Raiden.html" class="champion-link">
+                <img src="Icons/Raiden.png" alt="Raiden" class="champion-image">
+                <span class="champion-name">Raiden</span>
+            </a>
+            <a href="ch/Yugo.html" class="champion-link">
+                <img src="Icons/Yugo.png" alt="Yugo" class="champion-image">
+                <span class="champion-name">Yugo</span>
+            </a>
+            <a href="ch/Talim.html" class="champion-link">
+                <img src="Icons/Talim.png" alt="Talim" class="champion-image">
+                <span class="champion-name">Talim</span>
+            </a>
+            <a href="ch/Noel.html" class="champion-link">
+                <img src="Icons/Noel.png" alt="Noel" class="champion-image">
+                <span class="champion-name">Noel</span>
+            </a>
+            <a href="ch/Blanka.html" class="champion-link">
+                <img src="Icons/Blanka.png" alt="Blanka" class="champion-image">
+                <span class="champion-name">Blanka</span>
+            </a>
+            <a href="ch/Nina.html" class="champion-link">
+                <img src="Icons/Nina.png" alt="Nina" class="champion-image">
+                <span class="champion-name">Nina</span>
+            </a>
+            <a href="ch/Ayane.html" class="champion-link">
+                <img src="Icons/Ayane.png" alt="Ayane" class="champion-image">
+                <span class="champion-name">Ayane</span>
+            </a>
+            <a href="ch/Siegfried.html" class="champion-link">
+                <img src="Icons/Siegfried.png" alt="Siegfried" class="champion-image">
+                <span class="champion-name">Siegfried</span>
+            </a>
+            <a href="ch/Shoma.html" class="champion-link">
+                <img src="Icons/Shoma.png" alt="Shoma" class="champion-image">
+                <span class="champion-name">Shoma</span>
+            </a>
+            <a href="ch/Juri.html" class="champion-link">
+                <img src="Icons/Juri.png" alt="Juri" class="champion-image">
+                <span class="champion-name">Juri</span>
+            </a>
+            <a href="ch/Sub Zero.html" class="champion-link">
+                <img src="Icons/Sub Zero.png" alt="Sub Zero" class="champion-image">
+                <span class="champion-name">Sub Zero</span>
+            </a>
+            <a href="ch/Christie.html" class="champion-link">
+                <img src="Icons/Christie.png" alt="Christie" class="champion-image">
+                <span class="champion-name">Christie</span>
+            </a>
+            <a href="ch/Kokoro.html" class="champion-link">
+                <img src="Icons/Kokoro.png" alt="Kokoro" class="champion-image">
+                <span class="champion-name">Kokoro</span>
+            </a>
+            <a href="ch/Eagle.html" class="champion-link">
+                <img src="Icons/Eagle.png" alt="Eagle" class="champion-image">
+                <span class="champion-name">Eagle</span>
+            </a>
+            <a href="ch/Sophitia.html" class="champion-link">
+                <img src="Icons/Sophitia.png" alt="Sophitia" class="champion-image">
+                <span class="champion-name">Sophitia</span>
+            </a>
+            <a href="ch/Shizumaru.html" class="champion-link">
+                <img src="Icons/Shizumaru.png" alt="Shizumaru" class="champion-image">
+                <span class="champion-name">Shizumaru</span>
+            </a>
+            <a href="ch/Kagome.html" class="champion-link">
+                <img src="Icons/Kagome.png" alt="Kagome" class="champion-image">
+                <span class="champion-name">Kagome</span>
+            </a>
+            <a href="ch/Kabal.html" class="champion-link">
+                <img src="Icons/Kabal.png" alt="Kabal" class="champion-image">
+                <span class="champion-name">Kabal</span>
+            </a>
+            <a href="ch/Kuma.html" class="champion-link">
+                <img src="Icons/Kuma.png" alt="Kuma" class="champion-image">
+                <span class="champion-name">Kuma</span>
+            </a>
+            <a href="ch/Alice.html" class="champion-link">
+                <img src="Icons/Alice.png" alt="Alice" class="champion-image">
+                <span class="champion-name">Alice</span>
+            </a>
+            <a href="ch/Shinnok.html" class="champion-link">
+                <img src="Icons/Shinnok.png" alt="Shinnok" class="champion-image">
+                <span class="champion-name">Shinnok</span>
+            </a>
+            <a href="ch/FANG.html" class="champion-link">
+                <img src="Icons/FANG.png" alt="FANG" class="champion-image">
+                <span class="champion-name">FANG</span>
+            </a>
+            <a href="ch/Lili.html" class="champion-link">
+                <img src="Icons/Lili.png" alt="Lili" class="champion-image">
+                <span class="champion-name">Lili</span>
+            </a>
+            <a href="ch/Mega Man.html" class="champion-link">
+                <img src="Icons/Mega Man.png" alt="Mega Man" class="champion-image">
+                <span class="champion-name">Mega Man</span>
+            </a>
+            <a href="ch/Mai.html" class="champion-link">
+                <img src="Icons/Mai.png" alt="Mai" class="champion-image">
+                <span class="champion-name">Mai</span>
+            </a>
         </div>
     </div>
 <!-- Quests Section -->
 <div id="new-quests-box">
-    <div class="header">
-        <h2>Quests</h2>
-        <button id="toggle-quests" aria-label="Toggle Quests">&#9660;</button> <!-- Down arrow -->
-    </div>
     <div class="content">
         <!-- Quests will be dynamically loaded here -->
     </div>
 </div>
-    <div id="friend-list-container">
-        <div id="toggle-friend-list">Friend List</div>
-        <div id="friend-list">
-            <ul id="friend-list-ul"></ul>
-            <input type="text" id="friend-name-input" placeholder="Enter friend's username">
-            <button id="add-friend-button">Add Friend</button>
-        </div>
-    </div>
    <!-- Add these two lines -->
    <script src="recolor-data.js" type="module"></script>
    <script src="advent-calendar.js" type="module"></script>
 <script>
-    function profile() {
-         window.location.href = 'Profile.html';
+    // Wrap all DOM-dependent code in DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Firebase auth state
+        initializeAuthState();
+
+        // Create particles
+        createParticles();
+
+        // Initialize click handlers for profile image and container
+        const profileInfo = document.getElementById('profile-info');
+        const profileImage = document.getElementById('profile-image');
+        const profileMenu = document.getElementById('profile-menu');
+        const usernameDisplay = document.getElementById('username-display');
+
+        // Global toggle function for the profile menu
+        window.toggleProfileMenu = function(event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            if (profileMenu) {
+                profileMenu.classList.toggle('show');
+            }
         }
-	function viewCollection() {
-         window.location.href = 'Collection.html';
-        }	
-	document.addEventListener('DOMContentLoaded', function () {
-			var video = document.getElementById('video-background');
-			if (video) {
-				video.playbackRate = 1.0; // Set playback speed to 50%
-				video.play(); // Start playing the video
-			}
 
-            // Initialize Toggle Button State on Page Load
-            const championSelector = document.getElementById('champion-selector-container');
-        const toggleButton = document.getElementById('toggle-champion-button');
+        // Add click handlers
+        if (profileInfo) {
+            profileInfo.addEventListener('click', toggleProfileMenu);
+        }
+        if (profileImage) {
+            profileImage.addEventListener('click', toggleProfileMenu);
+        }
+        if (usernameDisplay) {
+            usernameDisplay.addEventListener('click', toggleProfileMenu);
+        }
 
-        // Initially show the champion selector
-        championSelector.style.display = 'flex';
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (profileMenu && profileMenu.classList.contains('show') && 
+                !profileInfo.contains(event.target) &&
+                !profileMenu.contains(event.target)) {
+                profileMenu.classList.remove('show');
+            }
+        });
 
-        // Close the quest container on page load
+        // Initialize quest container
         const questContent = document.querySelector('#new-quests-box .content');
         const questToggleButton = document.getElementById('toggle-quests');
-        questContent.style.display = 'none';
-        questToggleButton.innerHTML = '&#9660;'; // Down arrow
-    });
+        if (questContent && questToggleButton) {
+            questContent.style.display = 'none';
+            questToggleButton.innerHTML = '&#9660;';
+        }
 
-    // Toggle Quests Visibility with Smooth Transition
-    document.getElementById('toggle-quests').addEventListener('click', function() {
-        const content = document.querySelector('#new-quests-box .content');
-        const toggleButton = document.getElementById('toggle-quests');
-        
-        if (content.style.display === 'none' || content.style.display === '') {
-            content.style.display = 'flex';
-            toggleButton.innerHTML = '&#9650;'; // Up arrow
-        } else {
-            content.style.display = 'none';
-            toggleButton.innerHTML = '&#9660;'; // Down arrow
+        // Quest toggle functionality
+        const toggleQuestsButton = document.getElementById('toggle-quests');
+        if (toggleQuestsButton) {
+            toggleQuestsButton.addEventListener('click', function() {
+                const content = document.querySelector('#new-quests-box .content');
+                if (content) {
+                    const isHidden = content.style.display === 'none';
+                    content.style.display = isHidden ? 'block' : 'none';
+                    toggleQuestsButton.innerHTML = isHidden ? '&#9650;' : '&#9660;';
+                }
+            });
+        }
+
+        // Friend list functionality
+        const toggleFriendListButton = document.getElementById("toggle-friend-list");
+        const friendList = document.getElementById("friend-list");
+        const addFriendButton = document.getElementById("add-friend-button");
+        const friendNameInput = document.getElementById("friend-name-input");
+        const friendListUL = document.getElementById("friend-list-ul");
+
+        if (toggleFriendListButton && friendList) {
+            toggleFriendListButton.addEventListener("click", function() {
+                friendList.style.display = friendList.style.display === "none" ? "block" : "none";
+            });
+        }
+
+        if (addFriendButton && friendNameInput) {
+            addFriendButton.addEventListener("click", async function() {
+                const friendName = friendNameInput.value;
+                if (friendName) {
+                    try {
+                        const userId = auth.currentUser.uid;
+                        const usersRef = ref(database, 'users');
+                        const snapshot = await get(usersRef);
+                        let friendId = null;
+
+                        snapshot.forEach(childSnapshot => {
+                            const userData = childSnapshot.val();
+                            if (userData.username === friendName) {
+                                friendId = childSnapshot.key;
+                            }
+                        });
+
+                        if (friendId) {
+                            const friendRef = ref(database, 'users/' + userId + '/friends');
+                            const newFriendRef = push(friendRef);
+                            await set(newFriendRef, {
+                                id: friendId,
+                                name: friendName
+                            });
+                            friendNameInput.value = '';
+                            loadFriendList(userId);
+                        } else {
+                            alert('Username not found');
+                        }
+                    } catch (error) {
+                        console.error('Error adding friend:', error);
+                    }
+                }
+            });
         }
     });
 
-    // Toggle Champion Selector Visibility
+    // Functions that don't require immediate DOM access can stay outside
+    function profile() {
+        window.location.href = 'Profile.html';
+    }
+
+    function viewCollection() {
+        window.location.href = 'Collection.html';
+    }
+
     function toggleChampionSelector() {
         const championSelector = document.getElementById('champion-selector-container');
         const toggleButton = document.getElementById('toggle-champion-button');
-
-        if (championSelector.style.display === 'none' || championSelector.style.display === '') {
-            championSelector.style.display = 'flex';
-            toggleButton.classList.add('rotated');
-        } else {
-            championSelector.style.display = 'none';
-            toggleButton.classList.remove('rotated');
+        
+        if (championSelector && toggleButton) {
+            if (championSelector.style.display === 'none' || championSelector.style.display === '') {
+                championSelector.style.display = 'flex';
+                toggleButton.classList.add('rotated');
+            } else {
+                championSelector.style.display = 'none';
+                toggleButton.classList.remove('rotated');
+            }
         }
     }
 
@@ -2123,5 +3612,69 @@
         }
     });
 </script>
+
+<!-- Add this after the Firebase initialization -->
+<script>
+    // Add this after the Firebase initialization
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize profile menu click handler
+        document.addEventListener('click', function(event) {
+            const profileMenu = document.getElementById('profile-menu');
+            const profileInfo = document.getElementById('profile-info');
+            
+            if (profileMenu && profileInfo) {
+                // Close menu if clicking outside
+                if (!profileInfo.contains(event.target) && !profileMenu.contains(event.target)) {
+                    profileMenu.classList.remove('show');
+                }
+            }
+        });
+
+        // Initialize profile container click handler
+        const profileContainer = document.getElementById('profile-info');
+        if (profileContainer) {
+            profileContainer.addEventListener('click', function(event) {
+                event.stopPropagation();
+                const profileMenu = document.getElementById('profile-menu');
+                if (profileMenu) {
+                    profileMenu.classList.toggle('show');
+                }
+            });
+        }
+
+        // Initialize auth state
+        initializeAuthState();
+    });
+</script>
+
+<!-- Bottom Buttons Container -->
+<div class="bottom-buttons-container">
+    <!-- Battlepass Button -->
+    <div class="bottom-button" onclick="window.location.href='battlepass.html'">
+        <img src="Event/Steampunk Event.png" alt="Battlepass">
+        <div class="button-content">
+            <h3 class="button-title">Battlepass</h3>
+        </div>
+    </div>
+
+    <!-- Advent Calendar Button -->
+    <div class="bottom-button" onclick="(async () => { 
+        const { openAdventCalendar } = await import('./advent-calendar.js');
+        openAdventCalendar();
+    })()">
+        <img src="res/img/advent_calendar.jpeg" alt="Advent Calendar">
+        <div class="button-content">
+            <h3 class="button-title">Advent Calendar</h3>
+        </div>
+    </div>
+
+    <!-- Changelog Button -->
+    <div class="bottom-button" onclick="window.location.href='changelog.html'">
+        <img src="Default Splash/Shizumaru.png" alt="Changelog">
+        <div class="button-content">
+            <h3 class="button-title">Changelog</h3>
+        </div>
+    </div>
+</div>
 </body>
 </html>

@@ -14,11 +14,12 @@
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
-        import { getDatabase, ref, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { getDatabase, ref, set, get, update, increment } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
         import { quests } from './quests.js';
         import { roles } from './roles.js';
         import { characters } from './characterskinref.js'; // Import characters
         import { skinToBaseCharacterMap } from './skinmapping.js'; // Import skinToBaseCharacterMap
+        import { Roles } from './roles-data.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
@@ -40,40 +41,202 @@
         let bannedCharacters = [];
         let bansCompleted = 0;
 
-        window.onload = function() {
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                console.log("User is logged in:", user.uid);
-                const userRef = ref(database, 'users/' + user.uid);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val();
-                if (userData) {
-                    window.userRef = userRef;
+// Character XP System
+async function addCharacterXP(userId, character, isWin) {
+    try {
+        const xpGain = isWin ? 
+            Math.floor(Math.random() * 126) + 200 : // 200-325 for win
+            Math.floor(Math.random() * 111) + 100;  // 100-210 for loss
 
-                    if (userData.skins) {
-                        populateCharacterButtons(characters);
-                    } else {
-                        console.log("No skins available.");
-                    }
-                    await checkCharacterGames(userData.characters);  // Check character games
-                } else {
-                    console.log("User data not found in database.");
+        const charRef = ref(database, `users/${userId}/characters/${character}`);
+        const snapshot = await get(charRef);
+        
+        if (!snapshot.exists()) {
+            await set(charRef, {
+                xp: xpGain,
+                win: isWin ? 1 : 0,
+                lose: isWin ? 0 : 1
+            });
+        } else {
+            await update(charRef, {
+                xp: increment(xpGain),
+                win: isWin ? increment(1) : increment(0),
+                lose: isWin ? increment(0) : increment(1)
+            });
+        }
+        
+        console.log(`Added ${xpGain} XP to ${character}`);
+    } catch (error) {
+        console.error('Error adding character XP:', error);
+    }
+}
+
+// Database synchronization functions
+async function syncUserData() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const userRef = ref(database, `users/${user.uid}`);
+    const snapshot = await get(userRef);
+    const userData = snapshot.val();
+
+    if (userData) {
+        // Sync character data
+        if (userData.characters) {
+            await checkCharacterGames(userData.characters);
+        }
+
+        // Sync quests
+        if (userData.quests) {
+            for (const questId in userData.quests) {
+                const questData = userData.quests[questId];
+                if (questData.completed && !questData.claimed) {
+                    console.log(`Unclaimed rewards found for quest: ${questId}`);
                 }
-            } else {
-                console.log("User is not logged in.");
             }
-                    // Add event listeners for ban icons
-        document.getElementById('ban-icon1').addEventListener('click', () => openBanSelectionWindow(1));
-        document.getElementById('ban-icon2').addEventListener('click', () => openBanSelectionWindow(2));
-        document.addEventListener('DOMContentLoaded', () => {
-            const userSlot = Math.random() < 0.5 ? 'team1-player' + (Math.floor(Math.random() * 5) + 1) : 'team2-player' + (Math.floor(Math.random() * 5) + 1);
-            const userSlotElement = document.getElementById(userSlot);
-            userSlotElement.classList.add('highlight');
-            userSlotElement.dataset.user = true;
-        });
-        });
+        }
 
-        document.addEventListener('keydown', (event) => {
+        // Sync rank data
+        if (userData['Rank points'] !== undefined) {
+            console.log(`Current rank points: ${userData['Rank points']}`);
+        }
+    }
+}
+
+// Final UI adjustments
+function adjustUIForRole(role) {
+    const roleSlotMap = {
+        'Top': 1,
+        'Jungle': 2,
+        'Mid': 3,
+        'Adc': 4,
+        'Support': 5
+    };
+
+    const slotNumber = roleSlotMap[role];
+    const team1Slot = document.getElementById(`team1-player${slotNumber}`);
+    const team2Slot = document.getElementById(`team2-player${slotNumber}`);
+
+    // Highlight the appropriate slot based on team assignment
+    if (userTeam === 1) {
+        team1Slot.classList.add('user-slot');
+    } else {
+        team2Slot.classList.add('user-slot');
+    }
+}
+
+// Add these styles to your CSS
+const newStyles = `
+    .user-slot {
+        border: 2px solid #ffbb00 !important;
+        box-shadow: 0 0 15px #ffbb00 !important;
+    }
+
+    .pick-order-indicator {
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        color: #ffbb00;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 2;
+    }
+
+    .current-pick {
+        box-shadow: 0 0 20px 5px #ffbb00;
+        animation: pickPulse 2s infinite;
+    }
+
+    @keyframes pickPulse {
+        0% { box-shadow: 0 0 20px 5px #ffbb00; }
+        50% { box-shadow: 0 0 30px 10px #ffbb00; }
+        100% { box-shadow: 0 0 20px 5px #ffbb00; }
+    }
+`;
+
+// Add the new styles to the document
+const styleSheet = document.createElement("style");
+styleSheet.textContent = newStyles;
+document.head.appendChild(styleSheet);
+
+// Function to show pick order
+function showPickOrder() {
+    const pickOrderIndicators = document.querySelectorAll('.pick-order-indicator');
+    pickOrderIndicators.forEach(indicator => indicator.remove());
+
+    pickOrder.forEach((position, index) => {
+        const team = Math.ceil(position / 5); // 1-5 is team 1, 6-10 is team 2
+        const slot = ((position - 1) % 5) + 1;
+        const playerSlot = document.getElementById(`team${team}-player${slot}`);
+        
+        if (playerSlot) {
+            const indicator = document.createElement('div');
+            indicator.classList.add('pick-order-indicator');
+            
+            // Add "(You)" if this is the player's pick
+            const isPlayerPick = (team === userTeam && slot === userSlot);
+            indicator.textContent = `Pick ${index + 1}${isPlayerPick ? ' (You)' : ''}`;
+            
+            playerSlot.appendChild(indicator);
+        }
+    });
+}
+
+// Function to highlight current pick
+function highlightCurrentPick() {
+    // Remove previous highlights
+    document.querySelectorAll('.current-pick').forEach(el => {
+        el.classList.remove('current-pick');
+    });
+
+    if (currentPickIndex < pickOrder.length) {
+        const currentPick = pickOrder[currentPickIndex];
+        const team = Math.ceil(currentPick / 5);
+        const slot = ((currentPick - 1) % 5) + 1;
+        const playerSlot = document.getElementById(`team${team}-player${slot}`);
+        
+        if (playerSlot) {
+            playerSlot.classList.add('current-pick');
+        }
+    }
+}
+
+// Initialize Firebase and core variables
+window.onload = function() {
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            console.log("User is logged in:", user.uid);
+            const userRef = ref(database, 'users/' + user.uid);
+            const snapshot = await get(userRef);
+            const userData = snapshot.val();
+            if (userData) {
+                window.userRef = userRef;
+
+                if (userData.skins) {
+                    populateCharacterButtons(characters);
+                } else {
+                    console.log("No skins available.");
+                }
+                await checkCharacterGames(userData.characters);
+                
+                // Show role selection modal immediately
+                const roleModal = document.getElementById('role-selection-modal');
+                roleModal.style.display = 'block';
+            }
+        }
+    });
+
+    // Add event listeners for ban icons
+    document.getElementById('ban-icon1').addEventListener('click', () => openBanSelectionWindow(1));
+    document.getElementById('ban-icon2').addEventListener('click', () => openBanSelectionWindow(2));
+};
+
+
+       document.addEventListener('keydown', (event) => {
     if (event.key === 'P' || event.key === 'p') {
         if (bordersToggleEnabled) {
             toggleBorders();
@@ -91,56 +254,122 @@
     }
 });
 
+// Function to initialize event listeners for player data toggling
+async function initializePlayerDataToggle() {
+        const allSelected = await areAllPlayersSelected();
+        if (!allSelected) return;
+
+        const playerSlots = document.querySelectorAll('.player-slot');
+        playerSlots.forEach(slot => {
+            const imgElement = slot.querySelector('img');
+            imgElement.style.cursor = 'pointer';
+            imgElement.addEventListener('click', () => togglePlayerData(slot));
+        });
+    }
+
+// Function to toggle player data display
+async function togglePlayerData(playerSlot) {
+    const imgElement = playerSlot.querySelector('img');
+    const isDarkened = imgElement.classList.contains('darkened');
+
+    if (isDarkened) {
+        // Remove darkening and hide data
+        imgElement.classList.remove('darkened');
+        const dataContainer = playerSlot.querySelector('.player-data');
+        if (dataContainer) {
+            dataContainer.remove();
+        }
+    } else {
+        // Darken the image
+        imgElement.classList.add('darkened');
+
+        // Create a container to display data
+        const dataContainer = document.createElement('div');
+        dataContainer.classList.add('player-data');
+
+        // Append the data container to the player slot
+        playerSlot.appendChild(dataContainer);
+
+        // Fetch and display data
+        const user = auth.currentUser;
+        if (!user) {
+            console.error('User not authenticated');
+            return;
+        }
+
+        const userId = user.uid;
+        const skinName = playerSlot.querySelector('.skin-name').textContent;
+        const characterName = skinToBaseCharacterMap[skinName] || skinName;
+
+        try {
+            // Fetch Character Win/Lose
+            const charWinRef = ref(database, `users/${userId}/characters/${characterName}/win`);
+            const charLoseRef = ref(database, `users/${userId}/characters/${characterName}/lose`);
+            const [charWinSnap, charLoseSnap] = await Promise.all([
+                get(charWinRef),
+                get(charLoseRef)
+            ]);
+            const charWin = charWinSnap.val() || 0;
+            const charLose = charLoseSnap.val() || 0;
+            const charWinRate = charWin + charLose > 0 ? ((charWin / (charWin + charLose)) * 100).toFixed(2) : 'N/A';
+
+            // Max Games with Character
+            const maxGames = charWin + charLose;
+
+            // Fetch Rank Points
+            const rankPointsRef = ref(database, `users/${userId}/Rank points`);
+            const rankPointsSnap = await get(rankPointsRef);
+            const rankPoints = Number(rankPointsSnap.val()) || 0;
+
+            // Fetch Player Ranked Win/Lose
+            const rankedWinRef = ref(database, `users/${userId}/ranked win`);
+            const rankedLoseRef = ref(database, `users/${userId}/ranked lose`);
+            const [rankedWinSnap, rankedLoseSnap] = await Promise.all([
+                get(rankedWinRef),
+                get(rankedLoseRef)
+            ]);
+            const rankedWins = rankedWinSnap.val() || 0;
+            const rankedLosses = rankedLoseSnap.val() || 0;
+            const playerRankedWinRate = rankedWins + rankedLosses > 0 ? ((rankedWins / (rankedWins + rankedLosses)) * 100).toFixed(2) : 'N/A';
+
+            // Populate data container
+            dataContainer.innerHTML = `
+                <p><strong>Player Character Winrate (%):</strong> ${charWinRate}</p>
+                <p><strong>Player Rank Points:</strong> ${rankPoints}</p>
+                <p><strong>Max Games with this Character:</strong> ${maxGames}</p>
+                <p><strong>Player Ranked Winrate (%):</strong> ${playerRankedWinRate}</p>
+            `;
+        } catch (error) {
+            console.error('Error fetching player data:', error);
+            dataContainer.innerHTML = `<p>Error fetching data.</p>`;
+        }
+    }
+}
+
+async function loadMeta() {
+    try {
+        const response = await fetch('meta.json');
+        const meta = await response.json();
+        return meta;
+    } catch (error) {
+        console.error('Error loading meta.json:', error);
+        return {};
+    }
+}
+
 let gamepadDebounce = false;
 
-function banRandomCharacters() {
-    const allCharacters = Object.keys(skinToBaseCharacterMap);
-    const banned = [];
-    while (banned.length < 2) {
-        const randomCharacter = allCharacters[Math.floor(Math.random() * allCharacters.length)];
-        if (!banned.includes(randomCharacter)) {
-            banned.push(randomCharacter);
+// Function to check if all players are selected
+async function areAllPlayersSelected() {
+    const playerSlots = document.querySelectorAll('.player-slot');
+    for (const slot of playerSlots) {
+        const skinName = slot.querySelector('.skin-name').textContent;
+        if (!skinName) {
+            return false;
         }
     }
-    banned.forEach((character, index) => {
-        document.getElementById(`ban-icon${index + 1}`).style.backgroundImage = `url(Icons/${character}.png)`;
-    });
+    return true;
 }
-document.addEventListener('DOMContentLoaded', banRandomCharacters);
-
-document.querySelectorAll('.player-slot').forEach((slot, index) => {
-    slot.dataset.pickOrder = index + 1;
-});
-
-function autoPickCharacters() {
-    const slots = Array.from(document.querySelectorAll('.player-slot')).sort((a, b) => a.dataset.pickOrder - b.dataset.pickOrder);
-    let pickIndex = 0;
-
-    function pickNext() {
-        if (pickIndex >= slots.length) return;
-        const slot = slots[pickIndex];
-        if (!slot.dataset.user) {
-            const role = slot.id.includes('team1') ? 'team1' : 'team2';
-            const availableCharacters = roles[role].filter(character => !bannedCharacters.includes(character));
-            const randomCharacter = availableCharacters[Math.floor(Math.random() * availableCharacters.length)];
-            slot.querySelector('.skin-name').textContent = randomCharacter;
-        }
-        pickIndex++;
-        setTimeout(pickNext, pickIndex === 1 ? 35000 : 5000); // 35 sec for user, 5 sec for others
-    }
-
-    pickNext();
-}
-document.addEventListener('DOMContentLoaded', autoPickCharacters);
-
-function checkAllSkinsSelected() {
-    const allSelected = Array.from(document.querySelectorAll('.player-slot .skin-name')).every(skinName => skinName.textContent);
-    document.getElementById('decide-game-button').disabled = !allSelected;
-}
-document.querySelectorAll('.player-slot .skin-name').forEach(skinName => {
-    const observer = new MutationObserver(checkAllSkinsSelected);
-    observer.observe(skinName, { childList: true });
-});
 
 window.addEventListener('gamepadconnected', (event) => {
     const gamepad = navigator.getGamepads()[event.gamepad.index];
@@ -158,61 +387,145 @@ window.addEventListener('gamepadconnected', (event) => {
     checkGamepad();
 });
 
-function openBanSelectionWindow(banIndex) {
-        const modal = document.getElementById('ban-selection-modal');
-        const skinContainer = document.getElementById('ban-skin-container');
-        const searchInput = document.getElementById('ban-skin-search');
+let selectedRole = null;
+let userTeam = 1; // Always team 1 in solo mode
+let userSlot = null; // Will be set when role is selected
+let pickOrder = [];
+let currentPickIndex = 0;
+let aiPickInProgress = false;
+let bordersVisible = true;
+let bannersVisible = true;
+let bordersToggleEnabled = false;
+let bannersToggleEnabled = false;
 
-        skinContainer.innerHTML = ''; // Clear previous characters
-        searchInput.value = ''; // Clear search input
+// Show role selection modal when page loads
+window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('role-selection-modal').style.display = 'block';
+});
 
-        for (const character in characters) {
-            if (bannedCharacters.includes(character)) continue; // Skip banned characters
+function selectRole(role) {
+    const modal = document.getElementById('role-selection-modal');
+    const roleSlotMap = {
+        'Top': 1,
+        'Jungle': 2,
+        'Mid': 3,
+        'Adc': 4,
+        'Support': 5
+    };
 
-            document.getElementById('close-ban-modal').addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-        modal.style.display = 'block';
+    userSlot = roleSlotMap[role]; // Store the selected slot number
+    userTeam = 1; // Always team 1 in solo mode
 
-            const characterCard = document.createElement('div');
-            characterCard.classList.add('character-card');
-            characterCard.addEventListener('click', () => {
-            bannedCharacters.push(character);
-            document.getElementById(`ban-icon${banIndex}`).style.backgroundImage = `url(Icons/${encodeURIComponent(character)}.png)`; // Updated line
-            modal.style.display = 'none';
-            bansCompleted++;
-            if (bansCompleted === 2) {
-                enableChooseFighterButtons();
-                disableBanIcons();
-            }
-            });
-
-            const img = document.createElement('img');
-            img.src = `Icons/${character}.png`;
-            img.alt = character;
-            img.classList.add('character-image');
-            characterCard.appendChild(img);
-
-            const characterName = document.createElement('div');
-            characterName.textContent = character;
-            characterName.classList.add('character-name');
-            characterCard.appendChild(characterName);
-
-            skinContainer.appendChild(characterCard);
-        }
-
-        searchInput.addEventListener('input', (e) => {
-            const filter = e.target.value.toLowerCase();
-            const characterCards = skinContainer.getElementsByClassName('character-card');
-            Array.from(characterCards).forEach(card => {
-                const characterName = card.querySelector('.character-name').textContent.toLowerCase();
-                card.style.display = characterName.includes(filter) ? '' : 'none';
-            });
-        });
-
-        modal.style.display = 'block';
+    const slotNumber = roleSlotMap[role];
+    const team1Slot = document.getElementById(`team1-player${slotNumber}`);
+    
+    // Remove highlight from all slots
+    document.querySelectorAll('.player-slot').forEach(slot => {
+        slot.classList.remove('highlight');
+    });
+    
+    // Add highlight to selected slot
+    team1Slot.classList.add('highlight');
+    
+    // Enable the choose fighter button for the selected slot
+    const chooseButton = team1Slot.querySelector('.choose-fighter-button');
+    if (chooseButton) {
+        chooseButton.style.pointerEvents = 'auto';
+        chooseButton.style.opacity = '1';
     }
 
+    console.log(`Role selected: ${role}, Slot: ${slotNumber}, Team: 1`);
+    
+    // Start the pick phase after role selection
+    startPickPhase();
+
+    // Close the modal
+    modal.style.display = 'none';
+}
+
+async function startBanPhase() {
+    // AI ban (based on meta.json)
+    const meta = await loadMeta();
+    const sortedChampions = Object.entries(meta)
+        .sort(([,a], [,b]) => b - a)
+        .filter(([champ]) => !bannedCharacters.includes(champ));
+    
+    // AI bans highest winrate champion
+    const aiBan = sortedChampions[0][0];
+    bannedCharacters.push(aiBan);
+    document.getElementById('ban-icon1').style.backgroundImage = 
+        `url(Icons/${encodeURIComponent(aiBan)}.png)`;
+    
+    // Increment bans completed for AI ban
+    bansCompleted++;
+    
+    // Enable user ban
+    document.getElementById('ban-icon2').style.pointerEvents = 'auto';
+    document.getElementById('ban-icon2').style.opacity = '1';
+    
+    // Initialize pick order variables
+    currentPickIndex = 0;
+    pickOrder = generatePickOrder();
+}
+
+
+
+function openBanSelectionWindow(banIndex) {
+    const modal = document.getElementById('ban-selection-modal');
+    const skinContainer = document.getElementById('ban-skin-container');
+    const searchInput = document.getElementById('ban-skin-search');
+
+    skinContainer.innerHTML = ''; // Clear previous characters
+    searchInput.value = ''; // Clear search input
+
+    // Sort characters alphabetically
+    const sortedCharacters = Object.keys(characters).sort();
+
+    for (const character of sortedCharacters) {
+        if (bannedCharacters.includes(character)) continue; // Skip banned characters
+
+        const characterCard = document.createElement('div');
+        characterCard.classList.add('character-card');
+        characterCard.addEventListener('click', async () => {
+            bannedCharacters.push(character);
+            document.getElementById(`ban-icon${banIndex}`).style.backgroundImage = 
+                `url(Icons/${encodeURIComponent(character)}.png)`;
+            modal.style.display = 'none';
+            bansCompleted++;
+            
+            console.log('Bans completed:', bansCompleted); // Debug log
+            
+            if (bansCompleted === 2) {
+                // Start pick phase after both bans are completed
+                await startPickPhase();
+            }
+        });
+
+        const img = document.createElement('img');
+        img.src = `Icons/${character}.png`;
+        img.alt = character;
+        img.classList.add('character-image');
+        characterCard.appendChild(img);
+
+        const characterName = document.createElement('div');
+        characterName.textContent = character;
+        characterName.classList.add('character-name');
+        characterCard.appendChild(characterName);
+
+        skinContainer.appendChild(characterCard);
+    }
+
+    searchInput.addEventListener('input', (e) => {
+        const filter = e.target.value.toLowerCase();
+        const characterCards = skinContainer.getElementsByClassName('character-card');
+        Array.from(characterCards).forEach(card => {
+            const characterName = card.querySelector('.character-name').textContent.toLowerCase();
+            card.style.display = characterName.includes(filter) ? '' : 'none';
+        });
+    });
+
+    modal.style.display = 'block';
+}
     function enableChooseFighterButtons() {
         const buttons = document.querySelectorAll('.choose-fighter-button');
         buttons.forEach(button => {
@@ -228,7 +541,7 @@ function openBanSelectionWindow(banIndex) {
         });
     }
 
-function toggleMenuAndPlayButton() {
+    function toggleMenuAndPlayButton() {
     const menu = document.querySelector('.menu');
     const playButtonContainer = document.querySelector('.play-button-container');
     const isVisible = menu.style.display !== 'none';
@@ -248,27 +561,13 @@ function toggleMenuAndPlayButton() {
                 document.querySelectorAll('.player-slot').forEach(slot => {
                     slot.removeEventListener('click', selectPlayerSlot);
                 });
-                applyRandomBordersAndBanners();
+                applyRandomBordersAndBanners(selectedPlayerSlot);
             }
         }
 
-        function applyRandomBordersAndBanners() {
-            document.querySelectorAll('.player-slot').forEach(slot => {
-                if (slot !== selectedPlayerSlot) {
-                    const skinName = slot.querySelector('.skin-name').textContent;
-                    if (skinName) {
-                        const randomBorder = getRandomBorder();
-                        const randomBanner = getRandomBanner();
-                        if (randomBorder) showBorder(slot, randomBorder);
-                        if (randomBanner) showBanner(slot, randomBanner);
-                    }
-                }
-            });
-        }
 
         async function applyUserStatsBordersAndBanners() {
     const userOnly = document.getElementById('user-only-checkbox').checked;
-    const teamMode = document.getElementById('team-mode-checkbox').checked;
     const user = auth.currentUser;
 
     if (teamMode && user) {
@@ -367,299 +666,191 @@ function toggleMenuAndPlayButton() {
         });
     }
 }
+// Function to update win/loss in the database
+async function updatePlayerWinLoss(userId, isWin) {
+    try {
+        const winRef = ref(database, `users/${userId}/ranked win`);
+        const loseRef = ref(database, `users/${userId}/ranked lose`);
 
-        function getRandomBorder() {
-            const borders = [
-                { class: null, chance: 5 },
-                { class: 'silver-border', chance: 15 },
-                { class: 'gold-border', chance: 25 },
-                { class: 'emerald-border', chance: 45 },
-                { class: 'diamond-border', chance: 8 },
-                { class: 'challenger-border', chance: 2 }
-            ];
-            return getRandomItem(borders);
-        }
+        const [winSnap, loseSnap] = await Promise.all([get(winRef), get(loseRef)]);
+        let wins = winSnap.exists() ? winSnap.val() : 0;
+        let losses = loseSnap.exists() ? loseSnap.val() : 0;
 
-        function getRandomBanner() {
-            const banners = [
-                { class: null, chance: 15 },
-                { class: 'banner1', chance: 30 },
-                { class: 'banner2', chance: 25 },
-                { class: 'banner3', chance: 25 },
-                { class: 'banner4', chance: 5 }
-            ];
-            return getRandomItem(banners);
-        }
-
-        function getRandomItem(items) {
-            const totalChance = items.reduce((sum, item) => sum + item.chance, 0);
-            const random = Math.random() * totalChance;
-            let cumulativeChance = 0;
-            for (const item of items) {
-                cumulativeChance += item.chance;
-                if (random < cumulativeChance) {
-                    return item.class;
-                }
-            }
-            return null;
-        }
-
-        function showBorder(playerSlot, borderClass) {
-            let border = playerSlot.querySelector(`.${borderClass}`);
-            if (!border) {
-                border = document.createElement('img');
-                border.src = `res/img/${borderClass}.png`; // Ensure the path to the border image is correct
-                border.className = borderClass;
-                playerSlot.appendChild(border);
-            }
-            border.style.display = 'block';
-        }
-
-        function showBanner(playerSlot, bannerClass) {
-            let banner = playerSlot.querySelector(`.${bannerClass}`);
-            if (!banner) {
-                banner = document.createElement('img');
-                banner.src = `res/img/${bannerClass}.png`; // Ensure the path to the banner image is correct
-                banner.className = bannerClass;
-                playerSlot.appendChild(banner);
-            }
-            banner.style.display = 'block';
-        }
-
-        async function selectSkin(playerSlot, skin) {
-    const img = playerSlot.querySelector('img');
-    const skinNameDiv = playerSlot.querySelector('.skin-name');
-
-    loadImage(img, `Loading Screen/${skin}`);
-    skinNameDiv.textContent = skin;
-    skinNameDiv.style.display = 'block';
-
-    adjustSkinNameFontSize(skinNameDiv); // Adjust font size based on length
-
-    playerSlot.querySelector('.choose-fighter-button').style.display = 'none'; // Hide the button
-
-    const userOnly = document.getElementById('user-only-checkbox').checked;
-    const teamMode = document.getElementById('team-mode-checkbox').checked;
-    const user = auth.currentUser;
-
-    if (teamMode && user && playerSlot.id.startsWith('team1')) {
-        const userRef = ref(database, 'users/' + user.uid + '/characters');
-        const snapshot = await get(userRef);
-        const userCharacters = snapshot.val();
-
-        const baseCharacter = skinToBaseCharacterMap[skin] || skin;
-        const charData = userCharacters[baseCharacter];
-        if (charData) {
-            const totalGames = (charData.win || 0) + (charData.lose || 0);
-            const winRate = (charData.win / totalGames) * 100;
-
-            // Apply borders based on win rate
-            let borderClass = '';
-            if (winRate <= 35) {
-                borderClass = 'silver-border';
-            } else if (winRate <= 45) {
-                borderClass = 'gold-border';
-            } else if (winRate <= 58) {
-                borderClass = 'emerald-border';
-            } else if (winRate <= 74) {
-                borderClass = 'diamond-border';
-            } else {
-                borderClass = 'challenger-border';
-            }
-            if (borderClass) showBorder(playerSlot, borderClass);
-
-            // Apply banners based on total games
-            let bannerClass = '';
-            if (totalGames >= 100) {
-                bannerClass = 'banner4';
-            } else if (totalGames >= 50) {
-                bannerClass = 'banner3';
-            } else if (totalGames >= 30) {
-                bannerClass = 'banner2';
-            } else if (totalGames >= 10) {
-                bannerClass = 'banner1';
-            }
-            if (bannerClass) showBanner(playerSlot, bannerClass);
-        }
-    } else if (userOnly && playerSlot === selectedPlayerSlot) {
-        const baseCharacter = skinToBaseCharacterMap[skin] || skin;
-        const userRef = ref(database, 'users/' + user.uid + '/characters');
-        const snapshot = await get(userRef);
-        const userCharacters = snapshot.val();
-        const charData = userCharacters[baseCharacter];
-        if (charData) {
-            const totalGames = (charData.win || 0) + (charData.lose || 0);
-            const winRate = (charData.win / totalGames) * 100;
-
-            // Apply borders based on win rate
-            let borderClass = '';
-            if (winRate <= 35) {
-                borderClass = 'silver-border';
-            } else if (winRate <= 45) {
-                borderClass = 'gold-border';
-            } else if (winRate <= 58) {
-                borderClass = 'emerald-border';
-            } else if (winRate <= 74) {
-                borderClass = 'diamond-border';
-            } else {
-                borderClass = 'challenger-border';
-            }
-            if (borderClass) showBorder(playerSlot, borderClass);
-
-            // Apply banners based on total games
-            let bannerClass = '';
-            if (totalGames >= 100) {
-                bannerClass = 'banner4';
-            } else if (totalGames >= 50) {
-                bannerClass = 'banner3';
-            } else if (totalGames >= 30) {
-                bannerClass = 'banner2';
-            } else if (totalGames >= 10) {
-                bannerClass = 'banner1';
-            }
-            if (bannerClass) showBanner(playerSlot, bannerClass);
-        }
-    } else {
-        const baseCharacter = skinToBaseCharacterMap[skin] || skin;
-        const charData = characters[baseCharacter];
-        const totalGames = (charData.win || 0) + (charData.lose || 0);
-        if (totalGames >= 10) {
-            const winRate = (charData.win / totalGames) * 100;
-            let borderClass = '';
-            if (winRate <= 35) {
-                borderClass = 'silver-border';
-            } else if (winRate <= 50) {
-                borderClass = 'gold-border';
-            } else if (winRate <= 60) {
-                borderClass = 'emerald-border';
-            } else if (winRate <= 75) {
-                borderClass = 'diamond-border';
-            } else {
-                borderClass = 'challenger-border';
-            }
-            if (borderClass) showBorder(playerSlot, borderClass);
-
-            // Assign banners based on the number of wins
-            let bannerClass = '';
-            if (charData.win >= 100) {
-                bannerClass = 'banner4';
-            } else if (charData.win >= 55) {
-                bannerClass = 'banner3';
-            } else if (charData.win >= 30) {
-                bannerClass = 'banner2';
-            } else if (charData.win >= 15) {
-                bannerClass = 'banner1';
-            }
-            if (bannerClass) showBanner(playerSlot, bannerClass);
+        if (isWin) {
+            wins += 1;
+            await set(winRef, wins);
         } else {
-            const randomBorder = getRandomBorder();
-            const randomBanner = getRandomBanner();
-            if (randomBorder) showBorder(playerSlot, randomBorder);
-            if (randomBanner) showBanner(playerSlot, randomBanner);
+            losses += 1;
+            await set(loseRef, losses);
         }
-    }
 
-    closeSkinSelectionWindow();
-    checkAllSkinsSelected();
+        console.log(`Updated wins: ${wins}, losses: ${losses}`);
+    } catch (error) {
+        console.error('Error updating win/loss:', error);
+    }
 }
 
-document.getElementById('decide-game-button').addEventListener('click', async function() {
-    this.disabled = true;
-    const userSlot = document.querySelector('.player-slot[data-user="true"]');
-    const skinName = userSlot.querySelector('.skin-name').textContent;
-    const baseCharacter = skinToBaseCharacterMap[skinName] || skinName;
-    const winner = Math.random() < 0.5 ? 'team1' : 'team2';
 
-    await saveSoloModeData(auth.currentUser.uid, baseCharacter, winner);
-    await saveGlobalCharacterStats(winner);
-    displayResult(winner, winner === 'team1' ? 'team2' : 'team1');
+// Find this section in your code and update it
+document.getElementById('decide-game-button').addEventListener('click', async function() {
+    // Check if role is selected
+    if (!userSlot) {
+        console.error('No role selected');
+        alert('Please select a role first!');
+        const roleModal = document.getElementById('role-selection-modal');
+        roleModal.style.display = 'block';
+        return;
+    }
+
+    this.disabled = true;
+    const team1 = [];
+    const team2 = [];
+    const user = auth.currentUser;
+
+    if (!user) {
+        console.error('No user logged in');
+        return;
+    }
+    const userId = user.uid;
+
+    console.log('Decide Game button clicked (Solo Mode)');
+
+    // Get selected slot
+    const selectedSlot = document.querySelector('.player-slot.highlight');
+    if (!selectedSlot) {
+        console.error('No slot selected');
+        return;
+    }
+
+    for (let i = 1; i <= 5; i++) {
+        const team1Player = document.getElementById(`team1-player${i}`);
+        const team2Player = document.getElementById(`team2-player${i}`);
+
+        if (team1Player) {
+            const team1Skin = team1Player.querySelector('.skin-name')?.textContent;
+            if (team1Skin) team1.push(team1Skin);
+        }
+
+        if (team2Player) {
+            const team2Skin = team2Player.querySelector('.skin-name')?.textContent;
+            if (team2Skin) team2.push(team2Skin);
+        }
+    }
+
+    // Map skins to base characters
+    const team1BaseCharacters = team1.map(skin => skinToBaseCharacterMap[skin] || skin);
+    const team2BaseCharacters = team2.map(skin => skinToBaseCharacterMap[skin] || skin);
+
+    // Calculate winner
+    const winner = await calculateWinProbability(team1, team2);
+    const loser = winner === 'team1' ? 'team2' : 'team1';
+    const isWin = winner === 'team1';
+
+    // Process solo mode rewards and updates
+    const skinName = selectedSlot.querySelector('.skin-name').textContent;
+    const baseCharacter = skinToBaseCharacterMap[skinName] || skinName;
+    
+    // Update all necessary data
+    await handleMatchResult(userId, isWin);
+    await saveSoloModeData(userId, baseCharacter, team1BaseCharacters, team2BaseCharacters, winner);
+    await updateRankPoints(user, isWin);
+    await rewardPlayer(winner);
+    await rewardCharacterMoney();
+    
+    // Update quests
+    await updateQuestsAfterGame(userId, baseCharacter, isWin);
+
+    displayResult(winner, loser);
 });
 
+async function updateRankPoints(user, isWin) {
+    try {
+        const userId = user.uid;
+        const rankRef = ref(database, `users/${userId}/Rank points`);
+        const snapshot = await get(rankRef);
+        const currentRank = Number(snapshot.val()) || 0;
 
-// ... existing code ...
-
-async function saveTeamModeData(userId, team1BaseCharacters, team2BaseCharacters, winner) {
-    const updates = {};
-
-    console.log('Updating user character stats for Team 1');
-    // Update user character stats for Team 1
-    for (const character of team1BaseCharacters) {
-        const charRef = ref(database, `users/${userId}/characters/${character}`);
-        const snapshot = await get(charRef);
-        const charData = snapshot.val() || { win: 0, lose: 0 };
-
-        if (winner === 'team1') {
-            charData.win += 1;
+        let rankChange;
+        if (isWin) {
+            rankChange = getRandomInt(15, 28);
         } else {
-            charData.lose += 1;
+            rankChange = -getRandomInt(12, 34);
         }
 
-        updates[`users/${userId}/characters/${character}`] = charData;
+        let newRank = currentRank + rankChange;
+        if (newRank < 0) newRank = 0;
+
+        await update(ref(database, `users/${userId}`), { "Rank points": newRank });
+        console.log(`Rank points updated: ${currentRank} -> ${newRank}`);
+        showRankUpdateModal(currentRank, rankChange, newRank);
+    } catch (error) {
+        console.error('Error updating rank points:', error);
+    }
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function showRankUpdateModal(originalRank, rankChange, newRank) {
+    const modal = document.getElementById('rank-update-modal');
+    const message = document.getElementById('rank-update-message');
+    const closeModal = modal.querySelector('.close-modal');
+    const sign = rankChange >= 0 ? '+' : '';
+
+    message.innerHTML = `
+        <strong>Rank Points Updated!</strong><br>
+        Original: ${originalRank}<br>
+        Change: ${sign}${rankChange}<br>
+        New Rank Points: ${newRank}
+    `;
+
+    modal.style.display = 'block';
+
+    closeModal.onclick = function() {
+        modal.style.display = 'none';
     }
 
-    console.log('Updating global character stats for Team 1 and Team 2');
-    // Update global character stats for Team 1 and Team 2
-    for (const character of [...team1BaseCharacters, ...team2BaseCharacters]) {
-        const charRef = ref(database, `characters/${character}`);
-        const snapshot = await get(charRef);
-        const charData = snapshot.val() || { win: 0, lose: 0 };
-
-        if (winner === 'team1' && team1BaseCharacters.includes(character)) {
-            charData.win += 1;
-        } else if (winner === 'team2' && team2BaseCharacters.includes(character)) {
-            charData.win += 1;
-        } else {
-            charData.lose += 1;
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
         }
-
-        updates[`characters/${character}`] = charData;
     }
-
-    console.log('Saving updates to database:', updates);
-    await update(ref(database), updates);
 }
 
 async function saveSoloModeData(userId, baseCharacter, team1BaseCharacters, team2BaseCharacters, winner) {
     const updates = {};
 
-    console.log('Updating user character stats for the highlighted character');
     // Update user character stats for the highlighted character
     const userCharRef = ref(database, `users/${userId}/characters/${baseCharacter}`);
     const userSnapshot = await get(userCharRef);
     const userCharData = userSnapshot.val() || { win: 0, lose: 0 };
 
     if (winner === 'team1') {
-        userCharData.win += 1;
+        userCharData.win = (userCharData.win || 0) + 1;
     } else {
-        userCharData.lose += 1;
+        userCharData.lose = (userCharData.lose || 0) + 1;
     }
 
     updates[`users/${userId}/characters/${baseCharacter}`] = userCharData;
 
-    console.log('Updating global character stats for all characters');
-    // Update global character stats for all characters
-    const allCharacters = [...document.querySelectorAll('.player-slot')].map(slot => {
-        const skinName = slot.querySelector('.skin-name').textContent;
-        return skinToBaseCharacterMap[skinName] || skinName;
-    });
-
+    // Update global character stats
+    const allCharacters = [...team1BaseCharacters, ...team2BaseCharacters];
     for (const character of allCharacters) {
         const charRef = ref(database, `characters/${character}`);
         const snapshot = await get(charRef);
         const charData = snapshot.val() || { win: 0, lose: 0 };
 
-        if (winner === 'team1' && team1BaseCharacters.includes(character)) {
-            charData.win += 1;
-        } else if (winner === 'team2' && team2BaseCharacters.includes(character)) {
-            charData.win += 1;
+        if ((winner === 'team1' && team1BaseCharacters.includes(character)) ||
+            (winner === 'team2' && team2BaseCharacters.includes(character))) {
+            charData.win = (charData.win || 0) + 1;
         } else {
-            charData.lose += 1;
+            charData.lose = (charData.lose || 0) + 1;
         }
 
         updates[`characters/${character}`] = charData;
     }
 
-    console.log('Saving updates to database:', updates);
     await update(ref(database), updates);
 }
 
@@ -667,7 +858,6 @@ async function saveGlobalCharacterStats(team1BaseCharacters, team2BaseCharacters
     const updates = {};
 
     console.log('Updating global character stats for all characters');
-    // Update global character stats for all characters
     for (const character of [...team1BaseCharacters, ...team2BaseCharacters]) {
         const charRef = ref(database, `characters/${character}`);
         const snapshot = await get(charRef);
@@ -707,8 +897,9 @@ function adjustSkinNameFontSize(skinNameDiv) {
         }
     }
 
+// UI Helper Functions
 function toggleBorders() {
-    const borders = document.querySelectorAll('.silver-border');
+    const borders = document.querySelectorAll('.silver-border, .gold-border, .emerald-border, .diamond-border, .challenger-border');
     borders.forEach(border => {
         border.style.display = bordersVisible ? 'none' : 'block';
     });
@@ -769,36 +960,60 @@ window.updateQuestProgress = async function(questId, progressIncrement = 1) {
 
     
 
-    async function updateCharacterSpecificQuests(team1, team2) {
-     const user = auth.currentUser;
-     if (!user) {
-         console.error('User not authenticated');
-         return;
-     }
- 
-     const userId = user.uid;
-     const userRef = ref(database, `users/${userId}`);
-     const snapshot = await get(userRef);
-     const userData = snapshot.val();
- 
-     if (!userData) {
-         console.error('User data not found');
-         return;
-     }
- 
-     console.log('Checking quests for team1:', team1);
-     console.log('Checking quests for team2:', team2);
- 
-     for (const quest of quests) {
-         console.log(`Checking quest: ${quest.id}`);
-         if (quest.requirement(userData, team1) || quest.requirement(userData, team2)) {
-             console.log(`Quest ${quest.id} requirement met.`);
-             await updateQuestProgress(quest.id);
-         } else {
-             console.log(`Quest ${quest.id} requirement not met.`);
-         }
-     }
- }
+// Quest and Reward System Integration
+async function updateQuestProgress(questId, progressIncrement = 1) {
+    const user = auth.currentUser;
+    if (user) {
+        const userId = user.uid;
+        const userRef = ref(database, `users/${userId}/quests/${questId}`);
+        const snapshot = await get(userRef);
+        const questData = snapshot.val() || { progress: 0, completed: false, claimed: false };
+        if (!questData.completed) {
+            const newProgress = (questData.progress || 0) + progressIncrement;
+            if (newProgress >= quests.find(q => q.id === questId).goal) {
+                await update(userRef, { progress: newProgress, completed: true });
+                console.log(`Quest ${questId} completed.`);
+            } else {
+                await update(userRef, { progress: newProgress });
+                console.log(`Quest ${questId} progress updated to ${newProgress}.`);
+            }
+        } else {
+            console.log(`Quest ${questId} already completed.`);
+        }
+    } else {
+        console.error('User not authenticated');
+    }
+}
+async function updateCharacterSpecificQuests(team1, team2) {
+    const user = auth.currentUser;
+    if (!user) {
+        console.error('User not authenticated');
+        return;
+    }
+
+    const userId = user.uid;
+    const userRef = ref(database, `users/${userId}`);
+    const snapshot = await get(userRef);
+    const userData = snapshot.val();
+
+    if (!userData) {
+        console.error('User data not found');
+        return;
+    }
+
+    console.log('Checking quests for team1:', team1);
+    console.log('Checking quests for team2:', team2);
+
+    for (const quest of quests) {
+        console.log(`Checking quest: ${quest.id}`);
+        if (quest.requirement(userData, team1) || quest.requirement(userData, team2)) {
+            console.log(`Quest ${quest.id} requirement met.`);
+            await updateQuestProgress(quest.id);
+        } else {
+            console.log(`Quest ${quest.id} requirement not met.`);
+        }
+    }
+}
 
 function populateCharacterButtons(characters) {
         console.log('Populating character buttons with characters:', characters);
@@ -814,186 +1029,275 @@ function populateCharacterButtons(characters) {
     }
 
     function openCharacterSelectionWindow(characters, playerSlot) {
-        console.log('Opening character selection window for player slot:', playerSlot);
-        console.log('Characters object:', characters);
+    console.log('Opening character selection window for player slot:', playerSlot);
+    console.log('Characters object:', characters);
 
-        const modal = document.getElementById('skin-selection-modal');
-        const skinContainer = document.getElementById('skin-container');
-        const searchInput = document.getElementById('skin-search');
+    const modal = document.getElementById('skin-selection-modal');
+    const skinContainer = document.getElementById('skin-container');
+    const searchInput = document.getElementById('skin-search');
 
-        skinContainer.innerHTML = ''; // Clear previous characters
-        console.log('Cleared previous characters from skin container');
-        searchInput.value = ''; // Clear search input
-        console.log('Cleared search input');
+    skinContainer.innerHTML = ''; // Clear previous characters
+    console.log('Cleared previous characters from skin container');
+    searchInput.value = ''; // Clear search input
+    console.log('Cleared search input');
 
-        // Determine the role based on the player slot ID
-        const roleMap = {
-            'team1-player1': 'Top',
-            'team1-player2': 'Jungle',
-            'team1-player3': 'Mid',
-            'team1-player4': 'Adc',
-            'team1-player5': 'Support',
-            'team2-player1': 'Top',
-            'team2-player2': 'Jungle',
-            'team2-player3': 'Mid',
-            'team2-player4': 'Adc',
-            'team2-player5': 'Support'
-        };
-        const role = roleMap[playerSlot.id];
+    // Determine the role based on the player slot ID
+    const roleMap = {
+        'team1-player1': 'Top',
+        'team1-player2': 'Jungle',
+        'team1-player3': 'Mid',
+        'team1-player4': 'Adc',
+        'team1-player5': 'Support',
+        'team2-player1': 'Top',
+        'team2-player2': 'Jungle',
+        'team2-player3': 'Mid',
+        'team2-player4': 'Adc',
+        'team2-player5': 'Support'
+    };
+    const role = roleMap[playerSlot.id];
 
-        for (const roleName in roles) {
-            if (roleName !== role) continue; // Skip roles that don't match the player's role
+    for (const roleName in roles) {
+        if (roleName !== role) continue; // Skip roles that don't match the player's role
 
-            console.log('Processing role:', roleName);
-            const roleSection = document.createElement('div');
-            roleSection.classList.add('role-section');
+        console.log('Processing role:', roleName);
+        const roleSection = document.createElement('div');
+        roleSection.classList.add('role-section');
 
-            const roleHeader = document.createElement('h3');
-            roleHeader.textContent = roleName;
-            roleHeader.classList.add('role-header');
-            roleSection.appendChild(roleHeader);
+        const roleHeader = document.createElement('h3');
+        roleHeader.textContent = roleName;
+        roleHeader.classList.add('role-header');
+        roleSection.appendChild(roleHeader);
 
-            const roleCharacters = document.createElement('div');
-            roleCharacters.classList.add('role-characters');
-            roleSection.appendChild(roleCharacters);
+        const roleCharacters = document.createElement('div');
+        roleCharacters.classList.add('role-characters');
+        roleSection.appendChild(roleCharacters);
 
-            for (const character of roles[roleName]) {
-                if (bannedCharacters.includes(character)) continue; // Skip banned characters
+        for (const character of roles[roleName]) {
+            if (bannedCharacters.includes(character)) continue; // Skip banned characters
 
-                const characterCard = document.createElement('div');
-                characterCard.classList.add('character-card');
-                characterCard.addEventListener('click', () => {
-                    console.log('Character card clicked:', character);
-                    const skins = characters[character];
-                    console.log('Skins for character:', skins);
-                    if (Array.isArray(skins)) {
-                        openSkinSelectionWindow(skins, playerSlot, character);
-                    } else {
-                        console.error('Skins is not an array:', skins);
+            const characterCard = document.createElement('div');
+            characterCard.classList.add('character-card');
+            characterCard.addEventListener('click', () => {
+                console.log('Character card clicked:', character);
+                const skins = characters[character];
+                console.log('Skins for character:', skins);
+                if (Array.isArray(skins)) {
+                    openSkinSelectionWindow(skins, playerSlot, character);
+                } else {
+                    console.error('Skins is not an array:', skins);
+                }
+            });
+
+            const img = document.createElement('img');
+            img.src = `Icons/${character}.png`;
+            img.alt = character;
+            img.classList.add('character-image');
+            characterCard.appendChild(img);
+
+            const characterName = document.createElement('div');
+            characterName.textContent = character;
+            characterName.classList.add('character-name');
+            characterCard.appendChild(characterName);
+
+            roleCharacters.appendChild(characterCard);
+        }
+
+        skinContainer.appendChild(roleSection);
+    }
+
+    searchInput.addEventListener('input', (e) => {
+        console.log('Search input changed:', e.target.value);
+        const filter = e.target.value.toLowerCase();
+        const characterCards = skinContainer.getElementsByClassName('character-card');
+        Array.from(characterCards).forEach(card => {
+            const characterName = card.querySelector('.character-name').textContent.toLowerCase();
+            card.style.display = characterName.includes(filter) ? '' : 'none';
+            console.log('Character card display set to:', characterName.includes(filter) ? 'block' : 'none', 'for character:', characterName);
+        });
+    });
+
+    modal.style.display = 'block';
+    console.log('Character selection modal displayed');
+}
+
+async function openSkinSelectionWindow(skins, playerSlot, character) {
+    console.log('Opening skin selection window for character:', character, 'and player slot:', playerSlot);
+    console.log('Skins:', skins);
+
+    const modal = document.getElementById('skin-selection-modal');
+    const skinContainer = document.getElementById('skin-container');
+    const searchInput = document.getElementById('skin-search');
+    const backButton = document.createElement('button');
+
+    skinContainer.innerHTML = ''; // Clear previous skins
+    console.log('Cleared previous skins from skin container');
+    searchInput.value = ''; // Clear search input
+    console.log('Cleared search input');
+
+    backButton.textContent = 'Back';
+    backButton.id = 'back-button';
+    backButton.classList.add('back-button');
+    backButton.addEventListener('click', () => {
+        console.log('Back button clicked');
+        openCharacterSelectionWindow(characters, playerSlot);
+    });
+    skinContainer.appendChild(backButton);
+    console.log('Back button added to skin container');
+
+    const user = auth.currentUser;
+    if (user) {
+        console.log('User authenticated:', user.uid);
+        const userId = user.uid;
+        const userSkinsRef = ref(database, `users/${userId}/skins`);
+        const snapshot = await get(userSkinsRef);
+        const ownedSkins = snapshot.val() || {};
+        console.log('Owned skins retrieved:', ownedSkins);
+
+        for (const skin of skins) {
+            if (bannedCharacters.includes(skin)) continue; // Skip banned skins
+
+            if (ownedSkins.hasOwnProperty(skin)) {
+                console.log('Adding owned skin to skin container:', skin);
+                const skinCard = document.createElement('div');
+                skinCard.classList.add('skin-card');
+                skinCard.addEventListener('click', async () => {
+                    console.log('Skin card clicked:', skin);
+                    await selectSkin(playerSlot, skin);
+                    closeSkinSelectionWindow();
+                    
+                    // After user pick is complete, increment index and continue
+                    if (playerSlot.id.includes(`team${userTeam}`)) {
+                        currentPickIndex++;
+                        await new Promise(resolve => setTimeout(resolve, 1000)); // Add small delay
+                        await processNextPick();
                     }
                 });
 
                 const img = document.createElement('img');
-                img.src = `Icons/${character}.png`;
-                img.alt = character;
-                img.classList.add('character-image');
-                characterCard.appendChild(img);
+                img.src = `Loading Screen/${skin}.png`;
+                img.alt = skin;
+                img.classList.add('skin-image');
+                skinCard.appendChild(img);
+                console.log('Skin image added:', img.src);
 
-                const characterName = document.createElement('div');
-                characterName.textContent = character;
-                characterName.classList.add('character-name');
-                characterCard.appendChild(characterName);
+                const skinName = document.createElement('div');
+                skinName.textContent = skin;
+                skinName.classList.add('skin-name');
+                skinCard.appendChild(skinName);
+                console.log('Skin name added:', skin);
 
-                roleCharacters.appendChild(characterCard);
+                skinContainer.appendChild(skinCard);
+                console.log('Skin card added to skin container');
+            } else {
+                console.log('Skin not owned:', skin);
             }
-
-            skinContainer.appendChild(roleSection);
         }
 
         searchInput.addEventListener('input', (e) => {
             console.log('Search input changed:', e.target.value);
             const filter = e.target.value.toLowerCase();
-            const characterCards = skinContainer.getElementsByClassName('character-card');
-            Array.from(characterCards).forEach(card => {
-                const characterName = card.querySelector('.character-name').textContent.toLowerCase();
-                card.style.display = characterName.includes(filter) ? '' : 'none';
-                console.log('Character card display set to:', characterName.includes(filter) ? 'block' : 'none', 'for character:', characterName);
+            const skinCards = skinContainer.getElementsByClassName('skin-card');
+            Array.from(skinCards).forEach(card => {
+                const skinName = card.querySelector('.skin-name').textContent.toLowerCase();
+                card.style.display = skinName.includes(filter) ? '' : 'none';
+                console.log('Skin card display set to:', skinName.includes(filter) ? 'block' : 'none', 'for skin:', skinName);
             });
         });
 
         modal.style.display = 'block';
-        console.log('Character selection modal displayed');
+        console.log('Skin selection modal displayed');
+    } else {
+        console.error('User not authenticated');
     }
+}
 
-    async function openSkinSelectionWindow(skins, playerSlot, character) {
-        console.log('Opening skin selection window for character:', character, 'and player slot:', playerSlot);
-        console.log('Skins:', skins);
+async function selectSkin(playerSlot, skin) {
+    const img = playerSlot.querySelector('img');
+    const skinNameDiv = playerSlot.querySelector('.skin-name');
 
-        const modal = document.getElementById('skin-selection-modal');
-        const skinContainer = document.getElementById('skin-container');
-        const searchInput = document.getElementById('skin-search');
-        const backButton = document.createElement('button');
+    loadImage(img, `Loading Screen/${skin}`);
+    skinNameDiv.textContent = skin;
+    skinNameDiv.style.display = 'block';
+    
+    // Get user data and check mode
+    const user = auth.currentUser;
+    if (user) {
+        const baseCharacter = skinToBaseCharacterMap[skin] || skin;
+        const userRef = ref(database, `users/${user.uid}/characters`);
+        const snapshot = await get(userRef);
+        const userCharacters = snapshot.val();
+        
+        if (userCharacters && userCharacters[baseCharacter]) {
+            const charData = userCharacters[baseCharacter];
+            const totalGames = (charData.win || 0) + (charData.lose || 0);
+            const winRate = (charData.win / totalGames) * 100;
 
-        skinContainer.innerHTML = ''; // Clear previous skins
-        console.log('Cleared previous skins from skin container');
-        searchInput.value = ''; // Clear search input
-        console.log('Cleared search input');
-
-        backButton.textContent = 'Back';
-        backButton.id = 'back-button';
-        backButton.classList.add('back-button');
-        backButton.addEventListener('click', () => {
-            console.log('Back button clicked');
-            openCharacterSelectionWindow(characters, playerSlot);
-        });
-        skinContainer.appendChild(backButton);
-        console.log('Back button added to skin container');
-
-        const user = auth.currentUser;
-        if (user) {
-            console.log('User authenticated:', user.uid);
-            const userId = user.uid;
-            const userSkinsRef = ref(database, `users/${userId}/skins`);
-            const snapshot = await get(userSkinsRef);
-            const ownedSkins = snapshot.val() || {};
-            console.log('Owned skins retrieved:', ownedSkins);
-
-            for (const skin of skins) {
-                if (bannedCharacters.includes(skin)) continue; // Skip banned skins
-
-                if (ownedSkins.hasOwnProperty(skin)) {
-                    console.log('Adding owned skin to skin container:', skin);
-                    const skinCard = document.createElement('div');
-                    skinCard.classList.add('skin-card');
-                    skinCard.addEventListener('click', () => {
-                        console.log('Skin card clicked:', skin);
-                        selectSkin(playerSlot, skin);
-                    });
-
-                    const img = document.createElement('img');
-                    img.src = `Loading Screen/${skin}.png`; // Assuming all skins are .png
-                    img.alt = skin;
-                    img.classList.add('skin-image');
-                    skinCard.appendChild(img);
-                    console.log('Skin image added:', img.src);
-
-                    const skinName = document.createElement('div');
-                    skinName.textContent = skin;
-                    skinName.classList.add('skin-name');
-                    skinCard.appendChild(skinName);
-                    console.log('Skin name added:', skin);
-
-                    skinContainer.appendChild(skinCard);
-                    console.log('Skin card added to skin container');
-                } else {
-                    console.log('Skin not owned:', skin);
-                }
+            // Apply borders based on win rate
+            let borderClass = '';
+            if (winRate <= 35) {
+                borderClass = 'silver-border';
+            } else if (winRate <= 45) {
+                borderClass = 'gold-border';
+            } else if (winRate <= 58) {
+                borderClass = 'emerald-border';
+            } else if (winRate <= 74) {
+                borderClass = 'diamond-border';
+            } else {
+                borderClass = 'challenger-border';
             }
+            if (borderClass) showBorder(playerSlot, borderClass);
 
-            searchInput.addEventListener('input', (e) => {
-                console.log('Search input changed:', e.target.value);
-                const filter = e.target.value.toLowerCase();
-                const skinCards = skinContainer.getElementsByClassName('skin-card');
-                Array.from(skinCards).forEach(card => {
-                    const skinName = card.querySelector('.skin-name').textContent.toLowerCase();
-                    card.style.display = skinName.includes(filter) ? '' : 'none';
-                    console.log('Skin card display set to:', skinName.includes(filter) ? 'block' : 'none', 'for skin:', skinName);
-                });
-            });
-
-            // Display the modal only after skins are loaded
-            modal.style.display = 'block';
-            console.log('Skin selection modal displayed');
-        } else {
-            console.error('User not authenticated');
+            // Apply banners based on total games
+            let bannerClass = '';
+            if (totalGames >= 100) {
+                bannerClass = 'banner4';
+            } else if (totalGames >= 50) {
+                bannerClass = 'banner3';
+            } else if (totalGames >= 30) {
+                bannerClass = 'banner2';
+            } else if (totalGames >= 10) {
+                bannerClass = 'banner1';
+            }
+            if (bannerClass) showBanner(playerSlot, bannerClass);
         }
     }
 
+    adjustSkinNameFontSize(skinNameDiv);
+    playerSlot.querySelector('.choose-fighter-button').style.display = 'none';
+    
+    // Add this line at the end of the function
+    checkAllPicksCompleted();
+}
+
+// Add these helper functions if they don't exist
+function showBorder(playerSlot, borderClass) {
+    let border = playerSlot.querySelector(`.${borderClass}`);
+    if (!border) {
+        border = document.createElement('img');
+        border.src = `res/img/${borderClass}.png`;
+        border.className = borderClass;
+        playerSlot.appendChild(border);
+    }
+    border.style.display = 'block';
+}
+
+function showBanner(playerSlot, bannerClass) {
+    let banner = playerSlot.querySelector(`.${bannerClass}`);
+    if (!banner) {
+        banner = document.createElement('img');
+        banner.src = `res/img/${bannerClass}.png`;
+        banner.className = bannerClass;
+        playerSlot.appendChild(banner);
+    }
+    banner.style.display = 'block';
+}
+
        
 
-        function loadImage(imgElement, basePath) {
+        function loadImage(imgElement, basePath, callback) {
             const extensions = ['.png'];
             let found = false;
+            
             for (const ext of extensions) {
                 const img = new Image();
                 img.src = basePath + ext;
@@ -1001,15 +1305,18 @@ function populateCharacterButtons(characters) {
                     if (!found) {
                         imgElement.src = img.src;
                         found = true;
+                        if (callback) callback();
                     }
                 };
                 img.onerror = () => {
                     if (!found) {
-                        imgElement.src = ''; // Clear src if not found
+                        imgElement.src = '';
+                        if (callback) callback();
                     }
                 };
             }
         }
+        
 
         function checkAllSkinsSelected() {
             const buttons = document.querySelectorAll('.choose-fighter-button');
@@ -1075,25 +1382,29 @@ function populateCharacterButtons(characters) {
             await update(ref(database), updates);
         }
 
-        async function rewardPlayer() {
-            const userId = auth.currentUser.uid;
-            const userRef = ref(database, `users/${userId}`);
-            const snapshot = await get(userRef);
-            const userData = snapshot.val();
+        async function rewardPlayer(winner) {
+    const userId = auth.currentUser.uid;
+    const userRef = ref(database, `users/${userId}`);
+    const snapshot = await get(userRef);
+    const userData = snapshot.val();
 
-            if (userData) {
-                const exp = userData.BattlePassExp || 0;
-                const reward = Math.floor(Math.random() * 16) + 30; // Random number between 30 and 45
-                const newExp = exp + reward;
+    // Always process as solo mode
+    const selectedSlot = document.querySelector('.player-slot.highlight');
+    if (selectedSlot) {
+        const skinName = selectedSlot.querySelector('.skin-name').textContent;
+        const characterName = skinToBaseCharacterMap[skinName] || skinName;
+        await addCharacterXP(userId, characterName, winner === 'team1');
+    }
 
-                console.log('Current Exp:', exp);
-                console.log('Reward:', reward);
-                console.log('New Exp:', newExp);
+    if (userData) {
+        const exp = userData.BattlePassExp || 0;
+        const reward = Math.floor(Math.random() * 16) + 30; // Random number between 30 and 45
+        const newExp = exp + reward;
+        await update(userRef, { BattlePassExp: newExp });
+    }
+}
 
-                await update(userRef, { BattlePassExp: newExp });
-                console.log('BattlePassExp updated successfully.');
-            }
-        }
+        
 
         window.updateQuestProgress = async function(questId) {
         const user = auth.currentUser;
@@ -1113,31 +1424,31 @@ function populateCharacterButtons(characters) {
         } else {
             console.error('User not authenticated');
         }
-    }};
+    };
 
-        async function rewardCharacterMoney() {
-            try {
-                const userId = auth.currentUser.uid;
-                const userRef = ref(database, `users/${userId}`);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val();
+    async function rewardCharacterMoney() {
+    try {
+        const userId = auth.currentUser.uid;
+        const userRef = ref(database, `users/${userId}`);
+        const snapshot = await get(userRef);
+        const userData = snapshot.val();
 
-                if (userData) {
-                    const currentCM = userData.CM || 0;
-                    const reward = Math.floor(Math.random() * 181) + 300; // Random number between 300 and 480
-                    const newCM = currentCM + reward;
+        if (userData) {
+            const currentCM = userData.CM || 0;
+            const reward = Math.floor(Math.random() * 181) + 300; // Random number between 300 and 480
+            const newCM = currentCM + reward;
 
-                    console.log('Current CM:', currentCM);
-                    console.log('Reward:', reward);
-                    console.log('New CM:', newCM);
+            console.log('Current CM:', currentCM);
+            console.log('Reward:', reward);
+            console.log('New CM:', newCM);
 
-                    await update(userRef, { CM: newCM });
-                    console.log('CM updated successfully.');
-                }
-            } catch (error) {
-                console.error('Error updating CM:', error);
-            }
+            await update(userRef, { CM: newCM });
+            console.log('CM updated successfully.');
         }
+    } catch (error) {
+        console.error('Error updating CM:', error);
+    }
+}
 
         function displayResult(winner, loser) {
             const resultContainer = document.getElementById('game-result');
@@ -1145,8 +1456,8 @@ function populateCharacterButtons(characters) {
             resultContainer.style.display = 'block';
         }
 
-        // New function to check character games
-        async function checkCharacterGames(characters) {
+// Function to check character games
+async function checkCharacterGames(characters) {
     if (!characters) return;
 
     for (const character in characters) {
@@ -1179,22 +1490,6 @@ function populateCharacterButtons(characters) {
         }
     }
 }
-
-document.getElementById('sticker-toggle').addEventListener('change', function() {
-            const stickerButtons = document.querySelectorAll('.sticker-button');
-            stickerButtons.forEach(button => {
-                button.style.display = this.checked ? 'none' : 'flex';
-            });
-            console.log(`Sticker buttons are now ${this.checked ? 'hidden' : 'visible'}`);
-        });
-
-        document.querySelectorAll('.sticker-button').forEach(button => {
-            button.addEventListener('click', function() {
-                const playerSlot = this.parentElement;
-                console.log(`Sticker button clicked for player slot: ${playerSlot.id}`);
-                openStickerWindow(playerSlot);
-            });
-        });
 
         async function openStickerWindow(playerSlot) {
             const stickerWindow = document.getElementById('sticker-window');
@@ -1246,7 +1541,403 @@ document.getElementById('sticker-toggle').addEventListener('change', function() 
                 console.log(`Sticker animation removed for sticker: ${sticker}`);
             }, 2500);
         }
+        function generatePickOrder() {
+    // Initialize arrays for each team's positions
+    const team1Positions = [1, 2, 3, 4, 5];
+    const team2Positions = [6, 7, 8, 9, 10];
+    
+    // Shuffle both arrays
+    shuffleArray(team1Positions);
+    shuffleArray(team2Positions);
+    
+    // Create the pick order following draft rules but with randomized positions
+    const pickOrder = [];
+    
+    // First round (1-2)
+    pickOrder.push(team1Positions[0]); // Team 1 first pick
+    pickOrder.push(team2Positions[0], team2Positions[1]); // Team 2 picks
+    
+    // Second round (2-2)
+    pickOrder.push(team1Positions[1], team1Positions[2]); // Team 1 picks
+    pickOrder.push(team2Positions[2]); // Team 2 pick
+    
+    // Third round (2-2)
+    pickOrder.push(team1Positions[3]); // Team 1 pick
+    pickOrder.push(team2Positions[3], team2Positions[4]); // Team 2 picks
+    
+    // Last pick
+    pickOrder.push(team1Positions[4]); // Team 1 last pick
+    
+    console.log('Generated randomized pick order:', pickOrder);
+    return pickOrder;
+}
 
+// Fisher-Yates shuffle algorithm
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+// Update the startPickPhase function to include logging
+async function startPickPhase() {
+    console.log('Starting pick phase');
+    
+    // Generate and validate pick order
+    pickOrder = generatePickOrder();
+    console.log('Pick order generated:', pickOrder);
+    
+    if (!validatePickOrder()) {
+        console.error('Invalid pick order generated');
+        return;
+    }
+    
+    // Show pick order indicators
+    showPickOrder();
+    
+    // Reset pick index
+    currentPickIndex = 0;
+    
+    // Enable the first pick
+    await processNextPick();
+}
+
+// Add a more detailed validation function
+function validatePickOrder() {
+    // Check if we have exactly 10 picks
+    if (pickOrder.length !== 10) {
+        console.error('Invalid pick order length:', pickOrder.length);
+        return false;
+    }
+
+    // Check if all numbers 1-10 are present
+    const numbers = new Set(pickOrder);
+    if (numbers.size !== 10) {
+        console.error('Duplicate numbers in pick order');
+        return false;
+    }
+
+    for (let i = 1; i <= 10; i++) {
+        if (!numbers.has(i)) {
+            console.error('Missing number in pick order:', i);
+            return false;
+        }
+    }
+
+    // Validate the pick pattern (1-2-2-2-2-1)
+    const team1Picks = pickOrder.filter(n => n <= 5).length;
+    const team2Picks = pickOrder.filter(n => n > 5).length;
+    
+    if (team1Picks !== 5 || team2Picks !== 5) {
+        console.error('Uneven team picks:', {team1: team1Picks, team2: team2Picks});
+        return false;
+    }
+
+    return true;
+}
+
+async function processNextPick() {
+    if (currentPickIndex >= pickOrder.length) {
+        console.log('All picks completed');
+        return;
+    }
+    
+    const currentPick = pickOrder[currentPickIndex];
+    const team = Math.ceil(currentPick / 5); // 1-5 is team 1, 6-10 is team 2
+    const slot = ((currentPick - 1) % 5) + 1;
+    
+    console.log(`Processing pick ${currentPickIndex + 1}, Pick Order Number: ${currentPick}, Team ${team}, Slot ${slot}`);
+    
+    // Highlight current pick
+    highlightCurrentPick();
+    
+    if (team === userTeam && slot === userSlot) {
+        console.log('User turn to pick');
+        enableUserPick();
+    } else {
+        console.log('AI turn to pick');
+        try {
+            await aiPick(currentPick);
+            // Wait for the pick animation
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Move to next pick
+            currentPickIndex++;
+            await processNextPick();
+        } catch (error) {
+            console.error('Error during AI pick:', error);
+        }
+    }
+}
+
+// Add this function to check if a champion is already picked
+function isChampionPicked(champion) {
+    const allSlots = document.querySelectorAll('.player-slot');
+    for (const slot of allSlots) {
+        const skinName = slot.querySelector('.skin-name')?.textContent;
+        if (skinName) {
+            const baseCharacter = skinToBaseCharacterMap[skinName] || skinName;
+            if (baseCharacter === champion) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+// Update the aiPick function to use the new helper function
+async function aiPick(pickNumber) {
+    if (aiPickInProgress) return;
+    aiPickInProgress = true;
+    
+    try {
+        const team = Math.ceil(pickNumber / 5);
+        const slot = ((pickNumber - 1) % 5) + 1;
+        
+        console.log(`AI picking for pick number ${pickNumber} (Team ${team}, Slot ${slot})`);
+        
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        const roleForSlot = ['Top', 'Jungle', 'Mid', 'Adc', 'Support'][slot - 1];
+        const availableChamps = roles[roleForSlot].filter(champ => {
+            return !bannedCharacters.includes(champ) && !isChampionPicked(champ);
+        });
+        
+        if (availableChamps.length === 0) {
+            console.error('No available champions for role:', roleForSlot);
+            return;
+        }
+        
+        const selectedChamp = availableChamps[Math.floor(Math.random() * availableChamps.length)];
+        const availableSkins = characters[selectedChamp];
+        const selectedSkin = availableSkins[Math.floor(Math.random() * availableSkins.length)];
+        
+        const playerSlot = document.getElementById(`team${team}-player${slot}`);
+        if (!playerSlot) {
+            console.error(`Could not find player slot for pick ${pickNumber}`);
+            return;
+        }
+
+        await selectSkin(playerSlot, selectedSkin);
+        applyRandomBordersAndBanners(playerSlot);
+        
+    } catch (error) {
+        console.error('Error in aiPick:', error);
+    } finally {
+        aiPickInProgress = false;
+    }
+}
+
+function applyRandomBordersAndBanners(playerSlot) {
+    const randomBorder = getRandomBorder();
+    const randomBanner = getRandomBanner();
+    
+    if (randomBorder) showBorder(playerSlot, randomBorder);
+    if (randomBanner) showBanner(playerSlot, randomBanner);
+}
+
+function getRandomBorder() {
+    const borders = [
+        { class: null, chance: 5 },
+        { class: 'silver-border', chance: 15 },
+        { class: 'gold-border', chance: 25 },
+        { class: 'emerald-border', chance: 45 },
+        { class: 'diamond-border', chance: 8 },
+        { class: 'challenger-border', chance: 2 }
+    ];
+    return getRandomItem(borders);
+}
+
+function getRandomBanner() {
+    const banners = [
+        { class: null, chance: 15 },
+        { class: 'banner1', chance: 30 },
+        { class: 'banner2', chance: 25 },
+        { class: 'banner3', chance: 25 },
+        { class: 'banner4', chance: 5 }
+    ];
+    return getRandomItem(banners);
+}
+
+function getRandomItem(items) {
+    const totalChance = items.reduce((sum, item) => sum + item.chance, 0);
+    const random = Math.random() * totalChance;
+    let cumulativeChance = 0;
+    
+    for (const item of items) {
+        cumulativeChance += item.chance;
+        if (random < cumulativeChance) {
+            return item.class;
+        }
+    }
+    return null;
+}
+
+function enableUserPick() {
+    const playerSlot = document.getElementById(`team${userTeam}-player${userSlot}`);
+    if (playerSlot) {
+        const button = playerSlot.querySelector('.choose-fighter-button');
+        if (button) {
+            button.style.pointerEvents = 'auto';
+            button.style.opacity = '1';
+            console.log('Enabled user pick button');
+        }
+    }
+}
+
+// Make selectRole globally available
+window.selectRole = selectRole;
+
+// Add this function to check if all picks are completed
+function checkAllPicksCompleted() {
+    const allSlots = document.querySelectorAll('.player-slot');
+    let allCompleted = true;
+    
+    allSlots.forEach(slot => {
+        const skinName = slot.querySelector('.skin-name').textContent;
+        if (!skinName) {
+            allCompleted = false;
+        }
+    });
+
+    const decideGameContainer = document.getElementById('decide-game-container');
+    const decideGameButton = document.getElementById('decide-game-button');
+    
+    if (allCompleted) {
+        decideGameContainer.style.display = 'block';
+        decideGameButton.style.pointerEvents = 'auto';
+        decideGameButton.style.opacity = '1';
+    } else {
+        decideGameContainer.style.display = 'none';
+        decideGameButton.style.pointerEvents = 'none';
+        decideGameButton.style.opacity = '0.5';
+    }
+}
+
+// Add these helper functions before the decide game button event listener
+
+async function handleMatchResult(userId, isWin) {
+    try {
+        // Update ranked win/loss counters
+        const winRef = ref(database, `users/${userId}/ranked win`);
+        const loseRef = ref(database, `users/${userId}/ranked lose`);
+        
+        if (isWin) {
+            await update(ref(database, `users/${userId}`), {
+                "ranked win": increment(1)
+            });
+        } else {
+            await update(ref(database, `users/${userId}`), {
+                "ranked lose": increment(1)
+            });
+        }
+
+        // Calculate and log win rate
+        const [winSnap, loseSnap] = await Promise.all([
+            get(winRef),
+            get(loseRef)
+        ]);
+
+        const wins = winSnap.val() || 0;
+        const losses = loseSnap.val() || 0;
+        const winRate = calculateWinRate(wins, losses);
+        console.log(`Player Win Rate: ${winRate}%`);
+
+    } catch (error) {
+        console.error('Error handling match result:', error);
+    }
+}
+
+function calculateWinRate(wins, losses) {
+    const totalGames = wins + losses;
+    if (totalGames === 0) return 0;
+    return ((wins / totalGames) * 100).toFixed(2);
+}
+
+// Add these functions before your decide game button event listener
+
+async function calculateWinProbability(team1, team2) {
+    const meta = await loadMeta(); // Load meta.json
+    let team1Score = 0;
+    let team2Score = 0;
+
+    team1.forEach(character => {
+        const baseCharacter = skinToBaseCharacterMap[character] || character;
+        team1Score += meta[baseCharacter] || 0;
+    });
+
+    team2.forEach(character => {
+        const baseCharacter = skinToBaseCharacterMap[character] || character;
+        team2Score += meta[baseCharacter] || 0;
+    });
+
+    // Apply a 15% advantage to the team with the lower score
+    const advantage = 0.15;
+    if (team1Score < team2Score) {
+        team1Score *= (1 + advantage);
+    } else if (team2Score < team1Score) {
+        team2Score *= (1 + advantage);
+    }
+
+    return team1Score > team2Score ? 'team1' : 'team2';
+}
+
+// Add this in the decide game button click handler, where other quest updates are happening:
+
+// Replace the existing quest updates with:
+async function updateQuestsAfterGame(userId, selectedCharacter, isWin) {
+    try {
+        // Update general game quests
+        await updateQuestProgress('play3games');
+        await updateQuestProgress('play15Games');
+
+        // Update Steampunk event quest
+        const steampunkChampions = ['Nina', 'Yugo', 'Mega Man', 'Kabal', 'Ibuki'];
+        if (steampunkChampions.includes(selectedCharacter)) {
+            await updateQuestProgress('playSteampunkChampions');
+        }
+
+        // Update Enchanter quest
+        const userRef = ref(database, `users/${userId}`);
+        const snapshot = await get(userRef);
+        const userData = snapshot.val();
+
+        // Get enchanter champions from roles
+        const enchanters = Object.keys(roles).reduce((acc, role) => {
+            if (role === 'Support') {
+                return [...acc, ...roles[role].filter(champion => {
+                    const championRoles = Roles[champion]?.toLowerCase() || '';
+                    return championRoles.includes('enchanter');
+                })];
+            }
+            return acc;
+        }, []);
+
+        if (enchanters.includes(selectedCharacter)) {
+            await updateQuestProgress('playEnchanterGames');
+        }
+
+    } catch (error) {
+        console.error('Error updating quests:', error);
+    }
+}
+
+// Then modify the decide game button click handler to include this:
+decideGameButton.addEventListener('click', async () => {
+    // ... existing code ...
+
+    // After processing the game result
+    const selectedSlot = document.querySelector('.player-slot.highlight');
+    const skinName = selectedSlot.querySelector('.skin-name').textContent;
+    const baseCharacter = skinToBaseCharacterMap[skinName] || skinName;
+    const isWin = winner === 'team1';
+
+    // Update quests
+    await updateQuestsAfterGame(userId, baseCharacter, isWin);
+
+    // ... rest of the existing code ...
+});
     </script>
     <style>
         body {
@@ -1797,38 +2488,173 @@ document.getElementById('sticker-toggle').addEventListener('change', function() 
         .close-sticker-window:hover {
             color: #ff4444;
         }
-        #user-only-checkbox-container {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-        }
-
-        #user-only-checkbox {
-            margin-right: 5px;
-        }
-        .highlight {
-            border: 2px solid yellow;
-        }
-        /* Style for the checkbox container */
-#team-mode-checkbox-container {
-    display: flex;
-    align-items: center;
-    margin-top: 10px;
+/* Rank Update Modal Styles */
+#rank-update-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    background-color: rgba(0, 0, 0, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
-/* Style for the checkbox */
-#team-mode-checkbox {
-    margin-right: 5px;
+#rank-update-modal .modal-content {
+    position: relative;
+    padding: 20px;
+    color: white;
+    text-align: center;
 }
 
-/* Style for the checkbox label */
-#team-mode-checkbox + label {
-    font-size: 16px;
+#rank-update-modal .close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+#rank-update-modal .close-modal:hover,
+#rank-update-modal .close-modal:focus {
     color: #fff;
 }
+.player-data {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 10px;
+        border-radius: 10px;
+        text-align: center;
+        z-index: 1;
+    }
+
+    .darkened {
+        filter: brightness(50%);
+    }
+
+    #role-selection-modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    #role-selection-modal .close-modal {
+        display: none; /* Hide close button to force role selection */
+    }
+
+    #role-selection-modal .modal-content {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #1a1a1a;
+        padding: 20px;
+        border-radius: 10px;
+        min-width: 300px;
+    }
+
+    .role-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .role-buttons button {
+        padding: 15px 30px;
+        font-size: 18px;
+        border: none;
+        border-radius: 5px;
+        background-color: #ffbb00;
+        color: white;
+        cursor: pointer;
+        transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .role-buttons button:hover {
+        transform: scale(1.05);
+        background-color: #ff8800;
+    }
+
+    .pick-order-indicator {
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        z-index: 2;
+    }
+
+    #decide-game-container {
+        display: none;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    #decide-game-button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        pointer-events: none;
+        opacity: 0.5;
+    }
+
+    #decide-game-button:hover {
+        background-color: #45a049;
+    }
+
+    /* Role Selection Modal specific styles */
+    #role-selection-modal .role-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    #role-selection-modal .role-buttons button {
+        padding: 15px 30px;
+        font-size: 18px;
+        border: none;
+        border-radius: 5px;
+        background-color: #ffbb00;
+        color: white;
+        cursor: pointer;
+        transition: transform 0.2s, background-color 0.2s;
+    }
+
+    #role-selection-modal .role-buttons button:hover {
+        transform: scale(1.05);
+        background-color: #ff8800;
+    }
+
+    #role-selection-modal h2 {
+        color: white;
+        text-align: center;
+        margin-bottom: 20px;
+    }
     </style>
 </head>
 <body>
@@ -1845,8 +2671,6 @@ document.getElementById('sticker-toggle').addEventListener('change', function() 
     <div class="play-button-container">
         <a href="Game Modes.html" class="play-button">Play</a>
     </div>
-    <input type="checkbox" id="sticker-toggle">
-</div>
     <div class="team-container" id="team1">
         <div class="player-slot" id="team1-player1">
             <div class="choose-fighter-button">Choose Your Fighter</div>
@@ -1934,6 +2758,13 @@ document.getElementById('sticker-toggle').addEventListener('change', function() 
         <button id="decide-game-button">Decide Game</button>
     </div>
 
+    <div id="rank-update-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <p id="rank-update-message"></p>
+        </div>
+    </div>
+
     <div id="game-result" style="display:none;"></div>
 
     <div id="skin-selection-modal">
@@ -1941,6 +2772,21 @@ document.getElementById('sticker-toggle').addEventListener('change', function() 
             <input type="text" id="skin-search" placeholder="Search skins">
             <div id="skin-container"></div>
             <button id="close-modal">&times;</button>
+        </div>
+    </div>
+
+    <!-- Role Selection Modal -->
+    <div id="role-selection-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Select Your Role</h2>
+            <div class="role-buttons">
+                <button onclick="selectRole('Top')">Top</button>
+                <button onclick="selectRole('Jungle')">Jungle</button>
+                <button onclick="selectRole('Mid')">Mid</button>
+                <button onclick="selectRole('Adc')">ADC</button>
+                <button onclick="selectRole('Support')">Support</button>
+            </div>
         </div>
     </div>
 </body>

@@ -1,4 +1,4 @@
-import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js";
+import { getDatabase, ref, get, set, update, increment } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js";
 import { getAllRecolors } from './recolor-data.js';
 
@@ -105,8 +105,16 @@ const adventRewards = {
         image: "res/img/rewards/mystery_icon.jpg",
         isRandomIcon: true,
         icons: [
-            { name: "Santa Kuma Icon", image: "Icons/Profile/santa_kuma.jpeg", iconName: "santa_kuma" },
-            { name: "Santa Panda Icon", image: "Icons/Profile/santa_panda.jpeg", iconName: "santa_panda" }
+            { 
+                name: "Santa Kuma Icon", 
+                image: "Icons/Profile/santa_kuma.jpeg", 
+                iconName: "santa_kuma" 
+            },
+            { 
+                name: "Santa Panda Icon", 
+                image: "Icons/Profile/santa_panda.jpeg", 
+                iconName: "santa_panda" 
+            }
         ]
     },
     8: {
@@ -133,6 +141,88 @@ const adventRewards = {
         name: "Random Recolor Skin",
         image: "res/img/rewards/mystery_skin.jpg",
         isRecolor: true
+    },
+    10: {
+        name: "Random FM",
+        image: "res/img/fm.png",
+        isRandom: true,
+        rewards: [
+            { type: 'FM', amount: 500, chance: 65, image: 'res/img/fm.png', name: '500 FM' },
+            { type: 'FM', amount: 1000, chance: 20, image: 'res/img/fm.png', name: '1000 FM' },
+            { type: 'FM', amount: 2000, chance: 15, image: 'res/img/fm.png', name: '2000 FM' }
+        ]
+    },
+    11: {
+        name: "Random Skin Recolor",
+        image: "res/img/rewards/mystery_skin.jpg",
+        isRecolor: true
+    },
+    12: {
+        name: "Santa Claus Title",
+        image: "res/img/rewards/title.jpg",
+        type: 'TITLE',
+        titleName: 'Santa Claus'
+    },
+    13: {
+        name: "Free Lootbox",
+        image: "res/img/basicbox.png",
+        type: 'LOOTBOX',
+        folder: 'freelootbox'
+    },
+    14: {
+        name: "Winter Mega Man Icon",
+        image: "Icons/Profile/winter_megaman.jpeg",
+        folder: 'Icons',
+        iconName: 'winter_megaman'
+    },
+    15: {
+        name: "10,000 CM",
+        image: "res/img/cm.png",
+        type: 'CM',
+        amount: 10000
+    },
+    16: {
+        name: "Chibi Sub Zero Winter Sticker",
+        image: "Stickers/chibi_subzero_winter.png",
+        type: 'STICKER',
+        stickerName: 'chibi_subzero_winter'
+    },
+    17: {
+        name: "Random Skin Recolor",
+        image: "res/img/rewards/mystery_skin.jpg",
+        isRecolor: true
+    },
+    18: {
+        name: "Chibi Cham Cham Winter Icon",
+        image: "Icons/Profile/chibi_chamcham_winter.jpeg",
+        folder: 'Icons',
+        iconName: 'chibi_chamcham_winter'
+    },
+    19: {
+        name: "Random Currency",
+        image: "res/img/rewards/mystery_currency.jpg",
+        isRandom: true,
+        rewards: [
+            { type: 'CM', amount: 10000, chance: 50, image: 'res/img/cm.png', name: '10,000 CM' },
+            { type: 'FM', amount: 1000, chance: 50, image: 'res/img/fm.png', name: '1000 FM' }
+        ]
+    },
+    20: {
+        name: "Snowflake Title",
+        image: "res/img/rewards/title.jpg",
+        type: 'TITLE',
+        titleName: 'Snowflake'
+    },
+    21: {
+        name: "Random Skin Recolor",
+        image: "res/img/rewards/mystery_skin.jpg",
+        isRecolor: true
+    },
+    22: {
+        name: "Free Lootbox",
+        image: "res/img/basicbox.png",
+        type: 'LOOTBOX',
+        folder: 'freelootbox'
     }
 };
 
@@ -195,214 +285,101 @@ async function showReward(day) {
         const rewardName = document.getElementById('reward-name');
         
         try {
-            if (day === 4 && reward.isRandom) {
-                const selectedReward = getRandomReward(reward.rewards);
+            if (reward.type === 'TITLE') {
+                // Handle title rewards
+                rewardName.textContent = `New Title: ${reward.titleName}`;
+                rewardImage.src = reward.image;
                 
-                if (selectedReward.type === 'SKIN') {
-                    // Handle random skin reward
-                    const randomSkin = await getRandomUnownedSkin(user.uid);
-                    if (randomSkin) {
-                        rewardName.textContent = `New Skin: ${randomSkin}`;
-                        
-                        // Try to load the skin image
-                        const loadImage = async (skinName) => {
-                            for (let fileType of ['.png', '.jpg', '.jpeg']) {
-                                const imageUrl = `Skins/${skinName}${fileType}`;
-                                try {
-                                    const response = await fetch(imageUrl);
-                                    if (response.ok) {
-                                        rewardImage.src = imageUrl;
-                                        return;
-                                    }
-                                } catch (error) {
-                                    console.error(`Failed to fetch ${imageUrl}: ${error}`);
-                                }
-                            }
-                            rewardImage.src = selectedReward.image;
-                        };
-
-                        await loadImage(randomSkin);
-                        
-                        // Save skin to user's collection
-                        await update(ref(db), {
-                            [`users/${user.uid}/skins/${randomSkin}`]: 1,
-                            [`users/${user.uid}/advent2024/day${day}`]: true
-                        });
-                    } else {
-                        // If user owns all skins, give CM instead
-                        rewardName.textContent = "All skins owned! Here's 15,000 CM instead";
-                        rewardImage.src = 'res/img/cm.png';
-                        
-                        const userRef = ref(db, `users/${user.uid}`);
-                        const snapshot = await get(userRef);
-                        const currentCM = (snapshot.val()?.CM || 0) + 15000;
-                        
-                        await update(ref(db), {
-                            [`users/${user.uid}/CM`]: currentCM,
-                            [`users/${user.uid}/advent2024/day${day}`]: true
-                        });
-                    }
-                } else {
-                    // Handle CM or FM reward
-                    rewardName.textContent = selectedReward.name;
-                    rewardImage.src = selectedReward.image;
-                    
-                    const userRef = ref(db, `users/${user.uid}`);
-                    const snapshot = await get(userRef);
-                    const userData = snapshot.val() || {};
-                    
-                    const updates = {
-                        [`users/${user.uid}/advent2024/day${day}`]: true
-                    };
-                    
-                    if (selectedReward.type === 'CM') {
-                        updates[`users/${user.uid}/CM`] = (userData.CM || 0) + selectedReward.amount;
-                    } else {
-                        updates[`users/${user.uid}/FM`] = (userData.FM || 0) + selectedReward.amount;
-                    }
-                    
-                    await update(ref(db), updates);
-                }
-            } else if (day === 6 && reward.isRandomSticker) {
-                // Randomly select one of the stickers
-                const randomIndex = Math.floor(Math.random() * reward.stickers.length);
-                const selectedSticker = reward.stickers[randomIndex];
-                
-                rewardName.textContent = selectedSticker.name;
-                rewardImage.src = selectedSticker.image;
-                
-                // Save sticker to user's collection
-                const updates = {
-                    [`users/${user.uid}/Stickers/${selectedSticker.stickerName}`]: 1,
+                // Save title to user's collection
+                await update(ref(db), {
+                    [`users/${user.uid}/Titles/${reward.titleName}`]: 1,
                     [`users/${user.uid}/advent2024/day${day}`]: true
-                };
-                
-                await update(ref(db), updates);
-            } else if (day === 7 && reward.isRandomIcon) {
-                // Randomly select one of the icons
-                const randomIndex = Math.floor(Math.random() * reward.icons.length);
-                const selectedIcon = reward.icons[randomIndex];
-                
-                rewardName.textContent = selectedIcon.name;
-                rewardImage.src = selectedIcon.image;
-                
-                // Save icon to user's collection
-                const updates = {
-                    [`users/${user.uid}/Icons/${selectedIcon.iconName}`]: 1,
-                    [`users/${user.uid}/advent2024/day${day}`]: true
-                };
-                
-                await update(ref(db), updates);
-            } else if (day === 8 && reward.isRandomBox) {
-                const selectedReward = getRandomReward(reward.rewards);
-                
-                if (selectedReward.type === 'SKIN') {
-                    // Handle random skin reward
-                    const randomSkin = await getRandomUnownedSkin(user.uid);
-                    if (randomSkin) {
-                        rewardName.textContent = `New Skin: ${randomSkin}`;
-                        
-                        // Try to load the skin image
-                        const loadImage = async (skinName) => {
-                            for (let fileType of ['.png', '.jpg', '.jpeg']) {
-                                const imageUrl = `Skins/${skinName}${fileType}`;
-                                try {
-                                    const response = await fetch(imageUrl);
-                                    if (response.ok) {
-                                        rewardImage.src = imageUrl;
-                                        return;
-                                    }
-                                } catch (error) {
-                                    console.error(`Failed to fetch ${imageUrl}: ${error}`);
-                                }
-                            }
-                            rewardImage.src = selectedReward.image;
-                        };
-
-                        await loadImage(randomSkin);
-                        
-                        // Save skin to user's collection
-                        await update(ref(db), {
-                            [`users/${user.uid}/skins/${randomSkin}`]: 1,
-                            [`users/${user.uid}/advent2024/day${day}`]: true
-                        });
-                    } else {
-                        // If user owns all skins, give lootbox instead
-                        rewardName.textContent = "All skins owned! Here's a Free Lootbox instead";
-                        rewardImage.src = 'res/img/basicbox.png';
-                        
-                        await update(ref(db), {
-                            [`users/${user.uid}/freelootbox/basicbox`]: 1,
-                            [`users/${user.uid}/advent2024/day${day}`]: true
-                        });
-                    }
-                } else {
-                    // Handle lootbox reward
-                    rewardName.textContent = selectedReward.name;
-                    rewardImage.src = selectedReward.image;
-                    
-                    await update(ref(db), {
-                        [`users/${user.uid}/${selectedReward.folder}/basicbox`]: 1,
-                        [`users/${user.uid}/advent2024/day${day}`]: true
-                    });
-                }
-            } else if (day === 9 && reward.isRecolor) {
-                // Get user's owned skins
+                });
+            } else if (reward.type === 'FM') {
+                // Handle FM reward
                 const userRef = ref(db, `users/${user.uid}`);
                 const snapshot = await get(userRef);
-                const userData = snapshot.val();
-                const ownedSkins = userData.skins || {};
+                const currentFM = (snapshot.val()?.FM || 0) + reward.amount;
                 
-                // Get all possible recolors and filter out owned ones
-                const availableRecolors = getAllRecolors();
-                const unownedRecolors = availableRecolors.filter(skin => !ownedSkins[skin]);
+                await update(ref(db), {
+                    [`users/${user.uid}/FM`]: currentFM,
+                    [`users/${user.uid}/advent2024/day${day}`]: true
+                });
                 
-                if (unownedRecolors.length === 0) {
-                    // If user owns all recolors, give CM instead
-                    rewardName.textContent = "All recolors owned! Here's 15,000 CM instead";
-                    rewardImage.src = 'res/img/cm.png';
-                    
-                    const currentCM = (userData.CM || 0) + 15000;
-                    
+                rewardName.textContent = reward.name;
+                rewardImage.src = reward.image;
+            } else if (reward.type === 'CM') {
+                // Handle CM reward
+                const userRef = ref(db, `users/${user.uid}`);
+                const snapshot = await get(userRef);
+                const currentCM = (snapshot.val()?.CM || 0) + reward.amount;
+                
+                await update(ref(db), {
+                    [`users/${user.uid}/CM`]: currentCM,
+                    [`users/${user.uid}/advent2024/day${day}`]: true
+                });
+                
+                rewardName.textContent = reward.name;
+                rewardImage.src = reward.image;
+            } else if (reward.type === 'STICKER') {
+                // Handle sticker reward
+                await update(ref(db), {
+                    [`users/${user.uid}/Stickers/${reward.stickerName}`]: 1,
+                    [`users/${user.uid}/advent2024/day${day}`]: true
+                });
+                
+                rewardName.textContent = reward.name;
+                rewardImage.src = reward.image;
+            } else if (reward.type === 'LOOTBOX') {
+                // Handle lootbox reward
+                await update(ref(db), {
+                    [`users/${user.uid}/inventory/${reward.folder}`]: increment(1),
+                    [`users/${user.uid}/advent2024/day${day}`]: true
+                });
+                
+                rewardName.textContent = reward.name;
+                rewardImage.src = reward.image;
+            } else if (reward.isRandom) {
+                // Handle random rewards
+                const selectedReward = getRandomReward(reward.rewards);
+                rewardName.textContent = selectedReward.name;
+                rewardImage.src = selectedReward.image;
+
+                if (selectedReward.type === 'CM') {
+                    const userRef = ref(db, `users/${user.uid}`);
+                    const snapshot = await get(userRef);
+                    const currentCM = (snapshot.val()?.CM || 0) + selectedReward.amount;
                     await update(ref(db), {
                         [`users/${user.uid}/CM`]: currentCM,
                         [`users/${user.uid}/advent2024/day${day}`]: true
                     });
-                } else {
-                    // Select random unowned recolor
-                    const randomIndex = Math.floor(Math.random() * unownedRecolors.length);
-                    const selectedRecolor = unownedRecolors[randomIndex];
-                    
-                    rewardName.textContent = `New Skin: ${selectedRecolor}`;
-                    
-                    // Try to load the skin image
-                    const loadImage = async (skinName) => {
-                        for (let fileType of ['.png', '.jpg', '.jpeg']) {
-                            const imageUrl = `Skins/${skinName}${fileType}`;
-                            try {
-                                const response = await fetch(imageUrl);
-                                if (response.ok) {
-                                    rewardImage.src = imageUrl;
-                                    return;
-                                }
-                            } catch (error) {
-                                console.error(`Failed to fetch ${imageUrl}: ${error}`);
-                            }
-                        }
-                        rewardImage.src = reward.image;
-                    };
-
-                    await loadImage(selectedRecolor);
-                    
-                    // Save recolor to user's collection
+                } else if (selectedReward.type === 'FM') {
+                    const userRef = ref(db, `users/${user.uid}`);
+                    const snapshot = await get(userRef);
+                    const currentFM = (snapshot.val()?.FM || 0) + selectedReward.amount;
                     await update(ref(db), {
-                        [`users/${user.uid}/skins/${selectedRecolor}`]: 1,
+                        [`users/${user.uid}/FM`]: currentFM,
                         [`users/${user.uid}/advent2024/day${day}`]: true
                     });
                 }
-            } else {
-                // Handle other days' rewards (existing logic)
-                // ... rest of the existing reward handling code ...
+            } else if (reward.isRecolor) {
+                // Handle recolor rewards
+                const recolors = await getAvailableRecolors();
+                if (!recolors || recolors.length === 0) {
+                    alert('No recolors available');
+                    return;
+                }
+                
+                const randomIndex = Math.floor(Math.random() * recolors.length);
+                const selectedRecolor = recolors[randomIndex];
+                
+                rewardName.textContent = `New Recolor: ${selectedRecolor}`;
+                rewardImage.src = `Skins/${selectedRecolor}.png`;
+                
+                await update(ref(db), {
+                    [`users/${user.uid}/skins/${selectedRecolor}`]: 1,
+                    [`users/${user.uid}/advent2024/day${day}`]: true
+                });
             }
 
             // Update the calendar day visual

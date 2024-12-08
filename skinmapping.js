@@ -412,4 +412,13 @@ export const skinToBaseCharacterMap = {
     'Yugo Blood Hunter': 'Yugo',
     'Yugo Night': 'Yugo',
     'Yugo Silver Wolf': 'Yugo',
+    'Steamcore MegaMan': 'Mega Man',
+    'Steamcore MegaMan Copper': 'Mega Man',
+    'Steamcore MegaMan Golden': 'Mega Man',
+    'Steamcore MegaMan Silver': 'Mega Man',
+    'Steamcore MegaMan Metal': 'Mega Man',
+    'Steampunk Ibuki': 'Ibuki',
+    'Steamforged Nina': 'Nina',
+    'Steamforged Kabal': 'Kabal',
+    'Steamforged Yugo': 'Yugo',
 };

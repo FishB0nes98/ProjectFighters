@@ -12,58 +12,63 @@
             padding: 0;
         }
         .menu {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 0;
-        }
-        .menu-items {
-            display: flex;
-            justify-content: center;
-            position: relative;
-        }
-        .menu a {
-            color: white;
-            text-decoration: none;
-            padding: 14px 16px;
-            font-family: 'Roboto', sans-serif;
-            font-size: 16px;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        .menu a:hover {
-            background-color: #111;
-            transform: scale(1.1);
-        }
-        .play-button-container {
-            display: flex;
-            justify-content: flex-start;
-            padding: 20px;
-            z-index: auto;
-            position: fixed;
-        }
-        .play-button {
-            background-color: #ffbb00;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-size: 22px;
-            font-weight: bold;
-            text-decoration: none;
-            padding: 15px 40px;
-            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            z-index: 1;
-            top: 5px;
-            position: fixed;
-            left: 0px;
-        }
-        .play-button:hover {
-            background-color: #ff8800;
-            transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-        }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 0;
+}
+
+.menu-items {
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+.menu a {
+    color: white;
+    text-decoration: none;
+    padding: 14px 16px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.menu a:hover {
+    background-color: #111;
+    transform: scale(1.1);
+}
+.play-button-container {
+    display: flex;
+    justify-content: flex-start;
+    padding: 20px;
+    z-index: auto;
+    position: fixed;
+}
+
+.play-button {
+    background-color: #ffbb00;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 22px;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 15px 40px;
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+    top: 5px;
+    position: fixed;
+    left: 0px;
+}
+
+.play-button:hover {
+    background-color: #ff8800;
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
         .currency {
             position: fixed;
             text-align: right;
@@ -339,9 +344,17 @@
             const bundleName = item.dataset.bundleName;
             const button = item.querySelector('button');
             if (Bundles[bundleName] || 
-                (bundleName === 'HighElfEagle' && skins['High Elf Eagle'] === 1) ||
-                (bundleName === 'GothSophitiaCMSale' && skins['Goth Sophitia'] === 1) ||
-                (bundleName === 'RandomRecolorDuoPack6' && skins['Shadowbane Ayane Red Hood'] === 1 && skins['Voidborn Nina Warlock'] === 1)) {
+                (bundleName === 'WindwoodTalim' && skins['Windwood Talim'] === 1) ||
+                (bundleName === 'RainyDayRMikaCMSale' && skins['Rainy Day R Mika'] === 1) ||
+                (bundleName === 'RandomRecolorDuoPack6' && 
+                    skins['Rainy Day R Mika Moss'] === 1 && 
+                    skins['Pajama Party Cham Cham Cotton Candy'] === 1) ||
+                (bundleName === 'SteampunkBundle' && 
+                    skins['Steamcore Megaman'] === 1 && 
+                    skins['Steampunk Ibuki'] === 1 && 
+                    skins['Steamforged Nina'] === 1 && 
+                    skins['Steamforged Kabal'] === 1 && 
+                    skins['Steamforged Yugo'] === 1)) {
                 button.disabled = true;
                 button.textContent = 'Owned';
             }
@@ -380,28 +393,29 @@
         const userCurrencyElement = document.getElementById(`${currencyType.toLowerCase()}-amount`);
 
         // Check if the user already owns the High Elf Eagle skin
-        if (bundleName === 'HighElfEagle') {
-            const skinSnapshot = await get(ref(window.userRef, 'skins/High Elf Eagle'));
+        if (bundleName === 'WindwoodTalim') {
+            const skinSnapshot = await get(ref(window.userRef, 'skins/Windwood Talim'));
             if (skinSnapshot.exists() && skinSnapshot.val() === 1) {
-                alert('You already own the High Elf Eagle skin.');
+                alert('You already own the Windwood Talim skin.');
                 return;
             }
         }
 
-        // Check if the user already owns the Goth Sophitia skin
-        if (bundleName === 'GothSophitiaCMSale') {
-            const skinSnapshot = await get(ref(window.userRef, 'skins/Goth Sophitia'));
+        // Check if the user already owns the Rainy Day R Mika skin
+        if (bundleName === 'RainyDayRMikaCMSale') {
+            const skinSnapshot = await get(ref(window.userRef, 'skins/Rainy Day R Mika'));
             if (skinSnapshot.exists() && skinSnapshot.val() === 1) {
-                alert('You already own the Goth Sophitia skin.');
+                alert('You already own the Rainy Day R Mika skin.');
                 return;
             }
         }
 
         // Check if the user already owns the skins in the Random Recolor Duo Pack
         if (bundleName === 'RandomRecolorDuoPack6') {
-            const skin1Snapshot = await get(ref(window.userRef, 'skins/Voidborn Nina Warlock'));
-            const skin2Snapshot = await get(ref(window.userRef, 'skins/Shadowbane Ayane Red Hood'));
-            if (skin1Snapshot.exists() && skin1Snapshot.val() === 1 && skin2Snapshot.exists() && skin2Snapshot.val() === 1) {
+            const skin1Snapshot = await get(ref(window.userRef, 'skins/Rainy Day R Mika Moss'));
+            const skin2Snapshot = await get(ref(window.userRef, 'skins/Pajama Party Cham Cham Cotton Candy'));
+            if (skin1Snapshot.exists() && skin1Snapshot.val() === 1 && 
+                skin2Snapshot.exists() && skin2Snapshot.val() === 1) {
                 alert('You already own the skins in the Random Recolor Duo Pack.');
                 return;
             }
@@ -433,34 +447,33 @@
             }
 
             // Add High Elf Eagle to the Skins database for Bundle 2
-            if (bundleName === 'HighElfEagle') {
-                updates[`skins/High Elf Eagle`] = 1; // Adding the skin to the Skins folder with a value of 1
+            if (bundleName === 'WindwoodTalim') {
+                updates[`skins/Windwood Talim`] = 1; // Adding the skin to the Skins folder with a value of 1
             }
 
-            // Add Medieval Event Bundle skins to the Skins database for Bundle 3
-            if (bundleName === 'FarmerBundle') {
+            // Add Steampunk Bundle skins to the Skins database
+            if (bundleName === 'SteampunkBundle') {
                 const skins = [
-                    'Farmer Cham Cham',
-                    'Farmer Alice',
-                    'Farmer FANG',
-                    'Farmer Raiden',
-                    'Farmer Shoma',
-                    'Farmer Nina',
+                    'Steamcore Megaman',
+                    'Steampunk Ibuki',
+                    'Steamforged Nina',
+                    'Steamforged Kabal',
+                    'Steamforged Yugo'
                 ];
                 skins.forEach(skin => {
-                    updates[`skins/${skin}`] = 1; // Adding each skin to the Skins folder with a value of 1
+                    updates[`skins/${skin}`] = 1;
                 });
             }
 
-            // Add Goth Sophitia to the Skins database for the CM Sale bundle
-            if (bundleName === 'GothSophitiaCMSale') {
-                updates[`skins/Goth Sophitia`] = 1; // Adding the skin to the Skins folder with a value of 1
+            // Add Rainy Day R Mika to the Skins database for the CM Sale bundle
+            if (bundleName === 'RainyDayRMikaCMSale') {
+                updates[`skins/Rainy Day R Mika`] = 1; // Adding the skin to the Skins folder with a value of 1
             }
 
             // Add Random Recolor Duo Pack skins to the Skins database
             if (bundleName === 'RandomRecolorDuoPack6') {
-                updates[`skins/Shadowbane Ayane Red Hood`] = 1; // Adding the skin to the Skins folder with a value of 1
-                updates[`skins/Voidborn Nina Warlock`] = 1; // Adding the skin to the Skins folder with a value of 1
+                updates[`skins/Rainy Day R Mika Moss`] = 1;
+                updates[`skins/Pajama Party Cham Cham Cotton Candy`] = 1;
             }
 
             await update(window.userRef, updates);
@@ -495,19 +508,18 @@
             Your browser does not support the video tag.
         </video>
 
-    <!-- Menu -->
-    <div class="menu">
-        <div class="menu-items">
-            <a href="home.html">Home</a>
-            <a href="Store.html">Store</a>
-            <a href="event.html">Event</a>
-            <a href="Team Builder.html">Team Builder</a>
-            <a href="statistics.html">Statistics</a>
+        <div class="menu">
+            <div class="menu-items">
+                <a href="home.html">Home</a>
+                <a href="Store.html">Store</a>
+                <a href="event.html">Event</a>
+                <a href="Team Builder.html">Team Builder</a>
+                <a href="statistics.html">Statistics</a>
+            </div>
         </div>
-    </div>
-    <div class="play-button-container">
-        <a href="Game Modes.html" class="play-button">Play</a>
-    </div>
+        <div class="play-button-container">
+            <a href="Game Modes.html" class="play-button">Play</a>
+        </div>
     <div class="buy-fm-container">
         <button class="buy-fm-button" onclick="openBuyFMWindow()">Buy FM</button>
     </div>
@@ -578,54 +590,70 @@
             </div>
             <button onclick="purchaseBundle(this)">Buy</button>
         </div>
-        <div class="bundle-item" data-bundle-name="HighElfEagle">
-            <div class="bundle-name" style="color: white; font-weight: bold;">High Elf Eagle 70% SALE</div>
+        <div class="bundle-item" data-bundle-name="WindwoodTalim">
+            <div class="bundle-name" style="color: white; font-weight: bold;">Windwood Talim 70% SALE</div>
             <div class="image-container">
-                <img src="Skins/High Elf Eagle.png" alt="High Elf Eagle" style="margin-top: 10px;">
+                <img src="Skins/Windwood Talim.jpeg" alt="Windwood Talim" style="margin-top: 10px;">
             </div>
             <div class="price">
                 <img src="res/img/fm.png" alt="FM" style="margin-top: 10px;">
                 <span style="color: white; font-weight: bold;">600</span>
             </div>
             <button onclick="purchaseBundle(this)">Buy</button>
-    </div>
-    <div class="bundle-item" data-bundle-name="FarmerBundle">
-        <div class="bundle-name" style="color: white; font-weight: bold;">Farmer Bundle (+Nina and Shoma) (6 Skins)</div>
-        <div class="images-grid">
-            <img src="Loading Screen/Farmer Cham Cham.png" alt="Farmer Cham Cham" style="width: 80%;">
-            <img src="Loading Screen/Farmer Alice.png" alt="Farmer Alice" style="width: 80%;">
-            <img src="Loading Screen/Farmer FANG.png" alt="Farmer FANG" style="width: 80%;">
-            <img src="Loading Screen/Farmer Raiden.png" alt="Farmer Raiden" style="width: 80%;">
         </div>
-        <div class="price">
-            <img src="res/img/fm.png" alt="FM">
-            <span style="color: white; font-weight: bold;">7000</span>
+        <div class="bundle-item" data-bundle-name="SteampunkBundle">
+            <div class="bundle-name" style="color: white; font-weight: bold;">Steampunk Bundle (5 Skins)</div>
+            <div class="images-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px;">
+                <div class="image-wrapper" style="position: relative; padding-bottom: 56.25%;">
+                    <img src="Skins/Steamcore Megaman.jpeg" alt="Steamcore Megaman" 
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
+                </div>
+                <div class="image-wrapper" style="position: relative; padding-bottom: 56.25%;">
+                    <img src="Skins/Steampunk Ibuki.jpeg" alt="Steampunk Ibuki" 
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
+                </div>
+                <div class="image-wrapper" style="position: relative; padding-bottom: 56.25%;">
+                    <img src="Skins/Steamforged Nina.jpeg" alt="Steamforged Nina" 
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
+                </div>
+                <div class="image-wrapper" style="position: relative; padding-bottom: 56.25%;">
+                    <img src="Skins/Steamforged Kabal.jpeg" alt="Steamforged Kabal" 
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
+                </div>
+                <div class="image-wrapper" style="position: relative; padding-bottom: 56.25%; grid-column: span 2;">
+                    <img src="Skins/Steamforged Yugo.jpeg" alt="Steamforged Yugo" 
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
+                </div>
+            </div>
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span style="color: white; font-weight: bold;">6000</span>
+            </div>
+            <button onclick="purchaseBundle(this)">Buy</button>
         </div>
-        <button onclick="purchaseBundle(this)">Buy</button>
-    </div>
-    <div class="bundle-item" data-bundle-name="GothSophitiaCMSale">
-        <div class="bundle-name" style="color: white; font-weight: bold;">Goth Sophitia CM Sale</div>
-        <div class="image-container">
-            <img src="Skins/Goth Sophitia.png" alt="Goth Sophitia" style="margin-top: 10px;">
+        <div class="bundle-item" data-bundle-name="RainyDayRMikaCMSale">
+            <div class="bundle-name" style="color: white; font-weight: bold;">Rainy Day R Mika CM Sale</div>
+            <div class="image-container">
+                <img src="Skins/Rainy Day R Mika.jpeg" alt="Rainy Day R Mika" style="margin-top: 10px;">
+            </div>
+            <div class="price">
+                <img src="res/img/cm.png" alt="CM" style="margin-top: 10px;">
+                <span style="color: white; font-weight: bold;">100000</span>
+            </div>
+            <button onclick="purchaseBundle(this)">Buy</button>
         </div>
-        <div class="price">
-            <img src="res/img/cm.png" alt="CM" style="margin-top: 10px;">
-            <span style="color: white; font-weight: bold;">100000</span>
+        <div class="bundle-item" data-bundle-name="RandomRecolorDuoPack6">
+            <div class="bundle-name" style="color: white; font-weight: bold;">Random Recolor Duo Pack</div>
+            <div class="images-grid">
+                <img src="Loading Screen/Rainy Day R Mika Moss.png" alt="Rainy Day R Mika Moss" style="width: 80%;">
+                <img src="Loading Screen/Pajama Party Cham Cham Cotton Candy.png" alt="Pajama Party Cham Cham Cotton Candy" style="width: 80%;">
+            </div>
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span style="color: white; font-weight: bold;">750</span>
+            </div>
+            <button onclick="purchaseBundle(this)">Buy</button>
         </div>
-        <button onclick="purchaseBundle(this)">Buy</button>
-    </div>
-    <div class="bundle-item" data-bundle-name="RandomRecolorDuoPack6">
-        <div class="bundle-name" style="color: white; font-weight: bold;">Random Recolor Duo Pack</div>
-        <div class="images-grid">
-            <img src="Loading Screen/Shadowbane Ayane Red Hood.png" alt="Shadowbane Ayane Red Hood" style="width: 80%;">
-            <img src="Loading Screen/Voidborn Nina Warlock.png" alt="Voidborn Nina Warlock" style="width: 80%;">
-        </div>
-        <div class="price">
-            <img src="res/img/fm.png" alt="FM">
-            <span style="color: white; font-weight: bold;">750</span>
-        </div>
-        <button onclick="purchaseBundle(this)">Buy</button>
-    </div>
 
     <script>
         window.onload = function() {

@@ -1,4 +1,8 @@
 const recolorData = {
+    "Steamcore MegaMan": {
+        base: "Steamcore MegaMan",
+        recolors: ["Copper", "Silver"]
+    },
     "Sacred Ceremony Julia": {
         base: "Sacred Ceremony Julia",
         recolors: ["Sweetheart", "Black Velvet", "Champagne", "Romance"]

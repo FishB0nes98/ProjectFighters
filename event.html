@@ -7,15 +7,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet"> <!-- Updated for sacredceremony theme -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         body {
             margin: 0;
             padding: 0;
-            background: url('Event/Farmer Event.jpeg') no-repeat center center fixed; /* Updated to sacredceremony Event */
+            background: url('Event/Steampunk Event.png') no-repeat center center fixed;
             background-size: cover;
-            color: #6B4226; /* Earthy Brown */
-            font-family: 'Amatic SC', cursive; /* Rustic font */
+            color: #FFD700;
+            font-family: 'Orbitron', sans-serif;
             transition: background-image 0.5s ease-in-out;
         }
         h1, h2 {
@@ -216,36 +218,45 @@
             align-items: center;
             justify-content: center;
             padding: 10px;
-            width: 200px; /* Adjust the width as needed */
-            flex-direction: column; /* Stack image and text vertically */
+            width: 200px;
+            flex-direction: column;
         }
 
         .battlepass-button img {
-            width: 250px; /* Adjust the size as needed */
+            width: 250px;
             height: 100px;
             transition: transform 0.3s, box-shadow 0.3s;
-            position: absolute; /* Position image absolutely */
-            z-index: -1; /* Place image behind the text */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Add shadow for a modern effect */
-            border-radius: 10px; /* Slightly rounded corners for a modern look */
-            animation: float 5s ease-in-out infinite; /* Add floating animation */
+            position: absolute;
+            z-index: -1;
+            box-shadow: 0 0 20px rgba(184, 115, 51, 0.5); /* Copper glow */
+            border-radius: 10px;
+            animation: float 5s ease-in-out infinite;
         }
 
         .battlepass-button span {
-            color: #6B4226; /* Earthy Brown */
-            font-size: 24px; /* Slightly larger font size */
+            color: #FFD700; /* Metallic gold */
+            font-size: 28px;
             font-weight: bold;
-            margin-top: 10px; /* Adjust margin to position text */
-            transition: transform 0.3s;
-            z-index: 1; /* Ensure text is above the image */
-            font-family: 'Amatic SC', cursive; /* Rustic font */
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add shadow for a fancy effect */
-            animation: float 5s ease-in-out infinite; /* Add floating animation */
+            margin-top: 10px;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 
+                0 0 5px #B87333,
+                0 0 10px #B87333;
+            letter-spacing: 2px;
+            animation: steamGlow 2s infinite;
+            text-transform: uppercase;
         }
 
-        .battlepass-button span:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        .battlepass-button:hover img {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(184, 115, 51, 0.7);
+        }
+
+        .battlepass-button:hover span {
+            color: #FFA500;
+            text-shadow: 
+                0 0 10px #B87333,
+                0 0 20px #B87333;
         }
 
         /* New Styles for Event Buttons */
@@ -393,6 +404,73 @@
                 font-size: 36px;
             }
         }
+
+        .steampunk-section {
+            background: url('Event/Steampunk Event.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            color: #FFD700;
+            font-family: 'Orbitron', sans-serif;
+            position: relative;
+        }
+
+        .steampunk-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 0;
+        }
+
+        .steampunk-section > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .steampunk-section h1 {
+            font-size: 72px;
+            color: #FFD700; /* Metallic gold */
+            text-shadow: 
+                0 0 10px #B87333,
+                0 0 20px #B87333,
+                0 0 30px #B87333;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            animation: steamGlow 2s infinite;
+        }
+
+        .steampunk-gallery .skin-item {
+            margin: 40px;
+        }
+
+        .steampunk-gallery .skin-name {
+            color: #FFD700; /* Metallic gold */
+            font-size: 24px;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 
+                0 0 5px #B87333,
+                0 0 10px #B87333;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            text-transform: none; /* Allow for specific name formatting */
+        }
+
+        .steampunk-gallery .skin-name:hover {
+            color: #FFA500; /* Brighter gold on hover */
+            text-shadow: 
+                0 0 10px #B87333,
+                0 0 20px #B87333;
+            transform: scale(1.1);
+        }
+
+        @keyframes steamGlow {
+            0% { text-shadow: 0 0 10px #B87333, 0 0 20px #B87333, 0 0 30px #B87333; }
+            50% { text-shadow: 0 0 20px #B87333, 0 0 30px #B87333, 0 0 40px #B87333; }
+            100% { text-shadow: 0 0 10px #B87333, 0 0 20px #B87333, 0 0 30px #B87333; }
+        }
     </style>
 </head>
 <body>
@@ -407,53 +485,47 @@
         </div>
     </div>
     <div class="event-buttons" style="display: none;">
-        <button class="event-button" id="farmerEventBtn" aria-controls="farmerEventSection" aria-expanded="true">Farmer Event</button>
+        <button class="event-button" id="steampunkEventBtn" aria-controls="steampunkEventSection" aria-expanded="true">Steampunk Event</button>
     </div>
     <div class="play-button-container">
         <a href="Game Modes.html" class="play-button">Play</a>
     </div>
     <button class="battlepass-button" onclick="window.location.href='battlepass.html'">
-        <img src="Event/Farmer Event.jpeg" alt="Battlepass">
-        <span style="text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff; padding: 2px;">Battlepass</span>
+        <img src="Event/Steampunk Event.png" alt="Battlepass">
+        <span>Battlepass</span>
     </button>
-    <div id="farmerEventSection" class="event-section active-section farmer-section">
-        <h1>Farmer Event</h1>
-        <div id="skin-gallery" class="farmer-gallery">
+    <div id="steampunkEventSection" class="event-section active-section steampunk-section">
+        <h1>Steampunk Event</h1>
+        <div id="skin-gallery" class="steampunk-gallery">
             <div class="skin-item">
-                <a href="Skins/Farmer Shoma.jpeg" class="lightbox-link" data-caption="Farmer Shoma">
-                    <img src="Skins/Farmer Shoma.jpeg" alt="Farmer Shoma">
+                <a href="Skins/Steamcore MegaMan.jpeg" class="lightbox-link" data-caption="Steamcore MegaMan">
+                    <img src="Skins/Steamcore MegaMan.jpeg" alt="Steamcore MegaMan">
                 </a>
-                <div class="skin-name">Farmer Shoma</div>
+                <div class="skin-name">Steamcore MegaMan</div>
             </div>
             <div class="skin-item">
-                <a href="Skins/Farmer Cham Cham.jpeg" class="lightbox-link" data-caption="Farmer Cham Cham">
-                    <img src="Skins/Farmer Cham Cham.jpeg" alt="Farmer Cham Cham">
+                <a href="Skins/Steampunk Ibuki.jpeg" class="lightbox-link" data-caption="Steampunk Ibuki">
+                    <img src="Skins/Steampunk Ibuki.jpeg" alt="Steampunk Ibuki">
                 </a>
-                <div class="skin-name">Farmer Cham Cham</div>
+                <div class="skin-name">Steampunk Ibuki</div>
             </div>
             <div class="skin-item">
-                <a href="Skins/Farmer Alice.jpeg" class="lightbox-link" data-caption="Farmer Alice">
-                    <img src="Skins/Farmer Alice.jpeg" alt="Farmer Alice">
+                <a href="Skins/Steamforged Nina.jpeg" class="lightbox-link" data-caption="Steamforged Nina">
+                    <img src="Skins/Steamforged Nina.jpeg" alt="Steamforged Nina">
                 </a>
-                <div class="skin-name">Farmer Alice</div>
+                <div class="skin-name">Steamforged Nina</div>
             </div>
             <div class="skin-item">
-                <a href="Skins/Farmer Raiden.jpeg" class="lightbox-link" data-caption="Farmer Raiden">
-                    <img src="Skins/Farmer Raiden.jpeg" alt="Farmer Raiden">
+                <a href="Skins/Steamforged Kabal.jpeg" class="lightbox-link" data-caption="Steamforged Kabal">
+                    <img src="Skins/Steamforged Kabal.jpeg" alt="Steamforged Kabal">
                 </a>
-                <div class="skin-name">Farmer Raiden</div>
+                <div class="skin-name">Steamforged Kabal</div>
             </div>
             <div class="skin-item">
-                <a href="Skins/Farmer FANG.jpeg" class="lightbox-link" data-caption="Farmer FANG">
-                    <img src="Skins/Farmer FANG.jpeg" alt="Farmer FANG">
+                <a href="Skins/Steamforged Yugo.jpeg" class="lightbox-link" data-caption="Steamforged Yugo">
+                    <img src="Skins/Steamforged Yugo.jpeg" alt="Steamforged Yugo">
                 </a>
-                <div class="skin-name">Farmer FANG</div>
-            </div>
-            <div class="skin-item">
-                <a href="Skins/Farmer Nina.png" class="lightbox-link" data-caption="Farmer Nina">
-                    <img src="Skins/Farmer Nina.png" alt="Farmer Nina">
-                </a>
-                <div class="skin-name">Farmer Nina</div>
+                <div class="skin-name">Steamforged Yugo</div>
             </div>
         </div>
     </div>
@@ -525,6 +597,30 @@
             sacredceremonyEventSection.classList.add('active-section');
             // Optionally change background
             document.body.style.backgroundImage = "url('Event/sacredceremony Event.jpeg')";
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const eventButtons = document.querySelector('.event-buttons');
+            eventButtons.style.display = 'flex';
+
+            const buttons = document.querySelectorAll('.event-button');
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('aria-controls');
+                    const sections = document.querySelectorAll('.event-section');
+                    
+                    sections.forEach(section => {
+                        section.classList.remove('active-section');
+                    });
+                    
+                    document.getElementById(targetId).classList.add('active-section');
+                    
+                    buttons.forEach(btn => {
+                        btn.setAttribute('aria-expanded', 'false');
+                    });
+                    button.setAttribute('aria-expanded', 'true');
+                });
+            });
         });
     </script>
 </body>

@@ -1,0 +1,85 @@
+# -*- mode: python ; coding: utf-8 -*-
+
+block_cipher = None
+
+a = Analysis(
+    ['Raidpy/main.py'],
+    pathex=[],
+    binaries=[],
+    datas=[
+        ('Raidpy/res', 'Raidpy/res'),
+        ('Raidpy/data', 'Raidpy/data'),
+        ('Raidpy/stages', 'Raidpy/stages'),
+        ('Raidpy/engine', 'Raidpy/engine'),
+        ('Raidpy/characters', 'Raidpy/characters'),
+        ('borders', 'borders'),
+        ('ch', 'ch'),
+        ('characters', 'characters'),
+        ('debug', 'debug'),
+        ('Default Splash', 'Default Splash'),
+        ('Event', 'Event'),
+        ('icons', 'icons'),
+        ('Loading Screen', 'Loading Screen'),
+        ('Raids', 'Raids'),
+        ('res', 'res'),
+        ('Roguelike', 'Roguelike'),
+        ('Skins', 'Skins'),
+        ('stages', 'stages'),
+        ('stats', 'stats'),
+        ('Stickers', 'Stickers'),
+        ('Stories', 'Stories'),
+        ('titles', 'titles'),
+        ('Voices', 'Voices'),
+        ('*.html', '.'),
+        ('*.js', '.')
+    ],
+    hiddenimports=[
+        'Raidpy.stages.stage_base',
+        'Raidpy.stages.farm_raid.stage_1',
+        'Raidpy.stages.farm_raid.stage_2',
+        'Raidpy.stages.farm_raid.stage_3',
+        'Raidpy.engine.character',
+        'Raidpy.engine.ability',
+        'Raidpy.engine.battle_log',
+        'Raidpy.engine.buff',
+        'Raidpy.engine.debug_window',
+        'Raidpy.engine.firebase_manager',
+        'Raidpy.engine.inventory',
+        'Raidpy.engine.login_screen',
+        'Raidpy.engine.loot_notification',
+        'Raidpy.engine.target',
+        'Raidpy.engine.tooltip'
+    ],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=[],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=block_cipher,
+    noarchive=False,
+)
+
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    [],
+    name='Raidpy',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
+    console=True,
+    disable_windowed_traceback=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+    icon='Raidpy/res/img/icon.ico'
+) 
