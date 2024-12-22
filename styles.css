@@ -1,0 +1,3717 @@
+       body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a2634; /* Dark winter blue */
+            color: #e3f4ff; /* Ice blue text */
+            font-family: Arial, sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Menu Styles */
+        .menu {
+            background-color: rgba(26, 38, 52, 0.9); /* Darker winter blue with transparency */
+            border-bottom: 1px solid #4d88b7; /* Ice blue border */
+        }
+
+        .menu a {
+            color: #e3f4ff; /* Ice blue text */
+        }
+
+        .menu a:hover {
+            background-color: #4d88b7; /* Ice blue hover */
+            transform: scale(1.1);
+        }
+
+
+
+        /* Champion Selector */
+        #champion-selector-container {
+            background: rgba(26, 38, 52, 0.95);
+            border: 1px solid #4d88b7;
+            box-shadow: 0 8px 32px rgba(33, 150, 243, 0.2);
+        }
+
+        .champion-image {
+            border: 2px solid #4d88b7;
+        }
+
+        .champion-image:hover {
+            box-shadow: 0 0 20px #90caf9;
+            border-color: #90caf9;
+        }
+
+        /* Friend List */
+        #friend-list-container {
+            background: linear-gradient(145deg, rgba(26, 38, 52, 0.95), rgba(41, 58, 74, 0.95));
+            border: 1px solid #4d88b7;
+        }
+
+        #toggle-friend-list {
+            color: #90caf9;
+        }
+
+        #toggle-friend-list:hover {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196f3;
+        }
+
+        #friend-name-input {
+            background: rgba(26, 38, 52, 0.8);
+            border: 1px solid #4d88b7;
+        }
+
+        #add-friend-button {
+            background: linear-gradient(135deg, #2196f3, #4d88b7);
+        }
+
+        #add-friend-button:hover {
+            background: linear-gradient(135deg, #4d88b7, #2196f3);
+        }
+
+        /* Quest Box */
+        #new-quests-box .quest {
+            background: linear-gradient(145deg, rgba(26, 38, 52, 0.95), rgba(41, 58, 74, 0.95));
+            border: 1px solid #4d88b7;
+        }
+
+        .quest-progress {
+            background-color: rgba(33, 150, 243, 0.2);
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #2196f3, #4d88b7);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar-thumb {
+            background: rgba(33, 150, 243, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(33, 150, 243, 0.7);
+        }
+
+        /* Snow effect */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            z-index: 9999;
+            color: white;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+            animation: fall linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Winter glow effect */
+        .play-button, .menu a, #profile-info, .currency-container {
+            text-shadow: 0 0 10px rgba(144, 202, 249, 0.5);
+        }
+
+        /* Frost effect on containers */
+        #champion-selector-container, #friend-list-container, #new-quests-box .quest {
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 36px;
+            margin-top: 100px;
+        }
+        #champion-selector-container {
+            position: fixed;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 1000px; /* Increased from 900px */
+            width: 95%; /* More responsive width */
+            padding: 20px;
+            background: rgba(173, 216, 230, 0.3); /* Light blue with transparency */
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(135, 206, 235, 0.4); /* Sky blue shadow */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(176, 224, 230, 0.5); /* Powder blue border */
+            transition: all 0.3s ease;
+            z-index: 1;
+            max-height: 80vh;
+        }
+
+        /* Custom scrollbar for the container */
+        #champion-selector-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #champion-selector-container::-webkit-scrollbar-track {
+            background: rgba(144, 202, 249, 0.1); /* Light icy blue */
+            border-radius: 4px;
+        }
+
+        #champion-selector-container::-webkit-scrollbar-thumb {
+            background: rgba(176, 224, 230, 0.5); /* Powder blue */
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #champion-selector-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(135, 206, 235, 0.7); /* Sky blue */
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        #champion-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* Reduced from 100px */
+            gap: 15px; /* Reduced from 20px */
+            width: 100%;
+            padding: 15px;
+        }
+
+        .champion-link {
+            position: relative;
+            display: block;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .champion-image {
+            width: 80px; /* Add fixed width */
+            height: 80px; /* Add fixed height */
+            aspect-ratio: 1;
+            border-radius: 12px;
+            border: 2px solid rgba(173, 216, 230, 0.5); /* Light blue border */
+            transition: all 0.3s ease;
+            transform-origin: center;
+            box-shadow: 0 4px 15px rgba(135, 206, 235, 0.3); /* Ice blue shadow */
+            object-fit: cover;
+        }
+
+        .champion-name {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #E0FFFF; /* Light cyan */
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+            text-shadow: 2px 2px 4px rgba(176, 224, 230, 0.5); /* Powder blue shadow */
+            white-space: nowrap;
+        }
+
+        /* Section title */
+        .section-title {
+            color: #B0E0E6; /* Powder blue */
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(135, 206, 235, 0.5); /* Sky blue shadow */
+        }
+
+        /* New styles for user info */
+        #user-info {
+            position: flex;
+            top: 0px; /* Adjust top position as needed */
+            right: 0px; /* Adjust right position as needed */
+        }
+
+
+
+        /* Transparent Menu */
+        .menu {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: rgba(30, 44, 89, 0.9);
+            z-index: 0;
+            max-width: 1000px; /* Match champion container width */
+            margin: 0 auto; /* Center the menu */
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(176, 224, 230, 0.5);
+         
+        }
+
+        .menu-items {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .menu a {
+            color: #e8f4ff; /* Ice blue text */
+            text-decoration: none;
+            padding: 14px 16px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #93c2ff; /* Light winter blue */
+            transform: scale(1.1);
+        }
+
+        .play-button-container {
+            display: flex;
+            justify-content: flex-start;
+            padding: 20px;
+            z-index: auto;
+            position: fixed;
+        }
+
+        .play-button {
+            background: linear-gradient(135deg, #87CEEB, #4682B4);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            width: 240px;
+            height: 240px;
+            position: fixed;
+            top: -155px;
+            left: -155px;
+            display: flex;
+            align-items: flex-end; /* Changed from center to flex-end */
+            justify-content: flex-end; /* Changed from center to flex-end */
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 20px rgba(135, 206, 235, 0.3);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(176, 224, 230, 0.3);
+            z-index: 1000;
+            padding-bottom: 50px; /* Added padding-bottom */
+            padding-right: 50px; /* Added padding-right */
+            flex-direction: column;
+        }
+
+        .play-button:hover {
+            background: linear-gradient(135deg, #B0E0E6, #87CEEB);
+            transform: scale(1.1);
+            box-shadow: 0 12px 28px rgba(135, 206, 235, 0.4);
+        }
+
+        /* Glow effect */
+        .play-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .battlepass-button {
+            position: fixed;
+            top: 145px;
+            left: 75px;
+            background-color: transparent;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            width: 200px;
+            flex-direction: column;
+            border: 3px solid #93c2ff; /* Ice blue border */
+            border-radius: 15px;
+            background: linear-gradient(45deg, #1e3d4c, #2c5c7a); /* Winter ice blue gradient */
+            box-shadow: 0 0 15px rgba(147, 194, 255, 0.5); /* Ice blue glow */
+            transition: all 0.3s ease;
+        }
+
+        .battlepass-button img {
+            width: 250px;
+            height: 100px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: absolute;
+            z-index: -1;
+            border-radius: 10px;
+            filter: brightness(1.2) saturate(0.8) hue-rotate(180deg); /* Winter ice blue color filter */
+        }
+
+        .battlepass-button span {
+            color: #e8f4ff; /* Ice blue text */
+            font-size: 26px;
+            font-weight: bold;
+            margin-top: 10px;
+            font-family: 'Bangers', cursive;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .battlepass-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(147, 194, 255, 0.8), 
+                        inset 0 0 15px rgba(147, 194, 255, 0.5);
+            border-color: #b3d9ff; /* Lighter ice blue on hover */
+        }
+
+        .battlepass-button:hover img {
+            transform: scale(1.1);
+            filter: sepia(60%) hue-rotate(180deg) brightness(1.1);
+        }
+
+        .battlepass-button:hover span {
+            color: #b3d9ff; /* Lighter ice blue text on hover */
+            text-shadow: 0 0 10px rgba(147, 194, 255, 0.8);
+        }
+
+        /* Add winter animations */
+        @keyframes snowfall {
+            0% {
+                transform: translateY(-10vh) translateX(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(50vh) translateX(20px) rotate(180deg);
+            }
+            100% {
+                transform: translateY(110vh) translateX(0) rotate(360deg);
+            }
+        }
+
+        @keyframes frostGlow {
+            0% { filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.3)); }
+            50% { filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)); }
+            100% { filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.3)); }
+        }
+
+        .battlepass-button::before,
+        .battlepass-button::after {
+            content: '⚙';
+            position: absolute;
+            color: #b87333;
+            font-size: 24px;
+            opacity: 0.6;
+            animation: gearRotate 10s linear infinite;
+        }
+
+        .battlepass-button::before {
+            left: -15px;
+            top: -15px;
+        }
+
+        .battlepass-button::after {
+            right: -15px;
+            bottom: -15px;
+            animation-direction: reverse;
+        }
+
+        #video-background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            filter: brightness(40%) contrast(120%);
+        }
+
+        /* Profile Menu */
+        .profile-menu {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: rgba(26, 38, 52, 0.95);
+            border: 1px solid #4d88b7;
+            border-radius: 8px;
+            padding: 10px 0;
+            display: none;
+            z-index: 1001;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2);
+        }
+
+        .profile-menu.show {
+            display: block;
+        }
+
+        .profile-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .profile-menu li {
+            padding: 10px 20px;
+            color: #e3f4ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .profile-menu li:hover {
+            background: rgba(70, 130, 180, 0.2);
+            color: #90caf9;
+        }
+
+        .profile-container {
+            cursor: pointer;
+        }
+
+    /* Toggle Champion Selector Button Styles */
+    #toggle-champion-button {
+            position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%) rotate(0deg);
+        background-color: rgba(7, 4, 4, 0.589);
+        border: none;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        cursor: pointer;
+        font-size: 24px;
+            color: white;
+            display: flex;
+            align-items: center;
+        justify-content: center;
+        transition: transform 0.3s ease, background-color 0.3s ease;
+        z-index: 1000;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    #toggle-champion-button:hover {
+        background-color: rgba(255, 255, 255, 0.4);
+        transform: translateX(-50%) rotate(180deg);
+    }
+
+    /* Animation for Rotation */
+    @keyframes rotateArrow {
+        from {
+            transform: translateX(-50%) rotate(0deg);
+        }
+        to {
+            transform: translateX(-50%) rotate(180deg);
+        }
+    }
+
+    #toggle-champion-button.rotated {
+        animation: rotateArrow 0.3s forwards;
+    }
+
+    .friend-name:hover {
+        text-decoration: underline; /* Optional: Add underline on hover */
+    }
+
+    #friend-name-input {
+        width: calc(100% - 22px);
+        margin-top: 10px;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #333;
+        color: white;
+    }
+
+    #add-friend-button {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #b87333; /* Copper */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    #add-friend-button:hover {
+        background-color: #cd7f32; /* Brass */
+    }
+
+    #toggle-friend-list {
+        cursor: pointer;
+        color: #b87333; /* Copper */
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    #toggle-friend-list:hover {
+        color: #b87333; /* Copper */
+        text-decoration: underline;
+    }
+    /* Quests Section Styles */
+    #new-quests-box {
+        position: fixed;
+        left: 5px !important;
+        bottom: 5px !important; /* Changed from top: 450px to bottom: 20px */
+        width: 300px;
+        background: none; /* Remove background */
+        border: none; /* Remove border */
+        box-shadow: none; /* Remove shadow */
+        z-index: 1000;
+    }
+
+    /* Remove the header styles since we're removing that element */
+    #new-quests-box .header {
+        display: none; /* Hide the header completely */
+    }
+
+    #new-quests-box .content {
+        max-height: 400px;
+        overflow-y: auto;
+        padding: 15px;
+        display: block !important;
+    }
+
+    #new-quests-box .quest {
+        background: linear-gradient(145deg, rgba(26, 38, 52, 0.95), rgba(41, 58, 74, 0.95));
+        border: 1px solid #4d88b7;
+    }
+
+    #new-quests-box .quest-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    #new-quests-box .quest h3 {
+        margin: 0;
+        font-size: 16px;
+        color: #87CEEB; /* Sky blue */
+    }
+
+    .reward-image {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+    }
+
+    #new-quests-box .quest-description {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #E0FFFF; /* Light cyan */
+    }
+
+    #new-quests-box .quest .quest-progress {
+        height: 8px;
+        background-color: #4682B4; /* Steel blue */
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 8px;
+    }
+
+    #new-quests-box .quest .quest-progress div {
+        height: 100%;
+        background-color: #00BFFF; /* Deep sky blue */
+        width: 50%;
+        transition: width 0.3s;
+    }
+
+    #new-quests-box .quest .claim-button {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 12px;
+        background-color: #4682B4; /* Steel blue */
+        color: #ffffff;
+        transition: background-color 0.3s;
+    }
+
+    #new-quests-box .quest .claim-button:hover {
+        background-color: #5F9EA0; /* Cadet blue */
+    }
+
+    #new-quests-box .quest:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(176, 224, 230, 0.4); /* Powder blue shadow */
+    }
+
+ 
+
+
+    /* ===================== Animated Particle Background ===================== */
+
+    /* Container for particles */
+    .particle-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: -2; /* Ensure particles are behind all content */
+    }
+    /* Responsive Styles for Quests Section */
+    @media (max-width: 768px) {
+        #new-quests-box {
+            width: 90%;
+            left: 5%;
+            bottom: 10px;
+        }
+
+        #new-quests-box .header h2 {
+            font-size: 18px;
+        }
+
+        #new-quests-box .quest h3 {
+            font-size: 18px;
+        }
+
+        #new-quests-box .quest p {
+            font-size: 14px;
+        }
+
+        #new-quests-box .quest button {
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+    }
+
+    /* Particle Styles */
+    @keyframes particleMove {
+        0% {
+            transform: translate(0, 0) scale(1);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(100px, 100px) scale(0.5);
+            opacity: 0;
+        }
+    }
+
+    .particle {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: rgba(135, 206, 235, 0.4); /* Sky blue with transparency */
+        border-radius: 50%;
+        animation: particleMove linear infinite;
+        box-shadow: 0 0 4px rgba(255, 255, 255, 0.6); /* Soft white glow */
+    }
+
+    /* ===================== Menu Slide-In Animation ===================== */
+
+    @keyframes slideInFromTop {
+        from {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .menu {
+        animation: slideInFromTop 1s ease-out forwards;
+    }
+
+    /* ===================== Button Hover Effects ===================== */
+
+    /* Play Button Glowing and Scaling on Hover */
+    .play-button {
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .play-button:hover {
+            transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(0, 123, 95, 0.8);
+    }
+
+    /* Battlepass Button Hover Effects */
+    .battlepass-button:hover img {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+    }
+
+    .battlepass-button span:hover {
+        transform: scale(1.1);
+    }
+
+    /* ===================== Profile Section Animations ===================== */
+
+    /* Fade-In Animation for Profile Info */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ===================== Champion Selector Animations ===================== */
+
+    /* Enhanced Entrance Animation for Champion Images */
+    @keyframes fadeInScale {
+        0% {
+            opacity: 0;
+            transform: scale(0.85);
+        }
+        50% {
+            opacity: 0.5;
+            transform: scale(1.02);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .champion-image {
+        animation: fadeInScale 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        opacity: 0;
+    }
+
+    /* Add Delay for Staggered Entrance with Enhanced Timing */
+    .champion-image:nth-child(odd) {
+        animation-delay: 0.2s;
+    }
+
+    .champion-image:nth-child(even) {
+        animation-delay: 0.4s;
+    }
+
+    /* Smooth Hover Glow and Scale Effect */
+    .champion-image:hover {
+        box-shadow: 0 0 20px #E0FFFF; /* Ice Blue */
+        transform: scale(1.15);
+        transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .advent-calendar-button {
+        position: fixed;
+        top: 245px;
+        left: 75px;
+        background-color: transparent;
+        cursor: pointer;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        width: 200px;
+        flex-direction: column;
+        border: 2px solid #B0E0E6; /* Powder Blue */
+    }
+
+    .advent-calendar-button img {
+        width: 250px;
+        height: 100px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        position: absolute;
+        z-index: -1;
+        border-radius: 10px;
+        animation: float 5s ease-in-out infinite;
+        box-shadow: 0 8px 20px #87CEEB; /* Sky Blue */
+    }
+
+    .advent-calendar-button span {
+        color: #E0FFFF; /* Light Cyan */
+        font-size: 24px;
+        font-weight: bold;
+        margin-top: 10px;
+        transition: transform 0.3s;
+        z-index: 1;
+        font-family: 'Bangers', cursive;
+        text-shadow: 2px 2px 4px #B0E0E6; /* Powder Blue */
+        animation: float 5s ease-in-out infinite;
+    }
+
+    .advent-calendar-button span:hover {
+        color: #87CEEB; /* Sky Blue */
+        transform: scale(1.1);
+        box-shadow: 0 8px 20px #87CEEB;
+    }
+
+    .advent-calendar-button:hover img {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(176, 224, 230, 0.7); /* Powder Blue shadow */
+    }
+
+    /* Optional: Add a winter glow animation */
+    @keyframes festiveGlow {
+        0% { box-shadow: 0 0 15px rgba(176, 224, 230, 0.7); }
+        50% { box-shadow: 0 0 25px rgba(176, 224, 230, 0.9); }
+        100% { box-shadow: 0 0 15px rgba(176, 224, 230, 0.7); }
+    }
+
+    .advent-calendar-button:hover {
+        animation: festiveGlow 2s infinite;
+    }
+
+    /* Advent Calendar Window */
+    .modal-window {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 2000;
+    }
+
+    .advent-calendar-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        z-index: 1001;
+        width: 80%;
+        max-width: 600px;
+    }
+
+    .close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .close-button:hover {
+        color: #87CEEB; /* Sky Blue */
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 15px;
+        padding: 20px;
+        background-color: rgba(17, 16, 16, 0.95);
+        border-radius: 15px;
+        margin: 15px;
+    }
+
+    .calendar-day {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #B0E0E6; /* Powder Blue */
+        color: #333;
+        font-size: 1.5em;
+        font-weight: bold;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 8px rgba(176, 224, 230, 0.3);
+        padding: 15px;
+        min-height: 60px;
+    }
+
+    .calendar-day:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 12px rgba(176, 224, 230, 0.5);
+    }
+
+    .modal-window {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 2000;
+    }
+
+    .advent-calendar-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #1C2833; /* Dark winter blue */
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 0 30px rgba(176, 224, 230, 0.3); /* Powder blue shadow */
+        color: #E0FFFF; /* Light cyan */
+        width: 70%;
+        max-width: 900px;
+        min-height: 600px;
+        border: 1px solid rgba(176, 224, 230, 0.3); /* Powder blue border */
+    }
+
+    .advent-calendar-content h2 {
+        text-align: center;
+        font-size: 2em;
+        color: #B0E0E6; /* Powder blue */
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .close-button {
+        position: absolute;
+        top: 20px;
+        right: 25px;
+        font-size: 32px;
+        color: #B0E0E6; /* Powder blue */
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        z-index: 2001;
+    }
+
+    .close-button:hover {
+        transform: scale(1.2);
+    }
+
+    .reward-content {
+        width: 40%;
+        max-width: 400px;
+        padding: 30px;
+    }
+
+    #reward-image {
+        max-width: 200px;
+        max-height: 200px;
+    }
+
+    @media (max-width: 768px) {
+        .calendar-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .calendar-day {
+            padding: 20px;
+            font-size: 1.5em;
+            min-height: 80px;
+        }
+
+        .advent-calendar-content {
+            width: 95%;
+            padding: 20px;
+            min-height: auto;
+        }
+    }
+
+            /* Add or update these styles in your <style> section */
+            .modal-window {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+                z-index: 2000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #daily-reward-popup {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: rgb(17, 16, 16);
+                padding: 40px;
+                border-radius: 20px;
+                box-shadow: 0 0 30px rgba(176, 224, 230, 0.3);
+                text-align: center;
+                z-index: 2001;
+                width: 80%;
+                max-width: 600px;
+            }
+
+            #reward-image {
+                width: auto;
+                height: auto;
+                max-width: 400px;
+                max-height: 400px;
+                margin: 20px auto;
+                display: block;
+                border-radius: 10px;
+                box-shadow: 0 0 20px rgba(176, 224, 230, 0.2);
+            }
+
+            #reward-name {
+                font-size: 2em;
+                color: #B0E0E6; /* Powder Blue */
+                margin: 20px 0;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            }
+
+            .close-reward-button {
+                position: absolute;
+                top: 15px;
+                right: 20px;
+                font-size: 24px;
+                color: #B0E0E6; /* Powder Blue */
+                cursor: pointer;
+                background: none;
+                border: none;
+                padding: 5px 10px;
+                transition: transform 0.3s ease;
+            }
+
+            .close-reward-button:hover {
+                transform: scale(1.1);
+            }
+
+            /* Animation for reward appearance */
+            @keyframes popIn {
+                0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+                100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            }
+
+            #daily-reward-popup {
+                animation: popIn 0.3s ease-out forwards;
+            }
+
+            /* Update these styles in your <style> section */
+            .reward-display {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                padding: 20px;
+            }
+
+            .reward-display h2 {
+                font-size: 2em;
+                color: #B0E0E6; /* Powder Blue */
+                margin-bottom: 30px;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            }
+
+            #reward-image {
+                max-width: 80%;
+                max-height: 60vh;
+                border-radius: 10px;
+                box-shadow: 0 0 30px rgba(176, 224, 230, 0.3);
+            }
+
+            /* Animation for the reward appearance */
+            @keyframes fadeIn {
+                from { opacity: 0; transform: scale(0.9); }
+                to { opacity: 1; transform: scale(1); }
+            }
+
+            .reward-display {
+                animation: fadeIn 0.3s ease-out forwards;
+            }
+
+            /* Update the close button position */
+            .close-button {
+                position: absolute;
+                top: 20px;
+                right: 25px;
+                font-size: 32px;
+                color: #B0E0E6; /* Powder Blue */
+                cursor: pointer;
+                transition: transform 0.3s ease;
+                z-index: 2001;
+            }
+
+            .close-button:hover {
+                transform: scale(1.2);
+            }
+
+            /* Update these styles in your <style> section */
+            .modal-window {
+                display: none; /* Hide by default */
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+                z-index: 2000;
+            }
+
+            .advent-calendar-content {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: rgb(17, 16, 16);
+                padding: 30px;
+                border-radius: 20px;
+                box-shadow: 0 0 30px rgba(173, 216, 230, 0.3); /* Light blue shadow */
+                color: #fff;
+                width: 70%;
+                max-width: 900px;
+                min-height: 600px;
+            }
+
+            #daily-reward-popup {
+                display: none; /* Hide by default */
+            }
+
+            .username-title-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 2px;
+            }
+
+            #username-display {
+                font-size: 1.8em; /* Increased from 1.6em */
+                font-weight: 600;
+                color: #1d99af;
+                margin: 0;
+            }
+
+            #title-display {
+                font-size: 0.8em;
+                color: #1d99af;  /* Gold color for the title */
+                font-style: italic;
+            }
+
+            .patch-button {
+                position: fixed;
+                top: 200px; /* Adjust this value to move the button down */
+                left: 75px;
+                background-color: black;
+                border-radius: 10px;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+                overflow: hidden;
+                width: 250px; /* Adjust width as needed */
+                z-index: 1000;
+            }
+
+            .patch-button a {
+            display: flex;
+                flex-direction: column;
+            align-items: center;
+                text-decoration: none;
+                color: white;
+                padding: 10px;
+            }
+
+            .patch-button img {
+                width: 100%;
+                height: auto;
+                transition: transform 0.3s, box-shadow 0.3s;
+            }
+
+            .patch-button:hover img {
+                transform: scale(1.1);
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+            }
+
+            .patch-text h2, .patch-text p {
+                margin: 0;
+                text-align: center;
+                font-family: 'Bangers', cursive;
+            }
+
+            .patch-text h2 {
+                font-size: 24px;
+                margin-top: 10px;
+            }
+
+            .patch-text p {
+                font-size: 16px;
+            }
+
+            .changelog-button {
+                position: fixed;
+                top: 365px; /* Position it between battlepass and advent calendar buttons */
+                left: 75px;
+                background-color: transparent;
+                cursor: pointer;
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 10px;
+                width: 200px;
+                flex-direction: column;
+                border: 2px solid #44e7e7; /* Hay */
+            }
+
+            .changelog-button img {
+                width: 250px;
+                height: 100px;
+                transition: transform 0.3s, box-shadow 0.3s;
+                position: absolute;
+                z-index: -1;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+                border-radius: 10px;
+                animation: float 5s ease-in-out infinite;
+                background-color: black; /* Add black background to the image container */
+            }
+
+            .changelog-button span {
+                color: #ffffff;
+                font-size: 24px;
+                font-weight: bold;
+                margin-top: 10px;
+                transition: transform 0.3s;
+                z-index: 1;
+                font-family: 'Bangers', cursive;
+                text-shadow: 2px 2px 4px #b3f5f5;
+                animation: float 5s ease-in-out infinite;
+            }
+
+            .changelog-button:hover img {
+                transform: scale(1.1);
+                box-shadow: 0 0 15px rgba(245, 222, 179, 0.7);
+            }
+
+            .changelog-button:hover span {
+                color: #F5DEB3;
+                transform: scale(1.1);
+                box-shadow: 0 8px 20px #5af0f0;
+            }
+        /* Modern Header Styles */
+            .modern-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 30px;
+                background: rgba(0, 0, 0, 0.85);
+                backdrop-filter: blur(10px);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1000;
+                box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+            }
+
+            /* Menu Styles */
+            .menu-items {
+                display: flex;
+                gap: 30px;
+                align-items: center;
+            }
+
+            .menu-link {
+                color: #ffffff;
+                text-decoration: none;
+                font-size: 16px;
+                padding: 10px 20px;
+                border-radius: 8px;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            /* Special styling for the play button */
+            .menu-link.play-button {
+                background: linear-gradient(135deg, #87CEEB, #4682B4); /* Sky blue to steel blue */
+                color: white;
+                right: 850px;
+                top: 20px;
+                padding: 12px 30px;
+                border-radius: 20px;
+                box-shadow: 0 4px 15px rgba(135, 206, 235, 0.3); /* Sky blue shadow */
+                transition: all 0.3s ease;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 18px;
+            }
+
+            .menu-link.play-button:hover {
+                transform: translateY(-2px) scale(1.05);
+                box-shadow: 0 6px 20px rgba(135, 206, 235, 0.4);
+                background: linear-gradient(135deg, #B0E0E6, #87CEEB); /* Powder blue to sky blue */
+            }
+
+            .menu-link.play-button i {
+                margin-right: 8px;
+                font-size: 1.2em;
+            }
+
+            .menu-link:not(.play-button):hover {
+                background: rgba(176, 224, 230, 0.2); /* Powder blue */
+                transform: translateY(-2px);
+            }
+
+            .menu-link.active {
+                background: rgba(135, 206, 235, 0.3); /* Sky blue */
+                color: #B0E0E6; /* Powder blue */
+            }
+
+            /* Profile Container Styles */
+            .profile-container {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                background: rgba(26, 38, 52, 0.95);
+                padding: 10px 20px;
+                border-radius: 15px;
+                border: 1px solid #4d88b7;
+                box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2);
+                z-index: 1000;
+                transition: all 0.3s ease;
+            }
+
+            .profile-container:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(33, 150, 243, 0.3);
+                border-color: #90caf9;
+            }
+
+            .username-title-container {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 2px;
+                cursor: pointer;
+            }
+
+            #username-display {
+                font-size: 1.2em;
+                font-weight: 600;
+                color: #e3f4ff;
+                margin: 0;
+            }
+
+            #title-display {
+                font-size: 0.8em;
+                color: #90caf9;
+                font-style: italic;
+            }
+
+            .profile-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                border: 2px solid #4d88b7;
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+
+            .profile-icon:hover {
+                transform: scale(1.1);
+                border-color: #90caf9;
+                box-shadow: 0 0 15px rgba(33, 150, 243, 0.3);
+            }
+
+            /* Modern Play Button Styles */
+            .modern-play-button {
+                position: fixed;
+                top: 90px;
+                left: 30px;
+                background: linear-gradient(135deg, #87CEEB, #4682B4); /* Sky blue to steel blue */
+                color: white;
+                text-decoration: none;
+                padding: 15px 40px;
+                border-radius: 30px;
+                font-size: 20px;
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                transition: all 0.3s ease;
+                box-shadow: 0 5px 15px rgba(135, 206, 235, 0.3);
+                z-index: 999;
+            }
+
+            .modern-play-button:hover {
+                transform: translateY(-2px) scale(1.02);
+                box-shadow: 0 8px 20px rgba(176, 224, 230, 0.4); /* Powder blue shadow */
+                background: linear-gradient(135deg, #B0E0E6, #87CEEB); /* Powder blue to sky blue */
+            }
+
+            .play-icon {
+                font-size: 24px;
+            }
+
+            .play-text {
+                letter-spacing: 1px;
+            }
+
+            /* Username Container Styles */
+            .username-title-container {
+                background: rgba(176, 224, 230, 0.1); /* Powder blue */
+                padding: 8px 15px;
+                border-radius: 20px;
+                margin-right: 10px;
+                transition: all 0.3s ease;
+            }
+
+            .username-title-container:hover {
+                background: rgba(176, 224, 230, 0.2);
+            }
+
+            /* Enhanced Quest Styles */
+            .quest {
+                background: none;
+                border: none;
+                box-shadow: none;
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+
+            #new-quests-box {
+                background: none; /* Remove background */
+                border: none; /* Remove border */
+                box-shadow: none; /* Remove shadow */
+            }
+
+            #friend-list-container {
+                position: fixed;
+                right: -20px !important;/* Extend beyond screen edge */
+                top: 90px !important; /* Extend beyond screen edge */
+                width: 320px; /* Increased width to account for negative right position */
+                padding-right: 20px; /* Add padding to offset negative position */
+                padding-bottom: 20px; /* Add padding to offset negative position */
+                background: linear-gradient(145deg, rgba(26, 20, 18, 0.95), rgba(41, 33, 29, 0.95));
+                box-shadow: 0 4px 20px rgba(184, 115, 51, 0.3);
+                z-index: 1000;
+            }
+
+            #toggle-friend-list {
+                padding: 15px 20px;
+                color: #b87333;
+                font-weight: bold;
+                cursor: pointer;
+                border-bottom: 1px solid rgba(184, 115, 51, 0.2);
+                transition: all 0.3s ease;
+            }
+
+            #toggle-friend-list:hover {
+                background: rgba(184, 115, 51, 0.1);
+                color: #cd7f32;
+            }
+
+            #friend-list {
+                padding: 15px;
+            }
+
+            #friend-name-input {
+                width: 100%;
+                padding: 10px;
+                margin: 10px 0;
+                background: rgba(0, 0, 0, 0.2);
+                border: 1px solid rgba(184, 115, 51, 0.3);
+                border-radius: 8px;
+                color: #fff;
+            }
+
+            #add-friend-button {
+                width: 100%;
+                padding: 10px;
+                background: linear-gradient(135deg, #b87333, #cd7f32);
+                border: none;
+                border-radius: 8px;
+                color: white;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            #add-friend-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(184, 115, 51, 0.4);
+            }
+
+            .friend-item {
+                display: flex;
+                align-items: center;
+                padding: 10px;
+                border-bottom: 1px solid rgba(184, 115, 51, 0.2);
+                transition: all 0.3s ease;
+            }
+
+            .friend-item:hover {
+                background: rgba(184, 115, 51, 0.1);
+            }
+
+            .friend-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                margin-right: 10px;
+                border: 2px solid rgba(184, 115, 51, 0.3);
+            }
+
+            .friend-name {
+                color: #F5DEB3;
+                text-decoration: none;
+                transition: color 0.3s ease;
+            }
+
+            .friend-name:hover {
+                color: #cd7f32;
+            }
+
+            .friend-container {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .friend-info {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .friend-name {
+                color: #F5DEB3;
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+            .status-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #4CAF50;
+                margin-right: 5px;
+            }
+
+            .last-seen {
+                font-size: 0.8em;
+                color: #999;
+            }
+
+            .friend-actions {
+                display: flex;
+                gap: 8px;
+            }
+
+            .friend-action-button {
+                padding: 6px;
+                border: none;
+                border-radius: 4px;
+                background: rgba(184, 115, 51, 0.2);
+                color: #F5DEB3;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .friend-action-button:hover {
+                background: rgba(184, 115, 51, 0.4);
+                transform: scale(1.1);
+            }
+
+            .friend-notification {
+                position: absolute;
+                top: -40px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 4px;
+                animation: slideDown 0.3s ease, fadeOut 0.3s ease 2.7s;
+            }
+
+            @keyframes slideDown {
+                from { transform: translate(-50%, -20px); opacity: 0; }
+                to { transform: translate(-50%, 0); opacity: 1; }
+            }
+
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+
+
+            /* Profile Menu Styles */
+            .profile-menu {
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: rgba(26, 38, 52, 0.95);
+                border: 1px solid #4d88b7;
+                border-radius: 8px;
+                padding: 10px 0;
+                display: none;
+                z-index: 1001;
+                box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2);
+                min-width: 200px;
+            }
+
+            .profile-menu.show {
+                display: block;
+            }
+
+            .profile-menu ul {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .profile-menu li {
+                padding: 10px 20px;
+                color: #e3f4ff;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                white-space: nowrap;
+            }
+
+            .profile-menu li:hover {
+                background: rgba(70, 130, 180, 0.2);
+                color: #90caf9;
+            }
+
+            /* Bottom Buttons Container */
+            .bottom-buttons-container {
+                position: fixed;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                gap: 30px;
+                z-index: 1000;
+            }
+
+            .bottom-button {
+                width: 280px;
+                height: 160px;
+                position: relative;
+                overflow: hidden;
+                border-radius: 15px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                border: 2px solid rgba(176, 224, 230, 0.3); /* Powder blue border */
+                background: rgba(28, 40, 51, 0.7); /* Dark winter blue */
+                backdrop-filter: blur(5px);
+            }
+
+            .bottom-button:hover {
+                transform: translateY(-10px);
+                border-color: #B0E0E6; /* Powder blue */
+                box-shadow: 0 10px 25px rgba(176, 224, 230, 0.4); /* Powder blue shadow */
+            }
+
+            .bottom-button img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: all 0.3s ease;
+            }
+
+            .bottom-button:hover img {
+                transform: scale(1.1);
+            }
+
+            .bottom-button .button-content {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 15px;
+                background: linear-gradient(to top, rgba(28, 40, 51, 0.9), transparent); /* Dark winter blue gradient */
+                color: #E0FFFF; /* Light cyan */
+                text-align: center;
+            }
+
+            .bottom-button .button-title {
+                font-size: 24px;
+                font-weight: bold;
+                margin: 0;
+                text-shadow: 2px 2px 4px rgba(176, 224, 230, 0.5); /* Powder blue shadow */
+            }
+
+            .bottom-button:hover .button-content {
+                background: linear-gradient(to top, rgba(176, 224, 230, 0.9), transparent); /* Powder blue gradient */
+            }
+
+            /* Add winter snowflake animation */
+            .bottom-button::before,
+            .bottom-button::after {
+                content: '❄';
+                position: absolute;
+                color: #87CEEB; /* Sky blue */
+                font-size: 24px;
+                opacity: 0;
+                transition: all 0.3s ease;
+            }
+
+            .bottom-button::before {
+                top: 10px;
+                left: 10px;
+            }
+
+            .bottom-button::after {
+                bottom: 10px;
+                right: 10px;
+            }
+
+            .bottom-button:hover::before,
+            .bottom-button:hover::after {
+                opacity: 0.6;
+                transform: rotate(180deg);
+            }
+
+            /* Add these styles to the existing <style> section */
+
+            /* New Quest Panel Styles */
+            #new-quests-box {
+                position: fixed;
+                left: 20px;
+                bottom: 20px; /* Changed from top: 450px to bottom: 20px */
+                width: 300px;
+                background: none; /* Remove background */
+                border: none; /* Remove border */
+                box-shadow: none; /* Remove shadow */
+                z-index: 1000;
+            }
+
+            /* Remove the header styles since we're removing that element */
+            #new-quests-box .header {
+                display: none; /* Hide the header completely */
+            }
+
+            #new-quests-box .content {
+                max-height: 400px;
+                overflow-y: auto;
+                padding: 15px;
+                display: block !important;
+            }
+
+            #new-quests-box .quest {
+                background: linear-gradient(145deg, rgba(28, 40, 51, 0.95), rgba(44, 62, 80, 0.95)); /* Dark winter blue gradient */
+                border-radius: 8px;
+                margin-bottom: 10px;
+                padding: 15px;
+                box-shadow: 0 4px 20px rgba(176, 224, 230, 0.3); /* Powder blue shadow */
+                border: 1px solid rgba(176, 224, 230, 0.3); /* Powder blue border */
+            }
+
+            #new-quests-box .quest-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            #new-quests-box .quest h3 {
+                margin: 0;
+                font-size: 16px;
+                color: #B0E0E6; /* Powder blue */
+            }
+
+            .reward-image {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+            }
+
+            #new-quests-box .quest-description {
+                margin: 5px 0;
+                font-size: 14px;
+                color: #E0FFFF; /* Light cyan */
+            }
+
+            #new-quests-box .quest .quest-progress {
+                height: 8px;
+                background-color: #4682B4; /* Steel blue */
+                border-radius: 4px;
+                overflow: hidden;
+                margin-bottom: 8px;
+            }
+
+            #new-quests-box .quest .quest-progress div {
+                height: 100%;
+                background-color: #87CEEB; /* Sky blue */
+                width: 50%;
+                transition: width 0.3s;
+            }
+
+            #new-quests-box .quest .claim-button {
+                padding: 6px 12px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 12px;
+                background-color: #4682B4; /* Steel blue */
+                color: #ffffff;
+                transition: background-color 0.3s;
+            }
+
+            #new-quests-box .quest .claim-button:hover {
+                background-color: #87CEEB; /* Sky blue */
+            }
+
+            #new-quests-box .quest:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 16px rgba(176, 224, 230, 0.4); /* Powder blue shadow */
+            }
+
+
+            /* ===================== Animated Particle Background ===================== */
+
+            /* Container for particles */
+            .particle-container {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                overflow: hidden;
+                z-index: -2; /* Ensure particles are behind all content */
+            }
+            /* Responsive Styles for Quests Section */
+            @media (max-width: 768px) {
+                #new-quests-box {
+                    width: 90%;
+                    left: 5%;
+                    bottom: 10px;
+                }
+
+                #new-quests-box .header h2 {
+                    font-size: 18px;
+                }
+
+                #new-quests-box .quest h3 {
+                    font-size: 18px;
+                }
+
+                #new-quests-box .quest p {
+                    font-size: 14px;
+                }
+
+                #new-quests-box .quest button {
+                    font-size: 12px;
+                    padding: 6px 12px;
+                }
+            }
+
+            /* Particle Styles */
+            @keyframes particleMove {
+                0% {
+                    transform: translate(0, 0) scale(1);
+                    opacity: 1;
+                }
+                100% {
+                    transform: translate(100px, 100px) scale(0.5);
+                    opacity: 0;
+                }
+            }
+
+            .particle {
+                position: absolute;
+                width: 8px;
+                height: 8px;
+                background: rgba(39, 145, 194, 0.4); /* Copper with transparency */
+                border-radius: 50%;
+                animation: particleMove linear infinite;
+            }
+
+            /* ===================== Menu Slide-In Animation ===================== */
+
+            @keyframes slideInFromTop {
+                from {
+                    transform: translateY(-100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            .menu {
+                animation: slideInFromTop 1s ease-out forwards;
+            }
+
+            /* ===================== Button Hover Effects ===================== */
+
+            /* Play Button Glowing and Scaling on Hover */
+            .play-button {
+                transition: transform 0.3s, box-shadow 0.3s;
+            }
+
+            .play-button:hover {
+                    transform: scale(1.05);
+                box-shadow: 0 0 20px rgba(0, 123, 95, 0.8);
+            }
+
+            /* Battlepass Button Hover Effects */
+            .battlepass-button:hover img {
+                transform: scale(1.1);
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+            }
+
+            .battlepass-button span:hover {
+                transform: scale(1.1);
+            }
+
+            /* ===================== Profile Section Animations ===================== */
+
+            /* Fade-In Animation for Profile Info */
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* ===================== Champion Selector Animations ===================== */
+
+            /* Enhanced Entrance Animation for Champion Images */
+            @keyframes fadeInScale {
+                0% {
+                    opacity: 0;
+                    transform: scale(0.85);
+                }
+                50% {
+                    opacity: 0.5;
+                    transform: scale(1.02);
+                }
+                100% {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+
+            .champion-image {
+                animation: fadeInScale 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+                opacity: 0;
+            }
+
+            /* Add Delay for Staggered Entrance with Enhanced Timing */
+            .champion-image:nth-child(odd) {
+                animation-delay: 0.2s;
+            }
+
+            .champion-image:nth-child(even) {
+                animation-delay: 0.4s;
+            }
+
+            /* Smooth Hover Glow and Scale Effect */
+            .champion-image:hover {
+                box-shadow: 0 0 20px #0ab2c9; /* Hay */
+                transform: scale(1.15);
+                transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            }
+
+            .advent-calendar-button {
+                position: fixed;
+                top: 245px; /* Positioned below battlepass button */
+                left: 75px;
+                background-color: transparent;
+                cursor: pointer;
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 10px;
+                width: 200px; /* Adjust the width as needed */
+                flex-direction: column; /* Stack image and text vertically */
+                border: 2px solid #F5DEB3; /* Hay */
+            }
+
+            .advent-calendar-button img {
+                width: 250px; /* Adjust the size as needed */
+                height: 100px;
+                transition: transform 0.3s, box-shadow 0.3s;
+                position: absolute; /* Position image absolutely */
+                z-index: -1; /* Place image behind the text */
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Add shadow for a modern effect */
+                border-radius: 10px; /* Slightly rounded corners for a modern look */
+                animation: float 5s ease-in-out infinite; /* Add floating animation */
+                box-shadow: 0 8px 20px #F5DEB3; /* Hay */
+            }
+
+            .advent-calendar-button span {
+                color: #ffffff; /* MOBA game-like gold color */
+                font-size: 24px; /* Slightly larger font size */
+                font-weight: bold;
+                margin-top: 10px; /* Adjust margin to position text */
+                transition: transform 0.3s;
+                z-index: 1; /* Ensure text is above the image */
+                font-family: 'Bangers', cursive; /* MOBA game-like font */
+                text-shadow: 2px 2px 4px #F5DEB3; /* Hay */
+                animation: float 5s ease-in-out infinite; /* Add floating animation */
+            }
+
+            .advent-calendar-button span:hover {
+                color: #F5DEB3; /* Light Wedding Blue */
+                transform: scale(1.1);
+                box-shadow: 0 8px 20px #58dfe9; /* Hay */
+            }
+
+            .advent-calendar-button:hover img {
+                transform: scale(1.1);
+                box-shadow: 0 0 15px rgba(71, 207, 241, 0.7); /* Hay shadow */
+            }
+
+            /* Optional: Add a festive glow animation */
+            @keyframes festiveGlow {
+                0% { box-shadow: 0 0 15px rgba(245, 222, 179, 0.7); }
+                50% { box-shadow: 0 0 25px rgba(245, 222, 179, 0.9); }
+                100% { box-shadow: 0 0 15px rgba(245, 222, 179, 0.7); }
+            }
+
+            .advent-calendar-button:hover {
+                animation: festiveGlow 2s infinite;
+            }
+
+            /* Advent Calendar Window */
+            .modal-window {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+                z-index: 2000;
+            }
+
+            .advent-calendar-content {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+                z-index: 1001;
+                width: 80%;
+                max-width: 600px;
+            }
+
+            .close-button {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                font-size: 24px;
+                cursor: pointer;
+            }
+
+            .close-button:hover {
+                color: red;
+            }
+
+            .calendar-grid {
+                display: grid;
+                grid-template-columns: repeat(6, 1fr);
+                gap: 15px;
+                padding: 20px;
+                background-color: rgba(17, 16, 16, 0.95);
+                border-radius: 15px;
+                margin: 15px;
+            }
+
+            .calendar-day {
+                aspect-ratio: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: #B0E0E6; /* Powder Blue */
+                color: #333;
+                font-size: 1.5em;
+                font-weight: bold;
+                border-radius: 10px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 8px rgba(176, 224, 230, 0.3);
+                padding: 15px;
+                min-height: 60px;
+            }
+
+            .calendar-day:hover {
+                transform: scale(1.1);
+                box-shadow: 0 6px 12px rgba(176, 224, 230, 0.5);
+            }
+
+            .modal-window {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+                z-index: 2000;
+            }
+
+            .advent-calendar-content {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: #1C2833; /* Dark winter blue */
+                padding: 30px;
+                border-radius: 20px;
+                box-shadow: 0 0 30px rgba(176, 224, 230, 0.3); /* Powder blue shadow */
+                color: #E0FFFF; /* Light cyan */
+                width: 70%;
+                max-width: 900px;
+                min-height: 600px;
+                border: 1px solid rgba(176, 224, 230, 0.3); /* Powder blue border */
+            }
+
+            .advent-calendar-content h2 {
+                text-align: center;
+                font-size: 2em;
+                color: #B0E0E6; /* Powder blue */
+                margin-bottom: 20px;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            }
+
+            .close-button {
+                position: absolute;
+                top: 20px;
+                right: 25px;
+                font-size: 32px;
+                color: #B0E0E6; /* Powder blue */
+                cursor: pointer;
+                transition: transform 0.3s ease;
+                z-index: 2001;
+            }
+
+            .close-button:hover {
+                transform: scale(1.2);
+            }
+
+            .reward-content {
+                width: 40%;
+                max-width: 400px;
+                padding: 30px;
+            }
+
+            #reward-image {
+                max-width: 200px;
+                max-height: 200px;
+            }
+
+            @media (max-width: 768px) {
+                .calendar-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 15px;
+                    padding: 15px;
+                }
+
+                .calendar-day {
+                    padding: 20px;
+                    font-size: 1.5em;
+                    min-height: 80px;
+                }
+
+                .advent-calendar-content {
+                    width: 95%;
+                    padding: 20px;
+                    min-height: auto;
+                }
+            }
+
+            /* Add or update these styles in your <style> section */
+            .modal-window {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+                z-index: 2000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #daily-reward-popup {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: rgb(17, 16, 16);
+                padding: 40px;
+                border-radius: 20px;
+                box-shadow: 0 0 30px rgba(176, 224, 230, 0.3);
+                text-align: center;
+                z-index: 2001;
+                width: 80%;
+                max-width: 600px;
+            }
+
+            #reward-image {
+                width: auto;
+                height: auto;
+                max-width: 400px;
+                max-height: 400px;
+                margin: 20px auto;
+                display: block;
+                border-radius: 10px;
+                box-shadow: 0 0 20px rgba(176, 224, 230, 0.2);
+            }
+
+            #reward-name {
+                font-size: 2em;
+                color: #B0E0E6; /* Powder Blue */
+                margin: 20px 0;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            }
+
+            .close-reward-button {
+                position: absolute;
+                top: 15px;
+                right: 20px;
+                font-size: 24px;
+                color: #B0E0E6; /* Powder Blue */
+                cursor: pointer;
+                background: none;
+                border: none;
+                padding: 5px 10px;
+                transition: transform 0.3s ease;
+            }
+
+            .close-reward-button:hover {
+                transform: scale(1.1);
+            }
+
+            /* Animation for reward appearance */
+            @keyframes popIn {
+                0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+                100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            }
+
+            #daily-reward-popup {
+                animation: popIn 0.3s ease-out forwards;
+            }
+
+            /* Update these styles in your <style> section */
+            .reward-display {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                padding: 20px;
+            }
+
+            .reward-display h2 {
+                font-size: 2em;
+                color: #B0E0E6; /* Powder Blue */
+                margin-bottom: 30px;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            }
+
+            #reward-image {
+                max-width: 80%;
+                max-height: 60vh;
+                border-radius: 10px;
+                box-shadow: 0 0 30px rgba(176, 224, 230, 0.3);
+            }
+
+            /* Animation for the reward appearance */
+            @keyframes fadeIn {
+                from { opacity: 0; transform: scale(0.9); }
+                to { opacity: 1; transform: scale(1); }
+            }
+
+            .reward-display {
+                animation: fadeIn 0.3s ease-out forwards;
+            }
+
+            /* Update the close button position */
+            .close-button {
+                position: absolute;
+                top: 20px;
+                right: 25px;
+                font-size: 32px;
+                color: #B0E0E6; /* Powder Blue */
+                cursor: pointer;
+                transition: transform 0.3s ease;
+                z-index: 2001;
+            }
+
+            .close-button:hover {
+                transform: scale(1.2);
+            }
+
+            /* Update these styles in your <style> section */
+            .modal-window {
+                display: none; /* Hide by default */
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+                z-index: 2000;
+            }
+
+            .advent-calendar-content {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: rgb(17, 16, 16);
+                padding: 30px;
+                border-radius: 20px;
+                box-shadow: 0 0 30px rgba(173, 216, 230, 0.3); /* Light blue shadow */
+                color: #fff;
+                width: 70%;
+                max-width: 900px;
+                min-height: 600px;
+            }
+
+            #daily-reward-popup {
+                display: none; /* Hide by default */
+            }
+
+            .username-title-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 2px;
+            }
+
+            #username-display {
+                font-size: 1.8em; /* Increased from 1.6em */
+                font-weight: 600;
+                color: #1d99af;
+                margin: 0;
+            }
+
+            #title-display {
+                font-size: 0.8em;
+                color: #1d99af;  /* Gold color for the title */
+                font-style: italic;
+            }
+
+            .patch-button {
+                position: fixed;
+                top: 200px; /* Adjust this value to move the button down */
+                left: 75px;
+                background-color: black;
+                border-radius: 10px;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+                overflow: hidden;
+                width: 250px; /* Adjust width as needed */
+                z-index: 1000;
+            }
+
+            .patch-button a {
+            display: flex;
+                flex-direction: column;
+            align-items: center;
+                text-decoration: none;
+                color: white;
+                padding: 10px;
+            }
+
+            .patch-button img {
+                width: 100%;
+                height: auto;
+                transition: transform 0.3s, box-shadow 0.3s;
+            }
+
+            .patch-button:hover img {
+                transform: scale(1.1);
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+            }
+
+            .patch-text h2, .patch-text p {
+                margin: 0;
+                text-align: center;
+                font-family: 'Bangers', cursive;
+            }
+
+            .patch-text h2 {
+                font-size: 24px;
+                margin-top: 10px;
+            }
+
+            .patch-text p {
+                font-size: 16px;
+            }
+
+            .changelog-button {
+                position: fixed;
+                top: 365px; /* Position it between battlepass and advent calendar buttons */
+                left: 75px;
+                background-color: transparent;
+                cursor: pointer;
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 10px;
+                width: 200px;
+                flex-direction: column;
+                border: 2px solid #44e7e7; /* Hay */
+            }
+
+            .changelog-button img {
+                width: 250px;
+                height: 100px;
+                transition: transform 0.3s, box-shadow 0.3s;
+                position: absolute;
+                z-index: -1;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+                border-radius: 10px;
+                animation: float 5s ease-in-out infinite;
+                background-color: black; /* Add black background to the image container */
+            }
+
+            .changelog-button span {
+                color: #ffffff;
+                font-size: 24px;
+                font-weight: bold;
+                margin-top: 10px;
+                transition: transform 0.3s;
+                z-index: 1;
+                font-family: 'Bangers', cursive;
+                text-shadow: 2px 2px 4px #b3f5f5;
+                animation: float 5s ease-in-out infinite;
+            }
+
+            .changelog-button:hover img {
+                transform: scale(1.1);
+                box-shadow: 0 0 15px rgba(245, 222, 179, 0.7);
+            }
+
+            .changelog-button:hover span {
+                color: #F5DEB3;
+                transform: scale(1.1);
+                box-shadow: 0 8px 20px #5af0f0;
+            }
+        /* Modern Header Styles */
+            .modern-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 30px;
+                background: rgba(0, 0, 0, 0.85);
+                backdrop-filter: blur(10px);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1000;
+                box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+            }
+
+            /* Menu Styles */
+            .menu-items {
+                display: flex;
+                gap: 30px;
+                align-items: center;
+            }
+
+            .menu-link {
+                color: #ffffff;
+                text-decoration: none;
+                font-size: 16px;
+                padding: 10px 20px;
+                border-radius: 8px;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            /* Special styling for the play button */
+            .menu-link.play-button {
+                background: linear-gradient(135deg, #87CEEB, #4682B4); /* Sky blue to steel blue */
+                color: white;
+                right: 850px;
+                top: 20px;
+                padding: 12px 30px;
+                border-radius: 20px;
+                box-shadow: 0 4px 15px rgba(135, 206, 235, 0.3); /* Sky blue shadow */
+                transition: all 0.3s ease;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 18px;
+            }
+
+            .menu-link.play-button:hover {
+                transform: translateY(-2px) scale(1.05);
+                box-shadow: 0 6px 20px rgba(176, 224, 230, 0.4); /* Powder blue shadow */
+                background: linear-gradient(135deg, #B0E0E6, #87CEEB); /* Powder blue to Sky blue */
+            }
+
+            .menu-link.play-button i {
+                margin-right: 8px;
+                font-size: 1.2em;
+            }
+
+            .menu-link:not(.play-button):hover {
+                background: rgba(176, 224, 230, 0.2); /* Powder blue */
+                transform: translateY(-2px);
+            }
+
+            .menu-link.active {
+                background: rgba(135, 206, 235, 0.3); /* Sky blue */
+                color: #B0E0E6; /* Powder blue */
+            }
+
+            /* Profile Container Styles */
+            .profile-container {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                margin-left: auto;
+            }
+
+            .currency-display {
+                display: flex;
+                gap: 15px;
+            }
+
+            .currency-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                background: rgba(176, 224, 230, 0.1); /* Powder blue */
+                padding: 8px 15px;
+                border-radius: 20px;
+                transition: all 0.3s ease;
+            }
+
+            .currency-item:hover {
+                background: rgba(176, 224, 230, 0.2);
+                transform: scale(1.05);
+            }
+
+            .currency-icon {
+                width: 24px;
+                height: 24px;
+            }
+
+            .profile-icon {
+                width: 75px;
+                height: 75px;
+                border-radius: 50%;
+                border: 2px solid #B0E0E6; /* Powder blue */
+                transition: all 0.3s ease;
+            }
+
+            .profile-icon:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 15px rgba(176, 224, 230, 0.5); /* Powder blue glow */
+            }
+
+            /* Modern Play Button Styles */
+            .modern-play-button {
+                position: fixed;
+                top: 90px;
+                left: 30px;
+                background: linear-gradient(135deg, #87CEEB, #4682B4); /* Sky blue to Steel blue */
+                color: white;
+                text-decoration: none;
+                padding: 15px 40px;
+                border-radius: 30px;
+                font-size: 20px;
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                transition: all 0.3s ease;
+                box-shadow: 0 5px 15px rgba(135, 206, 235, 0.3);
+                z-index: 999;
+            }
+
+            .modern-play-button:hover {
+                transform: translateY(-2px) scale(1.02);
+                box-shadow: 0 8px 20px rgba(176, 224, 230, 0.4); /* Powder blue shadow */
+                background: linear-gradient(135deg, #B0E0E6, #87CEEB); /* Powder blue to Sky blue */
+            }
+
+            .play-icon {
+                font-size: 24px;
+            }
+
+            .play-text {
+                letter-spacing: 1px;
+            }
+
+            /* Username Container Styles */
+            .username-title-container {
+                background: rgba(28, 40, 51, 0.85); /* Dark winter blue */
+                padding: 8px 15px;
+                border-radius: 20px;
+                margin-right: 10px;
+                transition: all 0.3s ease;
+            }
+
+            .username-title-container:hover {
+                background: rgba(70, 130, 180, 0.2); /* Steel blue */
+            }
+
+            /* Enhanced Quest Styles */
+            .quest {
+                background: none;
+                border: none;
+                box-shadow: none;
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+
+            #new-quests-box {
+                background: none;
+                border: none;
+                box-shadow: none;
+            }
+
+            #friend-list-container {
+                position: fixed;
+                right: -20px !important;/* Extend beyond screen edge */
+                top: 90px !important; /* Extend beyond screen edge */
+                width: 320px; /* Increased width to account for negative right position */
+                padding-right: 20px; /* Add padding to offset negative position */
+                padding-bottom: 20px; /* Add padding to offset negative position */
+                background: linear-gradient(145deg, rgba(26, 20, 18, 0.95), rgba(41, 33, 29, 0.95));
+                box-shadow: 0 4px 20px rgba(184, 115, 51, 0.3);
+                z-index: 1000;
+            }
+
+            #toggle-friend-list {
+                padding: 15px 20px;
+                color: #b87333;
+                font-weight: bold;
+                cursor: pointer;
+                border-bottom: 1px solid rgba(184, 115, 51, 0.2);
+                transition: all 0.3s ease;
+            }
+
+            #toggle-friend-list:hover {
+                background: rgba(184, 115, 51, 0.1);
+                color: #cd7f32;
+            }
+
+            #friend-list {
+                padding: 15px;
+            }
+
+            #friend-name-input {
+                width: 100%;
+                padding: 10px;
+                margin: 10px 0;
+                background: rgba(0, 0, 0, 0.2);
+                border: 1px solid rgba(184, 115, 51, 0.3);
+                border-radius: 8px;
+                color: #fff;
+            }
+
+            #add-friend-button {
+                width: 100%;
+                padding: 10px;
+                background: linear-gradient(135deg, #b87333, #cd7f32);
+                border: none;
+                border-radius: 8px;
+                color: white;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            #add-friend-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(184, 115, 51, 0.4);
+            }
+
+            .friend-item {
+                display: flex;
+                align-items: center;
+                padding: 10px;
+                border-bottom: 1px solid rgba(184, 115, 51, 0.2);
+                transition: all 0.3s ease;
+            }
+
+            .friend-item:hover {
+                background: rgba(184, 115, 51, 0.1);
+            }
+
+            .friend-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                margin-right: 10px;
+                border: 2px solid rgba(184, 115, 51, 0.3);
+            }
+
+            .friend-name {
+                color: #F5DEB3;
+                text-decoration: none;
+                transition: color 0.3s ease;
+            }
+
+            .friend-name:hover {
+                color: #cd7f32;
+            }
+
+            .friend-container {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .friend-info {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .friend-name {
+                color: #F5DEB3;
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+            .status-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #4CAF50;
+                margin-right: 5px;
+            }
+
+            .last-seen {
+                font-size: 0.8em;
+                color: #999;
+            }
+
+            .friend-actions {
+                display: flex;
+                gap: 8px;
+            }
+
+            .friend-action-button {
+                padding: 6px;
+                border: none;
+                border-radius: 4px;
+                background: rgba(184, 115, 51, 0.2);
+                color: #F5DEB3;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .friend-action-button:hover {
+                background: rgba(184, 115, 51, 0.4);
+                transform: scale(1.1);
+            }
+
+            .friend-notification {
+                position: absolute;
+                top: -40px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 4px;
+                animation: slideDown 0.3s ease, fadeOut 0.3s ease 2.7s;
+            }
+
+            @keyframes slideDown {
+                from { transform: translate(-50%, -20px); opacity: 0; }
+                to { transform: translate(-50%, 0); opacity: 1; }
+            }
+
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+
+
+            /* Profile Menu Styles */
+            .profile-menu {
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: rgba(26, 38, 52, 0.95);
+                border: 1px solid #4d88b7;
+                border-radius: 8px;
+                padding: 10px 0;
+                display: none;
+                z-index: 1001;
+                box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2);
+                min-width: 200px;
+            }
+
+            .profile-menu.show {
+                display: block;
+            }
+
+            .profile-menu ul {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .profile-menu li {
+                padding: 10px 20px;
+                color: #e3f4ff;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                white-space: nowrap;
+            }
+
+            .profile-menu li:hover {
+                background: rgba(70, 130, 180, 0.2);
+                color: #90caf9;
+            }
+
+            /* Bottom Buttons Container */
+            .bottom-buttons-container {
+                position: fixed;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                gap: 30px;
+                z-index: 1000;
+            }
+
+            .bottom-button {
+                width: 280px;
+                height: 160px;
+                position: relative;
+                overflow: hidden;
+                border-radius: 15px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                border: 2px solid rgba(176, 224, 230, 0.3);
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(5px);
+            }
+
+            .bottom-button:hover {
+                transform: translateY(-10px);
+                border-color: #87CEEB; /* Sky blue */
+                box-shadow: 0 10px 25px rgba(176, 224, 230, 0.4);
+            }
+
+            .bottom-button img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: all 0.3s ease;
+            }
+
+            .bottom-button:hover img {
+                transform: scale(1.1);
+            }
+
+            .bottom-button .button-content {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 15px;
+                background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent); /* Dark winter blue gradient */
+                color: #E0FFFF; /* Light cyan */
+                text-align: center;
+            }
+
+            .bottom-button .button-title {
+                font-size: 24px;
+                font-weight: bold;
+                margin: 0;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            }
+
+            .bottom-button:hover .button-content {
+                background: linear-gradient(to top, rgba(176, 224, 230, 0.9), transparent);
+            }
+
+            /* Add winter snowflake animation */
+            .bottom-button::before,
+            .bottom-button::after {
+                content: '❄';
+                position: absolute;
+                color: #87CEEB; /* Sky blue */
+                font-size: 24px;
+                opacity: 0;
+                transition: all 0.3s ease;
+            }
+
+            .bottom-button::before {
+                top: 10px;
+                left: 10px;
+            }
+
+            .bottom-button::after {
+                bottom: 10px;
+                right: 10px;
+            }
+
+            .bottom-button:hover::before,
+            .bottom-button:hover::after {
+                opacity: 0.6;
+                transform: rotate(180deg);
+            }
+
+            /* Add these styles to the existing <style> section */
+
+            /* New Quest Panel Styles */
+            #new-quests-box {
+                position: fixed;
+                left: 20px;
+                bottom: 20px; /* Changed from top: 450px to bottom: 20px */
+                width: 300px;
+                background: none; /* Remove background */
+                border: none; /* Remove border */
+                box-shadow: none; /* Remove shadow */
+                z-index: 1000;
+            }
+
+            /* Remove the header styles since we're removing that element */
+            #new-quests-box .header {
+                display: none; /* Hide the header completely */
+            }
+
+            #new-quests-box .content {
+                max-height: 400px;
+                overflow-y: auto;
+                padding: 15px;
+                display: block !important;
+            }
+
+            #friend-list {
+                display: block !important; /* Always visible */
+                max-height: 300px;
+                overflow-y: auto;
+                overflow-x: hidden;
+                padding: 15px;
+            }
+
+            #friend-list-ul {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+
+            /* Custom scrollbar for both panels */
+            #new-quests-box .content::-webkit-scrollbar,
+            #friend-list::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            #new-quests-box .content::-webkit-scrollbar-track,
+            #friend-list::-webkit-scrollbar-track {
+                background: rgba(0, 0, 0, 0.2);
+                border-radius: 4px;
+            }
+
+            #new-quests-box .content::-webkit-scrollbar-thumb,
+            #friend-list::-webkit-scrollbar-thumb {
+                background: rgba(184, 115, 51, 0.5);
+                border-radius: 4px;
+            }
+
+            #new-quests-box .content::-webkit-scrollbar-thumb:hover,
+            #friend-list::-webkit-scrollbar-thumb:hover {
+                background: rgba(184, 115, 51, 0.7);
+            }
+
+            .quest-reward {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                margin-top: 5px;
+            }
+
+            .reward-item {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                background: rgba(184, 115, 51, 0.2);
+                padding: 4px 8px;
+                border-radius: 12px;
+            }
+
+            .reward-image {
+                width: 20px;
+                height: 20px;
+                object-fit: contain;
+            }
+
+            .reward-amount {
+                color: #F5DEB3;
+                font-size: 0.9em;
+                font-weight: 600;
+            }
+
+            .quest-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+
+            .quest-reward {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                margin-left: 10px;
+                cursor: help;
+            }
+
+            .reward-item {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                background: rgba(184, 115, 51, 0.2);
+                padding: 4px 8px;
+                border-radius: 12px;
+                transition: all 0.3s ease;
+            }
+
+            .reward-item:hover {
+                background: rgba(184, 115, 51, 0.3);
+                transform: translateY(-2px);
+            }
+
+            .reward-image {
+                width: 24px;
+                height: 24px;
+                object-fit: contain;
+            }
+
+            .reward-amount {
+                color: #F5DEB3;
+                font-size: 0.9em;
+                font-weight: 600;
+            }
+
+            .quest-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 10px;
+            }
+
+            .quest-progress-container {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .quest-progress {
+                flex-grow: 1;
+                height: 8px;
+                background-color: rgba(184, 115, 51, 0.2);
+                border-radius: 4px;
+                overflow: hidden;
+            }
+
+            .progress-bar {
+                height: 100%;
+                background: linear-gradient(90deg, #b87333, #cd7f32);
+                transition: width 0.3s ease;
+            }
+
+            .progress-text {
+                color: #F5DEB3;
+                font-size: 0.9em;
+                font-weight: 600;
+                min-width: 45px;
+                text-align: right;
+            }
+
+            /* Update these styles in the <style> section */
+
+            /* Modal Content Styles */
+            .modal-content {
+                background: linear-gradient(145deg, rgba(26, 20, 18, 0.95), rgba(41, 33, 29, 0.95));
+                margin: auto;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 20px rgba(184, 115, 51, 0.3);
+                max-width: 1000px; /* Increased from 800px */
+                width: 90%; /* Added to ensure responsiveness */
+                max-height: 85vh; /* Slightly increased */
+                overflow: auto;
+                border: 2px solid #b87333;
+                position: relative; /* For absolute positioning of close button */
+            }
+
+            /* Modal Container */
+            .modal {
+                position: fixed;
+                z-index: 9999; /* Increased z-index to be on top */
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+                display: none;
+            }
+
+            /* Icon Grid Styles */
+            #icon-list {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Increased from 80px */
+                gap: 15px; /* Increased from 10px */
+                padding: 20px;
+            }
+
+            .icon-image {
+                width: 80px; /* Increased from 60px */
+                height: 80px; /* Increased from 60px */
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                border: 2px solid transparent;
+                margin: auto; /* Center images in grid cells */
+                display: block; /* Ensure proper centering */
+            }
+
+            /* Close Button Style */
+            .close {
+                position: absolute;
+                right: 20px;
+                top: 15px;
+                font-size: 28px;
+                font-weight: bold;
+                color: #F5DEB3;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                z-index: 10000; /* Ensure it's above modal content */
+            }
+
+            .close:hover {
+                color: #b87333;
+                transform: scale(1.1);
+            }
+
+            /* Modal Header */
+            .modal-content h2 {
+                color: #F5DEB3;
+                text-align: center;
+                margin: 0 0 30px 0; /* Adjusted margin */
+                font-size: 28px; /* Increased from 24px */
+                padding-top: 10px;
+            }
+
+            /* Scrollbar Styles for Modal */
+            .modal-content::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .modal-content::-webkit-scrollbar-track {
+                background: rgba(0, 0, 0, 0.2);
+                border-radius: 4px;
+            }
+
+            .modal-content::-webkit-scrollbar-thumb {
+                background: rgba(184, 115, 51, 0.5);
+                border-radius: 4px;
+            }
+
+            .modal-content::-webkit-scrollbar-thumb:hover {
+                background: rgba(184, 115, 51, 0.7);
+            }
+
+            /* Snow Effect Styles */
+            .snowfall-container {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 1;
+                overflow: hidden;
+            }
+
+            .snowflake {
+                position: absolute;
+                background: white;
+                border-radius: 50%;
+                opacity: 0.8;
+                animation: snowfall linear infinite;
+                pointer-events: none;
+            }
+
+            @keyframes snowfall {
+                0% {
+                    transform: translateY(-10px) rotate(0deg);
+                }
+                100% {
+                    transform: translateY(100vh) rotate(360deg);
+                }
+            }
+
+            /* Add subtle glow to snowflakes */
+            .snowflake::after {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+            }
+
+            /* Music Player Styles */
+            .music-player-toggle {
+                position: fixed;
+                right: 20px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 40px;
+                height: 40px;
+                background: rgba(28, 40, 51, 0.95);
+                color: #E0FFFF;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                z-index: 1000;
+                transition: all 0.3s ease;
+                box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+                border: 1px solid rgba(176, 224, 230, 0.3);
+            }
+
+            .music-player-toggle:hover {
+                background: rgba(70, 130, 180, 0.95);
+                transform: translateY(-50%) scale(1.1);
+            }
+
+            .music-player-toggle i {
+                font-size: 1.2em;
+            }
+
+            .music-player {
+                position: fixed;
+                right: -350px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 350px;
+                background: rgba(28, 40, 51, 0.95);
+                border-radius: 10px 0 0 10px;
+                padding: 20px;
+                color: #E0FFFF;
+                transition: right 0.3s ease;
+                z-index: 999;
+                box-shadow: -2px 0 15px rgba(0, 0, 0, 0.3);
+            }
+
+            .music-player.active {
+                right: 0;
+            }
+
+            .music-player-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+
+            /* Add progress bar styles */
+            * Progress Bar Styles */
+            progress-container {
+               width: 100%;
+               height: 4px;
+               background: rgba(176, 224, 230, 0.1);
+               border-radius: 2px;
+               margin: 10px 0;
+               cursor: pointer;
+               position: relative;
+               box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            }
+            .progress-bar {
+                width: 100%;
+                height: 100%;
+               position: relative;
+               background: transparent;
+               box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            }
+            .progress {
+               height: 100%;
+               background: linear-gradient(90deg, #87CEEB, #4682B4);
+               border-radius: 2px;
+                position: absolute;
+               left: 0;
+               top: 0;
+               transition: width 0.1s linear;
+               box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            }
+            .progress-handle {
+               width: 12px;
+               height: 12px;
+               background: #E0FFFF;
+               border-radius: 50%;
+               position: absolute;
+               right: -6px;
+                top: 50%;
+               transform: translateY(-50%);
+               box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+               opacity: 0;
+               transition: opacity 0.2s ease;
+               box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            }
+            .progress:hover .progress-handle {
+               opacity: 1;
+               box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            }
+            /* Time Display */
+            time-info {
+               display: flex;
+               justify-content: space-between;
+               font-size: 12px;
+               color: #B0E0E6;
+               margin-top: 5px;
+               padding: 0 2px;
+               box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            }
+.cover-art {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 20px;
+                border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+ .cover-art img {
+    width: 150%;
+    height: 200%;
+                position: absolute;
+    top: 85%; /* Changed from 65% to 45% to show more of the top */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.3s ease;
+}
+            .music-info {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            .playlist-toggle {
+                cursor: pointer;
+                padding: 8px;
+                border-radius: 50%;
+                background: rgba(70, 130, 180, 0.3);
+                transition: all 0.3s ease;
+            }
+
+            .playlist-toggle:hover {
+                background: rgba(70, 130, 180, 0.5);
+            }
+
+            .playlist {
+                display: none;
+                background: rgba(28, 40, 51, 0.98);
+                position: absolute;
+                top: 0;
+                left: -300px;
+                width: 300px;
+                height: 100%;
+                border-radius: 10px 0 0 10px;
+                padding: 20px;
+                transition: left 0.3s ease;
+            }
+
+            .playlist.active {
+                display: block;
+                left: -300px;
+            }
+
+            .playlist-header {
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid rgba(176, 224, 230, 0.2);
+            }
+
+            .playlist-items {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                max-height: calc(100% - 60px);
+                overflow-y: auto;
+            }
+
+            .playlist-items li {
+                padding: 10px;
+                cursor: pointer;
+                border-radius: 5px;
+                transition: all 0.3s ease;
+            }
+
+            .playlist-items li:hover {
+                background: rgba(70, 130, 180, 0.3);
+            }
+
+            .playlist-items li.active {
+                background: rgba(70, 130, 180, 0.5);
+                color: #87CEEB;
+            }
+
+            /* Scrollbar Styles */
+            .playlist-items::-webkit-scrollbar {
+                width: 5px;
+            }
+
+            .playlist-items::-webkit-scrollbar-track {
+                background: rgba(176, 224, 230, 0.1);
+            }
+
+            .playlist-items::-webkit-scrollbar-thumb {
+                background: rgba(70, 130, 180, 0.5);
+                border-radius: 5px;
+            }
+
+            .playlist-items::-webkit-scrollbar-thumb:hover {
+                background: rgba(70, 130, 180, 0.7);
+            }
+
+            /* Music Player Controls */
+            .controls {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 20px;
+                margin: 20px 0;
+            }
+
+            .controls button {
+                background: transparent;
+                border: none;
+                color: #E0FFFF;
+                cursor: pointer;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+                background: rgba(70, 130, 180, 0.2);
+            }
+
+            .controls .play-btn {
+                width: 50px;
+                height: 50px;
+                background: linear-gradient(135deg, #87CEEB, #4682B4);
+                box-shadow: 0 0 15px rgba(135, 206, 235, 0.3);
+            }
+
+            .controls button:hover {
+                transform: scale(1.1);
+                background: rgba(70, 130, 180, 0.4);
+            }
+
+            .controls .play-btn:hover {
+                background: linear-gradient(135deg, #B0E0E6, #87CEEB);
+                box-shadow: 0 0 20px rgba(176, 224, 230, 0.4);
+            }
+
+            /* Progress Bar Styles */
+            .progress-container {
+                width: 100%;
+                height: 4px;
+                background: rgba(176, 224, 230, 0.1);
+                border-radius: 2px;
+                margin: 10px 0;
+                cursor: pointer;
+                position: relative;
+            }
+
+            .progress-bar {
+                height: 100%;
+                background: linear-gradient(90deg, #87CEEB, #4682B4);
+                border-radius: 2px;
+                transition: width 0.1s linear;
+                position: relative;
+            }
+
+            .progress-handle {
+                width: 12px;
+                height: 12px;
+                background: #E0FFFF;
+                border-radius: 50%;
+                position: absolute;
+                right: -6px;
+                top: 50%;
+                transform: translateY(-50%);
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+                opacity: 0;
+                transition: opacity 0.2s ease;
+            }
+
+            .progress-container:hover .progress-handle {
+                opacity: 1;
+            }
+
+            /* Time Display */
+            .time-info {
+                display: flex;
+                justify-content: space-between;
+                font-size: 12px;
+                color: #B0E0E6;
+                margin-top: 5px;
+            }
+
+            /* Volume Control */
+            .volume-control {
+            display: flex;
+            align-items: center;
+                gap: 10px;
+                margin-top: 15px;
+            }
+
+            .volume-slider {
+                flex: 1;
+                height: 4px;
+                appearance: none;
+                background: rgba(176, 224, 230, 0.1);
+                border-radius: 2px;
+                cursor: pointer;
+            }
+
+            .volume-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 12px;
+                height: 12px;
+                background: #E0FFFF;
+                border-radius: 50%;
+                cursor: pointer;
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+                transition: all 0.2s ease;
+            }
+
+            .volume-slider::-webkit-slider-thumb:hover {
+                transform: scale(1.2);
+                background: #87CEEB;
+            }
+            .shuffle-btn {
+                background: transparent;
+                border: none;
+                color: #E0FFFF;
+                cursor: pointer;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+                background: rgba(70, 130, 180, 0.2);
+            }
+            
+            .shuffle-btn.active {
+                background: rgba(70, 130, 180, 0.5);
+                color: #87CEEB;
+            }
+            
+            .shuffle-btn:hover {
+                transform: scale(1.1);
+                background: rgba(70, 130, 180, 0.4);
+            }
+            .reward-popup {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+               background: rgba(26, 38, 52, 0.95);
+               border: 2px solid #4d88b7;
+               border-radius: 15px;
+               padding: 20px;
+               width: 300px;
+               z-index: 1000;
+               box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+               animation: fadeIn 0.3s ease-out;
+            }
+            .reward-popup-header {
+                display: flex;
+               justify-content: space-between;
+                align-items: center;
+               margin-bottom: 15px;
+            }
+            .reward-popup-title {
+               color: #e3f4ff;
+               font-size: 1.2em;
+                margin: 0;
+            }
+            .reward-popup-close {
+               background: none;
+               border: none;
+               color: #90caf9;
+               cursor: pointer;
+               font-size: 1.2em;
+               padding: 5px;
+               transition: color 0.3s ease;
+            }
+            .reward-popup-close:hover {
+               color: #e3f4ff;
+            }
+            .reward-popup-content {
+               text-align: center;
+            }
+            .reward-popup-image {
+               width: 150px;
+               height: 150px;
+                border-radius: 10px;
+               margin: 10px auto;
+               border: 2px solid #4d88b7;
+               object-fit: cover;
+            }
+            .reward-popup-text {
+               color: #90caf9;
+               margin: 15px 0;
+            }
+            .claim-button {
+               background: linear-gradient(135deg, #2196f3, #4d88b7);
+               color: white;
+               border: none;
+               padding: 10px 30px;
+               border-radius: 25px;
+               cursor: pointer;
+               font-size: 1.1em;
+               transition: transform 0.2s ease, box-shadow 0.2s ease;
+               box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+            }
+            .claim-button:hover {
+               transform: translateY(-2px);
+               box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+               background: linear-gradient(135deg, #4d88b7, #2196f3);
+            }
+            @keyframes fadeIn {
+               from {
+                   opacity: 0;
+                   transform: translate(-50%, -48%);
+               }
+               to {
+                   opacity: 1;
+                   transform: translate(-50%, -50%);
+               }
+            }
+
+            .play-button span:first-child {
+                font-size: 28px;
+                margin-bottom: 5px;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+                text-align: center; /* Added text alignment */
+            }
+
+            .play-button span:last-child {
+                font-size: 22px;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+                text-align: center; /* Added text alignment */
+            }

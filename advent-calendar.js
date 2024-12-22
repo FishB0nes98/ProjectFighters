@@ -223,6 +223,18 @@ const adventRewards = {
         image: "res/img/basicbox.png",
         type: 'LOOTBOX',
         folder: 'freelootbox'
+    },
+    23: {
+        name: "Winter Festival Lili",
+        image: "Loading Screen/Winter Festival Lili.png",
+        type: 'SKIN',
+        skinName: 'Winter Festival Lili'
+    },
+    24: {
+        name: "3000 FM",
+        image: "res/img/fm.png",
+        type: 'FM',
+        amount: 3000
     }
 };
 

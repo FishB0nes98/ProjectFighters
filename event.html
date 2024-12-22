@@ -14,12 +14,34 @@
         body {
             margin: 0;
             padding: 0;
-            background: url('Event/Steampunk Event.png') no-repeat center center fixed;
+            background: url('Event/Christmas 2024 Event.jpeg') no-repeat center center fixed;
             background-size: cover;
-            color: #FFD700;
+            color: #E0FFFF;
             font-family: 'Orbitron', sans-serif;
             transition: background-image 0.5s ease-in-out;
         }
+
+        /* Enhanced Snow effect */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            z-index: 9999;
+            color: white;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+            animation: fall linear infinite;
+            pointer-events: none;
+            font-size: 1.5em;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
         h1, h2 {
             text-align: center;
             margin-top: 55px;
@@ -79,8 +101,9 @@
             justify-content: center;
             align-items: center;
             padding: 10px 20px;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(25, 48, 90, 0.8); /* Deep winter blue with transparency */
             z-index: 0;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .menu-items {
@@ -90,13 +113,14 @@
         }
 
         .menu a {
-            color: #6B4226; /* Earthy Brown */
+            color: #E0FFFF; /* Light cyan */
             text-decoration: none;
             padding: 14px 16px;
             font-family: 'Amatic SC', cursive; /* Rustic font */
             font-size: 16px;
             transition: background-color 0.3s, transform 0.3s;
             position: relative;
+            text-shadow: 0 0 5px rgba(65, 105, 225, 0.5); /* Royal blue glow */
         }
 
         .menu a::after {
@@ -114,7 +138,8 @@
         }
 
         .menu a:hover {
-            background-color: #8B4513; /* Saddle Brown */
+            background-color: rgba(65, 105, 225, 0.3); /* Royal blue with transparency */
+            color: white;
             transform: scale(1.05);
         }
 
@@ -127,7 +152,7 @@
         }
 
         .play-button {
-            background-color: #D2B48C; /* Tan */
+            background-color: #4169E1; /* Royal blue */
             color: white;
             border: none;
             border-radius: 25px; /* Slightly less rounded corners for a modern look */
@@ -136,18 +161,19 @@
             text-decoration: none;
             padding: 15px 40px; /* Increased padding for a more prominent button */
             transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* More pronounced shadow for a modern effect */
+            box-shadow: 0 8px 20px rgba(65, 105, 225, 0.4);
             z-index: 1; /* Ensure it is above other elements */
             top: 5px; /* Adjusted position */
             position: fixed;
             left: 0px;
             font-family: 'Amatic SC', cursive; /* Rustic font */
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
         }
 
         .play-button:hover {
-            background-color: #8B4513; /* Saddle Brown */
+            background-color: #1E90FF; /* Dodger blue */
             transform: scale(1.05); /* Slightly enlarge the button on hover */
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
+            box-shadow: 0 10px 25px rgba(65, 105, 225, 0.6);
         }
 
         /* Lightbox styles */
@@ -210,53 +236,58 @@
             position: fixed;
             top: 125px;
             left: 75px;
-            background-color: transparent;
-            border: none;
+            background: url('Event/Christmas 2024 Event.jpeg') no-repeat center center;
+            background-size: cover;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
             cursor: pointer;
             z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 10px;
-            width: 200px;
-            flex-direction: column;
-        }
-
-        .battlepass-button img {
             width: 250px;
             height: 100px;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(65, 105, 225, 0.5);
+            overflow: hidden;
+        }
+
+        .battlepass-button::before {
+            content: '';
             position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(65, 105, 225, 0.2);
+            backdrop-filter: blur(5px);
             z-index: -1;
-            box-shadow: 0 0 20px rgba(184, 115, 51, 0.5); /* Copper glow */
-            border-radius: 10px;
-            animation: float 5s ease-in-out infinite;
         }
 
         .battlepass-button span {
-            color: #FFD700; /* Metallic gold */
+            color: #FFFFFF;
             font-size: 28px;
             font-weight: bold;
-            margin-top: 10px;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Great Vibes', cursive;
             text-shadow: 
-                0 0 5px #B87333,
-                0 0 10px #B87333;
+                0 0 10px #4169E1,
+                0 0 20px #4169E1,
+                0 0 30px #4169E1;
             letter-spacing: 2px;
-            animation: steamGlow 2s infinite;
+            animation: winterGlow 2s infinite;
             text-transform: uppercase;
+            z-index: 2;
         }
 
-        .battlepass-button:hover img {
+        .battlepass-button:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(184, 115, 51, 0.7);
+            box-shadow: 0 0 30px rgba(65, 105, 225, 0.8);
+            border-color: rgba(255, 255, 255, 0.5);
         }
 
         .battlepass-button:hover span {
-            color: #FFA500;
-            text-shadow: 
-                0 0 10px #B87333,
-                0 0 20px #B87333;
+            color: #E0FFFF;
         }
 
         /* New Styles for Event Buttons */
@@ -271,7 +302,7 @@
         }
 
         .event-button {
-            background-color: #8B4513; /* Saddle Brown */
+            background-color: rgba(65, 105, 225, 0.8); /* Royal blue with transparency */
             color: white;
             border: none;
             border-radius: 8px;
@@ -283,10 +314,11 @@
             box-shadow: 0 4px 10px rgba(255, 215, 0, 0.2);
             z-index: 50;
             font-family: 'Amatic SC', cursive; /* Rustic font */
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
         }
 
         .event-button:hover {
-            background-color: #6B4226; /* Earthy Brown */
+            background-color: rgba(30, 144, 255, 0.8); /* Dodger blue with transparency */
             transform: scale(1.05);
         }
 
@@ -405,71 +437,74 @@
             }
         }
 
-        .steampunk-section {
-            background: url('Event/Steampunk Event.jpeg') no-repeat center center fixed;
+        .hidden {
+            display: none;
+        }
+
+        /* Winter Festival Event Styles */
+        .winter-festival-section {
+            background: url('Event/Winter Festival Event.jpeg') no-repeat center center fixed;
             background-size: cover;
-            color: #FFD700;
-            font-family: 'Orbitron', sans-serif;
+            color: #E0FFFF; /* Light cyan */
+            font-family: 'Playfair Display', serif;
             position: relative;
         }
 
-        .steampunk-section::before {
+        .winter-festival-section::before {
             content: "";
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(255, 255, 255, 0.1); /* Light snow overlay */
             z-index: 0;
         }
 
-        .steampunk-section > * {
+        .winter-festival-section > * {
             position: relative;
             z-index: 1;
         }
 
-        .steampunk-section h1 {
+        .winter-festival-section h1 {
             font-size: 72px;
-            color: #FFD700; /* Metallic gold */
+            color: #E0FFFF; /* Light cyan */
             text-shadow: 
-                0 0 10px #B87333,
-                0 0 20px #B87333,
-                0 0 30px #B87333;
-            font-family: 'Cinzel', serif;
+                0 0 10px #4169E1, /* Royal blue glow */
+                0 0 20px #4169E1,
+                0 0 30px #4169E1;
+            font-family: 'Great Vibes', cursive;
             letter-spacing: 4px;
-            text-transform: uppercase;
-            animation: steamGlow 2s infinite;
+            animation: winterGlow 2s infinite;
         }
 
-        .steampunk-gallery .skin-item {
+        .winter-festival-gallery .skin-item {
             margin: 40px;
         }
 
-        .steampunk-gallery .skin-name {
-            color: #FFD700; /* Metallic gold */
+        .winter-festival-gallery .skin-name {
+            color: #E0FFFF; /* Light cyan */
             font-size: 24px;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Playfair Display', serif;
             text-shadow: 
-                0 0 5px #B87333,
-                0 0 10px #B87333;
+                0 0 5px #4169E1,
+                0 0 10px #4169E1;
             letter-spacing: 2px;
             transition: all 0.3s ease;
-            text-transform: none; /* Allow for specific name formatting */
         }
 
-        .steampunk-gallery .skin-name:hover {
-            color: #FFA500; /* Brighter gold on hover */
+        .winter-festival-gallery .skin-name:hover {
+            color: #F0F8FF; /* Alice Blue */
             text-shadow: 
-                0 0 10px #B87333,
-                0 0 20px #B87333;
+                0 0 10px #4169E1,
+                0 0 20px #4169E1;
             transform: scale(1.1);
         }
 
-        @keyframes steamGlow {
-            0% { text-shadow: 0 0 10px #B87333, 0 0 20px #B87333, 0 0 30px #B87333; }
-            50% { text-shadow: 0 0 20px #B87333, 0 0 30px #B87333, 0 0 40px #B87333; }
-            100% { text-shadow: 0 0 10px #B87333, 0 0 20px #B87333, 0 0 30px #B87333; }
+        @keyframes winterGlow {
+            0% { text-shadow: 0 0 10px #4169E1, 0 0 20px #4169E1, 0 0 30px #4169E1; }
+            50% { text-shadow: 0 0 20px #4169E1, 0 0 30px #4169E1, 0 0 40px #4169E1; }
+            100% { text-shadow: 0 0 10px #4169E1, 0 0 20px #4169E1, 0 0 30px #4169E1; }
         }
     </style>
 </head>
@@ -484,48 +519,61 @@
             <a href="statistics.html">Statistics</a>
         </div>
     </div>
-    <div class="event-buttons" style="display: none;">
-        <button class="event-button" id="steampunkEventBtn" aria-controls="steampunkEventSection" aria-expanded="true">Steampunk Event</button>
+    <div class="event-buttons">
+        <button class="event-button" id="winterFestivalEventBtn" aria-controls="winterFestivalEventSection" aria-expanded="true">Winter Festival Event</button>
     </div>
     <div class="play-button-container">
         <a href="Game Modes.html" class="play-button">Play</a>
     </div>
     <button class="battlepass-button" onclick="window.location.href='battlepass.html'">
-        <img src="Event/Steampunk Event.png" alt="Battlepass">
         <span>Battlepass</span>
     </button>
-    <div id="steampunkEventSection" class="event-section active-section steampunk-section">
-        <h1>Steampunk Event</h1>
-        <div id="skin-gallery" class="steampunk-gallery">
+
+    <!-- Winter Festival Event Section -->
+    <div id="winterFestivalEventSection" class="event-section active-section winter-festival-section">
+        <h1>Winter Festival Event</h1>
+        <div id="skin-gallery" class="winter-festival-gallery">
             <div class="skin-item">
-                <a href="Skins/Steamcore MegaMan.jpeg" class="lightbox-link" data-caption="Steamcore MegaMan">
-                    <img src="Skins/Steamcore MegaMan.jpeg" alt="Steamcore MegaMan">
+                <a href="Skins/Winter Festival Lili.jpg" class="lightbox-link" data-caption="Winter Festival Lili">
+                    <img src="Skins/Winter Festival Lili.jpg" alt="Winter Festival Lili">
                 </a>
-                <div class="skin-name">Steamcore MegaMan</div>
+                <div class="skin-name">Winter Festival Lili</div>
             </div>
             <div class="skin-item">
-                <a href="Skins/Steampunk Ibuki.jpeg" class="lightbox-link" data-caption="Steampunk Ibuki">
-                    <img src="Skins/Steampunk Ibuki.jpeg" alt="Steampunk Ibuki">
+                <a href="Skins/Winter Festival Juri.jpeg" class="lightbox-link" data-caption="Winter Festival Juri">
+                    <img src="Skins/Winter Festival Juri.jpeg" alt="Winter Festival Juri">
                 </a>
-                <div class="skin-name">Steampunk Ibuki</div>
+                <div class="skin-name">Winter Festival Juri</div>
             </div>
             <div class="skin-item">
-                <a href="Skins/Steamforged Nina.jpeg" class="lightbox-link" data-caption="Steamforged Nina">
-                    <img src="Skins/Steamforged Nina.jpeg" alt="Steamforged Nina">
+                <a href="Skins/Winter Festival Kabal.jpeg" class="lightbox-link" data-caption="Winter Festival Kabal">
+                    <img src="Skins/Winter Festival Kabal.jpeg" alt="Winter Festival Kabal">
                 </a>
-                <div class="skin-name">Steamforged Nina</div>
+                <div class="skin-name">Winter Festival Kabal</div>
             </div>
             <div class="skin-item">
-                <a href="Skins/Steamforged Kabal.jpeg" class="lightbox-link" data-caption="Steamforged Kabal">
-                    <img src="Skins/Steamforged Kabal.jpeg" alt="Steamforged Kabal">
+                <a href="Skins/Winter Festival Mai.jpeg" class="lightbox-link" data-caption="Winter Festival Mai">
+                    <img src="Skins/Winter Festival Mai.jpeg" alt="Winter Festival Mai">
                 </a>
-                <div class="skin-name">Steamforged Kabal</div>
+                <div class="skin-name">Winter Festival Mai</div>
             </div>
             <div class="skin-item">
-                <a href="Skins/Steamforged Yugo.jpeg" class="lightbox-link" data-caption="Steamforged Yugo">
-                    <img src="Skins/Steamforged Yugo.jpeg" alt="Steamforged Yugo">
+                <a href="Skins/Winter Festival Kuma.jpeg" class="lightbox-link" data-caption="Winter Festival Kuma">
+                    <img src="Skins/Winter Festival Kuma.jpeg" alt="Winter Festival Kuma">
                 </a>
-                <div class="skin-name">Steamforged Yugo</div>
+                <div class="skin-name">Winter Festival Kuma</div>
+            </div>
+            <div class="skin-item">
+                <a href="Skins/Winter Queen Angel.jpeg" class="lightbox-link" data-caption="Winter Queen Angel">
+                    <img src="Skins/Winter Queen Angel.jpeg" alt="Winter Queen Angel">
+                </a>
+                <div class="skin-name">Winter Queen Angel</div>
+            </div>
+            <div class="skin-item">
+                <a href="Skins/Winter Festival Shizumaru.jpeg" class="lightbox-link" data-caption="Winter Festival Shizumaru">
+                    <img src="Skins/Winter Festival Shizumaru.jpeg" alt="Winter Festival Shizumaru">
+                </a>
+                <div class="skin-name">Winter Festival Shizumaru</div>
             </div>
         </div>
     </div>
@@ -622,6 +670,33 @@
                 });
             });
         });
+
+        // Enhanced Snow effect
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+            snowflake.innerHTML = '❄';
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.opacity = Math.random() * 0.8 + 0.2; // More visible snowflakes
+            snowflake.style.fontSize = (Math.random() * 15 + 8) + 'px'; // Varied sizes
+            snowflake.style.filter = 'blur(' + Math.random() * 2 + 'px)'; // Add depth
+            snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            snowflake.style.transform = `rotate(${Math.random() * 360}deg)`; // Random rotation
+            document.body.appendChild(snowflake);
+
+            // Remove snowflake after animation
+            snowflake.addEventListener('animationend', () => {
+                snowflake.remove();
+            });
+        }
+
+        // Create snowflakes more frequently
+        setInterval(createSnowflake, 50); // Increased frequency
+
+        // Initial batch of snowflakes
+        for(let i = 0; i < 50; i++) {
+            setTimeout(createSnowflake, Math.random() * 2000); // Stagger initial creation
+        }
     </script>
 </body>
 </html>

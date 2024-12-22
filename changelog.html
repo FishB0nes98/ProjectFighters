@@ -153,7 +153,7 @@
         .article-header h2 {
             font-size: 2.5em;
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 20px;
         }
@@ -460,29 +460,237 @@
 
         .meta-analysis {
             background: linear-gradient(180deg, rgba(15, 15, 25, 0.95) 0%, rgba(25, 25, 35, 0.95) 100%);
-            border-radius: 16px;
-            padding: 20px;
-            margin-top: 20px;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         .meta-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            padding-bottom: 20px;
         }
 
-        .meta-banner {
+        .meta-header:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-right: 20px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 3px;
+        }
+
+        .meta-header h3 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .meta-subtitle {
-            font-size: 1.2rem;
-            color: var(--secondary-color);
+            font-size: 1.2em;
+            color: #90caf9;
+            opacity: 0.8;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .meta-card {
+            background: rgba(30, 30, 40, 0.6);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .meta-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            font-size: 1.5em;
+            color: #FFD700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .highlight-card {
+            background: rgba(40, 40, 50, 0.6);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 10px 0;
+            transition: transform 0.2s ease;
+        }
+
+        .highlight-card:hover {
+            transform: translateX(10px);
+        }
+
+        .highlight-card.strong {
+            border-left: 4px solid #32cd32;
+        }
+
+        .highlight-card.weak {
+            border-left: 4px solid #ff4500;
+        }
+
+        .character-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        .champion-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .win-rate {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .win-rate.positive {
+            background: rgba(50, 205, 50, 0.2);
+            color: #32cd32;
+        }
+
+        .win-rate.negative {
+            background: rgba(255, 69, 0, 0.2);
+            color: #ff4500;
+        }
+
+        .role-tags {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #90caf9;
+        }
+
+        .detailed-analysis {
+            list-style: none;
+            padding-left: 0;
+            margin: 15px 0;
+        }
+
+        .detailed-analysis li {
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .detailed-analysis li:before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+        }
+
+        .matchup-section {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .matchup-section h4 {
+            color: #90caf9;
+            margin-bottom: 10px;
+        }
+
+        .role-distribution {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .role-group {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .role-group h4 {
+            color: #90caf9;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(144, 202, 249, 0.3);
+        }
+
+        .role-stat {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            gap: 15px;
+        }
+
+        .stat-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: var(--percentage);
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 4px;
+        }
+
+        .performance-stats {
+            display: grid;
+            gap: 15px;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stat-name {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .stat-value {
+            font-size: 0.9em;
+            color: #90caf9;
+        }
+
+        @media (max-width: 768px) {
+            .meta-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .tier-list {
@@ -684,6 +892,404 @@
             align-items: center;
             padding: 4px 0;
         }
+
+        .chart-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .role-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .role-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .role-label {
+            flex: 1;
+        }
+
+        .percentage {
+            text-align: right;
+        }
+
+        .damage-chart {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .damage-circle {
+            text-align: center;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .damage-type {
+            font-weight: bold;
+        }
+
+        .damage-value {
+            font-size: 0.8em;
+        }
+
+        .timeline-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .timeline-point {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .time {
+            flex: 1;
+        }
+
+        .point-stat {
+            display: flex;
+            align-items: center;
+        }
+
+        .mini-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 5px;
+        }
+
+        .comp-cards {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .comp-card {
+            text-align: center;
+            width: 150px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+
+        .comp-icons {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .metrics-grid {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .metric-card {
+            text-align: center;
+            width: 150px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+
+        .metric-label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-weight: bold;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .chart-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .role-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .role-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px;
+        }
+
+        .role-label {
+            min-width: 80px;
+        }
+
+        .stat-bar {
+            flex: 1;
+            height: 20px;
+            background: rgba(255, 69, 0, 0.2);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-bar::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: var(--percentage);
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        .percentage {
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .damage-chart {
+            display: flex;
+            justify-content: space-around;
+            gap: 20px;
+            padding: 15px 0;
+        }
+
+        .damage-circle {
+            width: 80px;
+            height: 80px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .comp-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .comp-card {
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .comp-icons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .mini-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .metric-card {
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .timeline-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .timeline-point {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        .time {
+            min-width: 120px;
+        }
+
+        .point-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 1200px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .comp-cards, .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .awards-showcase {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .award-category {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .award-category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .award-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .award-icon {
+            font-size: 2em;
+            background: rgba(255, 215, 0, 0.1);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .award-header h4 {
+            margin: 0;
+            color: #FFD700;
+            font-size: 1.2em;
+        }
+
+        .winner-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .winner-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #FFD700;
+        }
+
+        .winner-name {
+            font-size: 1.1em;
+            color: #fff;
+        }
+
+        .celebration-skin {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .skin-splash {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            object-position: top center;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .celebration-skin:hover .skin-splash {
+            transform: scale(1.05);
+        }
+
+        .skin-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: #fff;
+        }
+
+        .skin-info h5 {
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+        }
+
+        .price-tag {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .sale-price {
+            color: #32CD32;
+            font-weight: bold;
+        }
+
+        .discount-badge {
+            background: #FF4500;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        @media (max-width: 1200px) {
+            .awards-showcase {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -702,36 +1308,36 @@
     </video>
 
     <div class="header">
-        <h1>Patch 1.3 Notes</h1>
+        <h1>Patch 1.4 Notes</h1>
     </div>
 
     <div class="container">
         <div class="patch-section">
             <div class="article-header">
-                <h2>Gears of Evolution: Patch 1.3 Overhaul</h2>
+                <h2>Winter Festival: Patch 1.4 Celebration</h2>
                 <div class="header-image">
-                    <img src="Default Splash/Shizumaru.png" alt="Patch 1.3 Header" class="header-splash" style="object-position: top center;">
+                    <img src="Default Splash/Elphelt.png" alt="Patch 1.4 Header" class="header-splash" style="object-position: top center;">
                 </div>
-                <p class="highlight-text">Revolutionizing Ranked Play with Auto Pick and Steampunk Innovation</p>
+                <p class="highlight-text">Celebrating the Season with New Music, Winter Skins, and Meta Changes</p>
             </div>
 
             <div class="feature-grid" id="feature-highlights">
                 <div class="feature-card">
-                    <img src="res/img/ls.jpeg" alt="SoloQ Auto Pick" class="feature-icon">
-                    <h3>🎮 SoloQ Auto Pick</h3>
-                    <p>Experience our new auto pick system for ranked matches, making champion selection faster and more strategic.</p>
+                    <img src="res/img/music.png" alt="Songs" class="feature-icon">
+                    <h3>🎵 Songs have arrived</h3>
+                    <p>Experience our new music system, bringing your favorite character themes to life.</p>
                 </div>
 
                 <div class="feature-card">
-                    <img src="Event/Steampunk Event.png" alt="Steampunk Event" class="feature-icon">
-                    <h3>⚙️ Steampunk Event</h3>
-                    <p>Join our Victorian-era inspired event featuring exclusive steampunk-themed skins and rewards.</p>
+                    <img src="Event/Christmas 2024 Event.jpeg" alt="Holiday Season" class="feature-icon">
+                    <h3>🎄 It's Holiday Season!</h3>
+                    <p>Join our festive celebration with exclusive winter-themed skins and rewards.</p>
                 </div>
 
                 <div class="feature-card">
-                    <img src="res/img/advent_calendar.jpeg" alt="Advent Calendar" class="feature-icon">
-                    <h3>🎄 Advent Calendar</h3>
-                    <p>Continue collecting daily rewards and surprises until December 24th!</p>
+                    <img src="Loading Screen/Winter Festival Lili.png" alt="Winter Festival Lili" class="feature-icon">
+                    <h3>🎁 Free Winter Festival Lili</h3>
+                    <p>Log in now to claim your free Winter Festival Lili skin!</p>
                 </div>
             </div>
 
@@ -739,19 +1345,22 @@
                 <h3>Contents</h3>
                 <ul>
                     <li><a href="#feature-highlights">🌟 Feature Highlights</a></li>
+                    <li><a href="#state-of-game">💫 State of the Game</a></li>
                     <li><a href="#meta-analysis">📊 Meta Analysis</a></li>
-                    <li><a href="#ranked-system">🏆 Ranked System Changes</a></li>
-                    <li><a href="#advent-calendar">🎄 Advent Calendar Rewards</a></li>
-                    <li><a href="#character-progression">📈 Character Progression</a></li>
+                    <li><a href="#ranked-system">🏆 2024 Annual Awards</a></li>
+                    <li><a href="#quest-points">✨ Quest Points System</a></li>
+                    <li><a href="#advent-calendar">🎄 Music Update</a></li>
                     <li><a href="#looking-forward">🎯 Looking Forward</a></li>
+                    <li><a href="#winter-festival-skins">❄️ Winter Festival Event Skins</a></li>
+                    <li><a href="#winter-festival-lili">🎁 Free Winter Festival Lili</a></li>
                     <li><a href="#balance-changes">⚖️ Balance Changes</a>
                         <ul>
-                            <li><a href="#subzero-changes"><img src="Icons/Sub Zero.png" alt="Sub Zero" class="toc-icon">Sub Zero (Buff)</a></li>
-                            <li><a href="#shizumaru-changes"><img src="Icons/Shizumaru.png" alt="Shizumaru" class="toc-icon">Shizumaru (Nerf)</a></li>
-                            <li><a href="#birdie-changes"><img src="Icons/Birdie.png" alt="Birdie" class="toc-icon">Birdie (Nerf)</a></li>
-                            <li><a href="#yugo-changes"><img src="Icons/Yugo.png" alt="Yugo" class="toc-icon">Yugo (Buff)</a></li>
-                            <li><a href="#scorpion-changes"><img src="Icons/Scorpion.png" alt="Scorpion" class="toc-icon">Scorpion (Buff)</a></li>
-                            <li><a href="#noel-changes"><img src="Icons/Noel.png" alt="Noel" class="toc-icon">Noel (Nerf)</a></li>
+                            <li><a href="#elphelt-changes"><img src="Icons/Elphelt.png" alt="Elphelt" class="toc-icon">Elphelt (Nerf)</a></li>
+                            <li><a href="#julia-changes"><img src="Icons/Julia.png" alt="Julia" class="toc-icon">Julia (Buff)</a></li>
+                            <li><a href="#kabal-changes"><img src="Icons/Kabal.png" alt="Kabal" class="toc-icon">Kabal (Buff)</a></li>
+                            <li><a href="#astaroth-changes"><img src="Icons/Astaroth.png" alt="Astaroth" class="toc-icon">Astaroth (Buff)</a></li>
+                            <li><a href="#erron-black-changes"><img src="Icons/Erron Black.png" alt="Erron Black" class="toc-icon">Erron Black (Buff)</a></li>
+                            <li><a href="#akuma-changes"><img src="Icons/Akuma.png" alt="Akuma" class="toc-icon">Akuma (Buff)</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -763,523 +1372,1570 @@
                     <h3>State of the Game</h3>
                     <div class="content-card gradient-border">
                         <div class="meta-stat">
-                            <span class="stat-label">Assassin Presence</span>
-                            <div class="stat-bar" style="--percentage: 45%"></div>
+                            <span class="stat-label">Tank Presence</span>
+                            <div class="stat-bar" style="--percentage: 35%"></div>
                         </div>
                         <div class="meta-stat">
-                            <span class="stat-label">Match Duration</span>
-                            <div class="stat-bar" style="--percentage: 55%"></div>
+                            <span class="stat-label">Carry Impact</span>
+                            <div class="stat-bar" style="--percentage: 65%"></div>
                         </div>
-                        <p>The competitive landscape has shifted significantly following our previous balance changes. While Shizumaru maintained a strong presence with a 50% win rate, we've seen notable improvements in previously underperforming characters:</p>
+                        <p>The competitive landscape continues to evolve with some surprising shifts in character performance. Our data shows several notable trends:</p>
                         <ul style="list-style: none; padding-left: 0;">
-                            <li>• Alice's win rate improved from 64% to 68%, solidifying her position</li>
-                            <li>• Birdie saw increased play with a win rate rising from 62% to 66%</li>
-                            <li>• Raiden emerged as a strong pick with an 85% win rate</li>
-                            <li>• Sub Zero's presence grew with a positive win rate shift</li>
+                            <li>• Mega Man dominates with a 61% win rate (39W/25L), showing strong carry potential</li>
+                            <li>• Nina maintains high performance with a 71% win rate (22W/9L)</li>
+                            <li>• Christie excels with a 71% win rate (20W/8L)</li>
+                            <li>• Raiden shows impressive results with a 76% win rate (19W/6L)</li>
                         </ul>
-                        <p>However, some champions have struggled to find their footing:</p>
+                        <p>However, some characters are struggling in the current meta:</p>
                         <ul style="list-style: none; padding-left: 0;">
-                            <li>• Noel's win rate dropped to 20%, indicating the nerfs may have been too severe</li>
-                            <li>• Sophitia's dominance decreased with her win rate falling to 30%</li>
-                            <li>• Yugo remains underutilized with a 25% win rate despite recent buffs</li>
+                            <li>• Mai significantly underperforms with a 5% win rate (1W/18L)</li>
+                            <li>• Noel struggles with a 15% win rate (4W/22L)</li>
+                            <li>• Shoma faces difficulties with a 25% win rate (9W/27L)</li>
+                            <li>• Sophitia and Talim both show concerning win rates around 30% (13W/31L)</li>
+                        </ul>
+                        <p>Key Meta Observations:</p>
+                        <ul style="list-style: none; padding-left: 0;">
+                            <li>�� High mobility carries are dominating the current meta</li>
+                            <li>• Tank effectiveness has decreased due to the damage-heavy environment</li>
+                            <li>• Characters with strong self-peel abilities show higher success rates</li>
+                            <li>• Early game pressure remains crucial for victory</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="meta-analysis" id="meta-analysis">
+                    <style>
+                        .meta-analysis {
+                            background: linear-gradient(180deg, rgba(15, 15, 25, 0.95) 0%, rgba(25, 25, 35, 0.95) 100%);
+                            border-radius: 20px;
+                            padding: 30px;
+                            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+                        }
+
+                        .meta-header {
+                            text-align: center;
+                            margin-bottom: 40px;
+                            position: relative;
+                            padding-bottom: 20px;
+                        }
+
+                        .meta-header:after {
+                            content: '';
+                            position: absolute;
+                            bottom: 0;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            width: 100px;
+                            height: 3px;
+                            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+                            border-radius: 3px;
+                        }
+
+                        .meta-header h3 {
+                            font-size: 2.5em;
+                            margin-bottom: 10px;
+                            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+                            background-clip: text;
+                            -webkit-text-fill-color: transparent;
+                        }
+
+                        .meta-subtitle {
+                            font-size: 1.2em;
+                            color: #90caf9;
+                            opacity: 0.8;
+                        }
+
+                        .meta-grid {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                            gap: 25px;
+                            margin-top: 30px;
+                        }
+
+                        .meta-card {
+                            background: rgba(30, 30, 40, 0.6);
+                            border-radius: 15px;
+                            padding: 25px;
+                            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                            border: 1px solid rgba(255, 255, 255, 0.1);
+                            transition: transform 0.3s ease, box-shadow 0.3s ease;
+                        }
+
+                        .meta-card:hover {
+                            transform: translateY(-5px);
+                            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+                        }
+
+                        .card-header {
+                            font-size: 1.5em;
+                            color: #FFD700;
+                            margin-bottom: 20px;
+                            padding-bottom: 10px;
+                            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+                        }
+
+                        .highlight-card {
+                            background: rgba(40, 40, 50, 0.6);
+                            border-radius: 12px;
+                            padding: 15px;
+                            margin: 10px 0;
+                            transition: transform 0.2s ease;
+                        }
+
+                        .highlight-card:hover {
+                            transform: translateX(10px);
+                        }
+
+                        .highlight-card.strong {
+                            border-left: 4px solid #32cd32;
+                        }
+
+                        .highlight-card.weak {
+                            border-left: 4px solid #ff4500;
+                        }
+
+                        .character-icon {
+                            width: 32px;
+                            height: 32px;
+                            border-radius: 50%;
+                            border: 2px solid rgba(255, 255, 255, 0.2);
+                            vertical-align: middle;
+                            margin-right: 10px;
+                        }
+
+                        .champion-name {
+                            font-size: 1.1em;
+                            font-weight: 600;
+                            color: #fff;
+                        }
+
+                        .win-rate {
+                            display: inline-block;
+                            padding: 3px 8px;
+                            border-radius: 12px;
+                            font-size: 0.9em;
+                            margin-left: 10px;
+                        }
+
+                        .win-rate.positive {
+                            background: rgba(50, 205, 50, 0.2);
+                            color: #32cd32;
+                        }
+
+                        .win-rate.negative {
+                            background: rgba(255, 69, 0, 0.2);
+                            color: #ff4500;
+                        }
+
+                        .role-tags {
+                            display: block;
+                            margin-top: 5px;
+                            font-size: 0.9em;
+                            color: #90caf9;
+                        }
+
+                        .detailed-analysis {
+                            list-style: none;
+                            padding-left: 0;
+                            margin: 15px 0;
+                        }
+
+                        .detailed-analysis li {
+                            margin: 8px 0;
+                            padding-left: 20px;
+                            position: relative;
+                        }
+
+                        .detailed-analysis li:before {
+                            content: '•';
+                            position: absolute;
+                            left: 0;
+                            color: var(--primary-color);
+                        }
+
+                        .matchup-section {
+                            background: rgba(0, 0, 0, 0.2);
+                            border-radius: 10px;
+                            padding: 15px;
+                            margin-top: 15px;
+                        }
+
+                        .matchup-section h4 {
+                            color: #90caf9;
+                            margin-bottom: 10px;
+                        }
+
+                        .role-distribution {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 20px;
+                        }
+
+                        .role-group {
+                            background: rgba(0, 0, 0, 0.2);
+                            border-radius: 12px;
+                            padding: 15px;
+                        }
+
+                        .role-group h4 {
+                            color: #90caf9;
+                            margin-bottom: 15px;
+                            padding-bottom: 5px;
+                            border-bottom: 1px solid rgba(144, 202, 249, 0.3);
+                        }
+
+                        .role-stat {
+                            display: flex;
+                            align-items: center;
+                            margin: 10px 0;
+                            gap: 15px;
+                        }
+
+                        .stat-bar {
+                            height: 8px;
+                            border-radius: 4px;
+                            background: rgba(255, 255, 255, 0.1);
+                            position: relative;
+                            overflow: hidden;
+                        }
+
+                        .stat-bar::after {
+                            content: '';
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            height: 100%;
+                            width: var(--percentage);
+                            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+                            border-radius: 4px;
+                        }
+
+                        .performance-stats {
+                            display: grid;
+                            gap: 15px;
+                        }
+
+                        .stat-item {
+                            background: rgba(0, 0, 0, 0.2);
+                            border-radius: 10px;
+                            padding: 15px;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 8px;
+                        }
+
+                        .stat-name {
+                            font-weight: 600;
+                            color: #fff;
+                        }
+
+                        .stat-value {
+                            font-size: 0.9em;
+                            color: #90caf9;
+                        }
+
+                        @media (max-width: 768px) {
+                            .meta-grid {
+                                grid-template-columns: 1fr;
+                            }
+                        }
+                    </style>
+
                     <div class="meta-header">
                         <h3>Meta Analysis</h3>
-                        <p class="meta-subtitle">Patch 1.3 Competitive Overview</p>
+                        <p class="meta-subtitle">Patch 1.4 Comprehensive Meta Overview</p>
                     </div>
 
                     <div class="meta-grid">
-                        <!-- Win Rate Distribution Card -->
+                        <!-- S-Tier Analysis -->
                         <div class="meta-card">
-                            <div class="card-header">Top Performers</div>
+                            <div class="card-header">S-Tier Dominance</div>
                             <div class="highlight-card strong">
-                                <img src="Icons/Shizumaru.png" alt="Shizumaru" class="character-icon">
-                                <span class="champion-name"><a href="characters/Shizumaru Page.html">Shizumaru</a></span>
-                                <span class="win-rate positive">57% WR</span>
-                                <span class="role-tags">Mid, Assassin</span>
+                                <img src="Icons/Elphelt.png" alt="Elphelt" class="character-icon">
+                                <span class="champion-name"><a href="characters/Elphelt Page.html">Elphelt</a></span>
+                                <span class="win-rate positive">57 Power Rating</span>
+                                <span class="role-tags">ADC, CC, Ability-based</span>
                             </div>
-                            <div class="highlight-card strong">
-                                <img src="Icons/Birdie.png" alt="Birdie" class="character-icon">
-                                <span class="champion-name"><a href="characters/Birdie Page.html">Birdie</a></span>
-                                <span class="win-rate positive">55% WR</span>
-                                <span class="role-tags">Top, Jungle, Tank</span>
-                            </div>
-                            <div class="highlight-card strong">
-                                <img src="Icons/Noel.png" alt="Noel" class="character-icon">
-                                <span class="champion-name"><a href="characters/Noel Page.html">Noel</a></span>
-                                <span class="win-rate positive">55% WR</span>
-                                <span class="role-tags">ADC, Spell-based</span>
+                            <p class="analysis-text">Elphelt dominates the meta with an unprecedented 57 power rating, showcasing the strength of ability-based ADCs in the current state of the game. Her success stems from:</p>
+                            <ul class="detailed-analysis">
+                                <li>Exceptional lane control through CC abilities</li>
+                                <li>Strong scaling into late game while maintaining early presence</li>
+                                <li>Versatile build paths adapting to team compositions</li>
+                                <li>High impact in objective control scenarios</li>
+                            </ul>
+                            <div class="matchup-section">
+                                <h4>Key Matchups</h4>
+                                <p>Strong against: Tank compositions, immobile carries</p>
+                                <p>Weak against: High mobility assassins, long-range poke</p>
                             </div>
                         </div>
 
-                        <!-- Role Performance Card -->
+                        <!-- A-Tier Analysis -->
                         <div class="meta-card">
-                            <div class="card-header">Role Performance</div>
-                            <div class="role-stat">
-                                <span class="role-label">Mid Lane</span>
-                                <div class="stat-bar" style="--percentage: 75%"></div>
-                                <span class="win-rate">52.3% Avg WR</span>
-                            </div>
-                            <div class="role-stat">
-                                <span class="role-label">ADC</span>
-                                <div class="stat-bar" style="--percentage: 65%"></div>
-                                <span class="win-rate">51.8% Avg WR</span>
-                            </div>
-                            <div class="role-stat">
-                                <span class="role-label">Top</span>
-                                <div class="stat-bar" style="--percentage: 55%"></div>
-                                <span class="win-rate">49.2% Avg WR</span>
-                            </div>
-                            <div class="role-stat">
-                                <span class="role-label">Jungle</span>
-                                <div class="stat-bar" style="--percentage: 45%"></div>
-                                <span class="win-rate">48.7% Avg WR</span>
-                            </div>
-                            <div class="role-stat">
-                                <span class="role-label">Support</span>
-                                <div class="stat-bar" style="--percentage: 40%"></div>
-                                <span class="win-rate">47.5% Avg WR</span>
+                            <div class="card-header">A-Tier Meta Shapers</div>
+                            <div class="role-distribution">
+                                <div class="role-group">
+                                    <h4>Carries (Power Rating: High)</h4>
+                                    <ul>
+                                        <li>
+                                            <strong><img src="Icons/Mega Man.png" alt="Mega Man" class="character-icon"> Mega Man (50)</strong>
+                                            <p>- Excels in: Poke compositions, objective control</p>
+                                            <p>- Win rate: 61% (39W/25L)</p>
+                                            <p>- Key strength: Safe lane phase, consistent damage output</p>
+                                        </li>
+                                        <li>
+                                            <strong><img src="Icons/Eagle.png" alt="Eagle" class="character-icon"> Eagle (50)</strong>
+                                            <p>- Excels in: Sustained damage, tank shredding</p>
+                                            <p>- Notable synergy with engage supports</p>
+                                            <p>- Strong objective control with on-hit build</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="role-group">
+                                    <h4>Control Mages (Power Rating: Very High)</h4>
+                                    <ul>
+                                        <li>
+                                            <strong><img src="Icons/Sub Zero.png" alt="Sub Zero" class="character-icon"> Sub Zero (52)</strong>
+                                            <p>- Exceptional CC chains and zone control</p>
+                                            <p>- Strong roaming potential</p>
+                                            <p>- Key in teamfight compositions</p>
+                                        </li>
+                                        <li>
+                                            <strong><img src="Icons/Raiden.png" alt="Raiden" class="character-icon"> Raiden (52)</strong>
+                                            <p>- Impressive 76% win rate (19W/6L)</p>
+                                            <p>- Dominant mid lane presence</p>
+                                            <p>- Strong map pressure through mobility</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="role-group">
+                                    <h4>Fighters/Tanks (Power Rating: High)</h4>
+                                    <ul>
+                                        <li>
+                                            <strong><img src="Icons/Birdie.png" alt="Birdie" class="character-icon"> Birdie (54)</strong>
+                                            <p>- Versatile role coverage (Top, Jungle, Support)</p>
+                                            <p>- Strong early game presence</p>
+                                            <p>- Excellent team fight initiation</p>
+                                        </li>
+                                        <li>
+                                            <strong><img src="Icons/Talim.png" alt="Talim" class="character-icon"> Talim (54)</strong>
+                                            <p>- High mobility assassin playstyle</p>
+                                            <p>- Strong jungle clear and ganking</p>
+                                            <p>- Excellent split push pressure</p>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Meta Trends Card -->
+                        <!-- B-Tier Analysis -->
                         <div class="meta-card">
-                            <div class="card-header">Meta Trends</div>
-                            <div class="content-card">
-                                <p>• Mid lane dominance continues with assassins like Shizumaru (57% WR) and mages like Raiden (52% WR)</p>
-                                <p>• ADCs maintain strong presence with Noel, Peacock, and Alice all above 54% win rate</p>
-                                <p>• Tank meta shifting towards hybrid builds with Birdie leading at 55% win rate</p>
-                                <p>• Support role struggling with only Angel and FANG showing positive win rates</p>
-                                <p>• Jungle diversity decreasing with only 3 champions above 50% win rate</p>
+                            <div class="card-header">B-Tier Reliable Picks</div>
+                            <div class="role-analysis">
+                                <div class="support-analysis">
+                                    <h4>Support Meta (Average Power Rating: 50)</h4>
+                            <div class="role-stat">
+                                        <span class="role-label">Support Impact</span>
+                                        <div class="stat-bar" style="--percentage: 65%"></div>
+                            </div>
+                                    <ul>
+                                        <li>
+                                            <strong><img src="Icons/Angel.png" alt="Angel" class="character-icon"> Angel (52)</strong>
+                                            <p>- Excellent poke and sustain</p>
+                                            <p>- Strong vision control</p>
+                                        </li>
+                                        <li>
+                                            <strong><img src="Icons/FANG.png" alt="FANG" class="character-icon"> FANG (50)</strong>
+                                            <p>- Reliable healing output</p>
+                                            <p>- Good defensive utility</p>
+                                        </li>
+                                        <li>
+                                            <strong><img src="Icons/Julia.png" alt="Julia" class="character-icon"> Julia (48)</strong>
+                                            <p>- Strong team fight presence</p>
+                                            <p>- Versatile support style</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="fighter-analysis">
+                                    <h4>Fighter Performance</h4>
+                            <div class="role-stat">
+                                        <span class="role-label">Fighter Presence</span>
+                                        <div class="stat-bar" style="--percentage: 70%"></div>
+                                    </div>
+                                    <ul>
+                                        <li>
+                                            <strong><img src="Icons/Christie.png" alt="Christie" class="character-icon"> Christie (44)</strong>
+                                            <p>- High win rate: 71% (20W/8L)</p>
+                                            <p>- Strong 1v1 potential</p>
+                                        </li>
+                                        <li>
+                                            <strong><img src="Icons/Siegfried.png" alt="Siegfried" class="character-icon"> Siegfried (47)</strong>
+                                            <p>- Excellent team fight scaling</p>
+                                            <p>- Good lane sustain</p>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Balance Distribution Card -->
+                        <!-- C & D Tier Analysis -->
                         <div class="meta-card">
-                            <div class="card-header">Balance Distribution</div>
-                            <div class="meta-stat">
-                                <span class="stat-label">Strong (>53%)</span>
-                                <div class="stat-bar-container">
-                                    <div class="stat-bar" style="--percentage: 15%"></div>
-                                    <span>6 Champions</span>
+                            <div class="card-header">Struggling Picks (C & D Tier)</div>
+                            <div class="performance-stats">
+                                <div class="stat-item negative">
+                                    <img src="Icons/Erron Black.png" alt="Erron Black" class="character-icon">
+                                    <span class="stat-name">Erron Black</span>
+                                    <span class="stat-value">42 Rating</span>
+                                    <p>- Mobility issues in current meta</p>
+                                    <p>- Struggles against popular picks</p>
+                                </div>
+                                <div class="stat-item negative">
+                                    <img src="Icons/Akuma.png" alt="Akuma" class="character-icon">
+                                    <span class="stat-name">Akuma</span>
+                                    <span class="stat-value">42 Rating</span>
+                                    <p>- Weak early game presence</p>
+                                    <p>- Scaling issues vs meta picks</p>
+                                </div>
+                                <div class="stat-item negative">
+                                    <img src="Icons/Kabal.png" alt="Kabal" class="character-icon">
+                                    <span class="stat-name">Kabal</span>
+                                    <span class="stat-value">43 Rating</span>
+                                    <p>- Limited team fight impact</p>
+                                    <p>- Inconsistent damage output</p>
                                 </div>
                             </div>
-                            <div class="meta-stat">
-                                <span class="stat-label">Balanced (47-53%)</span>
-                                <div class="stat-bar-container">
-                                    <div class="stat-bar" style="--percentage: 65%"></div>
-                                    <span>26 Champions</span>
-                                </div>
-                            </div>
-                            <div class="meta-stat">
-                                <span class="stat-label">Weak (<47%)</span>
-                                <div class="stat-bar-container">
-                                    <div class="stat-bar" style="--percentage: 20%"></div>
-                                    <span>8 Champions</span>
-                                </div>
+                            <div class="additional-struggling">
+                                <h4>Notable Underperformers</h4>
+                                <ul>
+                                    <li><img src="Icons/Mai.png" alt="Mai" class="character-icon"> Mai: 5% win rate (1W/18L)</li>
+                                    <li><img src="Icons/Noel.png" alt="Noel" class="character-icon"> Noel: 15% win rate (4W/22L)</li>
+                                    <li><img src="Icons/Shoma.png" alt="Shoma" class="character-icon"> Shoma: 25% win rate (9W/27L)</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Key Findings -->
-                    <div class="meta-card">
-                        <div class="card-header">Key Findings</div>
-                        <div class="philosophy-cards">
-                            <div class="philosophy-card">
-                                <h4>Role Balance</h4>
-                                <p>Mid lane and ADC roles show consistently higher win rates, while support and jungle roles need attention in future patches.</p>
-                            </div>
-                            <div class="philosophy-card">
-                                <h4>Champion Diversity</h4>
-                                <p>65% of champions fall within balanced win rates (47-53%), showing healthy overall balance despite some outliers.</p>
-                            </div>
-                            <div class="philosophy-card">
-                                <h4>Emerging Trends</h4>
-                                <p>Hybrid builds gaining popularity, particularly on tanks and fighters, while pure support champions struggle to maintain impact.</p>
-                            </div>
-                        </div>
+                    <!-- Statistical Deep Dive -->
+                    <div class="meta-header">
+                        <h3>Statistical Deep Dive</h3>
+                        <p class="meta-subtitle">Comprehensive Performance Analysis</p>
                     </div>
-
-                    <!-- Gameplay Statistics -->
-                    <div class="meta-card">
-                        <div class="card-header">Gameplay Statistics</div>
-                        <div class="meta-stats">
-                            <h4>Most Played Characters</h4>
-                            <div class="role-stat">
-                                <span class="role-label">Sophitia</span>
-                                <div class="stat-bar" style="--percentage: 85%"></div>
-                                <span>35 Games</span>
-                            </div>
-                            <div class="role-stat">
-                                <span class="role-label">Mega Man</span>
-                                <div class="stat-bar" style="--percentage: 75%"></div>
-                                <span>43 Games</span>
-                            </div>
-                            <div class="role-stat">
-                                <span class="role-label">Julia</span>
-                                <div class="stat-bar" style="--percentage: 70%"></div>
-                                <span>31 Games</span>
-                            </div>
-
-                            <h4 style="margin-top: 20px;">Highest Win Rates</h4>
-                            <div class="role-stat">
-                                <span class="role-label">Raiden</span>
-                                <div class="stat-bar" style="--percentage: 85%"></div>
-                                <span>85.7% (12W/2L)</span>
-                            </div>
-                            <div class="role-stat">
-                                <span class="role-label">Kuma</span>
-                                <div class="stat-bar" style="--percentage: 80%"></div>
-                                <span>80% (4W/0L)</span>
-                            </div>
-                            <div class="role-stat">
-                                <span class="role-label">Christie</span>
-                                <div class="stat-bar" style="--percentage: 75%"></div>
-                                <span>75% (12W/6L)</span>
-                            </div>
-
-                            <h4 style="margin-top: 20px;">Role Distribution</h4>
-                            <div class="role-rows">
-                                <div class="role-row">
-                                    <span class="role-emoji">⚔️</span>
-                                    <span class="role-label">Fighter</span>
+                    <div class="stats-container">
+                        <!-- Role Distribution Chart -->
+                        <div class="chart-section">
+                            <h4>Role Distribution in High Elo</h4>
+                            <div class="role-chart">
+                                <div class="role-bar">
+                                    <span class="role-label">Mid</span>
                                     <div class="stat-bar" style="--percentage: 85%"></div>
-                                    <span>35%</span>
+                                    <span class="percentage">85%</span>
                                 </div>
-                                <div class="role-row">
-                                    <span class="role-emoji">🛡️</span>
-                                    <span class="role-label">Tank</span>
-                                    <div class="stat-bar" style="--percentage: 65%"></div>
-                                    <span>25%</span>
+                                <div class="role-bar">
+                                <span class="role-label">ADC</span>
+                                    <div class="stat-bar" style="--percentage: 75%"></div>
+                                    <span class="percentage">75%</span>
                                 </div>
-                                <div class="role-row">
-                                    <span class="role-emoji">🎯</span>
-                                    <span class="role-label">ADC</span>
-                                    <div class="stat-bar" style="--percentage: 55%"></div>
-                                    <span>20%</span>
-                                </div>
-                                <div class="role-row">
-                                    <span class="role-emoji">✨</span>
+                                <div class="role-bar">
                                     <span class="role-label">Support</span>
-                                    <div class="stat-bar" style="--percentage: 45%"></div>
-                                    <span>15%</span>
+                                <div class="stat-bar" style="--percentage: 65%"></div>
+                                    <span class="percentage">65%</span>
+                            </div>
+                                <div class="role-bar">
+                                    <span class="role-label">Jungle</span>
+                                <div class="stat-bar" style="--percentage: 55%"></div>
+                                    <span class="percentage">55%</span>
+                            </div>
+                                <div class="role-bar">
+                                    <span class="role-label">Top</span>
+                                <div class="stat-bar" style="--percentage: 45%"></div>
+                                    <span class="percentage">45%</span>
+                            </div>
+                            </div>
+                        </div>
+
+                        <!-- Damage Distribution -->
+                        <div class="chart-section">
+                            <h4>Damage Type Distribution</h4>
+                            <div class="damage-chart">
+                                <div class="damage-circle" style="--percentage: 65%">
+                                    <span class="damage-type">Physical</span>
+                                    <span class="damage-value">65%</span>
                                 </div>
-                                <div class="role-row">
-                                    <span class="role-emoji">🗡️</span>
-                                    <span class="role-label">Assassin</span>
-                                    <div class="stat-bar" style="--percentage: 35%"></div>
-                                    <span>5%</span>
+                                <div class="damage-circle" style="--percentage: 30%">
+                                    <span class="damage-type">Magic</span>
+                                    <span class="damage-value">30%</span>
+                                </div>
+                                <div class="damage-circle" style="--percentage: 5%">
+                                    <span class="damage-type">True</span>
+                                    <span class="damage-value">5%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Win Rate by Game Length -->
+                        <div class="chart-section">
+                            <h4>Win Rate by Game Length</h4>
+                            <div class="timeline-chart">
+                                <div class="timeline-point" style="--position: 20%">
+                                    <span class="time">Early (0-15m)</span>
+                                    <div class="point-stat">
+                                        <img src="Icons/Elphelt.png" alt="Elphelt" class="mini-icon">
+                                        <span>65% WR</span>
+                                </div>
+                            </div>
+                                <div class="timeline-point" style="--position: 50%">
+                                    <span class="time">Mid (15-25m)</span>
+                                    <div class="point-stat">
+                                        <img src="Icons/Mega Man.png" alt="Mega Man" class="mini-icon">
+                                        <span>61% WR</span>
+                                </div>
+                            </div>
+                                <div class="timeline-point" style="--position: 80%">
+                                    <span class="time">Late (25m+)</span>
+                                    <div class="point-stat">
+                                        <img src="Icons/Raiden.png" alt="Raiden" class="mini-icon">
+                                        <span>76% WR</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                        <!-- Popular Compositions -->
+                        <div class="chart-section">
+                            <h4>Most Successful Team Compositions</h4>
+                            <div class="comp-cards">
+                                <div class="comp-card">
+                                    <h5>Pick Comp (74% WR)</h5>
+                                    <div class="comp-icons">
+                                        <img src="Icons/Siegfried.png" alt="Siegfried" class="mini-icon" title="Top: Fighter, Sustain">
+                                        <img src="Icons/Scorpion.png" alt="Scorpion" class="mini-icon" title="Jungle: Assassin">
+                                        <img src="Icons/Raiden.png" alt="Raiden" class="mini-icon" title="Mid: Control Mage">
+                                        <img src="Icons/Elphelt.png" alt="Elphelt" class="mini-icon" title="ADC: CC">
+                                        <img src="Icons/Angel.png" alt="Angel" class="mini-icon" title="Support: Enchanter">
+                            </div>
+                                    <p class="comp-description">High pick potential with strong scaling</p>
+                            </div>
+                                <div class="comp-card">
+                                    <h5>Teamfight Comp (70% WR)</h5>
+                                    <div class="comp-icons">
+                                        <img src="Icons/Astaroth.png" alt="Astaroth" class="mini-icon" title="Top: Tank, Teamfight">
+                                        <img src="Icons/Blanka.png" alt="Blanka" class="mini-icon" title="Jungle: Tank, CC">
+                                        <img src="Icons/Morrigan.png" alt="Morrigan" class="mini-icon" title="Mid: Mage, Burst">
+                                        <img src="Icons/Mega Man.png" alt="Mega Man" class="mini-icon" title="ADC: Spell-based">
+                                        <img src="Icons/Julia.png" alt="Julia" class="mini-icon" title="Support: Healer">
+                            </div>
+                                    <p class="comp-description">Strong 5v5 with layered CC</p>
+                                </div>
+                                <div class="comp-card">
+                                    <h5>Split Push Comp (68% WR)</h5>
+                                    <div class="comp-icons">
+                                        <img src="Icons/Christie.png" alt="Christie" class="mini-icon" title="Top: Fighter, 1v1">
+                                        <img src="Icons/Talim.png" alt="Talim" class="mini-icon" title="Jungle: Assassin">
+                                        <img src="Icons/Sub Zero.png" alt="Sub Zero" class="mini-icon" title="Mid: CC">
+                                        <img src="Icons/Nina.png" alt="Nina" class="mini-icon" title="ADC: On-hit">
+                                        <img src="Icons/Kokoro.png" alt="Kokoro" class="mini-icon" title="Support: Healer">
+                                    </div>
+                                    <p class="comp-description">Strong side lanes with map control</p>
+                                </div>
+                        </div>
+                    </div>
+
+                        <!-- Performance Metrics -->
+                        <div class="chart-section">
+                            <h4>Key Performance Metrics</h4>
+                            <div class="metrics-grid">
+                                <div class="metric-card">
+                                    <span class="metric-label">Average Game Length</span>
+                                    <span class="metric-value">23:45</span>
+                            </div>
+                                <div class="metric-card">
+                                    <span class="metric-label">First Blood Rate</span>
+                                    <span class="metric-value">Mid: 45%</span>
+                            </div>
+                                <div class="metric-card">
+                                    <span class="metric-label">Objective Control</span>
+                                    <span class="metric-value">ADC: 65%</span>
+                                </div>
+                                <div class="metric-card">
+                                    <span class="metric-label">Vision Score</span>
+                                    <span class="metric-value">Support: 85</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                            </div>
 
                 <div class="major-section" id="ranked-system">
                     <div class="section-icon">🏆</div>
-                    <h3>Ranked System Changes</h3>
-                    <div class="philosophy-cards">
-                        <div class="philosophy-card">
-                            <div class="card-header">Auto Pick System</div>
-                            <p>New intelligent pick system that suggests optimal champions based on team composition and your performance history.</p>
-                            <ul style="list-style: none; padding-left: 0;">
-                                <li>• Analyzes your top 3 performing champions</li>
-                                <li>• Considers team synergies and counter picks</li>
-                                <li>• Provides real-time win rate statistics</li>
+                    <h3>2024 Annual Awards</h3>
+                    <div class="awards-showcase">
+                        <div class="award-category highest-winrate">
+                            <div class="award-header">
+                                <div class="award-icon">👑</div>
+                                <h4>Highest Winrate Champion</h4>
+                            </div>
+                            <div class="award-content">
+                                <div class="winner-info">
+                                    <img src="Icons/Shizumaru.png" alt="Shizumaru" class="winner-icon">
+                                    <span class="winner-name">Shizumaru</span>
+                            </div>
+                                <div class="celebration-skin">
+                                    <img src="Loading Screen/Superhero Shizumaru.png" alt="Superhero Shizumaru" class="skin-splash">
+                                    <div class="skin-info">
+                                        <h5>Superhero Shizumaru</h5>
+                                        <div class="price-tag">
+                                            <span class="original-price">3000 FM</span>
+                                            <span class="sale-price">1500 FM</span>
+                                            <span class="discount-badge">-50%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+
+                        <div class="award-category most-picked">
+                            <div class="award-header">
+                                <div class="award-icon">🌟</div>
+                                <h4>Most Picked Champion</h4>
+                                </div>
+                            <div class="award-content">
+                                <div class="winner-info">
+                                    <img src="Icons/Shizumaru.png" alt="Shizumaru" class="winner-icon">
+                                    <span class="winner-name">Shizumaru</span>
+                                </div>
+                                <div class="celebration-skin">
+                                    <img src="Loading Screen/Desert Demon Shizumaru.png" alt="Desert Demon Shizumaru" class="skin-splash">
+                                    <div class="skin-info">
+                                        <h5>Desert Demon Shizumaru</h5>
+                                        <div class="price-tag">
+                                            <span class="original-price">3000 FM</span>
+                                            <span class="sale-price">1500 FM</span>
+                                            <span class="discount-badge">-50%</span>
+                                </div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="award-category best-esport">
+                            <div class="award-header">
+                                <div class="award-icon">🏅</div>
+                                <h4>Best E-sport Performance</h4>
+                            </div>
+                            <div class="award-content">
+                                <div class="winner-info">
+                                    <img src="Icons/Noel.png" alt="Noel" class="winner-icon">
+                                    <span class="winner-name">Noel</span>
+                                </div>
+                                <div class="celebration-skin">
+                                    <img src="Loading Screen/Underworld Demon Noel.png" alt="Underworld Demon Noel" class="skin-splash">
+                                    <div class="skin-info">
+                                        <h5>Underworld Demon Noel</h5>
+                                        <div class="price-tag">
+                                            <span class="original-price">3000 FM</span>
+                                            <span class="sale-price">1500 FM</span>
+                                            <span class="discount-badge">-50%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                    </div>
+                </div>
+
+                        <div class="award-category community-favorite">
+                            <div class="award-header">
+                                <div class="award-icon">💖</div>
+                                <h4>Community Favorite</h4>
+                        </div>
+                            <div class="award-content">
+                                <div class="winner-info">
+                                    <img src="Icons/Shoma.png" alt="Shoma" class="winner-icon">
+                                    <span class="winner-name">Shoma</span>
+                                </div>
+                                <div class="celebration-skin">
+                                    <img src="Loading Screen/Skater Shoma.png" alt="Skater Shoma" class="skin-splash">
+                                    <div class="skin-info">
+                                        <h5>Skater Shoma</h5>
+                                        <div class="price-tag">
+                                            <span class="original-price">1000 FM</span>
+                                            <span class="sale-price">500 FM</span>
+                                            <span class="discount-badge">-50%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <style>
+                        .awards-showcase {
+                            display: grid;
+                            grid-template-columns: repeat(2, 1fr);
+                            gap: 30px;
+                            padding: 20px;
+                        }
+
+                        .award-category {
+                            background: rgba(0, 0, 0, 0.3);
+                            border-radius: 15px;
+                            padding: 20px;
+                            border: 1px solid rgba(255, 215, 0, 0.3);
+                            transition: transform 0.3s ease;
+                        }
+
+                        .award-category:hover {
+                            transform: translateY(-5px);
+                            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+                        }
+
+                        .award-header {
+                            display: flex;
+                            align-items: center;
+                            gap: 15px;
+                            margin-bottom: 20px;
+                            padding-bottom: 10px;
+                            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+                        }
+
+                        .award-icon {
+                            font-size: 2em;
+                            background: rgba(255, 215, 0, 0.1);
+                            width: 50px;
+                            height: 50px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            border-radius: 50%;
+                        }
+
+                        .award-header h4 {
+                            margin: 0;
+                            color: #FFD700;
+                            font-size: 1.2em;
+                        }
+
+                        .winner-info {
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                            margin-bottom: 15px;
+                        }
+
+                        .winner-icon {
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 50%;
+                            border: 2px solid #FFD700;
+                        }
+
+                        .winner-name {
+                            font-size: 1.1em;
+                            color: #fff;
+                        }
+
+                        .celebration-skin {
+                            position: relative;
+                            border-radius: 10px;
+                            overflow: hidden;
+                        }
+
+                        .skin-splash {
+                            width: 100%;
+                            height: 200px;
+                            object-fit: cover;
+                            object-position: top center;
+                            border-radius: 10px;
+                            transition: transform 0.3s ease;
+                        }
+
+                        .celebration-skin:hover .skin-splash {
+                            transform: scale(1.05);
+                        }
+
+                        .skin-info {
+                            position: absolute;
+                            bottom: 0;
+                            left: 0;
+                            right: 0;
+                            padding: 15px;
+                            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+                            color: #fff;
+                        }
+
+                        .skin-info h5 {
+                            margin: 0 0 10px 0;
+                            font-size: 1.1em;
+                        }
+
+                        .price-tag {
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                        }
+
+                        .original-price {
+                            text-decoration: line-through;
+                            color: #999;
+                        }
+
+                        .sale-price {
+                            color: #32CD32;
+                            font-weight: bold;
+                        }
+
+                        .discount-badge {
+                            background: #FF4500;
+                            padding: 2px 6px;
+                            border-radius: 4px;
+                            font-size: 0.8em;
+                        }
+
+                        @media (max-width: 1200px) {
+                            .awards-showcase {
+                                grid-template-columns: 1fr;
+                            }
+                        }
+                    </style>
+                </div>
+
+                <div class="major-section" id="quest-points">
+                    <div class="section-icon">✨</div>
+                    <h3>New Quest Points System</h3>
+                    <div class="content-card gradient-border">
+                        <div class="quest-system-intro">
+                            <h4>Introducing Quest Points (QP)</h4>
+                            <p>Complete quests to earn Quest Points, a new currency that can be used to unlock exclusive content!</p>
+                            
+                            <div class="daily-quests">
+                                <h4>Daily Quests</h4>
+                                <ul class="quest-list">
+                                    <li>
+                                        <div class="quest-reward">
+                                            <img src="res/img/qp.png" alt="Quest Points" class="currency-icon">
+                                            <span>500 QP</span>
+                                        </div>
+                                        <div class="quest-desc">Play 10 Games as Lili</div>
+                                    </li>
+                                    <li>
+                                        <div class="quest-reward">
+                                            <img src="res/img/qp.png" alt="Quest Points" class="currency-icon">
+                                            <span>75 QP</span>
+                                        </div>
+                                        <div class="quest-desc">Win 2 Games</div>
+                                    </li>
+                                    <li>
+                                        <div class="quest-reward">
+                                            <img src="res/img/qp.png" alt="Quest Points" class="currency-icon">
+                                            <span>25 QP</span>
+                                        </div>
+                                        <div class="quest-desc">Lose 2 Games</div>
+                                    </li>
                             </ul>
                         </div>
-                        <div class="philosophy-card">
-                            <div class="card-header">Performance Tracking</div>
-                            <p>Enhanced performance metrics to better reflect player skill and impact.</p>
-                            <ul style="list-style: none; padding-left: 0;">
-                                <li>• Role-specific performance ratings</li>
-                                <li>• Individual champion mastery tracking</li>
-                                <li>• Detailed post-match analytics</li>
+
+                            <div class="quest-rewards-info">
+                                <h4>Quest Points Rewards</h4>
+                                <p>Use your earned Quest Points to unlock exclusive content:</p>
+                                <ul>
+                                    <li>Winter Festival Lili recolors (1000 QP each)</li>
+                                    <li>Special event rewards</li>
+                                    <li>Unique cosmetic items</li>
                             </ul>
                         </div>
-                        <div class="philosophy-card">
-                            <div class="card-header">Rank Points Update</div>
-                            <p>Refined rank point system for more accurate skill representation.</p>
-                            <ul style="list-style: none; padding-left: 0;">
-                                <li>• Win streaks grant bonus points</li>
-                                <li>• Performance-based point adjustments</li>
-                                <li>• Loss protection at rank thresholds</li>
-                            </ul>
                         </div>
+
+                        <style>
+                            .quest-system-intro {
+                                padding: 20px;
+                            }
+
+                            .daily-quests {
+                                margin: 20px 0;
+                                background: rgba(0, 0, 0, 0.3);
+                                padding: 20px;
+                                border-radius: 10px;
+                            }
+
+                            .quest-list {
+                                list-style: none;
+                                padding: 0;
+                            }
+
+                            .quest-list li {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                padding: 10px;
+                                margin: 10px 0;
+                                background: rgba(255, 255, 255, 0.1);
+                                border-radius: 5px;
+                                transition: transform 0.3s ease;
+                            }
+
+                            .quest-list li:hover {
+                                transform: translateX(10px);
+                                background: rgba(255, 255, 255, 0.15);
+                            }
+
+                            .quest-reward {
+                                display: flex;
+                                align-items: center;
+                                gap: 5px;
+                                background: rgba(0, 0, 0, 0.3);
+                                padding: 5px 10px;
+                                border-radius: 5px;
+                            }
+
+                            .quest-reward img {
+                                width: 20px;
+                                height: 20px;
+                            }
+
+                            .quest-rewards-info {
+                                margin-top: 20px;
+                                padding: 20px;
+                                background: rgba(0, 0, 0, 0.3);
+                                border-radius: 10px;
+                            }
+
+                            .quest-rewards-info ul {
+                                list-style: none;
+                                padding-left: 0;
+                            }
+
+                            .quest-rewards-info li {
+                                margin: 10px 0;
+                                padding-left: 20px;
+                                position: relative;
+                            }
+
+                            .quest-rewards-info li:before {
+                                content: '•';
+                                position: absolute;
+                                left: 0;
+                                color: var(--primary-color);
+                            }
+                        </style>
                     </div>
                 </div>
 
                 <div class="major-section" id="advent-calendar">
-                    <div class="section-icon">🎄</div>
-                    <h3>Advent Calendar Rewards</h3>
+                    <h3>Music Update</h3>
                     <div class="content-card gradient-border">
-                        <p>Log in daily to collect exciting rewards from our Advent Calendar! Here's a preview of the first 6 days:</p>
-                        <div class="progression-preview" style="margin-top: 20px;">
-                            <div class="progression-milestone">
-                                <span class="milestone-level">1</span>
-                                <p>Random Skin</p>
-                                <img src="res/img/basicbox.png" alt="Random Skin" style="width: 50px; height: 50px; border-radius: 5px;">
+                        <p>Experience the new character themes that have been added to the game! Each song captures the unique personality and style of its champion.</p>
+                        
+                        <div class="songs-showcase">
+                            <div class="song-item">
+                                <div class="song-cover">
+                                    <img src="Loading Screen/Christie.png" alt="Christie Theme">
+                                    <div class="preview-overlay">
+                                        <button class="preview-button" onclick="togglePreview(this, 'Songs/Capoeira Queen (Christie Theme).mp3')">
+                                            <i class="fas fa-play"></i>
+                                        </button>
                             </div>
-                            <div class="progression-milestone">
-                                <span class="milestone-level">2</span>
-                                <p>600 FM</p>
-                                <img src="res/img/fm.png" alt="Fight Money" style="width: 50px; height: 50px; border-radius: 5px;">
                             </div>
-                            <div class="progression-milestone">
-                                <span class="milestone-level">3</span>
-                                <p>Snowman Icon</p>
-                                <img src="Icons/Profile/snowman.png" alt="Snowman Icon" style="width: 50px; height: 50px; border-radius: 5px;">
+                                <div class="song-info">
+                                    <h4>Capoeira Queen</h4>
+                                    <p>Christie's Theme</p>
                             </div>
-                            <div class="progression-milestone">
-                                <span class="milestone-level">4</span>
-                                <p>Mystery Gift</p>
-                                <img src="res/img/cm.png" alt="Mystery Gift" style="width: 50px; height: 50px; border-radius: 5px;">
                             </div>
-                            <div class="progression-milestone">
-                                <span class="milestone-level">5</span>
-                                <p>Winter Lili Icon</p>
-                                <img src="Icons/Profile/winter_lili.png" alt="Winter Lili Icon" style="width: 50px; height: 50px; border-radius: 5px;">
+
+                            <div class="song-item">
+                                <div class="song-cover">
+                                    <img src="Loading Screen/Winter Queen Angel.png" alt="Winter Queen Angel Theme">
+                                    <div class="preview-overlay">
+                                        <button class="preview-button" onclick="togglePreview(this, 'Songs/Flight of the Snow Queen Angel (Winter Queen Angel Theme).mp3')">
+                                            <i class="fas fa-play"></i>
+                                        </button>
                             </div>
-                            <div class="progression-milestone">
-                                <span class="milestone-level">6</span>
-                                <p>Holiday Sticker</p>
-                                <img src="stickers/santa_kuma.png" alt="Holiday Sticker" style="width: 50px; height: 50px; border-radius: 5px;">
+                            </div>
+                                <div class="song-info">
+                                    <h4>Flight of the Snow Queen Angel</h4>
+                                    <p>Winter Queen Angel's Theme</p>
+                        </div>
+                            </div>
+
+                            <div class="song-item">
+                                <div class="song-cover">
+                                    <img src="Loading Screen/Winter Festival Shizumaru.png" alt="Winter Festival Shizumaru Theme">
+                                    <div class="preview-overlay">
+                                        <button class="preview-button" onclick="togglePreview(this, 'Songs/Jingle Bells (Winter Festival Shizumaru Theme).mp3')">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="song-info">
+                                    <h4>Jingle Bells</h4>
+                                    <p>Winter Festival Shizumaru's Theme</p>
+                                </div>
+                            </div>
+
+                            <div class="song-item">
+                                <div class="song-cover">
+                                    <img src="Loading Screen/Skater Shoma.png" alt="Skater Shoma Theme">
+                                    <div class="preview-overlay">
+                                        <button class="preview-button" onclick="togglePreview(this, 'Songs/Skater Boy Riffs (Skater Shoma Theme).mp3')">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="song-info">
+                                    <h4>Skater Boy Riffs</h4>
+                                    <p>Skater Shoma's Theme</p>
+                                </div>
+                            </div>
+
+                            <div class="song-item">
+                                <div class="song-cover">
+                                    <img src="Loading Screen/Winter Festival Lili.png" alt="Winter Festival Lili Theme">
+                                    <div class="preview-overlay">
+                                        <button class="preview-button" onclick="togglePreview(this, 'Songs/Snowball Princess (Winter Festival Lili Theme).mp3')">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="song-info">
+                                    <h4>Snowball Princess</h4>
+                                    <p>Winter Festival Lili's Theme</p>
+                                </div>
                             </div>
                         </div>
-                        <p style="margin-top: 20px; font-style: italic;">More exciting rewards await! Log in daily to collect them all until December 24th.</p>
+
+                        <style>
+                            .songs-showcase {
+                                display: grid;
+                                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                                gap: 20px;
+                                padding: 20px;
+                            }
+
+                            .song-item {
+                                background: rgba(0, 0, 0, 0.3);
+                                border-radius: 10px;
+                                padding: 15px;
+                                text-align: center;
+                                transition: transform 0.3s ease;
+                            }
+
+                            .song-item:hover {
+                                transform: translateY(-5px);
+                            }
+
+                            .song-cover {
+                                width: 200px;
+                                height: 200px;
+                                margin: 0 auto 15px;
+                                border-radius: 10px;
+                                overflow: hidden;
+                                position: relative;
+                            }
+
+                            .song-cover img {
+                                width: 100%;
+                                height: 100%;
+                                object-fit: cover;
+                                object-position: top center;
+                                transition: transform 0.3s ease;
+                            }
+
+                            .song-item:hover .song-cover img {
+                                transform: scale(1.1);
+                            }
+
+                            .preview-overlay {
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                width: 100%;
+                                height: 100%;
+                                background: rgba(0, 0, 0, 0.5);
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                opacity: 0;
+                                transition: opacity 0.3s ease;
+                            }
+
+                            .song-cover:hover .preview-overlay {
+                                opacity: 1;
+                            }
+
+                            .preview-button {
+                                background: linear-gradient(45deg, #4d88b7, #90caf9);
+                                border: none;
+                                border-radius: 50%;
+                                width: 50px;
+                                height: 50px;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                cursor: pointer;
+                                transition: transform 0.3s ease;
+                            }
+
+                            .preview-button:hover {
+                                transform: scale(1.1);
+                            }
+
+                            .preview-button i {
+                                color: white;
+                                font-size: 1.5em;
+                            }
+
+                            .song-info {
+                                margin-top: 10px;
+                            }
+
+                            .song-info h4 {
+                                color: #fff;
+                                margin: 0 0 5px 0;
+                                font-size: 1.2em;
+                            }
+
+                            .song-info p {
+                                color: #90caf9;
+                                margin: 0;
+                                font-size: 0.9em;
+                            }
+
+                            .preview-button.playing {
+                                animation: pulse 2s infinite;
+                            }
+
+                            @keyframes pulse {
+                                0% {
+                                    box-shadow: 0 0 0 0 rgba(144, 202, 249, 0.4);
+                                }
+                                70% {
+                                    box-shadow: 0 0 0 10px rgba(144, 202, 249, 0);
+                                }
+                                100% {
+                                    box-shadow: 0 0 0 0 rgba(144, 202, 249, 0);
+                                }
+                            }
+                        </style>
+
+                        <script>
+                            let currentlyPlaying = null;
+
+                            window.togglePreview = function(button, songPath) {
+                                const songItem = button.closest('.song-item');
+                                const audio = songItem.querySelector('audio') || document.createElement('audio');
+                                const icon = button.querySelector('i');
+
+                                if (currentlyPlaying && currentlyPlaying !== audio) {
+                                    currentlyPlaying.pause();
+                                    currentlyPlaying.currentTime = 0;
+                                    const playingIcon = currentlyPlaying.parentElement.querySelector('.preview-button i');
+                                    playingIcon.className = 'fas fa-play';
+                                    const playingButton = currentlyPlaying.parentElement.querySelector('.preview-button');
+                                    playingButton.classList.remove('playing');
+                                }
+
+                                if (!audio.src) {
+                                    audio.src = songPath;
+                                    songItem.appendChild(audio);
+                                    audio.addEventListener('loadedmetadata', () => {
+                                        audio.currentTime = audio.duration * 0.4;
+                                    });
+                                }
+
+                                if (audio.paused) {
+                                    audio.play();
+                                    icon.className = 'fas fa-pause';
+                                    button.classList.add('playing');
+                                    currentlyPlaying = audio;
+
+                                    setTimeout(() => {
+                                        if (!audio.paused) {
+                                            audio.pause();
+                                            audio.currentTime = audio.duration * 0.4;
+                                            icon.className = 'fas fa-play';
+                                            button.classList.remove('playing');
+                                        }
+                                    }, 15000);
+
+                                    audio.onended = () => {
+                                        icon.className = 'fas fa-play';
+                                        button.classList.remove('playing');
+                                        currentlyPlaying = null;
+                                    };
+                                } else {
+                                    audio.pause();
+                                    audio.currentTime = audio.duration * 0.4;
+                                    icon.className = 'fas fa-play';
+                                    button.classList.remove('playing');
+                                    currentlyPlaying = null;
+                                }
+                            };
+                        </script>
                     </div>
                 </div>
             </div>
 
             <div class="article-section" id="looking-forward">
                 <h3>🎯 Looking Forward</h3>
-                <p>Patch 1.3 marks a significant step in our competitive evolution. The introduction of SoloQ Auto Pick and enhanced ranked systems demonstrates our commitment to improving the competitive experience. Here's what's on the horizon:</p>
+                <p>As the winter winds sweep across the battlefield, mysterious forces gather on the horizon. The future holds many secrets, and only time will reveal what lies ahead...</p>
                 
                 <div class="feature-grid" style="margin-top: 20px;">
                     <div class="content-card">
-                        <h4>January Update Preview</h4>
+                        <h4>Season's End Approaches</h4>
                         <ul style="list-style: none; padding-left: 0;">
-                            <li>• New Ranked Season with exclusive rewards</li>
-                            <li>• Expansion of the Auto Pick system with role preferences</li>
-                            <li>• Introduction of the Lunar New Year event</li>
+                            <li>• Current ranked season concludes on March 2nd</li>
+                            <li>• Claim your end-of-season rewards</li>
+                            <li>• Prepare for placement matches</li>
                         </ul>
                     </div>
                     
                     <div class="content-card">
-                        <h4>Balance Focus</h4>
+                        <h4>The Depths Call</h4>
                         <ul style="list-style: none; padding-left: 0;">
-                            <li>• Continued monitoring of Assassin presence in mid lane</li>
-                            <li>• Support role improvements and item diversity</li>
-                            <li>• Further adjustments to underperforming champions</li>
+                            <li>• Ancient powers stir beneath the waves...</li>
+                            <li>• A new warrior emerges from the depths</li>
+                            <li>• Secrets of Atlantis await discovery</li>
                         </ul>
                     </div>
                     
                     <div class="content-card">
-                        <h4>System Improvements</h4>
+                        <h4>New Season Dawn</h4>
                         <ul style="list-style: none; padding-left: 0;">
-                            <li>• Enhanced performance tracking metrics</li>
-                            <li>• New progression rewards system</li>
-                            <li>• Improved matchmaking algorithms</li>
+                            <li>• Season 2025-1 begins March 3rd</li>
+                            <li>• Fresh challenges await the worthy</li>
+                            <li>• New ranked rewards revealed soon...</li>
+                            <li>• A mighty warrior arrives from distant lands</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h4>Whispers of Spring</h4>
+                        <ul style="list-style: none; padding-left: 0;">
+                            <li>• The eternal conflict between order and chaos intensifies</li>
+                            <li>• Cherry blossoms herald new beginnings</li>
                         </ul>
                     </div>
                 </div>
                 
-                <p style="margin-top: 20px; font-style: italic;">Stay tuned for more updates as we continue to evolve and improve the game based on your feedback and data analysis.</p>
+                <p style="margin-top: 20px; font-style: italic; color: #90caf9;">The wheel of time turns, and with each season comes new challenges, new allies, and new battles to be fought. Stay vigilant, warriors...</p>
             </div>
 
-            <div class="event-showcase" id="steampunk-skins">
-                <h3>Steampunk Event Skins</h3>
+            <div class="event-showcase" id="winter-festival-skins">
+                <h3>Winter Festival Event Skins</h3>
                 <div class="skin-preview">
-                    <img src="Skins/Steamcore MegaMan.jpeg" alt="Steamcore MegaMan" class="skin-image">
-                    <img src="Skins/Steampunk Ibuki.jpeg" alt="Steampunk Ibuki" class="skin-image">
-                    <img src="Skins/Steamforged Nina.jpeg" alt="Steamforged Nina" class="skin-image">
-                    <img src="Skins/Steamforged Kabal.jpeg" alt="Steamforged Kabal" class="skin-image">
-                    <img src="Skins/Steamforged Yugo.jpeg" alt="Steamforged Yugo" class="skin-image">
+                    <img src="Skins/Winter Festival Lili.jpg" alt="Winter Festival Lili" class="skin-image">
+                    <img src="Skins/Winter Festival Juri.jpeg" alt="Winter Festival Juri" class="skin-image">
+                    <img src="Skins/Winter Festival Kabal.jpeg" alt="Winter Festival Kabal" class="skin-image">
+                    <img src="Skins/Winter Festival Mai.jpeg" alt="Winter Festival Mai" class="skin-image">
+                    <img src="Skins/Winter Festival Kuma.jpeg" alt="Winter Festival Kuma" class="skin-image">
+                    <img src="Skins/Winter Queen Angel.jpeg" alt="Winter Queen Angel" class="skin-image">
+                    <img src="Skins/Winter Festival Shizumaru.jpeg" alt="Winter Festival Shizumaru" class="skin-image">
+                </div>
+            </div>
+
+            <div class="major-section" id="winter-festival-lili">
+                <div class="section-icon">🎁</div>
+                <h3>Free Winter Festival Lili</h3>
+                <div class="content-card gradient-border">
+                    <div class="free-skin-showcase">
+                        <img src="Loading Screen/Winter Festival Lili.png" alt="Winter Festival Lili" class="showcase-splash">
+                        <div class="skin-details">
+                            <h4>Winter Festival Lili - Free for Everyone!</h4>
+                            <p>Log in during the Winter Festival Event to receive this magical winter-themed skin for free!</p>
+                            
+                            <div class="quest-system">
+                                <h4>Winter Festival Recolors Quest Line</h4>
+                                <p>Complete special winter quests to unlock stunning recolors of Winter Festival Lili:</p>
+                                <ul class="quest-rewards">
+                                    <li>❄️ Winter Festival Lili Holiday</li>
+                                    <li>🌟 Winter Festival Lili Snowy Blush</li>
+                                    <li>🌙 Winter Festival Lili Golden</li>
+                                    <li>✨ Winter Festival Lili Snowflake</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <style>
+                        .free-skin-showcase {
+                            display: flex;
+                            gap: 30px;
+                            padding: 20px;
+                            align-items: center;
+                        }
+
+                        .showcase-splash {
+                            width: 300px;
+                            height: 400px;
+                            object-fit: cover;
+                            object-position: top center;
+                            border-radius: 15px;
+                            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+                        }
+
+                        .skin-details {
+                            flex: 1;
+                        }
+
+                        .skin-details h4 {
+                            color: #FFD700;
+                            font-size: 1.5em;
+                            margin-bottom: 15px;
+                        }
+
+                        .quest-system {
+                            margin-top: 30px;
+                            background: rgba(0, 0, 0, 0.3);
+                            padding: 20px;
+                            border-radius: 10px;
+                        }
+
+                        .quest-rewards {
+                            list-style: none;
+                            padding: 0;
+                            margin-top: 15px;
+                        }
+
+                        .quest-rewards li {
+                            margin: 10px 0;
+                            padding: 10px;
+                            background: rgba(255, 255, 255, 0.1);
+                            border-radius: 5px;
+                            transition: transform 0.3s ease;
+                        }
+
+                        .quest-rewards li:hover {
+                            transform: translateX(10px);
+                            background: rgba(255, 255, 255, 0.15);
+                        }
+
+                        @media (max-width: 768px) {
+                            .free-skin-showcase {
+                                flex-direction: column;
+                                text-align: center;
+                            }
+
+                            .showcase-splash {
+                                width: 100%;
+                                max-width: 300px;
+                                margin: 0 auto;
+                            }
+                        }
+                    </style>
                 </div>
             </div>
         </div>
         <div class="patch-section" id="balance-changes">
-            <div class="champion-card" id="subzero-changes">
-                <img src="Icons/Sub Zero.png" alt="Sub Zero" class="champion-image">
+            <div class="champion-card" id="elphelt-changes">
+                <img src="Icons/Elphelt.png" alt="Elphelt" class="champion-image">
                 <div class="champion-info">
-                    <h2><a href="characters/Sub Zero Page.html">Sub Zero</a>  (Buff)</h2>
+                    <h2><a href="characters/Elphelt Page.html">Elphelt</a> 🎯 (Nerf)</h2>
+                    <ul class="change-list">
+                        <li class="change-item nerf">
+                            E: Rose Grenade:
+                            <ul>
+                                <li>Cooldown increased: 12s ➜ 15s</li>
+                                <li>Damage reduction reduced: 45% ➜ 35%</li>
+                            </ul>
+                            <div class="reasoning">
+                                Reducing Elphelt's safety and defensive capabilities while maintaining her damage output.
+                            </div>
+                        </li>
+                        <li class="change-item nerf">
+                            Level 15 Talent b:
+                            <ul>
+                                <li>Passive damage reduction decreased: 9% ➜ 7%</li>
+                            </ul>
+                        </li>
+                        <li class="change-item nerf">
+                            Base Stats:
+                            <ul>
+                                <li>Base Movement Speed reduced: 348 ➜ 340</li>
+                            </ul>
+                            <div class="reasoning">
+                                Reducing her mobility to create more opportunities for counterplay.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="champion-card" id="julia-changes">
+                <img src="Icons/Julia.png" alt="Julia" class="champion-image">
+                <div class="champion-info">
+                    <h2><a href="characters/Julia Page.html">Julia</a> 🌿 (Buff)</h2>
                     <ul class="change-list">
                         <li class="change-item buff">
                             Base Stats:
                             <ul>
-                                <li>Base mana increased: 280 ➜ 320</li>
-                                <li>Base AD increased: 65 ➜ 69</li>
+                                <li>Base HP increased: 611 ➜ 620</li>
                             </ul>
                             <div class="reasoning">
-                                Improving Sub Zero's early game presence and reducing his mana constraints.
+                                Improving Julia's survivability in teamfights.
                             </div>
                         </li>
                         <li class="change-item buff">
-                            E - Ice Clone:
+                            Passive: Spiritual Aura:
                             <ul>
-                                <li>Damage increased: 80/120/180/240/320 ➜ 100/150/220/290/380</li>
+                                <li>Added: Allies affected by Julia's abilities receive 50% of the HP Regen bonus for 3s</li>
                             </ul>
                             <div class="reasoning">
-                                Enhancing his zoning potential and ability to control space in teamfights.
+                                Enhancing her support capabilities and team synergy.
                             </div>
                         </li>
                         <li class="change-item buff">
-                            Level 5 Talent B:
+                            Q: Windblower:
                             <ul>
-                                <li>Added: Now grants 10% CDR</li>
+                                <li>Movement speed bonus increased: 20% ➜ 35%</li>
+                            </ul>
+                        </li>
+                        <li class="change-item buff">
+                            E: Knockback attack:
+                            <ul>
+                                <li>Cooldown reduced: 10s ➜ 9s</li>
                             </ul>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="champion-card" id="shizumaru-changes">
-                <img src="Icons/Shizumaru.png" alt="Shizumaru" class="champion-image">
+            <div class="champion-card" id="kabal-changes">
+                <img src="Icons/Kabal.png" alt="Kabal" class="champion-image">
                 <div class="champion-info">
-                    <h2><a href="characters/Shizumaru Page.html">Shizumaru</a>  ⚔️ (Nerf)</h2>
-                    <ul class="change-list">
-                        <li class="change-item nerf">
-                            Base Stats:
-                            <ul>
-                                <li>Base AD reduced: 82 ➜ 77</li>
-                            </ul>
-                            <div class="reasoning">
-                                Reducing Shizumaru's early game trading power to create more windows of vulnerability.
-                            </div>
-                        </li>
-                        <li class="change-item nerf">
-                            Q - Deflect:
-                            <ul>
-                                <li>Damage reduced: 80/130/190/260/340/420 ➜ 70/110/160/220/290/350</li>
-                            </ul>
-                            <div class="reasoning">
-                                Toning down his burst damage potential while maintaining his defensive capabilities.
-                            </div>
-                        </li>
-                        <li class="change-item nerf">
-                            W - Umbrella Stance:
-                            <ul>
-                                <li>Cooldown increased: 14s ➜ 16s</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="champion-card" id="birdie-changes">
-                <img src="Icons/Birdie.png" alt="Birdie" class="champion-image">
-                <div class="champion-info">
-                    <h2><a href="characters/Birdie Page.html">Birdie</a> 🔗 (Nerf)</h2>
-                    <ul class="change-list">
-                        <li class="change-item nerf">
-                            W - Chain Grab:
-                            <ul>
-                                <li>Stun duration reduced: 1.5s ➜ 1.2s</li>
-                            </ul>
-                            <div class="reasoning">
-                                Reducing the lockdown duration to provide more counterplay opportunities.
-                            </div>
-                        </li>
-                        <li class="change-item nerf">
-                            Level 5 Talent C:
-                            <ul>
-                                <li>Stun duration reduced: 1.2s ➜ 0.9s</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="champion-card" id="yugo-changes">
-                <img src="Icons/Yugo.png" alt="Yugo" class="champion-image">
-                <div class="champion-info">
-                    <h2><a href="characters/Yugo Page.html">Yugo</a> 🐺 (Buff)</h2>
+                    <h2><a href="characters/Kabal Page.html">Kabal</a> ⚔️ (Buff)</h2>
                     <ul class="change-list">
                         <li class="change-item buff">
                             Base Stats:
                             <ul>
-                                <li>Base HP increased: 680 ➜ 710</li>
-                                <li>Base attack speed increased: 0.45 ➜ 0.48</li>
+                                <li>Base AD increased: 60 ➜ 65</li>
                             </ul>
                             <div class="reasoning">
-                                Improving Yugo's survivability and basic attack trading potential.
+                                Improving Kabal's trading potential in lane.
                             </div>
                         </li>
                         <li class="change-item buff">
-                            Q - Wolf Fang:
+                            Q: Meat Hook:
                             <ul>
-                                <li>Armor reduction duration increased: 2s ➜ 3s</li>
+                                <li>Armor break duration increased: 3s ➜ 5s</li>
                             </ul>
+                        </li>
+                        <li class="change-item buff">
+                            E: Speedy Hands:
+                            <ul>
+                                <li>Splash damage increased: 50% ➜ 60% AD</li>
+                                <li>Duration increased: 3s ➜ 4s</li>
+                    </ul>
+                            <div class="reasoning">
+                                Enhancing his teamfight presence and damage output.
+                            </div>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="champion-card" id="scorpion-changes">
-                <img src="Icons/Scorpion.png" alt="Scorpion" class="champion-image">
+            <div class="champion-card" id="astaroth-changes">
+                <img src="Icons/Astaroth.png" alt="Astaroth" class="champion-image">
                 <div class="champion-info">
-                    <h2><a href="characters/Scorpion Page.html">Scorpion</a> 🦂 (Buff)</h2>
+                    <h2><a href="characters/Astaroth Page.html">Astaroth</a> 🛡️ (Buff)</h2>
                     <ul class="change-list">
                         <li class="change-item buff">
-                            W - Hellfire Blades:
+                            Base Stats:
                             <ul>
-                                <li>Added 50 bonus damage to all targets</li>
+                                <li>Base AD increased: 50 ➜ 55</li>
+                            </ul>
+                        </li>
+                        <li class="change-item buff">
+                            Q: Axe of Sorrow:
+                            <ul>
+                                <li>Slow duration increased: 1s ➜ 1.5s</li>
                             </ul>
                             <div class="reasoning">
-                                Enhancing Scorpion's wave clear and team fight presence.
+                                Improving his ability to control fights and stick to targets.
                             </div>
                         </li>
                         <li class="change-item buff">
-                            E - Open Portal:
+                            W: Groundbreaker:
                             <ul>
-                                <li>Cooldown reduced: 35s ➜ 30s</li>
+                                <li>Knockup duration increased: 0.5s ➜ 0.75s</li>
+                                <li>Cooldown reduced: 12s ➜ 11s</li>
                             </ul>
-                        </li>
-                        <li class="change-item buff">
-                            Level 5 Talent B:
-                            <ul>
-                                <li>Added 4% lifesteal against monsters</li>
-                            </ul>
+                            <div class="reasoning">
+                                Enhancing his CC capabilities and teamfight presence.
+                            </div>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="champion-card" id="noel-changes">
-                <img src="Icons/Noel.png" alt="Noel" class="champion-image">
+            <div class="champion-card" id="erron-black-changes">
+                <img src="Icons/Erron Black.png" alt="Erron Black" class="champion-image">
                 <div class="champion-info">
-                    <h2><a href="characters/Noel Page.html">Noel</a> 🎯 (Nerf)</h2>
+                    <h2><a href="characters/Erron Black Page.html">Erron Black</a> 🔫 (Buff)</h2>
                     <ul class="change-list">
-                        <li class="change-item nerf">
-                            Passive:
+                        <li class="change-item buff">
+                            Base Stats:
                             <ul>
-                                <li>AD scaling reduced: 12% AD ➜ 8% AD</li>
+                                <li>HP per level increased: 230 ➜ 245</li>
+                                <li>Base Movement Speed increased: 340 ➜ 345</li>
                             </ul>
                             <div class="reasoning">
-                                Reducing Noel's scaling potential to create more balanced late-game scenarios.
+                                Improving his survivability and mobility to better position in fights.
                             </div>
                         </li>
-                        <li class="change-item nerf">
-                            E - Flash Guard:
+                        <li class="change-item buff">
+                            Q: Coin Flip:
                             <ul>
-                                <li>Cooldown increased: 9s ➜ 11s</li>
+                                <li>Double damage window increased: 2s ➜ 3s</li>
                             </ul>
                         </li>
-                        <li class="change-item nerf">
-                            R - Zero Gun: Fenrir:
+                        <li class="change-item buff">
+                            W: Dynamite Throw:
                             <ul>
-                                <li>Healing reduced: 20% ➜ 15% of damage dealt</li>
+                                <li>Slow increased: 35% ➜ 45%</li>
+                                <li>Slow duration increased: 1.5s ➜ 2s</li>
                             </ul>
                         </li>
-                        <li class="change-item nerf">
-                            Level 10 Talent A:
+                        <li class="change-item buff">
+                            E: Shotgun Burst:
                             <ul>
-                                <li>MAXHP damage reduced: 6% ➜ 4%</li>
+                                <li>Stun duration increased: 0.5s ➜ 1.25s</li>
+                    </ul>
+                            <div class="reasoning">
+                                Enhancing his control capabilities and self-peel options.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="champion-card" id="akuma-changes">
+                <img src="Icons/Akuma.png" alt="Akuma" class="champion-image">
+                <div class="champion-info">
+                    <h2><a href="characters/Akuma Page.html">Akuma</a> 👿 (Buff)</h2>
+                    <ul class="change-list">
+                        <li class="change-item buff">
+                            Base Stats:
+                            <ul>
+                                <li>HP per level increased: 318 ➜ 325</li>
                             </ul>
+                            <div class="reasoning">
+                                Improving his scaling and survivability in the late game.
+                            </div>
+                        </li>
+                        <li class="change-item buff">
+                            Passive: Oni's Fury:
+                            <ul>
+                                <li>Added: After reaching 70 stacks, Akuma gains -1s cooldown on all abilities</li>
+                            </ul>
+                            <div class="reasoning">
+                                Rewarding skillful play and improving his late-game scaling.
+                            </div>
+                        </li>
+                        <li class="change-item buff">
+                            Q: Gohadoken:
+                            <ul>
+                                <li>Added: When hitting an enemy champion, reduce W cooldown by 1s</li>
+                            </ul>
+                            <div class="reasoning">
+                                Creating synergy between abilities and improving self-peel options.
+                            </div>
                         </li>
                     </ul>
                 </div>

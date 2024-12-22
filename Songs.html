@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Song Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import songs from './songs.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        document.getElementById('cm-amount').textContent = userData.CM || 0;
+                        document.getElementById('fm-amount').textContent = userData.FM || 0;
+                        window.userFM = userData.FM || 0;
+                        window.userCM = userData.CM || 0;
+                        window.userRef = userRef;
+                        updateSongButtons(userData.Songs || {});
+                    }
+                }
+            });
+
+            // Create song items dynamically
+            const songList = document.querySelector('.song-list');
+            songs.forEach(song => {
+                const songName = song.path.split('/').pop().replace('.mp3', '');
+                const songItem = document.createElement('div');
+                songItem.className = 'song-item';
+                songItem.dataset.songName = songName;
+                
+                songItem.innerHTML = `
+                    <div class="song-cover">
+                        <img src="${song.cover}" alt="${song.title} Cover">
+                        <div class="preview-overlay">
+                            <button class="preview-button" onclick="togglePreview(this, '${song.path}')">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="song-title">${song.title}</div>
+                    <div class="song-info">${song.artist}'s Theme</div>
+                    <div class="button-group">
+                        <button class="purchase-button fm-button" onclick="purchaseSongFM(this)">
+                            <span class="price-tag">250 <img src="res/img/fm.png" alt="FM"></span>
+                        </button>
+                        <button class="purchase-button cm-button" onclick="purchaseSongCM(this)">
+                            <span class="price-tag">10000 <img src="res/img/cm.png" alt="CM"></span>
+                        </button>
+                    </div>
+                    <audio class="song-preview"></audio>
+                `;
+                
+                songList.appendChild(songItem);
+            });
+        };
+
+        let currentlyPlaying = null;
+
+        window.togglePreview = function(button, songPath) {
+            const songItem = button.closest('.song-item');
+            const audio = songItem.querySelector('.song-preview');
+            const icon = button.querySelector('i');
+
+            // If there's another song playing, stop it
+            if (currentlyPlaying && currentlyPlaying !== audio) {
+                currentlyPlaying.pause();
+                currentlyPlaying.currentTime = 0;
+                const playingIcon = currentlyPlaying.parentElement.querySelector('.preview-button i');
+                playingIcon.className = 'fas fa-play';
+                const playingButton = currentlyPlaying.parentElement.querySelector('.preview-button');
+                playingButton.classList.remove('playing');
+            }
+
+            if (audio.paused) {
+                if (!audio.src) {
+                    audio.src = songPath;
+                    audio.load();
+                    // Wait for metadata to load to set the start time
+                    audio.addEventListener('loadedmetadata', () => {
+                        audio.currentTime = audio.duration * 0.4; // Start at 40% of the song
+                    });
+                }
+                audio.play();
+                icon.className = 'fas fa-pause';
+                button.classList.add('playing');
+                currentlyPlaying = audio;
+
+                // Set a timeout to stop the preview after 15 seconds
+                setTimeout(() => {
+                    if (!audio.paused) {
+                        audio.pause();
+                        audio.currentTime = audio.duration * 0.4; // Reset to 40% position
+                        icon.className = 'fas fa-play';
+                        button.classList.remove('playing');
+                    }
+                }, 15000);
+
+                // When the preview ends naturally
+                audio.onended = () => {
+                    icon.className = 'fas fa-play';
+                    button.classList.remove('playing');
+                    currentlyPlaying = null;
+                };
+            } else {
+                audio.pause();
+                audio.currentTime = audio.duration * 0.4; // Reset to 40% position
+                icon.className = 'fas fa-play';
+                button.classList.remove('playing');
+                currentlyPlaying = null;
+            }
+        };
+
+        window.purchaseSongFM = async function(button) {
+            const songItem = button.closest('.song-item');
+            const songName = songItem.dataset.songName;
+            const songPrice = 250;
+
+            if (window.userFM >= songPrice) {
+                const newFM = window.userFM - songPrice;
+                const updates = {};
+                updates['FM'] = newFM;
+                updates[`Songs/${songName}`] = 1;
+                await update(window.userRef, updates);
+                document.getElementById('fm-amount').textContent = newFM;
+                window.userFM = newFM;
+                updateButtonsAfterPurchase(songItem);
+                alert(`You have successfully purchased ${songName}!`);
+            } else {
+                alert("You don't have enough FM to purchase this song.");
+            }
+        };
+
+        window.purchaseSongCM = async function(button) {
+            const songItem = button.closest('.song-item');
+            const songName = songItem.dataset.songName;
+            const songPrice = 10000;
+
+            if (window.userCM >= songPrice) {
+                const newCM = window.userCM - songPrice;
+                const updates = {};
+                updates['CM'] = newCM;
+                updates[`Songs/${songName}`] = 1;
+                await update(window.userRef, updates);
+                document.getElementById('cm-amount').textContent = newCM;
+                window.userCM = newCM;
+                updateButtonsAfterPurchase(songItem);
+                alert(`You have successfully purchased ${songName}!`);
+            } else {
+                alert("You don't have enough CM to purchase this song.");
+            }
+        };
+
+        function updateButtonsAfterPurchase(songItem) {
+            const fmButton = songItem.querySelector('.fm-button');
+            const cmButton = songItem.querySelector('.cm-button');
+            fmButton.disabled = true;
+            cmButton.disabled = true;
+            fmButton.textContent = 'Owned';
+            cmButton.textContent = 'Owned';
+        }
+
+        function updateSongButtons(Songs) {
+            const songItems = document.querySelectorAll('.song-item');
+            songItems.forEach(item => {
+                const songName = item.dataset.songName;
+                if (Songs[songName]) {
+                    const fmButton = item.querySelector('.fm-button');
+                    const cmButton = item.querySelector('.cm-button');
+                    if (fmButton && cmButton) {
+                        fmButton.disabled = true;
+                        cmButton.disabled = true;
+                        fmButton.textContent = 'Owned';
+                        cmButton.textContent = 'Owned';
+                    }
+                }
+            });
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+        }
+        .menu {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 0;
+        }
+        .menu-items {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 16px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+        .currency {
+            position: fixed;
+            text-align: right;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            color: #e0e0e0;
+            right: 0;
+            top: 63px;
+        }
+        .currency img {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+        .song-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+            margin-top: 70px;
+            gap: 20px;
+        }
+        .song-item {
+            background: rgba(31, 31, 31, 0.9);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .song-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        .song-cover {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        .song-cover img {
+            width: 120%;
+            height: 120%;
+            object-fit: cover;
+            object-position: center -10%;
+            margin: -10% 0 0 -10%;
+            transition: transform 0.3s;
+        }
+        .song-item:hover .song-cover img {
+            transform: scale(1.1);
+        }
+        .song-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #fff;
+        }
+        .song-info {
+            color: #b0b0b0;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .purchase-button {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9em;
+        }
+        .purchase-button:not(:disabled):hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #ff4b2b, #ff416c);
+        }
+        .purchase-button:disabled {
+            background: #444;
+            cursor: not-allowed;
+        }
+        .price-tag {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            font-weight: bold;
+        }
+        .price-tag img {
+            width: 16px;
+            height: 16px;
+        }
+        .preview-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 38, 52, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(3px);
+        }
+        .song-cover:hover .preview-overlay {
+            opacity: 1;
+        }
+        .preview-button {
+            background: linear-gradient(135deg, #4d88b7, #90caf9);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(144, 202, 249, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .preview-button::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #4d88b7, #90caf9, #4d88b7);
+            z-index: -1;
+            animation: borderRotate 4s linear infinite;
+        }
+        @keyframes borderRotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        .preview-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(144, 202, 249, 0.6);
+            border-color: white;
+        }
+        .preview-button:active {
+            transform: scale(0.95);
+        }
+        .preview-button i {
+            font-size: 1.5em;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            z-index: 1;
+        }
+        .preview-button.playing {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 20px rgba(144, 202, 249, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(144, 202, 249, 0.7);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(144, 202, 249, 0.4);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu">
+        <div class="menu-items">
+            <a href="home.html">Home</a>
+            <a href="Store.html">Store</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+            <a href="statistics.html">Statistics</a>
+        </div>
+    </div>
+    <div class="currency">
+        <div>
+            <img src="res/img/cm.png" alt="CM">
+            <span id="cm-amount">0</span>
+        </div>
+        <div>
+            <img src="res/img/fm.png" alt="FM">
+            <span id="fm-amount">0</span>
+        </div>
+    </div>
+
+    <div class="song-list">
+        <!-- Songs will be dynamically added here -->
+    </div>
+</body>
+</html> 

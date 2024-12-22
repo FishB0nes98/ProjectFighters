@@ -15,10 +15,9 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
         import { getDatabase, ref, set, get, update, increment } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
-        import { quests } from './quests.js';
         import { roles } from './roles.js';
-        import { characters } from './characterskinref.js'; // Import characters
-        import { skinToBaseCharacterMap } from './skinmapping.js'; // Import skinToBaseCharacterMap
+        import { characters } from './characterskinref.js';
+        import { skinToBaseCharacterMap } from './skinmapping.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
@@ -767,93 +766,102 @@ document.getElementById('decide-game-button').addEventListener('click', async fu
     const teamMode = document.getElementById('team-mode-checkbox').checked;
     const user = auth.currentUser;
 
-    // Make sure we have a user and get their ID
     if (!user) {
         console.error('No user logged in');
         return;
     }
     const userId = user.uid;
 
-    console.log('Decide Game button clicked');
-    console.log('User Only:', userOnly);
-    console.log('Team Mode:', teamMode);
-
+    // Collect team data
     for (let i = 1; i <= 5; i++) {
         const team1Player = document.getElementById(`team1-player${i}`);
         const team2Player = document.getElementById(`team2-player${i}`);
 
-        // Check if the player slots exist
         if (team1Player) {
             const team1Skin = team1Player.querySelector('.skin-name').textContent;
-            if (team1Skin) {
-                team1.push(team1Skin);
-            }
-        } else {
-            console.error(`Element with id team1-player${i} not found.`);
+            if (team1Skin) team1.push(team1Skin);
         }
 
         if (team2Player) {
             const team2Skin = team2Player.querySelector('.skin-name').textContent;
             if (team2Skin) team2.push(team2Skin);
-        } else {
-            console.error(`Element with id team2-player${i} not found.`);
         }
     }
-
-    console.log('Team 1:', team1);
-    console.log('Team 2:', team2);
 
     // Map skins to base characters
     const team1BaseCharacters = team1.map(skin => skinToBaseCharacterMap[skin] || skin);
     const team2BaseCharacters = team2.map(skin => skinToBaseCharacterMap[skin] || skin);
 
-    console.log('Team 1 Base Characters:', team1BaseCharacters);
-    console.log('Team 2 Base Characters:', team2BaseCharacters);
-
-    // Calculate the winner based on character impact
+    // Calculate winner
     const winner = await calculateWinProbability(team1, team2);
     const loser = winner === 'team1' ? 'team2' : 'team1';
 
-    console.log('Winner:', winner);
-    console.log('Loser:', loser);
+    // Update player stats
+    await handleMatchResult(userId, winner === 'team1');
 
-    // Update player win/loss record
-    if (user) {
-        const userId = user.uid;
-        const isWin = (winner === 'team1'); // Assuming the user is on team1
-        await handleMatchResult(userId, isWin);
-    }
-    
-
-    // Save win/lose data based on mode
-    if (teamMode && user) {
-        console.log('Saving data in Team Mode');
-        await saveTeamModeData(user.uid, team1BaseCharacters, team2BaseCharacters, winner);
+    // Save game data
+    if (teamMode) {
+        await saveTeamModeData(userId, team1BaseCharacters, team2BaseCharacters, winner);
     } else if (userOnly && selectedPlayerSlot) {
-        console.log('Saving data in Solo Mode');
         const skinName = selectedPlayerSlot.querySelector('.skin-name').textContent;
         const baseCharacter = skinToBaseCharacterMap[skinName] || skinName;
-        await saveSoloModeData(user.uid, baseCharacter, team1BaseCharacters, team2BaseCharacters, winner);
-
-        // Implement Ranked System for Solo Mode
+        await saveSoloModeData(userId, baseCharacter, team1BaseCharacters, team2BaseCharacters, winner);
         await updateRankPoints(user, winner === 'team1');
     } else {
-        console.log('Saving global character stats');
         await saveGlobalCharacterStats(team1BaseCharacters, team2BaseCharacters, winner);
     }
 
-    await rewardPlayer(winner); // Pass the winner parameter here
+    // Update quests
+    const questUpdates = {};
+
+    // Check for Lili games quest - check in both teams
+    if (team1.some(skin => skin.includes('Lili')) || team2.some(skin => skin.includes('Lili'))) {
+        const liliQuestRef = ref(database, `users/${userId}/quests/lili-games`);
+        const liliQuestSnap = await get(liliQuestRef);
+        const questData = liliQuestSnap.val() || { progress: 0, completed: false };
+        if (!questData.completed) {
+            questUpdates['lili-games'] = {
+                progress: (questData.progress || 0) + 1,
+                completed: (questData.progress + 1) >= 10
+            };
+        }
+    }
+
+    // Check for win/lose quests
+    if (winner === 'team1') {
+        const winQuestRef = ref(database, `users/${userId}/quests/win-games`);
+        const winQuestSnap = await get(winQuestRef);
+        const questData = winQuestSnap.val() || { progress: 0, completed: false };
+        if (!questData.completed) {
+            questUpdates['win-games'] = {
+                progress: (questData.progress || 0) + 1,
+                completed: (questData.progress + 1) >= 2
+            };
+        }
+    } else {
+        const loseQuestRef = ref(database, `users/${userId}/quests/lose-games`);
+        const loseQuestSnap = await get(loseQuestRef);
+        const questData = loseQuestSnap.val() || { progress: 0, completed: false };
+        if (!questData.completed) {
+            questUpdates['lose-games'] = {
+                progress: (questData.progress || 0) + 1,
+                completed: (questData.progress + 1) >= 2
+            };
+        }
+    }
+
+    if (Object.keys(questUpdates).length > 0) {
+        const updates = {};
+        for (const [questId, questData] of Object.entries(questUpdates)) {
+            updates[`users/${userId}/quests/${questId}`] = questData;
+        }
+        await update(ref(database), updates);
+    }
+
+    // Handle rewards and display
+    await rewardPlayer(winner);
     await rewardCharacterMoney();
     displayResult(winner, loser);
-
-    // Update quest progress
-    await updateQuestProgress('play3games');
-    await updateCharacterSpecificQuests(team1BaseCharacters, team2BaseCharacters);
-    await updateQuestProgress('play10DraftModeGames');
-    await updateQuestProgress('play5GamesShomaRaiden');
-    await updateQuestProgress('play5GamesAliceNina');
-    await updateQuestProgress('play5GamesChamChamFANG');
-    await updateQuestProgress('play15Games');
 });
 
 // ... existing code ...
@@ -1386,6 +1394,7 @@ function populateCharacterButtons(characters) {
                 };
             }
         }
+        }
 
         function checkAllSkinsSelected() {
             const buttons = document.querySelectorAll('.choose-fighter-button');
@@ -1490,7 +1499,6 @@ function populateCharacterButtons(characters) {
                     await update(userRef, { progress: newProgress, completed: true });
                 } else {
                     await update(userRef, { progress: newProgress });
-                }
             }
         } else {
             console.error('User not authenticated');
@@ -1628,6 +1636,66 @@ document.getElementById('sticker-toggle').addEventListener('change', function() 
                 console.log(`Sticker animation removed for sticker: ${sticker}`);
             }, 2500);
         }
+
+        // Update quest progress based on game results
+        async function updateQuestsAfterGame(userId, team1BaseCharacters, team2BaseCharacters, winner) {
+            const userRef = ref(database, `users/${userId}`);
+            const userSnapshot = await get(userRef);
+            const userData = userSnapshot.val();
+
+            if (!userData || !userData.quests) return;
+
+            const questUpdates = {};
+
+            // Check for Lili games quest - check in both teams
+            if (team1BaseCharacters.includes('Lili') || team2BaseCharacters.includes('Lili')) {
+                const liliQuestRef = ref(database, `users/${userId}/quests/lili-games`);
+                const liliQuestSnap = await get(liliQuestRef);
+                const questData = liliQuestSnap.val() || { progress: 0, completed: false };
+                if (!questData.completed) {
+                    questUpdates['lili-games'] = {
+                        progress: (questData.progress || 0) + 1,
+                        completed: (questData.progress + 1) >= 10
+                    };
+                }
+            }
+
+            // Check for win/lose quests
+            if (winner === 'team1') {
+                const winQuestRef = ref(database, `users/${userId}/quests/win-games`);
+                const winQuestSnap = await get(winQuestRef);
+                const questData = winQuestSnap.val() || { progress: 0, completed: false };
+                if (!questData.completed) {
+                    questUpdates['win-games'] = {
+                        progress: (questData.progress || 0) + 1,
+                        completed: (questData.progress + 1) >= 2
+                    };
+                }
+            } else {
+                const loseQuestRef = ref(database, `users/${userId}/quests/lose-games`);
+                const loseQuestSnap = await get(loseQuestRef);
+                const questData = loseQuestSnap.val() || { progress: 0, completed: false };
+                if (!questData.completed) {
+                    questUpdates['lose-games'] = {
+                        progress: (questData.progress || 0) + 1,
+                        completed: (questData.progress + 1) >= 2
+                    };
+                }
+            }
+
+            if (Object.keys(questUpdates).length > 0) {
+                const updates = {};
+                for (const [questId, questData] of Object.entries(questUpdates)) {
+                    updates[`users/${userId}/quests/${questId}`] = questData;
+                }
+                await update(ref(database), updates);
+            }
+        }
+
+        // Remove old quest-related code
+        window.updateQuestProgress = undefined;
+        window.checkCharacterQuestProgress = undefined;
+        window.updateCharacterSpecificQuests = undefined;
 
     </script>
     <style>

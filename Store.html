@@ -11,6 +11,24 @@
             margin: 0;
             padding: 0;
         }
+
+        /* Snow effect */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            z-index: 9999;
+            color: white;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+            animation: fall linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
         .menu {
     display: flex;
     justify-content: center;
@@ -87,23 +105,30 @@
         .container {
             text-align: center;
             margin-top: 50px;
-            bottom: 0
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 0 20px;
         }
         h2 {
             margin-top: 60px;
         }
         .button {
-            display: inline-block;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             background-color: rgba(0, 0, 0, 0.7);
             color: white;
             border: none;
-            padding: 20px 30px;
-            font-size: 18px;
+            padding: 15px;
+            font-size: 16px;
             font-weight: bold;
             text-decoration: none;
             cursor: pointer;
             border-radius: 8px;
-            margin: 10px;
             transition: background-color 0.3s, transform 0.3s;
             width: 200px;
             height: 200px;
@@ -116,8 +141,8 @@
         .button img {
             display: block;
             margin: 0 auto 10px;
-            max-height: 80px;
-            max-width: 80px;
+            max-height: 90px;
+            max-width: 90px;
             height: auto;
         }
         video {
@@ -344,17 +369,18 @@
             const bundleName = item.dataset.bundleName;
             const button = item.querySelector('button');
             if (Bundles[bundleName] || 
-                (bundleName === 'WindwoodTalim' && skins['Windwood Talim'] === 1) ||
-                (bundleName === 'RainyDayRMikaCMSale' && skins['Rainy Day R Mika'] === 1) ||
-                (bundleName === 'RandomRecolorDuoPack6' && 
-                    skins['Rainy Day R Mika Moss'] === 1 && 
-                    skins['Pajama Party Cham Cham Cotton Candy'] === 1) ||
-                (bundleName === 'SteampunkBundle' && 
-                    skins['Steamcore Megaman'] === 1 && 
-                    skins['Steampunk Ibuki'] === 1 && 
-                    skins['Steamforged Nina'] === 1 && 
-                    skins['Steamforged Kabal'] === 1 && 
-                    skins['Steamforged Yugo'] === 1)) {
+                (bundleName === 'ArcticHuntressPeacock' && skins['Arctic Huntress Peacock'] === 1) ||
+                (bundleName === 'ArcadeSubZero' && skins['Arcade Sub Zero'] === 1) ||
+                (bundleName === 'WinterRecolorDuoPack' && 
+                    skins['Jade Scorpion Agate'] === 1 && 
+                    skins['Arcade Sub Zero Frosty Forest'] === 1) ||
+                (bundleName === 'WinterFestivalBundle' && 
+                    skins['Winter Festival Juri'] === 1 && 
+                    skins['Winter Festival Kabal'] === 1 && 
+                    skins['Winter Festival Mai'] === 1 && 
+                    skins['Winter Festival Kuma'] === 1 && 
+                    skins['Winter Festival Shizumaru'] === 1 && 
+                    skins['Winter Queen Angel'] === 1)) {
                 button.disabled = true;
                 button.textContent = 'Owned';
             }
@@ -392,31 +418,31 @@
         const userCurrency = currencyType === 'FM' ? window.userFM : window.userCM;
         const userCurrencyElement = document.getElementById(`${currencyType.toLowerCase()}-amount`);
 
-        // Check if the user already owns the High Elf Eagle skin
-        if (bundleName === 'WindwoodTalim') {
-            const skinSnapshot = await get(ref(window.userRef, 'skins/Windwood Talim'));
+        // Check if the user already owns the Arctic Huntress Peacock skin
+        if (bundleName === 'ArcticHuntressPeacock') {
+            const skinSnapshot = await get(ref(window.userRef, 'skins/Arctic Huntress Peacock'));
             if (skinSnapshot.exists() && skinSnapshot.val() === 1) {
-                alert('You already own the Windwood Talim skin.');
+                alert('You already own the Arctic Huntress Peacock skin.');
                 return;
             }
         }
 
-        // Check if the user already owns the Rainy Day R Mika skin
-        if (bundleName === 'RainyDayRMikaCMSale') {
-            const skinSnapshot = await get(ref(window.userRef, 'skins/Rainy Day R Mika'));
+        // Check if the user already owns the Arcade Sub Zero skin
+        if (bundleName === 'ArcadeSubZero') {
+            const skinSnapshot = await get(ref(window.userRef, 'skins/Arcade Sub Zero'));
             if (skinSnapshot.exists() && skinSnapshot.val() === 1) {
-                alert('You already own the Rainy Day R Mika skin.');
+                alert('You already own the Arcade Sub Zero skin.');
                 return;
             }
         }
 
-        // Check if the user already owns the skins in the Random Recolor Duo Pack
-        if (bundleName === 'RandomRecolorDuoPack6') {
-            const skin1Snapshot = await get(ref(window.userRef, 'skins/Rainy Day R Mika Moss'));
-            const skin2Snapshot = await get(ref(window.userRef, 'skins/Pajama Party Cham Cham Cotton Candy'));
+        // Check if the user already owns the skins in the Winter Recolor Duo Pack
+        if (bundleName === 'WinterRecolorDuoPack') {
+            const skin1Snapshot = await get(ref(window.userRef, 'skins/Jade Scorpion Agate'));
+            const skin2Snapshot = await get(ref(window.userRef, 'skins/Arcade Sub Zero Frosty Forest'));
             if (skin1Snapshot.exists() && skin1Snapshot.val() === 1 && 
                 skin2Snapshot.exists() && skin2Snapshot.val() === 1) {
-                alert('You already own the skins in the Random Recolor Duo Pack.');
+                alert('You already own the skins in the Winter Recolor Duo Pack.');
                 return;
             }
         }
@@ -446,34 +472,35 @@
                 });
             }
 
-            // Add High Elf Eagle to the Skins database for Bundle 2
-            if (bundleName === 'WindwoodTalim') {
-                updates[`skins/Windwood Talim`] = 1; // Adding the skin to the Skins folder with a value of 1
+            // Add Arctic Huntress Peacock to the Skins database
+            if (bundleName === 'ArcticHuntressPeacock') {
+                updates[`skins/Arctic Huntress Peacock`] = 1;
             }
 
-            // Add Steampunk Bundle skins to the Skins database
-            if (bundleName === 'SteampunkBundle') {
+            // Add Winter Festival Bundle skins to the Skins database
+            if (bundleName === 'WinterFestivalBundle') {
                 const skins = [
-                    'Steamcore Megaman',
-                    'Steampunk Ibuki',
-                    'Steamforged Nina',
-                    'Steamforged Kabal',
-                    'Steamforged Yugo'
+                    'Winter Festival Juri',
+                    'Winter Festival Kabal',
+                    'Winter Festival Mai',
+                    'Winter Festival Kuma',
+                    'Winter Festival Shizumaru',
+                    'Winter Queen Angel'
                 ];
                 skins.forEach(skin => {
                     updates[`skins/${skin}`] = 1;
                 });
             }
 
-            // Add Rainy Day R Mika to the Skins database for the CM Sale bundle
-            if (bundleName === 'RainyDayRMikaCMSale') {
-                updates[`skins/Rainy Day R Mika`] = 1; // Adding the skin to the Skins folder with a value of 1
+            // Add Arcade Sub Zero to the Skins database
+            if (bundleName === 'ArcadeSubZero') {
+                updates[`skins/Arcade Sub Zero`] = 1;
             }
 
-            // Add Random Recolor Duo Pack skins to the Skins database
-            if (bundleName === 'RandomRecolorDuoPack6') {
-                updates[`skins/Rainy Day R Mika Moss`] = 1;
-                updates[`skins/Pajama Party Cham Cham Cotton Candy`] = 1;
+            // Add Winter Recolor Duo Pack skins to the Skins database
+            if (bundleName === 'WinterRecolorDuoPack') {
+                updates[`skins/Jade Scorpion Agate`] = 1;
+                updates[`skins/Arcade Sub Zero Frosty Forest`] = 1;
             }
 
             await update(window.userRef, updates);
@@ -499,6 +526,27 @@
         closeBuyFMWindow();
         alert(`You have successfully purchased ${amount} FM!`);
     };
+    </script>
+    <script>
+        // Snow effect
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+            snowflake.innerHTML = '❄';
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.opacity = Math.random();
+            snowflake.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.body.appendChild(snowflake);
+
+            // Remove snowflake after animation
+            snowflake.addEventListener('animationend', () => {
+                snowflake.remove();
+            });
+        }
+
+        // Create snowflakes periodically
+        setInterval(createSnowflake, 100);
     </script>
 </head>
 <body>
@@ -573,6 +621,10 @@
             <img src="Icons/Profile/Root.png" alt="Icon">
             Icon Store
         </a>
+        <a href="Songs.html" class="button">
+            <img src="res/img/music.png" alt="Music">
+            Songs
+        </a>
     </div>
     <h2 style="text-align: center; color: white; font-size: 2em; text-shadow: 0 0 10px yellow;">Bundles and Sales</h2>
     <div class="bundle-container">
@@ -590,10 +642,10 @@
             </div>
             <button onclick="purchaseBundle(this)">Buy</button>
         </div>
-        <div class="bundle-item" data-bundle-name="WindwoodTalim">
-            <div class="bundle-name" style="color: white; font-weight: bold;">Windwood Talim 70% SALE</div>
+        <div class="bundle-item" data-bundle-name="ArcticHuntressPeacock">
+            <div class="bundle-name" style="color: white; font-weight: bold;">Arctic Huntress Peacock 70% SALE</div>
             <div class="image-container">
-                <img src="Skins/Windwood Talim.jpeg" alt="Windwood Talim" style="margin-top: 10px;">
+                <img src="Skins/Arctic Huntress Peacock.png" alt="Arctic Huntress Peacock" style="margin-top: 10px;">
             </div>
             <div class="price">
                 <img src="res/img/fm.png" alt="FM" style="margin-top: 10px;">
@@ -601,40 +653,44 @@
             </div>
             <button onclick="purchaseBundle(this)">Buy</button>
         </div>
-        <div class="bundle-item" data-bundle-name="SteampunkBundle">
-            <div class="bundle-name" style="color: white; font-weight: bold;">Steampunk Bundle (5 Skins)</div>
+        <div class="bundle-item" data-bundle-name="WinterFestivalBundle">
+            <div class="bundle-name" style="color: white; font-weight: bold;">Winter Festival Bundle (6 Skins)</div>
             <div class="images-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px;">
                 <div class="image-wrapper" style="position: relative; padding-bottom: 56.25%;">
-                    <img src="Skins/Steamcore Megaman.jpeg" alt="Steamcore Megaman" 
+                    <img src="Skins/Winter Festival Juri.jpeg" alt="Winter Festival Juri" 
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
                 </div>
                 <div class="image-wrapper" style="position: relative; padding-bottom: 56.25%;">
-                    <img src="Skins/Steampunk Ibuki.jpeg" alt="Steampunk Ibuki" 
+                    <img src="Skins/Winter Festival Kabal.jpeg" alt="Winter Festival Kabal" 
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
                 </div>
                 <div class="image-wrapper" style="position: relative; padding-bottom: 56.25%;">
-                    <img src="Skins/Steamforged Nina.jpeg" alt="Steamforged Nina" 
+                    <img src="Skins/Winter Festival Mai.jpeg" alt="Winter Festival Mai" 
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
                 </div>
                 <div class="image-wrapper" style="position: relative; padding-bottom: 56.25%;">
-                    <img src="Skins/Steamforged Kabal.jpeg" alt="Steamforged Kabal" 
+                    <img src="Skins/Winter Festival Kuma.jpeg" alt="Winter Festival Kuma" 
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
                 </div>
-                <div class="image-wrapper" style="position: relative; padding-bottom: 56.25%; grid-column: span 2;">
-                    <img src="Skins/Steamforged Yugo.jpeg" alt="Steamforged Yugo" 
+                <div class="image-wrapper" style="position: relative; padding-bottom: 56.25%;">
+                    <img src="Skins/Winter Festival Shizumaru.jpeg" alt="Winter Festival Shizumaru" 
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
+                </div>
+                <div class="image-wrapper" style="position: relative; padding-bottom: 56.25%;">
+                    <img src="Skins/Winter Queen Angel.jpeg" alt="Winter Queen Angel" 
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
                 </div>
             </div>
             <div class="price">
                 <img src="res/img/fm.png" alt="FM">
-                <span style="color: white; font-weight: bold;">6000</span>
+                <span style="color: white; font-weight: bold;">8550</span>
             </div>
             <button onclick="purchaseBundle(this)">Buy</button>
         </div>
-        <div class="bundle-item" data-bundle-name="RainyDayRMikaCMSale">
-            <div class="bundle-name" style="color: white; font-weight: bold;">Rainy Day R Mika CM Sale</div>
+        <div class="bundle-item" data-bundle-name="ArcadeSubZero">
+            <div class="bundle-name" style="color: white; font-weight: bold;">Arcade Sub Zero CM Sale</div>
             <div class="image-container">
-                <img src="Skins/Rainy Day R Mika.jpeg" alt="Rainy Day R Mika" style="margin-top: 10px;">
+                <img src="Skins/Arcade Sub Zero.jpeg" alt="Arcade Sub Zero" style="margin-top: 10px;">
             </div>
             <div class="price">
                 <img src="res/img/cm.png" alt="CM" style="margin-top: 10px;">
@@ -642,11 +698,11 @@
             </div>
             <button onclick="purchaseBundle(this)">Buy</button>
         </div>
-        <div class="bundle-item" data-bundle-name="RandomRecolorDuoPack6">
-            <div class="bundle-name" style="color: white; font-weight: bold;">Random Recolor Duo Pack</div>
+        <div class="bundle-item" data-bundle-name="WinterRecolorDuoPack">
+            <div class="bundle-name" style="color: white; font-weight: bold;">Winter Recolor Duo Pack</div>
             <div class="images-grid">
-                <img src="Loading Screen/Rainy Day R Mika Moss.png" alt="Rainy Day R Mika Moss" style="width: 80%;">
-                <img src="Loading Screen/Pajama Party Cham Cham Cotton Candy.png" alt="Pajama Party Cham Cham Cotton Candy" style="width: 80%;">
+                <img src="Loading Screen/Jade Scorpion Agate.png" alt="Jade Scorpion Agate" style="width: 80%;">
+                <img src="Loading Screen/Arcade Sub Zero Frosty Forest.png" alt="Arcade Sub Zero Frosty Forest" style="width: 80%;">
             </div>
             <div class="price">
                 <img src="res/img/fm.png" alt="FM">

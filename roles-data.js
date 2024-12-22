@@ -35,5 +35,6 @@ export const Roles = {
     Sophitia: "Top, Tank, Teamfight",
     "Sub Zero": "Mid, Support, CC, Burst",
     Talim: "Jungle, Assassin",
-    Yugo: "Top, Fighter"
+    Yugo: "Top, Fighter",
+    Mai: "Fighter, Top, Teamfight"
 }; 

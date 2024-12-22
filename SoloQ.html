@@ -693,74 +693,133 @@ async function updatePlayerWinLoss(userId, isWin) {
 
 // Find this section in your code and update it
 document.getElementById('decide-game-button').addEventListener('click', async function() {
-    // Check if role is selected
-    if (!userSlot) {
-        console.error('No role selected');
-        alert('Please select a role first!');
-        const roleModal = document.getElementById('role-selection-modal');
-        roleModal.style.display = 'block';
-        return;
-    }
+    try {
+        this.disabled = true;
+        const team1 = [];
+        const team2 = [];
+        const user = auth.currentUser;
 
-    this.disabled = true;
-    const team1 = [];
-    const team2 = [];
-    const user = auth.currentUser;
+        if (!user) {
+            console.error('No user logged in');
+            return;
+        }
+        const userId = user.uid;
 
-    if (!user) {
-        console.error('No user logged in');
-        return;
-    }
-    const userId = user.uid;
+        // Collect team data
+        for (let i = 1; i <= 5; i++) {
+            const team1Player = document.getElementById(`team1-player${i}`);
+            const team2Player = document.getElementById(`team2-player${i}`);
 
-    console.log('Decide Game button clicked (Solo Mode)');
+            if (team1Player) {
+                const team1Skin = team1Player.querySelector('.skin-name').textContent;
+                if (team1Skin) team1.push(team1Skin);
+            }
 
-    // Get selected slot
-    const selectedSlot = document.querySelector('.player-slot.highlight');
-    if (!selectedSlot) {
-        console.error('No slot selected');
-        return;
-    }
-
-    for (let i = 1; i <= 5; i++) {
-        const team1Player = document.getElementById(`team1-player${i}`);
-        const team2Player = document.getElementById(`team2-player${i}`);
-
-        if (team1Player) {
-            const team1Skin = team1Player.querySelector('.skin-name')?.textContent;
-            if (team1Skin) team1.push(team1Skin);
+            if (team2Player) {
+                const team2Skin = team2Player.querySelector('.skin-name').textContent;
+                if (team2Skin) team2.push(team2Skin);
+            }
         }
 
-        if (team2Player) {
-            const team2Skin = team2Player.querySelector('.skin-name')?.textContent;
-            if (team2Skin) team2.push(team2Skin);
+        // Map skins to base characters
+        const team1BaseCharacters = team1.map(skin => skinToBaseCharacterMap[skin] || skin);
+        const team2BaseCharacters = team2.map(skin => skinToBaseCharacterMap[skin] || skin);
+
+        console.log('Team 1 Characters:', team1BaseCharacters);
+        console.log('Team 2 Characters:', team2BaseCharacters);
+
+        // Calculate winner
+        const winner = await calculateWinProbability(team1, team2);
+        const loser = winner === 'team1' ? 'team2' : 'team1';
+
+        console.log('Game Result - Winner:', winner, 'Loser:', loser);
+
+        // Update player stats
+        await handleMatchResult(userId, winner === 'team1');
+
+        // Save game data
+        await saveGlobalCharacterStats(team1BaseCharacters, team2BaseCharacters, winner);
+
+        // Get the user's selected character (from team 1, slot 1)
+        const selectedSlot = document.querySelector('.player-slot.highlight');
+        const selectedSkin = selectedSlot?.querySelector('.skin-name')?.textContent;
+        const selectedCharacter = selectedSkin ? (skinToBaseCharacterMap[selectedSkin] || selectedSkin) : null;
+
+        console.log('Selected character for quests:', selectedCharacter);
+
+        // Update quests
+        const questsRef = ref(database, `users/${userId}/quests`);
+        const questsSnapshot = await get(questsRef);
+        const questsData = questsSnapshot.val() || {};
+        const updates = {};
+
+        // Check for Lili games quest
+        if (selectedCharacter === 'Lili') {
+            const liliQuestData = questsData['lili-games'] || { progress: 0, completed: false, claimed: false };
+            console.log('Current Lili quest progress:', liliQuestData.progress);
+            
+            if (!liliQuestData.claimed) {
+                const newProgress = (liliQuestData.progress || 0) + 1;
+                updates['lili-games'] = {
+                    progress: newProgress,
+                    completed: newProgress >= 10,
+                    claimed: false
+                };
+                console.log('Updated Lili quest progress:', newProgress);
+            }
         }
+
+        // Check for win/lose quests
+        if (winner === 'team1') {
+            const winQuestData = questsData['win-games'] || { progress: 0, completed: false, claimed: false };
+            console.log('Current win quest progress:', winQuestData.progress);
+            
+            if (!winQuestData.claimed) {
+                const newProgress = (winQuestData.progress || 0) + 1;
+                updates['win-games'] = {
+                    progress: newProgress,
+                    completed: newProgress >= 2,
+                    claimed: false
+                };
+                console.log('Updated win quest progress:', newProgress);
+            }
+        } else {
+            const loseQuestData = questsData['lose-games'] || { progress: 0, completed: false, claimed: false };
+            console.log('Current lose quest progress:', loseQuestData.progress);
+            
+            if (!loseQuestData.claimed) {
+                const newProgress = (loseQuestData.progress || 0) + 1;
+                updates['lose-games'] = {
+                    progress: newProgress,
+                    completed: newProgress >= 2,
+                    claimed: false
+                };
+                console.log('Updated lose quest progress:', newProgress);
+            }
+        }
+
+        // Update quests in database
+        if (Object.keys(updates).length > 0) {
+            console.log('Updating quests in database:', updates);
+            const questUpdates = {};
+            for (const [questId, questData] of Object.entries(updates)) {
+                questUpdates[`users/${userId}/quests/${questId}`] = questData;
+            }
+            await update(ref(database), questUpdates);
+            console.log('Quest updates completed');
+        } else {
+            console.log('No quest updates needed');
+        }
+
+        // Handle rewards and display
+        await rewardPlayer(winner);
+        await rewardCharacterMoney();
+        displayResult(winner, loser);
+        await updateRankPoints(user, winner === 'team1');
+    } catch (error) {
+        console.error('Error in decide game button handler:', error);
+        this.disabled = false;
     }
-
-    // Map skins to base characters
-    const team1BaseCharacters = team1.map(skin => skinToBaseCharacterMap[skin] || skin);
-    const team2BaseCharacters = team2.map(skin => skinToBaseCharacterMap[skin] || skin);
-
-    // Calculate winner
-    const winner = await calculateWinProbability(team1, team2);
-    const loser = winner === 'team1' ? 'team2' : 'team1';
-    const isWin = winner === 'team1';
-
-    // Process solo mode rewards and updates
-    const skinName = selectedSlot.querySelector('.skin-name').textContent;
-    const baseCharacter = skinToBaseCharacterMap[skinName] || skinName;
-    
-    // Update all necessary data
-    await handleMatchResult(userId, isWin);
-    await saveSoloModeData(userId, baseCharacter, team1BaseCharacters, team2BaseCharacters, winner);
-    await updateRankPoints(user, isWin);
-    await rewardPlayer(winner);
-    await rewardCharacterMoney();
-    
-    // Update quests
-    await updateQuestsAfterGame(userId, baseCharacter, isWin);
-
-    displayResult(winner, loser);
 });
 
 async function updateRankPoints(user, isWin) {
@@ -1452,8 +1511,17 @@ function showBanner(playerSlot, bannerClass) {
 
         function displayResult(winner, loser) {
             const resultContainer = document.getElementById('game-result');
-            resultContainer.innerHTML = `Winner: ${winner}<br>Loser: ${loser}`;
-            resultContainer.style.display = 'block';
+            if (resultContainer) {
+                resultContainer.innerHTML = `
+                    <div style="text-align: center; margin-top: 20px; padding: 10px; background-color: rgba(0, 0, 0, 0.7); border-radius: 5px;">
+                        <h3 style="color: ${winner === 'team1' ? '#4CAF50' : '#f44336'}">
+                            ${winner === 'team1' ? 'Victory!' : 'Defeat!'}
+                        </h3>
+                        <p style="color: white;">Winner: ${winner}</p>
+                    </div>
+                `;
+                resultContainer.style.display = 'block';
+            }
         }
 
 // Function to check character games
@@ -1858,29 +1926,42 @@ function calculateWinRate(wins, losses) {
 // Add these functions before your decide game button event listener
 
 async function calculateWinProbability(team1, team2) {
-    const meta = await loadMeta(); // Load meta.json
-    let team1Score = 0;
-    let team2Score = 0;
+    try {
+        const meta = await loadMeta(); // Load meta.json
+        let team1Score = 0;
+        let team2Score = 0;
 
-    team1.forEach(character => {
-        const baseCharacter = skinToBaseCharacterMap[character] || character;
-        team1Score += meta[baseCharacter] || 0;
-    });
+        team1.forEach(character => {
+            const baseCharacter = skinToBaseCharacterMap[character] || character;
+            team1Score += meta[baseCharacter] || 0;
+        });
 
-    team2.forEach(character => {
-        const baseCharacter = skinToBaseCharacterMap[character] || character;
-        team2Score += meta[baseCharacter] || 0;
-    });
+        team2.forEach(character => {
+            const baseCharacter = skinToBaseCharacterMap[character] || character;
+            team2Score += meta[baseCharacter] || 0;
+        });
 
-    // Apply a 15% advantage to the team with the lower score
-    const advantage = 0.15;
-    if (team1Score < team2Score) {
-        team1Score *= (1 + advantage);
-    } else if (team2Score < team1Score) {
-        team2Score *= (1 + advantage);
+        // Apply a 15% advantage to the team with the lower score
+        const advantage = 0.15;
+        if (team1Score < team2Score) {
+            team1Score *= (1 + advantage);
+        } else if (team2Score < team1Score) {
+            team2Score *= (1 + advantage);
+        }
+
+        // Add some randomness to make it less predictable
+        team1Score *= (1 + Math.random() * 0.2); // Random boost up to 20%
+        team2Score *= (1 + Math.random() * 0.2);
+
+        console.log('Team 1 Score:', team1Score);
+        console.log('Team 2 Score:', team2Score);
+
+        return team1Score >= team2Score ? 'team1' : 'team2';
+    } catch (error) {
+        console.error('Error calculating win probability:', error);
+        // Default to team1 win if there's an error
+        return 'team1';
     }
-
-    return team1Score > team2Score ? 'team1' : 'team2';
 }
 
 // Add this in the decide game button click handler, where other quest updates are happening:
@@ -1924,7 +2005,11 @@ async function updateQuestsAfterGame(userId, selectedCharacter, isWin) {
 }
 
 // Then modify the decide game button click handler to include this:
-decideGameButton.addEventListener('click', async () => {
+        // Get the decide game button
+        const decideGameButton = document.getElementById('decide-game-button');
+        
+        // Update the decide game button handler
+        decideGameButton.addEventListener('click', async function() {
     // ... existing code ...
 
     // After processing the game result
