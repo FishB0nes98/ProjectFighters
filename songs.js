@@ -1,5 +1,17 @@
 const songs = [
     {
+        title: "Under The Sea",
+        artist: "Atlantean Christie",
+        path: "Songs/Under The Sea (Atlantean Christie Theme).mp3",
+        cover: "Loading Screen/Atlantean Christie.png"
+    },
+    {
+        title: "Welcome To Atlantis",
+        artist: "Event",
+        path: "Songs/Welcome To Atlantis (Event Theme).mp3",
+        cover: "Event/Atlantis Event.jpeg"
+    },
+    {
         title: "Capoeira Queen",
         artist: "Christie",
         path: "Songs/Capoeira Queen (Christie Theme).mp3",
@@ -34,7 +46,7 @@ const songs = [
         artist: "Winter Festival Lili",
         path: "Songs/Snowball Princess (Winter Festival Lili Theme).mp3",
         cover: "Loading Screen/Winter Festival Lili.png"
-    }
+    },
 ];
 
 export default songs; 

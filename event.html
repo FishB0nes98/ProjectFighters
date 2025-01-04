@@ -506,6 +506,96 @@
             50% { text-shadow: 0 0 20px #4169E1, 0 0 30px #4169E1, 0 0 40px #4169E1; }
             100% { text-shadow: 0 0 10px #4169E1, 0 0 20px #4169E1, 0 0 30px #4169E1; }
         }
+
+        /* Add Atlantis Event Styles */
+        .atlantis-section {
+            background: url('Event/Atlantis Event.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            color: #00FFFF; /* Cyan for underwater theme */
+            font-family: 'Playfair Display', serif;
+            position: relative;
+        }
+
+        .atlantis-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                rgba(0, 40, 80, 0.4),
+                rgba(0, 20, 40, 0.6)
+            );
+            z-index: 0;
+        }
+
+        .atlantis-section > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .atlantis-section h1 {
+            font-size: 72px;
+            color: #00FFFF;
+            text-shadow: 
+                0 0 10px #0088FF,
+                0 0 20px #0088FF,
+                0 0 30px #0088FF;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 4px;
+            animation: waterGlow 3s infinite;
+        }
+
+        .atlantis-gallery .skin-item {
+            margin: 40px;
+        }
+
+        .atlantis-gallery .skin-name {
+            color: #00FFFF;
+            font-size: 24px;
+            font-family: 'Cinzel', serif;
+            text-shadow: 
+                0 0 5px #0088FF,
+                0 0 10px #0088FF;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .atlantis-gallery .skin-name:hover {
+            color: #80FFFF;
+            text-shadow: 
+                0 0 10px #00FFFF,
+                0 0 20px #00FFFF;
+            transform: scale(1.1);
+        }
+
+        @keyframes waterGlow {
+            0% { text-shadow: 0 0 10px #0088FF, 0 0 20px #0088FF, 0 0 30px #0088FF; }
+            50% { text-shadow: 0 0 20px #00FFFF, 0 0 30px #00FFFF, 0 0 40px #00FFFF; }
+            100% { text-shadow: 0 0 10px #0088FF, 0 0 20px #0088FF, 0 0 30px #0088FF; }
+        }
+
+        /* Bubble animation for Atlantis theme */
+        .bubble {
+            position: fixed;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2));
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float-up linear infinite;
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(100vh) translateX(0px);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100px) translateX(20px);
+                opacity: 0;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -520,7 +610,8 @@
         </div>
     </div>
     <div class="event-buttons">
-        <button class="event-button" id="winterFestivalEventBtn" aria-controls="winterFestivalEventSection" aria-expanded="true">Winter Festival Event</button>
+        <button class="event-button" id="atlantisEventBtn" aria-controls="atlantisEventSection" aria-expanded="true">Atlantis Event</button>
+        <button class="event-button" id="winterFestivalEventBtn" aria-controls="winterFestivalEventSection" aria-expanded="false">Winter Festival Event</button>
     </div>
     <div class="play-button-container">
         <a href="Game Modes.html" class="play-button">Play</a>
@@ -529,8 +620,51 @@
         <span>Battlepass</span>
     </button>
 
+    <!-- Atlantis Event Section -->
+    <div id="atlantisEventSection" class="event-section active-section atlantis-section">
+        <h1>Atlantis Event</h1>
+        <div id="skin-gallery" class="atlantis-gallery">
+            <div class="skin-item">
+                <a href="Skins/Atlantean Christie.jpeg" class="lightbox-link" data-caption="Atlantean Christie">
+                    <img src="Skins/Atlantean Christie.jpeg" alt="Atlantean Christie">
+                </a>
+                <div class="skin-name">Atlantean Christie</div>
+            </div>
+            <div class="skin-item">
+                <a href="Skins/Atlantean Kotal Kahn.jpeg" class="lightbox-link" data-caption="Atlantean Kotal Kahn">
+                    <img src="Skins/Atlantean Kotal Kahn.jpeg" alt="Atlantean Kotal Kahn">
+                </a>
+                <div class="skin-name">Atlantean Kotal Kahn</div>
+            </div>
+            <div class="skin-item">
+                <a href="Skins/Atlantean Zasalamel.jpg" class="lightbox-link" data-caption="Atlantean Zasalamel">
+                    <img src="Skins/Atlantean Zasalamel.jpg" alt="Atlantean Zasalamel">
+                </a>
+                <div class="skin-name">Atlantean Zasalamel</div>
+            </div>
+            <div class="skin-item">
+                <a href="Skins/Atlantean Sub Zero.jpeg" class="lightbox-link" data-caption="Atlantean Sub Zero">
+                    <img src="Skins/Atlantean Sub Zero.jpeg" alt="Atlantean Sub Zero">
+                </a>
+                <div class="skin-name">Atlantean Sub Zero</div>
+            </div>
+            <div class="skin-item">
+                <a href="Skins/Atlantean Shinnok.jpeg" class="lightbox-link" data-caption="Atlantean Shinnok">
+                    <img src="Skins/Atlantean Shinnok.jpeg" alt="Atlantean Shinnok">
+                </a>
+                <div class="skin-name">Atlantean Shinnok</div>
+            </div>
+            <div class="skin-item">
+                <a href="Skins/Atlantean Kagome.jpeg" class="lightbox-link" data-caption="Atlantean Kagome">
+                    <img src="Skins/Atlantean Kagome.jpeg" alt="Atlantean Kagome">
+                </a>
+                <div class="skin-name">Atlantean Kagome</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Winter Festival Event Section -->
-    <div id="winterFestivalEventSection" class="event-section active-section winter-festival-section">
+    <div id="winterFestivalEventSection" class="event-section winter-festival-section">
         <h1>Winter Festival Event</h1>
         <div id="skin-gallery" class="winter-festival-gallery">
             <div class="skin-item">
@@ -591,7 +725,6 @@
         const lightboxImage = document.getElementById('lightbox-image');
         let currentImageIndex = 0;
         const lightboxLinks = document.querySelectorAll('.lightbox-link');
-        // Array to hold all lightbox links
         const lightboxArray = Array.from(lightboxLinks);
 
         // Ensure lightbox is hidden initially
@@ -610,19 +743,16 @@
             });
         });
 
-        // Open lightbox function
         function openLightbox(imageUrl, caption) {
             lightboxImage.src = imageUrl;
             lightboxImage.alt = caption;
             lightbox.style.display = 'flex';
         }
 
-        // Close lightbox function
         function closeLightbox() {
             lightbox.style.display = 'none';
         }
 
-        // Previous image function
         function prevImage() {
             currentImageIndex = (currentImageIndex - 1 + lightboxLinks.length) % lightboxLinks.length;
             const imageUrl = lightboxLinks[currentImageIndex].getAttribute('href');
@@ -630,46 +760,12 @@
             openLightbox(imageUrl, caption);
         }
 
-        // Next image function
         function nextImage() {
             currentImageIndex = (currentImageIndex + 1) % lightboxLinks.length;
             const imageUrl = lightboxLinks[currentImageIndex].getAttribute('href');
             const caption = lightboxLinks[currentImageIndex].getAttribute('data-caption');
             openLightbox(imageUrl, caption);
         }
-        // Event Buttons Functionality
-        const sacredceremonyEventBtn = document.getElementById('sacredceremonyEventBtn');
-        const sacredceremonyEventSection = document.getElementById('sacredceremonyEventSection');
-
-        sacredceremonyEventBtn.addEventListener('click', () => {
-            sacredceremonyEventSection.classList.add('active-section');
-            // Optionally change background
-            document.body.style.backgroundImage = "url('Event/sacredceremony Event.jpeg')";
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const eventButtons = document.querySelector('.event-buttons');
-            eventButtons.style.display = 'flex';
-
-            const buttons = document.querySelectorAll('.event-button');
-            buttons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetId = button.getAttribute('aria-controls');
-                    const sections = document.querySelectorAll('.event-section');
-                    
-                    sections.forEach(section => {
-                        section.classList.remove('active-section');
-                    });
-                    
-                    document.getElementById(targetId).classList.add('active-section');
-                    
-                    buttons.forEach(btn => {
-                        btn.setAttribute('aria-expanded', 'false');
-                    });
-                    button.setAttribute('aria-expanded', 'true');
-                });
-            });
-        });
 
         // Enhanced Snow effect
         function createSnowflake() {
@@ -677,26 +773,97 @@
             snowflake.classList.add('snowflake');
             snowflake.innerHTML = '❄';
             snowflake.style.left = Math.random() * 100 + 'vw';
-            snowflake.style.opacity = Math.random() * 0.8 + 0.2; // More visible snowflakes
-            snowflake.style.fontSize = (Math.random() * 15 + 8) + 'px'; // Varied sizes
-            snowflake.style.filter = 'blur(' + Math.random() * 2 + 'px)'; // Add depth
+            snowflake.style.opacity = Math.random() * 0.8 + 0.2;
+            snowflake.style.fontSize = (Math.random() * 15 + 8) + 'px';
+            snowflake.style.filter = 'blur(' + Math.random() * 2 + 'px)';
             snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            snowflake.style.transform = `rotate(${Math.random() * 360}deg)`; // Random rotation
+            snowflake.style.transform = `rotate(${Math.random() * 360}deg)`;
             document.body.appendChild(snowflake);
 
-            // Remove snowflake after animation
             snowflake.addEventListener('animationend', () => {
                 snowflake.remove();
             });
         }
 
-        // Create snowflakes more frequently
-        setInterval(createSnowflake, 50); // Increased frequency
-
-        // Initial batch of snowflakes
-        for(let i = 0; i < 50; i++) {
-            setTimeout(createSnowflake, Math.random() * 2000); // Stagger initial creation
+        function startSnowflakes() {
+            if (document.getElementById('winterFestivalEventSection').classList.contains('active-section')) {
+                setInterval(createSnowflake, 50);
+                for(let i = 0; i < 50; i++) {
+                    setTimeout(createSnowflake, Math.random() * 2000);
+                }
+            }
         }
+
+        // Bubble effect for Atlantis theme
+        function createBubble() {
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble');
+            const size = Math.random() * 30 + 10;
+            bubble.style.width = size + 'px';
+            bubble.style.height = size + 'px';
+            bubble.style.left = Math.random() * 100 + 'vw';
+            bubble.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.body.appendChild(bubble);
+
+            bubble.addEventListener('animationend', () => {
+                bubble.remove();
+            });
+        }
+
+        function startBubbles() {
+            if (document.getElementById('atlantisEventSection').classList.contains('active-section')) {
+                setInterval(createBubble, 500);
+                for(let i = 0; i < 20; i++) {
+                    setTimeout(createBubble, Math.random() * 2000);
+                }
+            }
+        }
+
+        function stopBubbles() {
+            const bubbles = document.querySelectorAll('.bubble');
+            bubbles.forEach(bubble => bubble.remove());
+        }
+
+        function stopSnowflakes() {
+            const snowflakes = document.querySelectorAll('.snowflake');
+            snowflakes.forEach(snowflake => snowflake.remove());
+        }
+
+        // Initialize events and handle switching
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set initial state
+            document.body.style.backgroundImage = "url('Event/Atlantis Event.jpeg')";
+            const atlantisSection = document.getElementById('atlantisEventSection');
+            const winterSection = document.getElementById('winterFestivalEventSection');
+            
+            atlantisSection.classList.add('active-section');
+            winterSection.classList.remove('active-section');
+            startBubbles();
+
+            // Event button handlers
+            const atlantisBtn = document.getElementById('atlantisEventBtn');
+            const winterBtn = document.getElementById('winterFestivalEventBtn');
+
+            atlantisBtn.addEventListener('click', () => {
+                document.body.style.backgroundImage = "url('Event/Atlantis Event.jpeg')";
+                atlantisSection.classList.add('active-section');
+                winterSection.classList.remove('active-section');
+                atlantisBtn.setAttribute('aria-expanded', 'true');
+                winterBtn.setAttribute('aria-expanded', 'false');
+                stopSnowflakes();
+                startBubbles();
+            });
+
+            winterBtn.addEventListener('click', () => {
+                document.body.style.backgroundImage = "url('Event/Winter Festival Event.jpeg')";
+                winterSection.classList.add('active-section');
+                atlantisSection.classList.remove('active-section');
+                winterBtn.setAttribute('aria-expanded', 'true');
+                atlantisBtn.setAttribute('aria-expanded', 'false');
+                stopBubbles();
+                startSnowflakes();
+            });
+        });
     </script>
 </body>
 </html>

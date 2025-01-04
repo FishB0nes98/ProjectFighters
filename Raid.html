@@ -125,6 +125,61 @@
         transform: scale(1.05); /* Slightly enlarge the button on hover */
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
     }
+
+    /* Crafting Button Styles */
+    .crafting-button-container {
+        display: flex;
+        justify-content: flex-end;
+        padding: 20px;
+        z-index: auto;
+        position: fixed;
+        right: 0;
+        top: 5px;
+    }
+
+    .crafting-button {
+        background: linear-gradient(135deg, #00ced1, #008b8b);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 22px;
+        font-weight: bold;
+        text-decoration: none;
+        padding: 15px 40px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 8px 20px rgba(0, 206, 209, 0.3);
+        z-index: 1;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .crafting-button:hover {
+        transform: scale(1.05) translateY(-2px);
+        box-shadow: 0 15px 30px rgba(0, 206, 209, 0.4);
+        background: linear-gradient(135deg, #00e6e9, #00ced1);
+    }
+
+    .crafting-button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 150%;
+        height: 150%;
+        background: radial-gradient(circle, rgba(0, 206, 209, 0.4) 0%, transparent 70%);
+        transform: translate(-50%, -50%) scale(0);
+        transition: transform 0.5s ease-out;
+    }
+
+    .crafting-button:hover::before {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    .crafting-button:active {
+        transform: scale(0.95);
+        box-shadow: 0 5px 15px rgba(0, 206, 209, 0.3);
+    }
+
         #video-background {
             position: fixed;
             right: 0;
@@ -190,22 +245,24 @@
 
         window.onload = function() {
             // Add click handlers
-            document.getElementById('farmRaidButton').addEventListener('click', showFarmStages);
+            document.getElementById('atlantisRaidButton').addEventListener('click', () => {
+                window.open('https://github.com/FishB0nes98/Project-Fighter-Raids/releases/tag/v1.0.0', '_blank');
+            });
             document.getElementById('backButton').addEventListener('click', showRaidSelect);
-            document.getElementById('farmStage1').addEventListener('click', () => {
-                window.location.href = 'Raids/Farm Raid/Stage_1_Farm.html';
+            document.getElementById('atlantisStage1').addEventListener('click', () => {
+                window.location.href = 'Raids/Atlantis Raid/Stage_1_Atlantis.html';
             });
 
             // Check authentication and stages
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
-                    const userRef = ref(database, 'users/' + user.uid + '/Raid/Farm');
+                    const userRef = ref(database, 'users/' + user.uid + '/Raid/Atlantis');
                     const snapshot = await get(userRef);
                     if (snapshot.exists()) {
-                        const farmRaidData = snapshot.val();
+                        const atlantisRaidData = snapshot.val();
                         for (let i = 1; i <= 5; i++) {
-                            if (farmRaidData[`Stage${i}`] === 1 && i < 5) {
-                                document.getElementById(`farmStage${i + 1}`).style.display = 'inline-block';
+                            if (atlantisRaidData[`Stage${i}`] === 1 && i < 5) {
+                                document.getElementById(`atlantisStage${i + 1}`).style.display = 'inline-block';
                             }
                         }
                     }
@@ -213,7 +270,7 @@
             });
         };
 
-        function showFarmStages() {
+        function showAtlantisStages() {
             document.getElementById('raidSelect').style.display = 'none';
             document.getElementById('stageSelect').style.display = 'block';
             document.getElementById('backButton').style.display = 'block';
@@ -245,37 +302,40 @@
     <div class="play-button-container">
         <a href="Game Modes.html" class="play-button">Play</a>
     </div>
+    <div class="crafting-button-container">
+        <a href="crafting.html" class="crafting-button">Crafting</a>
+    </div>
     <button id="backButton" class="back-button">Back to Raids</button>
 
     <div id="raidSelect" class="container">
         <h1>Available Raids</h1>
-        <!-- Farm Raid Button -->
-        <div id="farmRaidButton" class="stage-button">
-            <img src="res/img/farm_background.jpeg" alt="Farm Raid">
-            <span>Farm Raid</span>
+        <!-- Atlantis Raid Button -->
+        <div id="atlantisRaidButton" class="stage-button">
+            <img src="Event/Atlantis Event.jpeg" alt="Atlantis Raid">
+            <span>Atlantis Raid</span>
         </div>
     </div>
 
     <div id="stageSelect" class="container">
-        <h1>Farm Raid Stages</h1>
-        <div id="farmStage1" class="stage-button" style="cursor: pointer;">
-            <img src="res/img/farm_stage_1_bg.jpeg" alt="Stage 1">
+        <h1>Atlantis Raid Stages</h1>
+        <div id="atlantisStage1" class="stage-button" style="cursor: pointer;">
+            <img src="res/img/atlantis_stage_1_bg.jpeg" alt="Stage 1">
             <span>Stage 1</span>
         </div>
-        <div id="farmStage2" class="stage-button" style="display: none;">
-            <img src="res/img/raid/farm_stage_2_bg.jpeg" alt="Stage 2">
+        <div id="atlantisStage2" class="stage-button" style="display: none;">
+            <img src="res/img/raid/atlantis_stage_2_bg.jpeg" alt="Stage 2">
             <span>Stage 2</span>
         </div>
-        <div id="farmStage3" class="stage-button" style="display: none;">
-            <img src="res/img/raid/farm_stage3.png" alt="Stage 3">
+        <div id="atlantisStage3" class="stage-button" style="display: none;">
+            <img src="res/img/raid/atlantis_stage3.png" alt="Stage 3">
             <span>Stage 3</span>
         </div>
-        <div id="farmStage4" class="stage-button" style="display: none;">
-            <img src="res/img/raid/farm_stage4.png" alt="Stage 4">
+        <div id="atlantisStage4" class="stage-button" style="display: none;">
+            <img src="res/img/raid/atlantis_stage4.png" alt="Stage 4">
             <span>Stage 4</span>
         </div>
-        <div id="farmStage5" class="stage-button" style="display: none;">
-            <img src="res/img/raid/farm_stage5.png" alt="Stage 5">
+        <div id="atlantisStage5" class="stage-button" style="display: none;">
+            <img src="res/img/raid/atlantis_stage5.png" alt="Stage 5">
             <span>Stage 5</span>
         </div>
     </div>

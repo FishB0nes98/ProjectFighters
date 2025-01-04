@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Zasalamel - Character Page</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('../Default Splash/Zasalamel.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            font-family: Arial, sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Transparent Menu */
+        .menu {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 0;
+        }
+
+        .menu-items {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 16px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+
+        .play-button-container {
+            display: flex;
+            justify-content: flex-start;
+            padding: 20px;
+            z-index: auto;
+            position: fixed;
+        }
+
+        .play-button {
+            background-color: #ffbb00;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 22px;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 15px 40px;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1;
+            top: 5px;
+            position: fixed;
+            left: 0px;
+        }
+
+        .play-button:hover {
+            background-color: #ff8800;
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .content {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 100px 50px 50px 50px;
+        }
+
+        .left-panel {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-right: 20px;
+            max-width: 400px;
+        }
+
+        .left-panel h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .left-panel p {
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .role {
+            font-size: 24px;
+            font-weight: bold;
+            color: gold;
+            margin-bottom: 20px;
+        }
+
+        .bio-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .bio-button:hover {
+            background-color: #0056b3;
+        }
+
+        .skins-container {
+            display: flex;
+            overflow-x: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .skins-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .skin-image {
+            width: 300px;
+            height: 169px;
+            margin: 10px;
+            border: 2px solid #444;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+        }
+
+        .skin-image:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+
+        .lightbox.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox-img {
+            max-width: 80%;
+            max-height: 80%;
+            border-radius: 10px;
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .arrow {
+            position: absolute;
+            top: 50%;
+            font-size: 60px;
+            color: white;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .arrow.left {
+            left: 30px;
+        }
+
+        .arrow.right {
+            right: 30px;
+        }
+
+        .best-players {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .best-players h2 {
+            font-size: 24px;
+            color: gold;
+            margin-bottom: 10px;
+        }
+
+        .best-players ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .best-players li {
+            font-size: 18px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .right-panel {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            right: 50px;
+            position: fixed;
+            top: 175px;
+        }
+
+        .more-link {
+            color: #007bff;
+            cursor: pointer;
+        }
+
+        .hide-ui-button {
+            position: fixed;
+            top: 75px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .hide-ui-button:hover {
+            background-color: #0056b3;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+    <!-- Include Firebase SDK and configuration as module scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule="">
+        // Fallback for non-module browsers (if needed)
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+    <script type="module">
+        // Initialize Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        async function fetchBestZasalamelPlayers() {
+            const usersRef = ref(database, 'users');
+            const snapshot = await get(usersRef);
+            const users = snapshot.val();
+            const ZasalamelPlayers = [];
+
+            for (const userId in users) {
+                const user = users[userId];
+                if (user.characters && user.characters['Zasalamel']) {
+                    const { win, lose } = user.characters['Zasalamel'];
+                    const totalGames = win + lose;
+                    if (totalGames >= 15) {
+                        const winrate = (win / totalGames) * 100;
+                        ZasalamelPlayers.push({ username: user.username, winrate });
+                    }
+                }
+            }
+
+            ZasalamelPlayers.sort((a, b) => b.winrate - a.winrate);
+            return ZasalamelPlayers.slice(0, 5);
+        }
+
+        async function displayBestZasalamelPlayers() {
+            const bestPlayers = await fetchBestZasalamelPlayers();
+            const bestPlayersList = document.getElementById('best-players-list');
+            bestPlayersList.innerHTML = '';
+
+            bestPlayers.forEach(player => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `<span>${player.username}</span><span>${player.winrate.toFixed(2)}%</span>`;
+                bestPlayersList.appendChild(listItem);
+            });
+        }
+
+        window.onload = function() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    displayBestZasalamelPlayers();
+                }
+            });
+        };
+    </script>
+</head>
+<body>
+    <!-- Menu -->
+    <div class="menu">
+        <div class="menu-items">
+            <a href="../home.html">Home</a>
+            <a href="../Store.html">Store</a>
+            <a href="../event.html">Event</a>
+            <a href="../Team Builder.html">Team Builder</a>
+            <a href="../championstats.html">Statistics</a>
+        </div>
+    </div>
+    <div class="play-button-container">
+        <a class="play-button" href="../Game Modes.html">Play</a>
+    </div>
+    <!-- Hide UI Button -->
+    <button class="hide-ui-button" onclick="toggleUI()">Hide UI</button>
+    <!-- Content -->
+    <div class="content">
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <p>Zasalamel is a mysterious warrior who wields a scythe and possesses the power of reincarnation. He is cursed with immortality and has lived through countless lifetimes, accumulating vast knowledge and experience. His ultimate goal is to break free from his eternal cycle of death and rebirth. Throughout his many lives, he has mastered various forms of combat and magic, making him a formidable opponent in battle. <a href="../characters/Zasalamel Page.html" class="bio-button">Check Bio</a></p>
+        </div>
+    </div>
+    <div class="content">
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="best-players">
+                <h2>Best Zasalamel Players</h2>
+                <ul id="best-players-list">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- Skins Container -->
+    <div class="skins-container">
+        <label style="position: absolute; top: 10px; left: 10px; color: white;">
+            <input id="hide-recolors" onclick="toggleRecolors()" type="checkbox"/>
+            Hide Recolors
+        </label>
+        <img src="../Skins/Atlantean Zasalamel.jpg" alt="Atlantean Zasalamel" class="skin-image" onclick="openLightbox(0)">
+        <img alt="Zasalamel Evil" class="skin-image recolor" onclick="openLightbox(1)" src="../Skins/Zasalamel Evil.png"/>
+        <img alt="Zasalamel Scarlet" class="skin-image recolor" onclick="openLightbox(2)" src="../Skins/Zasalamel Scarlet.png"/>
+        <img alt="Zasalamel Sorcerer" class="skin-image recolor" onclick="openLightbox(3)" src="../Skins/Zasalamel Sorcerer.png"/>
+    </div>
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox">
+        <span class="close" onclick="closeLightbox()">&times;</span>
+        <span class="arrow left" onclick="prevImage()">&#10094;</span>
+        <img id="lightbox-img" src="" alt="Skin Image" class="lightbox-img">
+        <span class="arrow right" onclick="nextImage()">&#10095;</span>
+    </div>
+    <script>
+        const skins = [
+            '../Skins/Atlantean Zasalamel.jpg',
+            '../Skins/Zasalamel Evil.png',
+            '../Skins/Zasalamel Scarlet.png',
+            '../Skins/Zasalamel Sorcerer.png'
+        ];
+        let currentIndex = 0;
+
+        function openLightbox(index) {
+            currentIndex = index;
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.add('show');
+            document.getElementById('lightbox-img').src = skins[currentIndex];
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('show');
+        }
+
+        function prevImage() {
+            currentIndex = (currentIndex - 1 + skins.length) % skins.length;
+            document.getElementById('lightbox-img').src = skins[currentIndex];
+        }
+
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % skins.length;
+            document.getElementById('lightbox-img').src = skins[currentIndex];
+        }
+
+        function toggleRecolors() {
+            const recolorSkins = document.querySelectorAll('.skin-image.recolor');
+            const hideRecolors = document.getElementById('hide-recolors').checked;
+            recolorSkins.forEach(skin => {
+                skin.style.display = hideRecolors ? 'none' : 'block';
+            });
+        }
+
+        function toggleUI() {
+            const uiElements = document.querySelectorAll('.menu, .play-button-container, .hide-ui-button, .content, .lightbox');
+            uiElements.forEach(element => {
+                if (element.style.display === 'none') {
+                    element.style.display = 'flex';
+                } else {
+                    element.style.display = 'none';
+                }
+            });
+        }
+
+        document.querySelector('.skins-container').addEventListener('mousemove', function(e) {
+            const container = e.currentTarget;
+            const containerWidth = container.offsetWidth;
+            const scrollWidth = container.scrollWidth;
+            const scrollLeft = container.scrollLeft;
+            const mouseX = e.clientX - container.getBoundingClientRect().left;
+
+            if (mouseX < containerWidth * 0.1) {
+                container.scrollLeft = Math.max(0, scrollLeft - 10);
+            } else if (mouseX > containerWidth * 0.9) {
+                container.scrollLeft = Math.min(scrollWidth - containerWidth, scrollLeft + 10);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const skinsContainer = document.querySelector('.skins-container');
+            
+            if (skinsContainer) {
+                skinsContainer.addEventListener('mousemove', function(e) {
+                    const containerWidth = skinsContainer.offsetWidth;
+                    const scrollWidth = skinsContainer.scrollWidth;
+                    const scrollLeft = skinsContainer.scrollLeft;
+                    const mouseX = e.clientX - skinsContainer.getBoundingClientRect().left;
+
+                    if (mouseX < containerWidth * 0.1) {
+                        skinsContainer.scrollLeft = Math.max(0, scrollLeft - 10);
+                    } else if (mouseX > containerWidth * 0.9) {
+                        skinsContainer.scrollLeft = Math.min(scrollWidth - containerWidth, scrollLeft + 10);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

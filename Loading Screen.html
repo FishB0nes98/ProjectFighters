@@ -812,20 +812,10 @@ document.getElementById('decide-game-button').addEventListener('click', async fu
     }
 
     // Update quests
+    const questsRef = ref(database, `users/${userId}/quests`);
+    const questsSnapshot = await get(questsRef);
+    const questsData = questsSnapshot.val() || {};
     const questUpdates = {};
-
-    // Check for Lili games quest - check in both teams
-    if (team1.some(skin => skin.includes('Lili')) || team2.some(skin => skin.includes('Lili'))) {
-        const liliQuestRef = ref(database, `users/${userId}/quests/lili-games`);
-        const liliQuestSnap = await get(liliQuestRef);
-        const questData = liliQuestSnap.val() || { progress: 0, completed: false };
-        if (!questData.completed) {
-            questUpdates['lili-games'] = {
-                progress: (questData.progress || 0) + 1,
-                completed: (questData.progress + 1) >= 10
-            };
-        }
-    }
 
     // Check for win/lose quests
     if (winner === 'team1') {

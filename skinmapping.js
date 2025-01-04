@@ -436,4 +436,15 @@ export const skinToBaseCharacterMap = {
     'Steamforged Nina': 'Nina',
     'Steamforged Kabal': 'Kabal',
     'Steamforged Yugo': 'Yugo',
+    'Atlantean Zasalamel': 'Zasalamel',
+    'Zasalamel': 'Zasalamel',
+    'Zasalamel Evil': 'Zasalamel',
+    'Zasalamel Scarlet': 'Zasalamel',
+    'Zasalamel Sorcerer': 'Zasalamel',
+    'Atlantean Christie': 'Christie',
+    'Atlantean Kotal Kahn': 'Kotal Kahn',
+    'Atlantean Shinnok': 'Shinnok',
+    'Atlantean Sub Zero': 'Sub Zero',
+    'Atlantean Kagome': 'Kagome',
+    
 };

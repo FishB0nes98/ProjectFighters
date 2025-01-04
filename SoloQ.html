@@ -15,7 +15,6 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
         import { getDatabase, ref, set, get, update, increment } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
-        import { quests } from './quests.js';
         import { roles } from './roles.js';
         import { characters } from './characterskinref.js'; // Import characters
         import { skinToBaseCharacterMap } from './skinmapping.js'; // Import skinToBaseCharacterMap
@@ -751,64 +750,84 @@ document.getElementById('decide-game-button').addEventListener('click', async fu
         const questsRef = ref(database, `users/${userId}/quests`);
         const questsSnapshot = await get(questsRef);
         const questsData = questsSnapshot.val() || {};
-        const updates = {};
-
-        // Check for Lili games quest
-        if (selectedCharacter === 'Lili') {
-            const liliQuestData = questsData['lili-games'] || { progress: 0, completed: false, claimed: false };
-            console.log('Current Lili quest progress:', liliQuestData.progress);
-            
-            if (!liliQuestData.claimed) {
-                const newProgress = (liliQuestData.progress || 0) + 1;
-                updates['lili-games'] = {
-                    progress: newProgress,
-                    completed: newProgress >= 10,
-                    claimed: false
-                };
-                console.log('Updated Lili quest progress:', newProgress);
-            }
-        }
+        const questUpdates = {};
 
         // Check for win/lose quests
         if (winner === 'team1') {
-            const winQuestData = questsData['win-games'] || { progress: 0, completed: false, claimed: false };
-            console.log('Current win quest progress:', winQuestData.progress);
-            
-            if (!winQuestData.claimed) {
-                const newProgress = (winQuestData.progress || 0) + 1;
-                updates['win-games'] = {
-                    progress: newProgress,
-                    completed: newProgress >= 2,
-                    claimed: false
+            const winQuestRef = ref(database, `users/${userId}/quests/win-games`);
+            const winQuestSnap = await get(winQuestRef);
+            const questData = winQuestSnap.val() || { progress: 0, completed: false };
+            if (!questData.completed) {
+                questUpdates['win-games'] = {
+                    progress: (questData.progress || 0) + 1,
+                    completed: (questData.progress + 1) >= 2
                 };
-                console.log('Updated win quest progress:', newProgress);
             }
-        } else {
-            const loseQuestData = questsData['lose-games'] || { progress: 0, completed: false, claimed: false };
-            console.log('Current lose quest progress:', loseQuestData.progress);
-            
-            if (!loseQuestData.claimed) {
-                const newProgress = (loseQuestData.progress || 0) + 1;
-                updates['lose-games'] = {
-                    progress: newProgress,
-                    completed: newProgress >= 2,
-                    claimed: false
-                };
-                console.log('Updated lose quest progress:', newProgress);
-            }
-        }
 
-        // Update quests in database
-        if (Object.keys(updates).length > 0) {
-            console.log('Updating quests in database:', updates);
-            const questUpdates = {};
-            for (const [questId, questData] of Object.entries(updates)) {
-                questUpdates[`users/${userId}/quests/${questId}`] = questData;
+            // Check win against Shinnok or Zasalamel quest
+            const team2Characters = team2BaseCharacters.map(skin => skinToBaseCharacterMap[skin] || skin);
+            if (team2Characters.some(char => char === 'Shinnok' || char === 'Zasalamel')) {
+                const winAgainstRef = ref(database, `users/${userId}/quests/win-against`);
+                const winAgainstSnap = await get(winAgainstRef);
+                const winAgainstData = winAgainstSnap.val() || { progress: 0, completed: false };
+                if (!winAgainstData.completed) {
+                    questUpdates['win-against'] = {
+                        progress: 1,
+                        completed: true
+                    };
+                }
             }
-            await update(ref(database), questUpdates);
-            console.log('Quest updates completed');
+
+            // Check win as Atlantean Champion quest
+            const atlanteanChampions = ['Kotal Kahn', 'Sub Zero', 'Christie', 'Kagome'];
+            const team1Characters = team1BaseCharacters.map(skin => skinToBaseCharacterMap[skin] || skin);
+            if (team1Characters.some(char => atlanteanChampions.includes(char))) {
+                const winAsAtlanteanRef = ref(database, `users/${userId}/quests/win-as-atlantean`);
+                const winAsAtlanteanSnap = await get(winAsAtlanteanRef);
+                const winAsAtlanteanData = winAsAtlanteanSnap.val() || { progress: 0, completed: false };
+                if (!winAsAtlanteanData.completed) {
+                    questUpdates['win-as-atlantean'] = {
+                        progress: 1,
+                        completed: true
+                    };
+                }
+            }
+
+            // Update quests in database
+            if (Object.keys(questUpdates).length > 0) {
+                console.log('Updating quests in database:', questUpdates);
+                const updates = {};
+                for (const [questId, questData] of Object.entries(questUpdates)) {
+                    updates[`users/${userId}/quests/${questId}`] = questData;
+                }
+                await update(ref(database), updates);
+                console.log('Quest updates completed');
+            } else {
+                console.log('No quest updates needed');
+            }
         } else {
-            console.log('No quest updates needed');
+            const loseQuestRef = ref(database, `users/${userId}/quests/lose-games`);
+            const loseQuestSnap = await get(loseQuestRef);
+            const questData = loseQuestSnap.val() || { progress: 0, completed: false };
+            if (!questData.completed) {
+                questUpdates['lose-games'] = {
+                    progress: (questData.progress || 0) + 1,
+                    completed: (questData.progress + 1) >= 2
+                };
+            }
+
+            // Update quests in database for lose case
+            if (Object.keys(questUpdates).length > 0) {
+                console.log('Updating quests in database:', questUpdates);
+                const updates = {};
+                for (const [questId, questData] of Object.entries(questUpdates)) {
+                    updates[`users/${userId}/quests/${questId}`] = questData;
+                }
+                await update(ref(database), updates);
+                console.log('Quest updates completed');
+            } else {
+                console.log('No quest updates needed');
+            }
         }
 
         // Handle rewards and display

@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crafting - Project Fighters</title>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #003246;
+            color: #ffd700;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        .crafting-container {
+            max-width: 1200px;
+            margin: 100px auto;
+            padding: 20px;
+            background: rgba(0, 50, 70, 0.95);
+            border: 1px solid #00ced1;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 206, 209, 0.2);
+        }
+
+        .crafting-title {
+            text-align: center;
+            color: #00ced1;
+            font-size: 2em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .crafting-interface {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .inventory-section {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 206, 209, 0.3);
+        }
+
+        .crafting-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .crafting-slots {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .crafting-slot {
+            width: 100px;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #00ced1;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .crafting-slot:hover {
+            box-shadow: 0 0 15px rgba(0, 206, 209, 0.3);
+            transform: scale(1.05);
+        }
+
+        .result-slot {
+            width: 120px;
+            height: 120px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .craft-button {
+            background: linear-gradient(135deg, #00ced1, #008b8b);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 206, 209, 0.3);
+        }
+
+        .craft-button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 206, 209, 0.4);
+            background: linear-gradient(135deg, #00a5a8, #00ced1);
+        }
+
+        .craft-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .inventory-item {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            cursor: grab;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 206, 209, 0.3);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .inventory-item:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 206, 209, 0.4);
+        }
+
+        .inventory-item img {
+            width: 90%;
+            height: 90%;
+            object-fit: contain;
+        }
+
+        .item-count {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #ffd700;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 2;
+            min-width: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .crafting-slot .item-count {
+            bottom: 2px;
+            right: 2px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .result-slot .item-count {
+            bottom: 2px;
+            right: 2px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .recipe-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border: 1px solid rgba(0, 206, 209, 0.2);
+        }
+
+        .recipe-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .recipe-operator {
+            color: #00ced1;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Menu styles */
+        .menu {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: rgba(0, 50, 70, 0.9);
+            z-index: 1000;
+            max-width: 1000px;
+            margin: 0 auto;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 206, 209, 0.5);
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .menu-items {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .menu a {
+            color: #ffd700;
+            text-decoration: none;
+            padding: 14px 16px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: rgba(0, 206, 209, 0.3);
+            transform: scale(1.1);
+        }
+
+        @keyframes craftAnimation {
+            0% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+                filter: brightness(1);
+            }
+            50% {
+                transform: scale(0.8) rotate(180deg);
+                opacity: 0.8;
+                filter: brightness(2) drop-shadow(0 0 10px #00ced1);
+            }
+            100% {
+                transform: scale(0) rotate(360deg);
+                opacity: 0;
+                filter: brightness(3) drop-shadow(0 0 20px #00ced1);
+            }
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes craftSuccessAnimation {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+                filter: brightness(3) drop-shadow(0 0 30px #ffd700);
+            }
+            50% {
+                transform: scale(1.3) rotate(0deg);
+                opacity: 1;
+                filter: brightness(2) drop-shadow(0 0 40px #ffd700);
+            }
+            75% {
+                transform: scale(0.9) rotate(0deg);
+                opacity: 1;
+                filter: brightness(1.5) drop-shadow(0 0 20px #00ced1);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+                filter: brightness(1) drop-shadow(0 0 10px #00ced1);
+            }
+        }
+
+        .crafting-animation {
+            animation: craftAnimation 1s ease-in forwards;
+        }
+
+        .craft-success-animation {
+            animation: craftSuccessAnimation 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            position: relative;
+        }
+
+        .craft-success-animation::before,
+        .craft-success-animation::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle, #00ced1 0%, transparent 70%);
+            transform: translate(-50%, -50%) scale(0);
+            animation: sparkle 0.8s ease-out forwards;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .craft-success-animation::after {
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, #ffd700 0%, transparent 70%);
+            animation-delay: 0.2s;
+        }
+
+        .result-slot {
+            position: relative;
+            overflow: visible;
+        }
+
+        @keyframes particleAnimation {
+            0% {
+                transform: translate(var(--startX), var(--startY)) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--endX), var(--endY)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #00ced1;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleAnimation 0.8s ease-out forwards;
+        }
+
+        /* Raid Button Styles */
+        .raid-button-container {
+            display: flex;
+            justify-content: flex-start;
+            padding: 20px;
+            z-index: auto;
+            position: fixed;
+            left: 0;
+            top: 5px;
+        }
+
+        .raid-button {
+            background-color: #ffbb00;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 22px;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 15px 40px;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+        .raid-button:hover {
+            background-color: #ff8800;
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .raid-button:active {
+            transform: scale(0.95);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Menu -->
+    <div class="menu">
+        <div class="menu-items">
+            <a href="home.html">Home</a>
+            <a href="Store.html">Store</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+            <a href="statistics.html">Statistics</a>
+        </div>
+    </div>
+
+    <div class="raid-button-container">
+        <a href="Raid.html" class="raid-button">Raid</a>
+    </div>
+
+    <div class="crafting-container">
+        <h1 class="crafting-title">Crafting Station</h1>
+        <div class="crafting-interface">
+            <div class="inventory-section">
+                <h2>Inventory</h2>
+                <div class="inventory-grid" id="inventory">
+                    <!-- Items will be populated by JavaScript -->
+                </div>
+            </div>
+            <div class="crafting-section">
+                <div class="crafting-slots">
+                    <div class="crafting-slot" id="slot1"></div>
+                    <div class="crafting-slot" id="slot2"></div>
+                </div>
+                <div class="result-slot" id="result-slot"></div>
+                <button class="craft-button" id="craft-button" disabled>Craft</button>
+            </div>
+            <div class="inventory-section">
+                <h2>Recipes</h2>
+                <div id="recipes">
+                    <!-- Recipes will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        let userInventory = {};
+        let userRef = null;
+        
+        function getItemFileName(itemName) {
+            return itemName.toLowerCase().replace(/ /g, '_');
+        }
+        
+        const recipes = {
+            "Tidal Charm": {
+                ingredients: ["Deep Sea Essence", "Murky Water Vial"],
+                count: [1, 1]
+            },
+            "Ice Dagger": {
+                ingredients: ["Shadow Dagger", "Ice Flask"],
+                count: [1, 1]
+            },
+            "Ice Flask": {
+                ingredients: ["Ice Shard", "Ice Shard"],
+                count: [1, 1]
+            },
+            "Underwater Cursed Shell": {
+                ingredients: ["Cursed Water Vial", "Murky Water Vial"],
+                count: [1, 1]
+            },
+            "Shadow Dagger": {
+                ingredients: ["Void Essence", "Smoke Bomb"],
+                count: [1, 1]
+            },
+            "Abyssal Echo": {
+                ingredients: ["Deep Sea Essence", "Void Essence"],
+                count: [1, 1]
+            },
+            "Zasalamel Scythe": {
+                ingredients: ["Atlantean Trident of Time Manipulation", "Abyssal Echo"],
+                count: [1, 1]
+            },
+            "Leviathan Mist Vial": {
+                ingredients: ["Murky Water Vial", "Leviathan Scale"],
+                count: [1, 1]
+            },
+            "Atlantean Trident of Time Manipulation": {
+                ingredients: ["Abyssal Echo", "Abyssal Echo"],
+                count: [1, 1]
+            }
+        };
+
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.closest('.inventory-item').id);
+            // Add source information
+            ev.dataTransfer.setData("source", ev.target.closest('.crafting-slot') ? 'slot' : 'inventory');
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const source = ev.dataTransfer.getData("source");
+            const draggedElement = document.getElementById(data);
+            
+            if (!draggedElement) return;
+            
+            // If dropping on inventory and item is from a slot
+            const inventoryGrid = ev.target.closest('.inventory-grid');
+            if (inventoryGrid && source === 'slot') {
+                // Remove item from slot
+                draggedElement.parentElement.innerHTML = '';
+                checkRecipe();
+                return;
+            }
+            
+            // If dropping on a slot and item is from inventory
+            const slot = ev.target.closest('.crafting-slot');
+            if (slot && source === 'inventory' && !slot.hasChildNodes()) {
+                const clonedElement = draggedElement.cloneNode(true);
+                // Add drag event listener to the cloned element
+                clonedElement.addEventListener('dragstart', drag);
+                slot.appendChild(clonedElement);
+                checkRecipe();
+            }
+        }
+
+        function loadInventory() {
+            const inventory = document.getElementById('inventory');
+            const recipesDiv = document.getElementById('recipes');
+            inventory.innerHTML = '';
+            recipesDiv.innerHTML = '';
+
+            // Make inventory droppable
+            inventory.addEventListener('dragover', allowDrop);
+            inventory.addEventListener('drop', drop);
+
+            // Load inventory items
+            for (const [item, count] of Object.entries(userInventory)) {
+                // Skip items with 0 count
+                if (count <= 0) continue;
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'inventory-item';
+                itemDiv.draggable = true;
+                itemDiv.id = `item-${item}`;
+                
+                const img = document.createElement('img');
+                img.src = `res/img/raiditem/${getItemFileName(item)}.png`;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'contain';
+                
+                const countSpan = document.createElement('span');
+                countSpan.className = 'item-count';
+                countSpan.textContent = count;
+                
+                itemDiv.appendChild(img);
+                itemDiv.appendChild(countSpan);
+                inventory.appendChild(itemDiv);
+
+                // Add drag event listener to the entire item div
+                itemDiv.addEventListener('dragstart', drag);
+            }
+
+            // Load recipes display
+            for (const [result, recipe] of Object.entries(recipes)) {
+                const recipeDiv = document.createElement('div');
+                recipeDiv.className = 'recipe-item';
+
+                // First ingredient
+                const img1 = document.createElement('img');
+                img1.src = `res/img/raiditem/${getItemFileName(recipe.ingredients[0])}.png`;
+                recipeDiv.appendChild(img1);
+
+                // Plus sign
+                const plus = document.createElement('span');
+                plus.className = 'recipe-operator';
+                plus.textContent = '+';
+                recipeDiv.appendChild(plus);
+
+                // Second ingredient
+                const img2 = document.createElement('img');
+                img2.src = `res/img/raiditem/${getItemFileName(recipe.ingredients[1])}.png`;
+                recipeDiv.appendChild(img2);
+
+                // Equals sign
+                const equals = document.createElement('span');
+                equals.className = 'recipe-operator';
+                equals.textContent = '=';
+                recipeDiv.appendChild(equals);
+
+                // Result
+                const imgResult = document.createElement('img');
+                imgResult.src = `res/img/raiditem/${getItemFileName(result)}.png`;
+                recipeDiv.appendChild(imgResult);
+
+                recipesDiv.appendChild(recipeDiv);
+            }
+
+            // Add drop event listeners to crafting slots
+            const slots = document.querySelectorAll('.crafting-slot');
+            slots.forEach(slot => {
+                slot.addEventListener('dragover', allowDrop);
+                slot.addEventListener('drop', drop);
+            });
+        }
+
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userRef = ref(database, 'users/' + user.uid);
+                    const inventoryRef = ref(database, `users/${user.uid}/RaidInventory/items`);
+                    const snapshot = await get(inventoryRef);
+                    if (snapshot.exists()) {
+                        userInventory = snapshot.val() || {};
+                        loadInventory();
+                    } else {
+                        userInventory = {};
+                        loadInventory();
+                    }
+                } else {
+                    // Redirect to login if not authenticated
+                    window.location.href = 'index.html';
+                }
+            });
+        };
+
+        function checkRecipe() {
+            const slot1 = document.getElementById('slot1');
+            const slot2 = document.getElementById('slot2');
+            const resultSlot = document.getElementById('result-slot');
+            const craftButton = document.getElementById('craft-button');
+
+            if (!slot1.firstChild || !slot2.firstChild) {
+                resultSlot.innerHTML = '';
+                craftButton.disabled = true;
+                return;
+            }
+
+            const item1 = slot1.firstChild.id.replace('item-', '');
+            const item2 = slot2.firstChild.id.replace('item-', '');
+
+            // Check recipes
+            for (const [result, recipe] of Object.entries(recipes)) {
+                if (
+                    (recipe.ingredients[0] === item1 && recipe.ingredients[1] === item2) ||
+                    (recipe.ingredients[0] === item2 && recipe.ingredients[1] === item1)
+                ) {
+                    // Check if user has enough materials
+                    const hasEnoughMaterials = recipe.ingredients.every((ingredient, index) => {
+                        const count = recipe.count[index];
+                        return userInventory[ingredient] >= count;
+                    });
+
+                    if (hasEnoughMaterials) {
+                        resultSlot.innerHTML = `
+                            <img src="res/img/raiditem/${getItemFileName(result)}.png" style="width: 100%; height: 100%; object-fit: contain;">
+                            <span class="item-count">1</span>
+                        `;
+                        craftButton.disabled = false;
+                        return;
+                    }
+                }
+            }
+
+            resultSlot.innerHTML = '';
+            craftButton.disabled = true;
+        }
+
+        document.getElementById('craft-button').addEventListener('click', async function() {
+            const slot1 = document.getElementById('slot1');
+            const slot2 = document.getElementById('slot2');
+            const resultSlot = document.getElementById('result-slot');
+            
+            if (!slot1.firstChild || !slot2.firstChild || !resultSlot.firstChild) return;
+
+            const item1 = slot1.firstChild.id.replace('item-', '');
+            const item2 = slot2.firstChild.id.replace('item-', '');
+
+            // Find the matching recipe
+            let resultItem = null;
+            let recipe = null;
+            for (const [result, recipeData] of Object.entries(recipes)) {
+                if (
+                    (recipeData.ingredients[0] === item1 && recipeData.ingredients[1] === item2) ||
+                    (recipeData.ingredients[0] === item2 && recipeData.ingredients[1] === item1)
+                ) {
+                    resultItem = result;
+                    recipe = recipeData;
+                    break;
+                }
+            }
+
+            if (!resultItem || !recipe) return;
+
+            // Add animation class to slots
+            slot1.firstChild.classList.add('crafting-animation');
+            slot2.firstChild.classList.add('crafting-animation');
+
+            // Create particles
+            const createParticles = () => {
+                const numParticles = 20;
+                const container = document.querySelector('.crafting-section');
+                
+                for (let i = 0; i < numParticles; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    
+                    // Random starting position around the crafting slots
+                    const startX = (Math.random() - 0.5) * 200;
+                    const startY = (Math.random() - 0.5) * 200;
+                    
+                    // Random ending position converging to the result slot
+                    const endX = (Math.random() - 0.5) * 50;
+                    const endY = -100 + (Math.random() - 0.5) * 50;
+                    
+                    particle.style.setProperty('--startX', `${startX}px`);
+                    particle.style.setProperty('--startY', `${startY}px`);
+                    particle.style.setProperty('--endX', `${endX}px`);
+                    particle.style.setProperty('--endY', `${endY}px`);
+                    
+                    container.appendChild(particle);
+                    
+                    // Remove particle after animation
+                    setTimeout(() => particle.remove(), 800);
+                }
+            };
+
+            // Wait for ingredients to start disappearing
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Create particles
+            createParticles();
+
+            // Create new result item with animation
+            const newResultItem = document.createElement('div');
+            newResultItem.className = 'inventory-item craft-success-animation';
+            newResultItem.innerHTML = `
+                <img src="res/img/raiditem/${getItemFileName(resultItem)}.png" style="width: 100%; height: 100%; object-fit: contain;">
+                <span class="item-count">1</span>
+            `;
+            resultSlot.innerHTML = '';
+            resultSlot.appendChild(newResultItem);
+
+            // Update inventory in Firebase
+            const updates = {};
+            recipe.ingredients.forEach((ingredient, index) => {
+                const currentCount = userInventory[ingredient] || 0;
+                const newCount = currentCount - recipe.count[index];
+                updates[ingredient] = newCount;
+                userInventory[ingredient] = newCount;
+            });
+
+            // Add crafted item to inventory
+            const currentResultCount = userInventory[resultItem] || 0;
+            updates[resultItem] = currentResultCount + 1;
+            userInventory[resultItem] = currentResultCount + 1;
+
+            // Wait for all animations
+            await new Promise(resolve => setTimeout(resolve, 1200));
+
+            // Update Firebase
+            const inventoryRef = ref(database, `users/${auth.currentUser.uid}/RaidInventory/items`);
+            await update(inventoryRef, updates);
+
+            // Clear slots
+            slot1.innerHTML = '';
+            slot2.innerHTML = '';
+            resultSlot.innerHTML = '';
+            this.disabled = true;
+
+            // Reload inventory
+            loadInventory();
+        });
+
+        // Make functions available to the window object
+        window.loadInventory = loadInventory;
+        window.checkRecipe = checkRecipe;
+    </script>
+</body>
+</html> 

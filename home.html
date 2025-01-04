@@ -20,9 +20,11 @@
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
         import { getDatabase, ref, push, set, get, update, runTransaction } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
-        import { quests } from './quests.js';
         import { roles } from './roles.js';
 
+        // Global variables for demo player
+        window.atlantisDemoPlaying = false;
+        window.atlantisDemoTimeout = null;
         
     // Make database functions available globally
     window.ref = ref;
@@ -391,7 +393,6 @@
             'Juri.png', 'Sub Zero.png', 'Christie.png', 'Kokoro.png', 'Eagle.png',
             'Sophitia.png', 'Shizumaru.png', 'Kagome.png', 'Kabal.png', 'Kuma.png',
             'Alice.png', 'Shinnok.png', 'FANG.png', 'Lili.png', 'Mega Man.png', "Mai.png"
-            
         ];
 
         icons.forEach(icon => {
@@ -533,27 +534,11 @@
 
             // Define quest goals
             const questGoals = {
-                'lili-games': 10,
                 'win-games': 2,
-                'lose-games': 2
+                'lose-games': 2,
+                'win-against': 1,
+                'win-as-atlantean': 1
             };
-
-            // Update Lili games quest
-            const liliQuestData = questsData['lili-games'] || {};
-            const liliProgress = document.getElementById('lili-games-progress');
-            if (liliProgress) {
-                const progressBar = liliProgress.parentElement.querySelector('.progress');
-                const progressText = liliProgress.parentElement.nextElementSibling;
-                const claimButton = liliProgress.closest('.quest-item').querySelector('.claim-button');
-                
-                const progress = liliQuestData.progress || 0;
-                const completed = liliQuestData.completed || false;
-                const claimed = liliQuestData.claimed || false;
-
-                progressBar.style.width = `${(progress / questGoals['lili-games']) * 100}%`;
-                progressText.textContent = `${progress}/${questGoals['lili-games']}`;
-                claimButton.style.display = completed && !claimed ? 'block' : 'none';
-            }
 
             // Update win games quest
             const winQuestData = questsData['win-games'] || {};
@@ -586,6 +571,40 @@
 
                 progressBar.style.width = `${(progress / questGoals['lose-games']) * 100}%`;
                 progressText.textContent = `${progress}/${questGoals['lose-games']}`;
+                claimButton.style.display = completed && !claimed ? 'block' : 'none';
+            }
+
+            // Update win against quest
+            const winAgainstData = questsData['win-against'] || {};
+            const winAgainstProgress = document.getElementById('win-against-progress');
+            if (winAgainstProgress) {
+                const progressBar = winAgainstProgress.parentElement.querySelector('.progress');
+                const progressText = winAgainstProgress.parentElement.nextElementSibling;
+                const claimButton = winAgainstProgress.closest('.quest-item').querySelector('.claim-button');
+                
+                const progress = winAgainstData.progress || 0;
+                const completed = winAgainstData.completed || false;
+                const claimed = winAgainstData.claimed || false;
+
+                progressBar.style.width = `${(progress / questGoals['win-against']) * 100}%`;
+                progressText.textContent = `${progress}/${questGoals['win-against']}`;
+                claimButton.style.display = completed && !claimed ? 'block' : 'none';
+            }
+
+            // Update win as atlantean quest
+            const winAsAtlanteanData = questsData['win-as-atlantean'] || {};
+            const winAsAtlanteanProgress = document.getElementById('win-as-atlantean-progress');
+            if (winAsAtlanteanProgress) {
+                const progressBar = winAsAtlanteanProgress.parentElement.querySelector('.progress');
+                const progressText = winAsAtlanteanProgress.parentElement.nextElementSibling;
+                const claimButton = winAsAtlanteanProgress.closest('.quest-item').querySelector('.claim-button');
+                
+                const progress = winAsAtlanteanData.progress || 0;
+                const completed = winAsAtlanteanData.completed || false;
+                const claimed = winAsAtlanteanData.claimed || false;
+
+                progressBar.style.width = `${(progress / questGoals['win-as-atlantean']) * 100}%`;
+                progressText.textContent = `${progress}/${questGoals['win-as-atlantean']}`;
                 claimButton.style.display = completed && !claimed ? 'block' : 'none';
             }
 
@@ -704,15 +723,101 @@
         }
     });
 
-    window.openQuestWindow = async function() {
+    async function openQuestWindow() {
+        try {
+            const auth = window.firebaseAuth;
+            const database = window.firebaseDatabase;
         const questWindow = document.getElementById('quest-window');
         if (questWindow) {
             questWindow.style.display = 'block';
-            try {
+                await updateQuestPoints();
                 await updateQuestProgress();
+
+                // Check owned skins and update recolor buttons
+                const user = auth.currentUser;
+                if (user) {
+                    const userId = user.uid;
+                    const userRef = ref(database, `users/${userId}`);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val() || {};
+                    const ownedSkins = userData.skins || {};
+                    const ownedSongs = userData.Songs || {};
+
+                    // Update Lili recolor buttons
+                    const recolorMap = {
+                        'holiday': 'Winter Festival Lili Holiday',
+                        'snowy-blush': 'Winter Festival Lili Snowy Blush',
+                        'golden': 'Winter Festival Lili Golden',
+                        'snowflake': 'Winter Festival Lili Snowflake'
+                    };
+
+                    // Update all recolor buttons
+                    for (const [recolorId, skinName] of Object.entries(recolorMap)) {
+                        const claimButton = document.querySelector(`button[onclick="unlockRecolor('${recolorId}', 1000)"]`);
+                        if (claimButton) {
+                            if (ownedSkins[skinName]) {
+                                claimButton.disabled = true;
+                                claimButton.textContent = 'Claimed';
+                                claimButton.style.backgroundColor = '#666';
+                            } else {
+                                claimButton.disabled = false;
+                                claimButton.innerHTML = `Claim for <img src="res/img/qp.png" alt="Quest Points" class="currency-icon"> 1000`;
+                                claimButton.style.backgroundColor = '#4682B4';
+                            }
+                        }
+                    }
+
+                    // Update Atlantis reward buttons
+                    // Check Atlantean Kagome skin
+                    const kagomeButton = document.querySelector(`button[onclick="unlockAtlantisReward('atlantean-kagome', 2000, 'skin')"]`);
+                    if (kagomeButton && ownedSkins['Atlantean Kagome']) {
+                        kagomeButton.disabled = true;
+                        kagomeButton.textContent = 'Claimed';
+                        kagomeButton.style.backgroundColor = '#666';
+                    }
+
+                    // Check Welcome To Atlantis song
+                    const songButton = document.querySelector(`button[onclick="unlockAtlantisReward('welcome-to-atlantis', 450, 'song')"]`);
+                    if (songButton && ownedSongs['Welcome To Atlantis']) {
+                        songButton.disabled = true;
+                        songButton.textContent = 'Claimed';
+                        songButton.style.backgroundColor = '#666';
+                    }
+
+                    // Check Free Lootbox
+                    const lootboxButton = document.querySelector(`button[onclick="unlockAtlantisReward('free-lootbox', 1000, 'lootbox')"]`);
+                    if (lootboxButton && userData.claimedQuestLootbox) {
+                        lootboxButton.disabled = true;
+                        lootboxButton.textContent = 'Claimed';
+                        lootboxButton.style.backgroundColor = '#666';
+                    }
+                }
+            }
             } catch (error) {
                 console.error('Error opening quest window:', error);
             }
+    }
+
+    async function updateQuestPoints() {
+        const auth = window.firebaseAuth;
+        const database = window.firebaseDatabase;
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const userId = user.uid;
+        const userRef = ref(database, `users/${userId}`);
+        const snapshot = await get(userRef);
+        const userData = snapshot.val();
+        const questPointsDisplay = document.getElementById('quest-points-amount');
+        if (questPointsDisplay) {
+            questPointsDisplay.textContent = userData?.questPoints || 0;
+        }
+    }
+
+    function closeQuestWindow() {
+        const questWindow = document.getElementById('quest-window');
+        if (questWindow) {
+            questWindow.style.display = 'none';
         }
     }
 
@@ -776,51 +881,79 @@
         }
     }
 
-    async function openQuestWindow() {
-        try {
+    async function unlockAtlantisReward(rewardId, cost, type) {
             const auth = window.firebaseAuth;
             const database = window.firebaseDatabase;
-            const questWindow = document.getElementById('quest-window');
-            if (questWindow) {
-                questWindow.style.display = 'block';
-                await updateQuestPoints();
-                await updateQuestProgress();
-
-                // Check owned skins and update recolor buttons
                 const user = auth.currentUser;
-                if (user) {
+        if (!user) return;
+
                     const userId = user.uid;
-                    const userSkinsRef = ref(database, `users/${userId}/skins`);
-                    const snapshot = await get(userSkinsRef);
-                    const ownedSkins = snapshot.val() || {};
+        const userRef = ref(database, `users/${userId}`);
+        const snapshot = await get(userRef);
+        const userData = snapshot.val();
 
-                    const recolorMap = {
-                        'holiday': 'Winter Festival Lili Holiday',
-                        'snowy-blush': 'Winter Festival Lili Snowy Blush',
-                        'golden': 'Winter Festival Lili Golden',
-                        'snowflake': 'Winter Festival Lili Snowflake'
-                    };
+        if (!userData) return;
 
-                    // Update all recolor buttons
-                    for (const [recolorId, skinName] of Object.entries(recolorMap)) {
-                        const claimButton = document.querySelector(`button[onclick="unlockRecolor('${recolorId}', 1000)"]`);
-                        if (claimButton) {
-                            if (ownedSkins[skinName]) {
-                                claimButton.disabled = true;
-                                claimButton.textContent = 'Claimed';
-                                claimButton.style.backgroundColor = '#666'; // Grayed out color
-                            } else {
-                                claimButton.disabled = false;
-                                claimButton.innerHTML = `Claim for <img src="res/img/qp.png" alt="Quest Points" class="currency-icon"> 1000`;
-                                claimButton.style.backgroundColor = '#4682B4'; // Original color
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('Error opening quest window:', error);
+        const questPoints = userData.questPoints || 0;
+
+        // Check if user has enough quest points
+        if (questPoints < cost) {
+            alert('Not enough quest points!');
+            return;
         }
+
+        // Check if user already owns the reward
+        if (type === 'skin') {
+            const ownedSkins = userData.skins || {};
+            if (ownedSkins['Atlantean Kagome']) {
+                alert('You already own this skin!');
+                return;
+            }
+        } else if (type === 'song') {
+            const ownedSongs = userData.Songs || {};
+            if (ownedSongs['Welcome To Atlantis']) {
+                alert('You already own this song!');
+                return;
+            }
+        } else if (type === 'lootbox') {
+            const claimedLootbox = userData.claimedQuestLootbox;
+            if (claimedLootbox) {
+                alert('You have already claimed the free lootbox!');
+                return;
+            }
+        }
+
+        // Prepare updates
+        const updates = {};
+        updates[`users/${userId}/questPoints`] = questPoints - cost;
+
+        // Add the reward based on type
+        if (type === 'skin') {
+            updates[`users/${userId}/skins/Atlantean Kagome`] = 1;
+        } else if (type === 'song') {
+            updates[`users/${userId}/Songs/Welcome To Atlantis`] = 1;
+        } else if (type === 'lootbox') {
+            updates[`users/${userId}/claimedQuestLootbox`] = true;
+            // Add lootbox to inventory
+            const currentLootboxes = userData.lootboxes || 0;
+            updates[`users/${userId}/lootboxes`] = currentLootboxes + 1;
+        }
+
+        // Apply updates
+        await update(ref(database), updates);
+
+        // Update the quest window display
+        await updateQuestProgress();
+
+        // Disable the claim button
+        const claimButton = document.querySelector(`button[onclick="unlockAtlantisReward('${rewardId}', ${cost}, '${type}')"]`);
+        if (claimButton) {
+            claimButton.disabled = true;
+            claimButton.textContent = 'Claimed';
+            claimButton.style.backgroundColor = '#666';
+        }
+
+        alert('Reward claimed successfully!');
     }
 
     // Add this function to your existing script
@@ -892,18 +1025,150 @@
             checkAndShowJuliaReward();
         }
     });
+
+    function toggleAtlantisSongDemo() {
+        const audio = document.getElementById('atlantis-demo');
+        const button = document.querySelector('.demo-button i');
+        
+        if (window.atlantisDemoPlaying) {
+            audio.pause();
+            button.className = 'fas fa-play';
+            window.atlantisDemoPlaying = false;
+            if (window.atlantisDemoTimeout) {
+                clearTimeout(window.atlantisDemoTimeout);
+                window.atlantisDemoTimeout = null;
+            }
+        } else {
+            // Load the audio if not loaded
+            if (!audio.src) {
+                audio.src = 'Songs/Welcome To Atlantis.mp3';
+            }
+
+            // Wait for metadata to load before playing
+            const playAudio = () => {
+                if (audio.duration) {
+                    audio.currentTime = audio.duration * 0.4;
+                    audio.play()
+                        .then(() => {
+                            button.className = 'fas fa-pause';
+                            window.atlantisDemoPlaying = true;
+
+                            // Stop preview after 15 seconds
+                            window.atlantisDemoTimeout = setTimeout(() => {
+                                if (audio.duration) {
+                                    audio.pause();
+                                    audio.currentTime = audio.duration * 0.4;
+                                }
+                                button.className = 'fas fa-play';
+                                window.atlantisDemoPlaying = false;
+                            }, 15000);
+                        })
+                        .catch(error => {
+                            console.error('Error playing audio:', error);
+                            button.className = 'fas fa-play';
+                            window.atlantisDemoPlaying = false;
+                        });
+                }
+            };
+
+            if (audio.readyState >= 2) { // HAVE_CURRENT_DATA or higher
+                playAudio();
+            } else {
+                audio.addEventListener('loadedmetadata', playAudio, { once: true });
+            }
+
+            // When the preview ends naturally
+            audio.onended = () => {
+                button.className = 'fas fa-play';
+                window.atlantisDemoPlaying = false;
+                if (window.atlantisDemoTimeout) {
+                    clearTimeout(window.atlantisDemoTimeout);
+                    window.atlantisDemoTimeout = null;
+                }
+            };
+        }
+    }
+
+    // Make the function globally available
+    window.toggleAtlantisSongDemo = toggleAtlantisSongDemo;
 </script>
-<script type="module" src="quests.js"></script>
+
 
     <!-- Add Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Music Player Script -->
     <script type="module">
-        import { initializeMusicPlayer } from './music-player.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, update, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { initMusicPlayer } from './music-player.js';
         
         document.addEventListener('DOMContentLoaded', () => {
-            initializeMusicPlayer();
+            initMusicPlayer();
+            
+            // Initialize Julia reward check
+            const auth = getAuth();
+            const database = getDatabase();
+            
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    try {
+                        const userSongsRef = ref(database, `users/${user.uid}/Songs`);
+                        const snapshot = await get(userSongsRef);
+                        const ownedSongs = snapshot.val() || {};
+
+                        if (!ownedSongs['Forest Wanderer (Julia Theme)']) {
+                            showJuliaReward(auth, database);
+                        }
+                    } catch (error) {
+                        console.error('Error checking Julia reward:', error);
+                    }
+                }
+            });
         });
+
+        function showJuliaReward(auth, database) {
+            const popup = document.createElement('div');
+            popup.className = 'reward-popup';
+            popup.innerHTML = `
+                <div class="reward-popup-header">
+                    <h3 class="reward-popup-title">New Song Unlocked!</h3>
+                    <button class="reward-popup-close">×</button>
+                </div>
+                <div class="reward-popup-content">
+                    <img src="Loading Screen/Julia.png" alt="Julia Portrait" class="reward-popup-image">
+                    <p class="reward-popup-text">You've received Julia's Theme:<br>"Forest Wanderer"</p>
+                    <button class="claim-button">Claim</button>
+                </div>
+            `;
+
+            document.body.appendChild(popup);
+
+            // Close button handler
+            popup.querySelector('.reward-popup-close').addEventListener('click', () => {
+                popup.remove();
+            });
+
+            // Claim button handler
+            popup.querySelector('.claim-button').addEventListener('click', async () => {
+                const user = auth.currentUser;
+                if (!user) return;
+
+                try {
+                    const userSongsRef = ref(database, `users/${user.uid}/Songs`);
+                    const updates = {};
+                    updates['Forest Wanderer (Julia Theme)'] = 1;
+                    await update(userSongsRef, updates);
+                    
+                    // Close popup after claiming
+                    popup.remove();
+                    
+                    // Refresh music player to include new song
+                    window.location.reload();
+                } catch (error) {
+                    console.error('Error claiming Julia song:', error);
+                }
+            });
+        }
     </script>
     <style>
         /* Add new currency box styles */
@@ -912,11 +1177,11 @@
             left: 20px;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(26, 38, 52, 0.95);
+            background: rgba(0, 30, 46, 0.95);
             padding: 15px;
             border-radius: 10px;
-            border: 1px solid #4d88b7;
-            box-shadow: 0 0 20px rgba(144, 202, 249, 0.3);
+            border: 1px solid #00ced1;
+            box-shadow: 0 0 20px rgba(0, 206, 209, 0.3);
             z-index: 1000;
             display: flex;
             flex-direction: column;
@@ -939,39 +1204,512 @@
         .currency-item img {
             width: 24px;
             height: 24px;
-            filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.3));
+            filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.3));
         }
 
         .currency-item span {
-            color: #e0e0e0;
+            color: #e0ffff;
             font-size: 1.1em;
             font-weight: 500;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Menu styles */
+        .menu {
+            background-color: rgba(0, 30, 46, 0.9);
+            border-bottom: 1px solid #00ced1;
+        }
+
+        .menu a {
+            color: #e0ffff;
+            transition: all 0.3s ease;
+        }
+
+        .menu a:hover {
+            background-color: rgba(0, 206, 209, 0.2);
+            color: #ffd700;
+            transform: scale(1.1);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        /* Play button styles */
+        .play-button {
+            background: linear-gradient(45deg, #00ced1, #20b2aa);
+            color: #ffffff;
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 15px rgba(0, 206, 209, 0.4);
+        }
+
+        .play-button:hover {
+            background: linear-gradient(45deg, #ffd700, #daa520);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        /* Quest Window Styles */
+        #quest-window .modal-content {
+            background: rgba(0, 30, 46, 0.95);
+            color: #e0ffff;
+            max-width: 1000px;
+            width: 95%;
+            padding: 30px;
+            border: 1px solid #00ced1;
+            box-shadow: 0 0 30px rgba(0, 206, 209, 0.2);
+        }
+
+        .quest-item {
+            background: rgba(0, 206, 209, 0.15);
+            border: 1px solid rgba(0, 206, 209, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-bar {
+            background: rgba(0, 206, 209, 0.1);
+            height: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            background: linear-gradient(90deg, #00ced1, #ffd700);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .claim-button {
+            background: #00ced1;
+            color: #ffffff;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .claim-button:hover {
+            background: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Awards Window Styles */
+        #awards-window {
+            background: rgba(0, 30, 46, 0.9);
+        }
+
+        #awards-window .modal-content {
+            background: rgba(0, 30, 46, 0.95);
+            color: #e0ffff;
+            border: 1px solid #00ced1;
+            box-shadow: 0 0 30px rgba(0, 206, 209, 0.2);
+        }
+
+        .award-item {
+            background: rgba(0, 206, 209, 0.15);
+            border: 1px solid rgba(0, 206, 209, 0.3);
+            box-shadow: 0 0 15px rgba(0, 206, 209, 0.2);
+        }
+
+        .award-info h3 {
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .skin-name {
+            color: #e0ffff;
+        }
+
+        .sale-price {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .purchase-button {
+            background: #00ced1;
+            color: #ffffff;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .purchase-button:hover {
+            background: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .purchase-button.disabled {
+            background: #1a4657;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Profile styles */
+        .profile-container {
+            background: rgba(0, 30, 46, 0.9);
+            border: 1px solid #00ced1;
+        }
+
+        .profile-menu {
+            background: rgba(0, 30, 46, 0.95);
+            border: 1px solid #00ced1;
+            box-shadow: 0 0 20px rgba(0, 206, 209, 0.3);
+        }
+
+        .profile-menu li:hover {
+            background: rgba(0, 206, 209, 0.2);
+            color: #ffd700;
+        }
+
+        /* Bottom buttons styles */
+        .bottom-button {
+            background: rgba(0, 30, 46, 0.9);
+            border: 1px solid #00ced1;
+            box-shadow: 0 0 15px rgba(0, 206, 209, 0.2);
+        }
+
+        .bottom-button:hover {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .button-title {
+            color: #e0ffff;
+            text-shadow: 0 0 10px rgba(0, 206, 209, 0.5);
+        }
+
+        /* Music player styles */
+        .music-player {
+            background: rgba(0, 30, 46, 0.95);
+            border: 1px solid #00ced1;
+            box-shadow: 0 0 20px rgba(0, 206, 209, 0.3);
+        }
+
+        .music-player-toggle {
+            background: #00ced1;
+            color: #ffffff;
+        }
+
+        .music-player-toggle:hover {
+            background: #ffd700;
+        }
+
+        .controls button {
+            color: #e0ffff;
+            background: rgba(0, 206, 209, 0.2);
+        }
+
+        .controls button:hover {
+            background: rgba(255, 215, 0, 0.3);
+            color: #ffffff;
+        }
+
+        .playlist {
+            background: rgba(0, 30, 46, 0.95);
+            border-top: 1px solid #00ced1;
+        }
+
+        .playlist-items li:hover {
+            background: rgba(0, 206, 209, 0.2);
+            color: #ffd700;
+        }
+
+        .volume-slider {
+            background: rgba(0, 206, 209, 0.2);
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            background: #ffd700;
+        }
+
+        .volume-slider::-moz-range-thumb {
+            background: #ffd700;
+        }
+
+        /* ... existing styles ... */
+
+        /* Currency Display Styles */
+        .currency-display {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 10px 20px;
+            margin: 52px 20px;
+            background: rgba(0, 30, 46, 0.95);
+            border: 1px solid #00ced1;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 206, 209, 0.3);
+            backdrop-filter: blur(5px);
+            width: calc(100% - 40px); /* Full width minus margins */
+            max-width: 300px; /* Same width as profile container */
+            margin-left: auto;
+        }
+
+        .currency-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .currency-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .currency-item img {
+            width: 24px;
+            height: 24px;
+            filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.3));
+        }
+
+        .currency-item span {
+            color: #e0ffff;
+            font-size: 1.1em;
+            font-weight: 500;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Menu styles */
+        .menu {
+            background-color: rgba(0, 30, 46, 0.9);
+            border-bottom: 1px solid #00ced1;
+        }
+
+        .menu a {
+            color: #e0ffff;
+            transition: all 0.3s ease;
+        }
+
+        .menu a:hover {
+            background-color: rgba(0, 206, 209, 0.2);
+            color: #ffd700;
+            transform: scale(1.1);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        /* Play button styles */
+        .play-button {
+            background: linear-gradient(45deg, #00ced1, #20b2aa);
+            color: #ffffff;
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 15px rgba(0, 206, 209, 0.4);
+        }
+
+        .play-button:hover {
+            background: linear-gradient(45deg, #ffd700, #daa520);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        /* Quest Window Styles */
+        #quest-window .modal-content {
+            background: rgba(0, 30, 46, 0.95);
+            color: #e0ffff;
+            max-width: 1000px;
+            width: 95%;
+            padding: 30px;
+            border: 1px solid #00ced1;
+            box-shadow: 0 0 30px rgba(0, 206, 209, 0.2);
+        }
+
+        .quest-item {
+            background: rgba(0, 206, 209, 0.15);
+            border: 1px solid rgba(0, 206, 209, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-bar {
+            background: rgba(0, 206, 209, 0.1);
+            height: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            background: linear-gradient(90deg, #00ced1, #ffd700);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .claim-button {
+            background: #00ced1;
+            color: #ffffff;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .claim-button:hover {
+            background: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Awards Window Styles */
+        #awards-window {
+            background: rgba(0, 30, 46, 0.9);
+        }
+
+        #awards-window .modal-content {
+            background: rgba(0, 30, 46, 0.95);
+            color: #e0ffff;
+            border: 1px solid #00ced1;
+            box-shadow: 0 0 30px rgba(0, 206, 209, 0.2);
+        }
+
+        .award-item {
+            background: rgba(0, 206, 209, 0.15);
+            border: 1px solid rgba(0, 206, 209, 0.3);
+            box-shadow: 0 0 15px rgba(0, 206, 209, 0.2);
+        }
+
+        .award-info h3 {
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .skin-name {
+            color: #e0ffff;
+        }
+
+        .sale-price {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .purchase-button {
+            background: #00ced1;
+            color: #ffffff;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .purchase-button:hover {
+            background: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .purchase-button.disabled {
+            background: #1a4657;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Profile styles */
+        .profile-container {
+            background: rgba(0, 30, 46, 0.9);
+            border: 1px solid #00ced1;
+        }
+
+        .profile-menu {
+            background: rgba(0, 30, 46, 0.95);
+            border: 1px solid #00ced1;
+            box-shadow: 0 0 20px rgba(0, 206, 209, 0.3);
+        }
+
+        .profile-menu li:hover {
+            background: rgba(0, 206, 209, 0.2);
+            color: #ffd700;
+        }
+
+        /* Bottom buttons styles */
+        .bottom-button {
+            background: rgba(0, 30, 46, 0.9);
+            border: 1px solid #00ced1;
+            box-shadow: 0 0 15px rgba(0, 206, 209, 0.2);
+        }
+
+        .bottom-button:hover {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .button-title {
+            color: #e0ffff;
+            text-shadow: 0 0 10px rgba(0, 206, 209, 0.5);
+        }
+
+        /* Music player styles */
+        .music-player {
+            background: rgba(0, 30, 46, 0.95);
+            border: 1px solid #00ced1;
+            box-shadow: 0 0 20px rgba(0, 206, 209, 0.3);
+        }
+
+        .music-player-toggle {
+            background: #00ced1;
+            color: #ffffff;
+        }
+
+        .music-player-toggle:hover {
+            background: #ffd700;
+        }
+
+        .controls button {
+            color: #e0ffff;
+            background: rgba(0, 206, 209, 0.2);
+        }
+
+        .controls button:hover {
+            background: rgba(255, 215, 0, 0.3);
+            color: #ffffff;
+        }
+
+        .playlist {
+            background: rgba(0, 30, 46, 0.95);
+            border-top: 1px solid #00ced1;
+        }
+
+        .playlist-items li:hover {
+            background: rgba(0, 206, 209, 0.2);
+            color: #ffd700;
+        }
+
+        .volume-slider {
+            background: rgba(0, 206, 209, 0.2);
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            background: #ffd700;
+        }
+
+        .volume-slider::-moz-range-thumb {
+            background: #ffd700;
         }
     </style>
 </head>
 <body>
     <!-- Add currency box after body tag -->
-    <div class="currency-box">
-        <div class="currency-item">
-            <img src="res/img/fm.png" alt="FM">
-            <span id="currency-amount">0</span>
-        </div>
-        <div class="currency-item">
-            <img src="res/img/cm.png" alt="CM">
-            <span id="cm-amount">0</span>
-        </div>
-        <div class="currency-item">
-            <img src="res/img/qp.png" alt="QP">
-            <span id="qp-amount">0</span>
-        </div>
-    </div>
     <div class="play-button-container">
         <a href="Game Modes.html" class="play-button">
-            <i class="fas fa-play"></i>
-            <span>Play</span>
+            <div class="play-button-inner">
+                <div class="play-icon">
+                    <i class="fas fa-play"></i>
+                </div>
+                <span class="play-text">PLAY</span>
+            </div>
+            <div class="play-button-glow"></div>
         </a>
-</div>
+    </div>
     <!-- Replace the smoke-container div with this snow container -->
     <div class="snowfall-container"></div>
 
@@ -1013,6 +1751,22 @@
             <div id="title-display"></div>
         </div>
         <img id="profile-image" src="" alt="Profile Icon" class="profile-icon" onclick="toggleProfileMenu(event)">
+    </div>
+
+    <!-- Currency Display -->
+    <div class="currency-display">
+        <div class="currency-item">
+            <img src="res/img/fm.png" alt="FM">
+            <span id="currency-amount">0</span>
+        </div>
+        <div class="currency-item">
+            <img src="res/img/cm.png" alt="CM">
+            <span id="cm-amount">0</span>
+        </div>
+        <div class="currency-item">
+            <img src="res/img/qp.png" alt="QP">
+            <span id="qp-amount">0</span>
+        </div>
     </div>
 
     <!-- Profile Menu Pop-up -->
@@ -1203,6 +1957,10 @@
             <a href="ch/Mai.html" class="champion-link">
                 <img src="Icons/Mai.png" alt="Mai" class="champion-image">
                 <span class="champion-name">Mai</span>
+            </a>
+            <a href="ch/Zasalamel.html" class="champion-link">
+                <img src="Icons/Zasalamel.png" alt="Zasalamel" class="champion-image">
+                <span class="champion-name">Zasalamel</span>
             </a>
         </div>
     </div>
@@ -1411,20 +2169,9 @@
     <div class="bottom-buttons-container">
         <!-- Battlepass Button -->
         <div class="bottom-button" onclick="window.location.href='battlepass.html'">
-            <img src="Event/Christmas 2024 Event.jpeg" alt="Battlepass">
+            <img src="Event/Atlantis Event.jpeg" alt="Battlepass">
             <div class="button-content">
                 <h3 class="button-title">Battlepass</h3>
-            </div>
-        </div>
-
-        <!-- Advent Calendar Button -->
-        <div class="bottom-button" onclick="(async () => { 
-            const { openAdventCalendar } = await import('./advent-calendar.js');
-            openAdventCalendar();
-        })()">
-            <img src="res/img/advent_calendar.jpeg" alt="Advent Calendar">
-            <div class="button-content">
-                <h3 class="button-title">Advent Calendar</h3>
             </div>
         </div>
 
@@ -1438,17 +2185,9 @@
 
         <!-- Changelog Button -->
         <div class="bottom-button" onclick="window.location.href='changelog.html'">
-            <img src="Default Splash/Elphelt.png" alt="Changelog">
+            <img src="Default Splash/Talim.jpeg" alt="Changelog">
             <div class="button-content">
                 <h3 class="button-title">Changelog</h3>
-            </div>
-        </div>
-
-        <!-- 2024 Award Winners Button -->
-        <div class="bottom-button" onclick="openAwardsWindow()">
-            <img src="Skins/Desert Demon Shizumaru.jpg" alt="2024 Awards">
-            <div class="button-content">
-                <h3 class="button-title">2024 Award Winners</h3>
             </div>
         </div>
     </div>
@@ -1463,20 +2202,6 @@
                             <span id="quest-points-amount">0</span>
                         </div>
                         <div class="quest-list">
-                            <div class="quest-item">
-                                <div class="quest-info">
-                                    <h3>Play 10 Games as Lili</h3>
-                                    <div class="progress-bar">
-                                        <div class="progress" id="lili-games-progress"></div>
-                                    </div>
-                                    <span class="progress-text">0/10</span>
-                                </div>
-                                <div class="quest-reward">
-                                    <img src="res/img/qp.png" alt="Quest Points" class="currency-icon">
-                                    <span>500</span>
-                                </div>
-                                <button class="claim-button" onclick="claimQuestReward('lili-games', 500)">Claim</button>
-                            </div>
                             <div class="quest-item">
                                 <div class="quest-info">
                                     <h3>Win 2 Games</h3>
@@ -1505,7 +2230,69 @@
                                 </div>
                                 <button class="claim-button" onclick="claimQuestReward('lose-games', 25)">Claim</button>
                             </div>
+                            <div class="quest-item">
+                                <div class="quest-info">
+                                    <h3>Win against Shinnok or Zasalamel</h3>
+                                    <div class="progress-bar">
+                                        <div class="progress" id="win-against-progress"></div>
                         </div>
+                                    <span class="progress-text">0/1</span>
+                                </div>
+                                <div class="quest-reward">
+                                    <img src="res/img/qp.png" alt="Quest Points" class="currency-icon">
+                                    <span>200</span>
+                                </div>
+                                <button class="claim-button" onclick="claimQuestReward('win-against', 200)">Claim</button>
+                            </div>
+                            <div class="quest-item">
+                                <div class="quest-info">
+                                    <h3>Win as Atlantean Champion</h3>
+                                    <div class="progress-bar">
+                                        <div class="progress" id="win-as-atlantean-progress"></div>
+                                    </div>
+                                    <span class="progress-text">0/1</span>
+                                </div>
+                                <div class="quest-reward">
+                                    <img src="res/img/qp.png" alt="Quest Points" class="currency-icon">
+                                    <span>100</span>
+                                </div>
+                                <button class="claim-button" onclick="claimQuestReward('win-as-atlantean', 100)">Claim</button>
+                            </div>
+                        </div>
+                        <!-- Atlantis Rewards Section -->
+                        <div class="recolors-section">
+                            <h3>Atlantis Rewards</h3>
+                            <div class="recolors-grid">
+                                <div class="recolor-item">
+                                    <img src="Loading Screen/Atlantean Kagome.png" alt="Atlantean Kagome">
+                                    <h4>Atlantean Kagome</h4>
+                                    <button class="claim-button" onclick="unlockAtlantisReward('atlantean-kagome', 2000, 'skin')">
+                                        Claim for <img src="res/img/qp.png" alt="Quest Points" class="currency-icon"> 2000
+                                    </button>
+                                </div>
+                                <div class="recolor-item">
+                                    <img src="Event/Atlantis Event.jpeg" alt="Welcome To Atlantis">
+                                    <h4>Welcome To Atlantis (Song)</h4>
+                                    <button class="claim-button" onclick="unlockAtlantisReward('welcome-to-atlantis', 450, 'song')">
+                                        Claim for <img src="res/img/qp.png" alt="Quest Points" class="currency-icon"> 450
+                                    </button>
+                                    <div class="demo-player">
+                                        <audio id="atlantis-demo" src="Songs/Welcome To Atlantis (Event Theme).mp3"></audio>
+                                        <button class="demo-button" onclick="toggleAtlantisSongDemo()">
+                                            <i class="fas fa-play"></i> Preview
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="recolor-item">
+                                    <img src="res/img/basicbox.png" alt="Free Lootbox">
+                                    <h4>Free Lootbox</h4>
+                                    <button class="claim-button" onclick="unlockAtlantisReward('free-lootbox', 1500, 'lootbox')">
+                                        Claim for <img src="res/img/qp.png" alt="Quest Points" class="currency-icon"> 1500
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Lili's Winter Festival Recolors Section -->
                         <div class="recolors-section">
                             <h3>Lili's Winter Festival Recolors</h3>
                             <div class="recolors-grid">
@@ -1560,10 +2347,13 @@
             const user = auth.currentUser;
             if (user) {
                 const userId = user.uid;
-                const userSkinsRef = ref(database, `users/${userId}/skins`);
-                const snapshot = await get(userSkinsRef);
-                const ownedSkins = snapshot.val() || {};
+                const userRef = ref(database, `users/${userId}`);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val() || {};
+                const ownedSkins = userData.skins || {};
+                const ownedSongs = userData.Songs || {};
 
+                // Update Lili recolor buttons
                 const recolorMap = {
                     'holiday': 'Winter Festival Lili Holiday',
                     'snowy-blush': 'Winter Festival Lili Snowy Blush',
@@ -1578,13 +2368,38 @@
                         if (ownedSkins[skinName]) {
                             claimButton.disabled = true;
                             claimButton.textContent = 'Claimed';
-                            claimButton.style.backgroundColor = '#666'; // Grayed out color
+                            claimButton.style.backgroundColor = '#666';
                         } else {
                             claimButton.disabled = false;
                             claimButton.innerHTML = `Claim for <img src="res/img/qp.png" alt="Quest Points" class="currency-icon"> 1000`;
-                            claimButton.style.backgroundColor = '#4682B4'; // Original color
+                            claimButton.style.backgroundColor = '#4682B4';
                         }
                     }
+                }
+
+                // Update Atlantis reward buttons
+                // Check Atlantean Kagome skin
+                const kagomeButton = document.querySelector(`button[onclick="unlockAtlantisReward('atlantean-kagome', 2000, 'skin')"]`);
+                if (kagomeButton && ownedSkins['Atlantean Kagome']) {
+                    kagomeButton.disabled = true;
+                    kagomeButton.textContent = 'Claimed';
+                    kagomeButton.style.backgroundColor = '#666';
+                }
+
+                // Check Welcome To Atlantis song
+                const songButton = document.querySelector(`button[onclick="unlockAtlantisReward('welcome-to-atlantis', 450, 'song')"]`);
+                if (songButton && ownedSongs['Welcome To Atlantis']) {
+                    songButton.disabled = true;
+                    songButton.textContent = 'Claimed';
+                    songButton.style.backgroundColor = '#666';
+                }
+
+                // Check Free Lootbox
+                const lootboxButton = document.querySelector(`button[onclick="unlockAtlantisReward('free-lootbox', 1000, 'lootbox')"]`);
+                if (lootboxButton && userData.claimedQuestLootbox) {
+                    lootboxButton.disabled = true;
+                    lootboxButton.textContent = 'Claimed';
+                    lootboxButton.style.backgroundColor = '#666';
                 }
             }
         }
@@ -1708,6 +2523,148 @@
                             alert('Not enough quest points!');
                         }
                     }
+
+                    async function unlockAtlantisReward(rewardId, cost, type) {
+                        const auth = window.firebaseAuth;
+                        const database = window.firebaseDatabase;
+                        const user = auth.currentUser;
+                        if (!user) return;
+
+                        const userId = user.uid;
+                        const userRef = ref(database, `users/${userId}`);
+                        const snapshot = await get(userRef);
+                        const userData = snapshot.val();
+
+                        if (!userData) return;
+
+                        const questPoints = userData.questPoints || 0;
+
+                        // Check if user has enough quest points
+                        if (questPoints < cost) {
+                            alert('Not enough quest points!');
+                            return;
+                        }
+
+                        // Check if user already owns the reward
+                        if (type === 'skin') {
+                            const ownedSkins = userData.skins || {};
+                            if (ownedSkins['Atlantean Kagome']) {
+                                alert('You already own this skin!');
+                                return;
+                            }
+                        } else if (type === 'song') {
+                            const ownedSongs = userData.Songs || {};
+                            if (ownedSongs['Welcome To Atlantis']) {
+                                alert('You already own this song!');
+                                return;
+                            }
+                        } else if (type === 'lootbox') {
+                            const claimedLootbox = userData.claimedQuestLootbox;
+                            if (claimedLootbox) {
+                                alert('You have already claimed the free lootbox!');
+                                return;
+                            }
+                        }
+
+                        // Prepare updates
+                        const updates = {};
+                        updates[`users/${userId}/questPoints`] = questPoints - cost;
+
+                        // Add the reward based on type
+                        if (type === 'skin') {
+                            updates[`users/${userId}/skins/Atlantean Kagome`] = 1;
+                        } else if (type === 'song') {
+                            updates[`users/${userId}/Songs/Welcome To Atlantis`] = 1;
+                        } else if (type === 'lootbox') {
+                            updates[`users/${userId}/claimedQuestLootbox`] = true;
+                            // Add lootbox to inventory
+                            const currentLootboxes = userData.lootboxes || 0;
+                            updates[`users/${userId}/lootboxes`] = currentLootboxes + 1;
+                        }
+
+                        // Apply updates
+                        await update(ref(database), updates);
+
+                        // Update the quest window display
+                        await updateQuestProgress();
+
+                        // Disable the claim button
+                        const claimButton = document.querySelector(`button[onclick="unlockAtlantisReward('${rewardId}', ${cost}, '${type}')"]`);
+                        if (claimButton) {
+                            claimButton.disabled = true;
+                            claimButton.textContent = 'Claimed';
+                            claimButton.style.backgroundColor = '#666';
+                        }
+
+                        alert('Reward claimed successfully!');
+                    }
+
+                    // Global variables for demo player
+                    let atlantisDemoPlaying = false;
+                    let atlantisDemoTimeout = null;
+
+                    function toggleAtlantisSongDemo() {
+                        const audio = document.getElementById('atlantis-demo');
+                        const button = document.querySelector('.demo-button i');
+                        
+                        if (atlantisDemoPlaying) {
+                            audio.pause();
+                            button.className = 'fas fa-play';
+                            window.atlantisDemoPlaying = false;
+                            if (atlantisDemoTimeout) {
+                                clearTimeout(atlantisDemoTimeout);
+                                atlantisDemoTimeout = null;
+                            }
+                        } else {
+                            // Load the audio if not loaded
+                            if (!audio.src) {
+                                audio.src = 'Songs/Welcome To Atlantis.mp3';
+                            }
+
+                            // Wait for metadata to load before playing
+                            const playAudio = () => {
+                                if (audio.duration) {
+                                    audio.currentTime = audio.duration * 0.4;
+                                    audio.play()
+                                        .then(() => {
+                                            button.className = 'fas fa-pause';
+                                            window.atlantisDemoPlaying = true;
+
+                                            // Stop preview after 15 seconds
+                                            window.atlantisDemoTimeout = setTimeout(() => {
+                                                if (audio.duration) {
+                                                    audio.pause();
+                                                    audio.currentTime = audio.duration * 0.4;
+                                                }
+                                                button.className = 'fas fa-play';
+                                                window.atlantisDemoPlaying = false;
+                                            }, 15000);
+                                        })
+                                        .catch(error => {
+                                            console.error('Error playing audio:', error);
+                                            button.className = 'fas fa-play';
+                                            window.atlantisDemoPlaying = false;
+                                        });
+                                }
+                            };
+
+                            if (audio.readyState >= 2) { // HAVE_CURRENT_DATA or higher
+                                playAudio();
+                            } else {
+                                audio.addEventListener('loadedmetadata', playAudio, { once: true });
+                            }
+
+                            // When the preview ends naturally
+                            audio.onended = () => {
+                                button.className = 'fas fa-play';
+                                window.atlantisDemoPlaying = false;
+                                if (atlantisDemoTimeout) {
+                                    clearTimeout(atlantisDemoTimeout);
+                                    atlantisDemoTimeout = null;
+                                }
+                            };
+                        }
+                    }
     </script>
 
                 <style>
@@ -1715,12 +2672,13 @@
 
                     /* Quest Window Styles */
                     #quest-window .modal-content {
-                        background: rgba(28, 40, 51, 0.95);
-                        color: #E0FFFF;
+                        background: rgba(0, 30, 46, 0.95);
+                        color: #e0ffff;
                         max-width: 1000px;
                         width: 95%;
                         padding: 30px;
-                        border: 1px solid rgba(176, 224, 230, 0.3); /* Winter blue border */
+                        border: 1px solid #00ced1;
+                        box-shadow: 0 0 30px rgba(0, 206, 209, 0.2);
                     }
 
                     .quest-points {
@@ -1747,7 +2705,8 @@
                     }
 
                     .quest-item {
-                        background: rgba(70, 130, 180, 0.2);
+                        background: rgba(0, 206, 209, 0.15);
+                        border: 1px solid rgba(0, 206, 209, 0.3);
                         padding: 15px;
                         border-radius: 8px;
                         margin-bottom: 15px;
@@ -1761,7 +2720,7 @@
                     }
 
                     .progress-bar {
-                        background: rgba(176, 224, 230, 0.2);
+                        background: rgba(0, 206, 209, 0.1);
                         height: 10px;
                         border-radius: 5px;
                         margin: 10px 0;
@@ -1769,7 +2728,7 @@
                     }
 
                     .progress {
-                        background: linear-gradient(90deg, #87CEEB, #4682B4);
+                        background: linear-gradient(90deg, #00ced1, #ffd700);
                         height: 100%;
                         width: 0%;
                         transition: width 0.3s ease;
@@ -1783,9 +2742,9 @@
                     }
 
                     .claim-button {
-                        background: #4682B4;
-                        color: white;
-                    border: none;
+                        background: #00ced1;
+                        color: #ffffff;
+                        border: 1px solid rgba(255, 215, 0, 0.3);
                         padding: 6px 12px;
                         border-radius: 5px;
                         cursor: pointer;
@@ -1797,7 +2756,8 @@
                     }
 
                     .claim-button:hover {
-                        background: #87CEEB;
+                        background: #ffd700;
+                        box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
                         transform: translateY(-2px);
                     }
 
@@ -1813,7 +2773,7 @@
                     }
 
                     .recolor-item {
-                        background: rgba(70, 130, 180, 0.2);
+                        background: rgba(0, 206, 209, 0.15);
                     padding: 15px;
                         border-radius: 8px;
                         text-align: center;
@@ -1827,9 +2787,9 @@
                     }
 
                     .unlock-button {
-                        background: #4682B4;
-                        color: white;
-                    border: none;
+                        background: #00ced1;
+                        color: #ffffff;
+                        border: 1px solid rgba(255, 215, 0, 0.3);
                         padding: 6px 12px;
                         border-radius: 5px;
                     cursor: pointer;
@@ -1841,13 +2801,49 @@
                 }
 
                     .unlock-button:hover {
-                        background: #87CEEB;
+                        background: #ffd700;
+                        box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
                     transform: translateY(-2px);
                     }
 
                     .currency-icon {
                         width: 20px;
                         height: 20px;
+                    }
+
+                    /* Demo Player Styles */
+                    .demo-player {
+                        margin-top: 10px;
+                    }
+
+                    .demo-button {
+                        background: linear-gradient(135deg, #4d88b7, #90caf9);
+                        border: 2px solid rgba(255, 255, 255, 0.8);
+                        border-radius: 20px;
+                        padding: 8px 16px;
+                        color: white;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        margin: 0 auto;
+                        font-size: 0.9em;
+                    }
+
+                    .demo-button:hover {
+                        transform: scale(1.05);
+                        box-shadow: 0 0 15px rgba(144, 202, 249, 0.6);
+                        border-color: white;
+                    }
+
+                    .demo-button:active {
+                        transform: scale(0.95);
+                    }
+
+                    .demo-button i {
+                        font-size: 1.1em;
+                        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
                     }
                 </style>
 
@@ -1933,16 +2929,16 @@
             justify-content: center;
             align-items: center;
             z-index: 6000; /* Increased by 5000 */
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 30, 46, 0.9);
         }
 
         #awards-window .modal-content {
-            background: rgba(28, 40, 51, 0.95);
-            color: #E0FFFF;
+            background: rgba(0, 30, 46, 0.95);
+            color: #e0ffff;
             max-width: 1400px;
             width: 95%;
             padding: 30px;
-            border: 1px solid rgba(176, 224, 230, 0.3);
+            border: 1px solid #00ced1;
             position: relative;
         }
 
@@ -1955,12 +2951,12 @@
         }
 
         .award-item {
-            background: rgba(70, 130, 180, 0.2);
+            background: rgba(0, 206, 209, 0.15);
             padding: 20px;
             border-radius: 4px;
             text-align: center;
-            max-width: 300px; /* Added max-width to control image size */
-            margin: 0 auto; /* Center items in their grid cells */
+            max-width: 300px;
+            margin: 0 auto;
             width: 100%;
         }
 
@@ -1971,7 +2967,7 @@
         .award-info h3 {
             margin-bottom: 15px;
             font-size: 1.2em;
-            color: #FFD700;
+            color: #ffd700;
         }
 
         .image-container {
@@ -1995,7 +2991,7 @@
         .skin-name {
             font-size: 1.1em;
             margin: 10px 0;
-            color: #E0FFFF;
+            color: #e0ffff;
         }
 
         .skin-price {
@@ -2013,14 +3009,14 @@
         }
 
         .sale-price {
-            color: #4CAF50;
+            color: #ffd700;
             font-weight: bold;
         }
 
         .purchase-button {
-            background: #4682B4;
-            color: white;
-            border: none;
+            background: #00ced1;
+            color: #ffffff;
+            border: 1px solid rgba(255, 215, 0, 0.3);
             padding: 8px 16px;
             border-radius: 4px;
             cursor: pointer;
@@ -2031,13 +3027,14 @@
         }
 
         .purchase-button:hover {
-            background: #87CEEB;
+            background: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
             transform: translateY(-2px);
         }
 
         .purchase-button.disabled {
-            background: #666;
-            cursor: not-allowed;
+            background: #1a4657;
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .close {
@@ -2178,132 +3175,412 @@
     </script>
     
     <!-- Music Player -->
-    <div class="music-player-toggle">
+    <button class="music-player-toggle">
         <i class="fas fa-music"></i>
-    </div>
-    
+    </button>
     <div class="music-player">
         <div class="music-player-header">
-            <div class="playlist-toggle">
+            <button class="playlist-toggle">
                 <i class="fas fa-list"></i>
-            </div>
-            <div class="music-player-toggle">
-                <i class="fas fa-music"></i>
-            </div>
+            </button>
         </div>
-
         <div class="cover-art">
-            <img src="" alt="Album Cover">
+            <img src="" alt="Cover Art">
         </div>
-
         <div class="music-info">
-            <h3 class="song-title">Loading...</h3>
-            <p class="artist-name">Please wait</p>
+            <div class="song-title"></div>
+            <div class="artist-name"></div>
         </div>
-
         <div class="progress-container">
-            <div class="progress-bar">
-                <div class="progress"></div>
-                <div class="progress-handle"></div>
-            </div>
+            <div class="progress"></div>
+            <div class="progress-handle"></div>
         </div>
-
         <div class="time-info">
             <span class="current-time">0:00</span>
             <span class="duration">0:00</span>
         </div>
-
         <div class="controls">
-            <button class="prev-btn"><i class="fas fa-backward"></i></button>
-            <button class="play-btn"><i class="fas fa-play"></i></button>
-            <button class="next-btn"><i class="fas fa-forward"></i></button>
-            <button class="shuffle-btn"><i class="fas fa-random"></i></button>
+            <button class="shuffle-btn">
+                <i class="fas fa-random"></i>
+            </button>
+            <button class="prev-btn">
+                <i class="fas fa-step-backward"></i>
+            </button>
+            <button class="play-btn">
+                <i class="fas fa-play"></i>
+            </button>
+            <button class="next-btn">
+                <i class="fas fa-step-forward"></i>
+            </button>
         </div>
-
         <div class="volume-control">
             <i class="fas fa-volume-up"></i>
-            <input type="range" class="volume-slider" min="0" max="100" value="20">
+            <input type="range" class="volume-slider" min="0" max="100" value="50">
         </div>
-
         <div class="playlist">
             <div class="playlist-header">
                 <h3>Playlist</h3>
             </div>
             <ul class="playlist-items">
-                <!-- Playlist items will be added here dynamically -->
+                <!-- Songs will be added here dynamically -->
             </ul>
         </div>
     </div>
-<script type="module">
-    // Add this function to your existing script
-    async function checkAndShowJuliaReward() {
-        const user = auth.currentUser;
-        if (!user) return;
 
-        try {
-            const userSongsRef = ref(database, `users/${user.uid}/Songs`);
-            const snapshot = await get(userSongsRef);
-            const ownedSongs = snapshot.val() || {};
+    <button class="skin-highlight-toggle">
+        <i class="fas fa-star"></i>
+    </button>
+    <div class="skin-highlight">
+        <div class="skin-highlight-header">
+            <h3>Featured Skins</h3>
+        </div>
+        <div class="skin-highlight-content">
+            <!-- Skins will be loaded here dynamically -->
+        </div>
+    </div>
 
-            if (!ownedSongs['Forest Wanderer (Julia Theme)']) {
-                showJuliaReward();
-            }
-        } catch (error) {
-            console.error('Error checking Julia reward:', error);
+    <!-- Add Lightbox -->
+    <div id="lightbox" class="lightbox">
+        <div class="lightbox-content">
+            <img id="lightbox-image" src="" alt="Skin Image">
+            <button id="purchase-button" class="purchase-button" onclick="purchaseSkin()"></button>
+            <button class="close-button" onclick="closeLightbox()">x</button>
+        </div>
+    </div>
+
+    <style>
+        /* Skin Highlight Styles */
+        .skin-highlight-toggle {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 30, 46, 0.95);
+            color: #e0ffff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #00ced1;
+            box-shadow: 0 0 20px rgba(0, 206, 209, 0.3);
+            transition: all 0.3s ease;
         }
-    }
 
-    function showJuliaReward() {
-        const popup = document.createElement('div');
-        popup.className = 'reward-popup';
-        popup.innerHTML = `
-            <div class="reward-popup-header">
-                <h3 class="reward-popup-title">New Song Unlocked!</h3>
-                <button class="reward-popup-close">×</button>
-            </div>
-            <div class="reward-popup-content">
-                <img src="Loading Screen/Julia.png" alt="Julia Portrait" class="reward-popup-image">
-                <p class="reward-popup-text">You've received Julia's Theme:<br>"Forest Wanderer"</p>
-                <button class="claim-button">Claim</button>
-            </div>
-        `;
+        .skin-highlight-toggle:hover {
+            background: rgba(0, 206, 209, 0.2);
+            transform: translateY(-50%) scale(1.1);
+        }
 
-        document.body.appendChild(popup);
+        .skin-highlight {
+            position: fixed;
+            left: -300px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 300px;
+            background: rgba(0, 30, 46, 0.95);
+            border: 1px solid #00ced1;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 206, 209, 0.3);
+            z-index: 999;
+            transition: left 0.3s ease;
+            backdrop-filter: blur(5px);
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-        // Close button handler
-        popup.querySelector('.reward-popup-close').addEventListener('click', () => {
-            popup.remove();
-        });
+        .skin-highlight.show {
+            left: 70px;
+        }
 
-        // Claim button handler
-        popup.querySelector('.claim-button').addEventListener('click', async () => {
-            const user = auth.currentUser;
-            if (!user) return;
+        .skin-highlight-header {
+            padding: 15px;
+            border-bottom: 1px solid #00ced1;
+            text-align: center;
+        }
 
-            try {
-                const userSongsRef = ref(database, `users/${user.uid}/Songs`);
+        .skin-highlight-header h3 {
+            margin: 0;
+            color: #e0ffff;
+            font-size: 1.2em;
+        }
+
+        .skin-highlight-content {
+            padding: 15px;
+            overflow-y: auto;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .featured-skin {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            background: #000; /* Add dark background */
+            transform: translate3d(0, 0, 0); /* Force GPU acceleration */
+        }
+
+        .featured-skin:hover {
+            transform: none; /* Remove container scale */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .featured-skin img {
+            width: 100%;
+            height: 152px; /* 16:9 aspect ratio for 270px width */
+            object-fit: cover;
+            display: block;
+            image-rendering: -webkit-optimize-contrast; /* Improve image quality in Chrome/Safari */
+            image-rendering: crisp-edges; /* Improve image quality in Firefox */
+            backface-visibility: hidden; /* Prevent blurry text on transform */
+            transform: translateZ(0); /* Force GPU acceleration */
+            will-change: transform; /* Optimize for animations */
+        }
+
+        .featured-skin:hover img {
+            transform: scale(1.05); /* Move scale to img instead of container */
+            transition: transform 0.3s ease;
+        }
+
+        .featured-skin-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: #fff;
+        }
+
+        .featured-skin-name {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .featured-skin-price {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .featured-skin-price img {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Lightbox Styles */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 80%;
+            max-height: 80%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+        }
+
+        .lightbox .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ffcc00;
+            color: black;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 1.5em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .purchase-button {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: grey;
+            color: black;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .purchase-button.enabled {
+            background-color: gold;
+        }
+
+        .purchase-button.disabled {
+            background-color: grey;
+        }
+    </style>
+
+    <script>
+        // Make functions globally available
+        window.openLightbox = function(src, name, price) {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.style.display = 'flex';
+            const img = document.getElementById('lightbox-image');
+            img.src = src;
+            const purchaseButton = document.getElementById('purchase-button');
+            purchaseButton.dataset.skinName = name;
+            purchaseButton.dataset.skinPrice = price;
+            purchaseButton.textContent = `Purchase for ${price} FM`;
+            purchaseButton.className = window.userFM >= price ? 'purchase-button enabled' : 'purchase-button disabled';
+            if (window.userSkins && window.userSkins[name]) {
+                purchaseButton.classList.add('disabled');
+                purchaseButton.textContent = 'Owned';
+            }
+        };
+
+        window.closeLightbox = function(event) {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.style.display = 'none';
+            if (event) {
+                event.stopPropagation(); // Prevent the click from bubbling up
+            }
+        };
+
+        window.purchaseSkin = async function() {
+            const purchaseButton = document.getElementById('purchase-button');
+            const skinName = purchaseButton.dataset.skinName;
+            const skinPrice = parseInt(purchaseButton.dataset.skinPrice, 10);
+
+            if (window.userFM >= skinPrice) {
+                const newFM = window.userFM - skinPrice;
                 const updates = {};
-                updates['Forest Wanderer (Julia Theme)'] = 1;
-                await update(userSongsRef, updates);
+                updates['FM'] = newFM;
+                updates[`skins/${skinName}`] = 1;
+                await update(window.userRef, updates);
+                document.getElementById('currency-amount').textContent = newFM;
+                window.userFM = newFM;
+                window.userSkins[skinName] = 1;
+                closeLightbox();
+                alert(`You have successfully purchased ${skinName}!`);
                 
-                // Close popup after claiming
-                popup.remove();
+                // Update any matching skins in the highlight panel
+                const skinElements = document.querySelectorAll('.featured-skin');
+                skinElements.forEach(element => {
+                    const nameElement = element.querySelector('.featured-skin-name');
+                    if (nameElement && nameElement.textContent === skinName) {
+                        element.classList.add('owned');
+                    }
+                });
+            } else {
+                alert("You don't have enough FM to purchase this skin.");
+            }
+        };
+
+        // Initialize skin highlight functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const skinHighlightToggle = document.querySelector('.skin-highlight-toggle');
+            const skinHighlight = document.querySelector('.skin-highlight');
+            const musicPlayerToggle = document.querySelector('.music-player-toggle');
+            const musicPlayer = document.querySelector('.music-player');
+            
+            if (skinHighlightToggle && skinHighlight) {
+                skinHighlightToggle.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    skinHighlight.classList.toggle('show');
+                });
+
+                // Close skin highlight when clicking outside, but ignore music player clicks
+                document.addEventListener('click', function(event) {
+                    // Ignore clicks on music player elements
+                    if (musicPlayer && (musicPlayer.contains(event.target) || musicPlayerToggle.contains(event.target))) {
+                        return;
+                    }
+                    
+                    // Handle skin highlight panel
+                    if (!skinHighlight.contains(event.target) && 
+                        !skinHighlightToggle.contains(event.target) && 
+                        skinHighlight.classList.contains('show')) {
+                        skinHighlight.classList.remove('show');
+                    }
+                });
+
+                // Prevent skin highlight panel from closing when clicking inside it
+                skinHighlight.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                });
+
+                // Load featured skins from Firebase
+                const auth = window.firebaseAuth;
+                const database = window.firebaseDatabase;
                 
-                // Refresh music player to include new song
-                window.location.reload();
-            } catch (error) {
-                console.error('Error claiming Julia song:', error);
+                const featuredSkinsRef = ref(database, 'Server/skinhighlight');
+                get(featuredSkinsRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const featuredSkins = snapshot.val();
+                        const skinHighlightContent = document.querySelector('.skin-highlight-content');
+                        skinHighlightContent.innerHTML = ''; // Clear existing content
+
+                        Object.values(featuredSkins).forEach(skin => {
+                            const skinElement = document.createElement('div');
+                            skinElement.className = 'featured-skin';
+                            if (window.userSkins && window.userSkins[skin.name]) {
+                                skinElement.classList.add('owned');
+                            }
+                            skinElement.innerHTML = `
+                                <img src="${skin.image}" alt="${skin.name}">
+                                <div class="featured-skin-info">
+                                    <div class="featured-skin-name">${skin.name}</div>
+                                    <div class="featured-skin-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>${skin.price}</span>
+                                    </div>
+                                </div>
+                            `;
+                            
+                            // Add click handler to open lightbox
+                            skinElement.addEventListener('click', (event) => {
+                                event.stopPropagation();
+                                openLightbox(skin.image, skin.name, skin.price);
+                            });
+                            
+                            skinHighlightContent.appendChild(skinElement);
+                        });
+                    }
+                }).catch((error) => {
+                    console.error("Error loading featured skins:", error);
+                });
             }
         });
-    }
-
-    // Add this to your auth state change listener
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            // ... existing auth code ...
-            checkAndShowJuliaReward();
-        }
-    });
-</script>
+    </script>
 </body>
 </html>

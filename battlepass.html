@@ -1,11 +1,406 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Fighters - Battle Pass</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00a8ff;
+            --secondary-color: #ff9f1a;
+            --background-dark: #1a1a1a;
+            --text-color: #ffffff;
+            --progress-bar-height: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--background-dark);
+            color: var(--text-color);
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+        }
+
+        #video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            filter: brightness(0.4);
+        }
+
+        /* Keep existing menu styles */
+        .menu {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2;
+            position: relative;
+        }
+
+        .menu-items {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 16px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+
+        /* Keep existing play button styles */
+        .play-button-container {
+            display: flex;
+            justify-content: flex-start;
+            padding: 20px;
+            z-index: 2;
+            position: fixed;
+        }
+
+        .play-button {
+            background-color: #ffbb00;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 22px;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 15px 40px;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .play-button:hover {
+            background-color: #ff8800;
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        /* New Battle Pass Styles */
+        .battlepass-container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .battlepass-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .battlepass-progress {
+            flex-grow: 1;
+            margin: 0 20px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: var(--progress-bar-height);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transition: width 0.3s ease;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0, 168, 255, 0.5);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .progress-info img {
+            border: 2px solid var(--secondary-color);
+            box-shadow: 0 0 10px rgba(255, 159, 26, 0.3);
+        }
+
+        .progress-info span {
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        #battlepass-exp {
+            color: var(--secondary-color);
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 5px 10px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 159, 26, 0.3);
+        }
+
+        .battlepass-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .battlepass-item {
+            position: relative;
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .battlepass-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .battlepass-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .item-info {
+            text-align: center;
+        }
+
+        .item-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .item-exp {
+            font-size: 14px;
+            color: var(--secondary-color);
+        }
+
+        .locked-item {
+            filter: grayscale(100%);
+            opacity: 0.5;
+        }
+
+        .locked-item::after {
+            content: '🔒';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+        }
+
+        .claimed-item::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--primary-color);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .currency-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+        }
+
+        .currency-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .buy-pass-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .buy-pass-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.4);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(30, 30, 30, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 300px;
+        }
+
+        .modal-btn {
+            margin: 10px;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .modal-btn.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .modal-btn.cancel {
+            background: #ff4757;
+            color: white;
+        }
+
+        .modal-btn:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Keep existing menu -->
+    <div class="menu">
+        <div class="menu-items">
+            <a href="home.html">Home</a>
+            <a href="Store.html">Store</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+            <a href="statistics.html">Statistics</a>
+        </div>
+    </div>
+
+    <!-- Keep existing play button -->
+    <div class="play-button-container">
+        <a href="Game Modes.html" class="play-button">Play</a>
+    </div>
+
+    <!-- Video Background -->
+    <video id="video-background" autoplay muted loop>
+        <source src="Event/Eventvideo.mp4" type="video/mp4">
+    </video>
+
+    <!-- New Battle Pass Content -->
+    <div class="battlepass-container">
+        <div class="battlepass-header">
+            <div class="currency-display">
+                <img src="res/img/fm.png" alt="FM" class="currency-icon">
+                <span id="currency-amount">0</span>
+                <img src="res/img/cm.png" alt="CM" class="currency-icon">
+                <span id="currency-amount-cm">0</span>
+            </div>
+            <div class="battlepass-progress">
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="bp-progress-bar"></div>
+                </div>
+                <div class="progress-info">
+                    <span id="current-level">Level 1</span>
+                    <span id="battlepass-exp">0 / 11500 BP Exp</span>
+                </div>
+            </div>
+            <button class="buy-pass-btn" onclick="buyBattlepass()">Buy Battle Pass</button>
+        </div>
+
+        <div class="battlepass-grid" id="battle-pass-container">
+            <!-- Items will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Buy Modal -->
+    <div id="buy-battlepass-modal" class="modal">
+        <div class="modal-content">
+            <h2>Buy Battle Pass</h2>
+            <p>Choose your payment method:</p>
+            <button id="buy-with-fm" class="modal-btn primary">3,000 FM</button>
+            <button id="buy-with-cm" class="modal-btn secondary">100,000 CM</button>
+            <button id="cancel-purchase" class="modal-btn cancel">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script type="module">
-        // Initialize Firebase
+        // Import Firebase modules
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
         import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js";
 
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
             authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
@@ -17,30 +412,32 @@
             measurementId: "G-LNEM6HR842"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
         
+        // Battle Pass Items (keep your existing items array)
         const battlePassItems = [
-            { id: 'Item1', exp: 0, img: 'Skins/Winter Festival Shizumaru.jpeg', skinName: 'Winter Festival Shizumaru', name: 'Winter Festival Shizumaru Skin' },
-            { id: 'Item2', exp: 30, img: 'res/img/music.png', songName: 'Jingle Bells (Winter Festival Shizumaru Theme)', name: 'Jingle Bells Song', type: 'Song' },
+            { id: 'Item1', exp: 0, img: 'Default Splash/Zasalamel.jpg', skinName: 'Zasalamel', name: 'Zasalamel' },
+            { id: 'Item2', exp: 30, img: 'Skins/Atlantean Zasalamel.jpg', skinName: 'Atlantean Zasalamel', name: 'Atlantean Zasalamel Skin' },
             { id: 'Item3', exp: 85, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
             { id: 'Item4', exp: 150, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
-            { id: 'Item5', exp: 200, img: 'Skins/Winter Festival Kuma.jpeg', skinName: 'Winter Festival Kuma', name: 'Winter Festival Kuma Skin' },
-            { id: 'Item6', exp: 260, img: 'res/img/music.png', songName: 'Snowball Princess', name: 'Snowball Princess Song', type: 'Song' },
-            { id: 'Item7', exp: 320, img: 'titles/titleimage.jpeg', name: 'Snow Angel', type: 'Title', titleName: 'Snow Angel' },
-            { id: 'Item8', exp: 395, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
+            { id: 'Item5', exp: 200, img: 'titles/titleimage.jpeg', name: 'Atlantean Warrior', type: 'Title', titleName: 'Atlantean Warrior' },
+            { id: 'Item6', exp: 260, img: 'res/img/music.png', songName: 'Under The Sea (Atlantean Christie Theme)', name: 'Under The Sea', type: 'Song' },
+            { id: 'Item7', exp: 320, img: 'Skins/Atlantean Kotal Kahn.jpeg', skinName: 'Atlantean Kotal Kahn', name: 'Atlantean Kotal Kahn Skin' },
+            { id: 'Item8', exp: 395, img: 'Icons/Profile/Coral_Armor.png', rewardName: 'Coral Armor', type: 'icon', name: 'Coral Armor Icon' },
             { id: 'Item9', exp: 480, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
-            { id: 'Item10', exp: 580, img: 'Skins/Winter Queen Angel.jpeg', skinName: 'Winter Queen Angel', name: 'Winter Queen Angel Skin' },
-            { id: 'Item11', exp: 665, img: 'res/img/cm.png', name: '8500 CM', type: 'CM' },
-            { id: 'Item12', exp: 750, img: 'titles/titleimage.jpeg', name: 'Father Santa', type: 'Title', titleName: 'Father Santa' },
-            { id: 'Item13', exp: 835, img: 'res/img/music.png', songName: 'Flight of the Snow Queen Angel', name: 'Flight of the Snow Queen Angel Song', type: 'Song' },
-            { id: 'Item14', exp: 910, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
+            { id: 'Item10', exp: 580, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
+            { id: 'Item11', exp: 665, img: 'Skins/Atlantean Christie.jpeg', skinName: 'Atlantean Christie', name: 'Atlantean Christie Skin' },
+            { id: 'Item12', exp: 750, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
+            { id: 'Item13', exp: 835, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
+            { id: 'Item14', exp: 910, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
             { id: 'Item15', exp: 1000, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
             { id: 'Item16', exp: 1300, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
             { id: 'Item17', exp: 1600, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
             { id: 'Item18', exp: 1900, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item19', exp: 2200, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
+            { id: 'Item19', exp: 2200, img: 'titles/titleimage.jpeg', name: 'Mermaid', type: 'Title', titleName: 'Mermaid' },
             { id: 'Item20', exp: 2500, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
             { id: 'Item21', exp: 2800, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
             { id: 'Item22', exp: 3100, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
@@ -71,178 +468,88 @@
             { id: 'Item47', exp: 10600, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
             { id: 'Item48', exp: 10900, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
             { id: 'Item49', exp: 11200, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item50', exp: 11500, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item51', exp: 11800, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item52', exp: 12100, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item53', exp: 12400, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item54', exp: 12700, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item55', exp: 13000, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' }
+            { id: 'Item50', exp: 11500, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' }
         ];
-  // Ensure the function is called when the user is authenticated
-  onAuthStateChanged(auth, (user) => {
-        if (user) {
-            const userId = user.uid;
-            const userRef = ref(database, 'users/' + userId);
 
-            get(userRef).then((snapshot) => {
-                if (snapshot.exists()) {
-                    const userData = snapshot.val();
-                    const userExp = userData.BattlePassExp || 0;
-                    const claimedItems = userData.BPprogress || {};
-                    const hasBattlepass = userData.hasBattlepass || false;
-                    document.getElementById('currency-amount').textContent = userData.FM || 0;
-                    document.getElementById('currency-amount-cm').textContent = userData.CM || 0;
-                    // Set BattlePassExp
-                    document.getElementById('battlepass-exp').textContent = `${userExp} BP Exp`;
-                    displayBattlePass(userExp, claimedItems);
-
-                    // Hide the buy button if the user has already purchased the battlepass
-                    if (hasBattlepass) {
-                        document.querySelector('.buy-battlepass-button').style.display = 'none';
-                    }
+        // Update progress bar
+        function updateProgressBar(currentExp) {
+            // Find the next item to unlock
+            let nextItem = battlePassItems[0];
+            let previousExp = 0;
+            
+            for (let item of battlePassItems) {
+                if (item.exp > currentExp) {
+                    nextItem = item;
+                    break;
                 }
-            }).catch((error) => {
-                console.error(error);
-            });
-        } else {
-            console.log("User is not authenticated");
-            displayBattlePass(0, {}); // Display greyed-out items for unauthenticated users
+                previousExp = item.exp;
+            }
+
+            // Calculate progress to next item
+            const progressToNext = currentExp - previousExp;
+            const totalNeededForNext = nextItem.exp - previousExp;
+            const progress = (progressToNext / totalNeededForNext) * 100;
+
+            // Update progress bar
+            const progressBar = document.getElementById('bp-progress-bar');
+            progressBar.style.width = `${Math.min(progress, 100)}%`;
+            
+            // Update progress info
+            document.getElementById('current-level').innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <img src="${nextItem.img}" alt="${nextItem.name}" style="width: 30px; height: 30px; border-radius: 5px;">
+                    <span>Next: ${nextItem.name}</span>
+                </div>`;
+            document.getElementById('battlepass-exp').textContent = 
+                `${progressToNext}/${totalNeededForNext} EXP to unlock`;
         }
-    });
 
+        // Display Battle Pass items
+        function displayBattlePass(userExp, claimedItems) {
+            const container = document.getElementById('battle-pass-container');
+            container.innerHTML = ''; // Clear existing items
 
-        function buyBattlepass() {
             const user = auth.currentUser;
             if (user) {
                 const userId = user.uid;
                 const userRef = ref(database, 'users/' + userId);
 
                 get(userRef).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        const userData = snapshot.val();
-                        const userFM = userData.FM || 0;
-                        const userCM = userData.CM || 0;
+                    const userData = snapshot.exists() ? snapshot.val() : {};
+                    const hasBattlepass = userData.hasBattlepass || false;
 
-                        // Show the modal dialog
-                        const modal = document.getElementById('buy-battlepass-modal');
-                        modal.style.display = 'block';
+                    battlePassItems.forEach((item) => {
+                        const itemElement = document.createElement('div');
+                        itemElement.className = 'battlepass-item';
+                        
+                        if (!hasBattlepass || userExp < item.exp) {
+                            itemElement.classList.add('locked-item');
+                        } else if (claimedItems[item.id]) {
+                            itemElement.classList.add('claimed-item');
+                        }
 
-                        // Set up event listeners for the buttons
-                        document.getElementById('buy-with-fm').onclick = () => {
-                            if (userFM >= 3000) {
-                                purchaseBattlepass(userId, 'FM', userFM - 3000);
-                            } else {
-                                alert("You don't have enough FM to purchase the battlepass.");
-                            }
-                            modal.style.display = 'none';
-                        };
+                        itemElement.innerHTML = `
+                            <img src="${item.img}" alt="${item.name}">
+                            <div class="item-info">
+                                <div class="item-name">${item.name}</div>
+                                <div class="item-exp">${item.exp} BP Exp</div>
+                            </div>
+                        `;
 
-                        document.getElementById('buy-with-cm').onclick = () => {
-                            if (userCM >= 100000) {
-                                purchaseBattlepass(userId, 'CM', userCM - 100000);
-                            } else {
-                                alert("You don't have enough CM to purchase the battlepass.");
-                            }
-                            modal.style.display = 'none';
-                        };
+                        if (hasBattlepass && userExp >= item.exp && !claimedItems[item.id]) {
+                            itemElement.onclick = () => claimItem(item.id, item.img, item.exp, item.folder, item.skinName, item.type);
+                        }
 
-                        document.getElementById('cancel-purchase').onclick = () => {
-                            modal.style.display = 'none';
-                        };
-                    }
-                }).catch((error) => {
-                    console.error(error);
+                        container.appendChild(itemElement);
+                    });
+
+                    // Update progress bar
+                    updateProgressBar(userExp);
                 });
             }
         }
 
-        function purchaseBattlepass(userId, currency, newAmount) {
-            const updates = {};
-            updates[currency] = newAmount;
-            updates['hasBattlepass'] = true;
-            update(ref(database, 'users/' + userId), updates).then(() => {
-                alert('Battlepass purchased successfully!');
-                location.reload();
-            }).catch((error) => {
-                console.error(error);
-            });
-        }
-
-        window.buyBattlepass = buyBattlepass;
-
-
-        function displayBattlePass(userExp, claimedItems) {
-    const container = document.getElementById('battle-pass-container');
-
-    const user = auth.currentUser;
-    if (user) {
-        const userId = user.uid;
-        const userRef = ref(database, 'users/' + userId);
-
-        get(userRef).then((snapshot) => {
-            const userData = snapshot.exists() ? snapshot.val() : {};
-            const hasBattlepass = userData.hasBattlepass || false;
-
-            battlePassItems.forEach((item) => {
-                const itemContainer = document.createElement('div');
-                itemContainer.classList.add('battle-pass-item');
-                itemContainer.title = `Requires ${item.exp} BP Exp`; // Add title attribute
-
-                const imgElement = document.createElement('img');
-                imgElement.src = `${item.img}`;
-                imgElement.alt = `Item ${item.exp}`;
-
-                const nameElement = document.createElement('div');
-                nameElement.classList.add('item-name');
-                nameElement.textContent = item.name || 'Unknown Item';
-
-                itemContainer.appendChild(imgElement);
-                itemContainer.appendChild(nameElement);
-
-                if (!hasBattlepass) {
-                    itemContainer.classList.add('greyed-out');
-                    itemContainer.style.pointerEvents = 'none'; // Make unclickable
-                } else if (userExp < item.exp) {
-                    imgElement.classList.add('locked');
-                } else if (claimedItems[item.id]) {
-                    imgElement.classList.add('claimed');
-                } else {
-                    itemContainer.onclick = () => claimItem(item.id, item.img, item.exp, item.folder, item.skinName, item.type);
-                }
-
-                container.appendChild(itemContainer);
-            });
-        }).catch((error) => {
-            console.error(error);
-        });
-    } else {
-        // If no user is authenticated, still display the items greyed out
-        battlePassItems.forEach((item) => {
-            const itemContainer = document.createElement('div');
-            itemContainer.classList.add('battle-pass-item');
-            itemContainer.title = `Requires ${item.exp} BP Exp`; // Add title attribute
-
-            const imgElement = document.createElement('img');
-            imgElement.src = `${item.img}`;
-            imgElement.alt = `Item ${item.exp}`;
-
-            const nameElement = document.createElement('div');
-            nameElement.classList.add('item-name');
-            nameElement.textContent = item.name || 'Unknown Item';
-
-            itemContainer.classList.add('greyed-out');
-            itemContainer.style.pointerEvents = 'none'; // Make unclickable
-
-            itemContainer.appendChild(imgElement);
-            itemContainer.appendChild(nameElement);
-
-            container.appendChild(itemContainer);
-        });
-    }
-}
-                // Attach the function to the window object
-                window.buyBattlepass = buyBattlepass;
-
+        // Claim item function (keep your existing function)
         function claimItem(itemId, img, exp, folder, skinName, itemType) {
             const user = auth.currentUser;
             if (user) {
@@ -296,366 +603,93 @@
                 });
             }
         }
-    </script>
-    <script>
-        // Snow effect
-        function createSnowflake() {
-            const snowflake = document.createElement('div');
-            snowflake.classList.add('snowflake');
-            snowflake.innerHTML = '❄';
-            snowflake.style.left = Math.random() * 100 + 'vw';
-            snowflake.style.opacity = Math.random();
-            snowflake.style.fontSize = (Math.random() * 20 + 10) + 'px';
-            snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            document.body.appendChild(snowflake);
 
-            // Remove snowflake after animation
-            snowflake.addEventListener('animationend', () => {
-                snowflake.remove();
+        // Buy Battle Pass function (keep your existing function)
+        window.buyBattlepass = function() {
+            const user = auth.currentUser;
+            if (user) {
+                const userId = user.uid;
+                const userRef = ref(database, 'users/' + userId);
+
+                get(userRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        const userFM = userData.FM || 0;
+                        const userCM = userData.CM || 0;
+
+                        // Show the modal dialog
+                        const modal = document.getElementById('buy-battlepass-modal');
+                        modal.style.display = 'block';
+
+                        // Set up event listeners for the buttons
+                        document.getElementById('buy-with-fm').onclick = () => {
+                            if (userFM >= 3000) {
+                                purchaseBattlepass(userId, 'FM', userFM - 3000);
+                            } else {
+                                alert("You don't have enough FM to purchase the battlepass.");
+                            }
+                            modal.style.display = 'none';
+                        };
+
+                        document.getElementById('buy-with-cm').onclick = () => {
+                            if (userCM >= 100000) {
+                                purchaseBattlepass(userId, 'CM', userCM - 100000);
+                            } else {
+                                alert("You don't have enough CM to purchase the battlepass.");
+                            }
+                            modal.style.display = 'none';
+                        };
+
+                        document.getElementById('cancel-purchase').onclick = () => {
+                            modal.style.display = 'none';
+                        };
+                    }
+                }).catch((error) => {
+                    console.error(error);
+                });
+            }
+        };
+
+        // Add the missing purchaseBattlepass function
+        function purchaseBattlepass(userId, currency, newAmount) {
+            const updates = {};
+            updates[`users/${userId}/${currency}`] = newAmount;
+            updates[`users/${userId}/hasBattlepass`] = true;
+            
+            update(ref(database), updates).then(() => {
+                alert('Battle Pass purchased successfully!');
+                location.reload();
+            }).catch((error) => {
+                console.error('Error purchasing battle pass:', error);
+                alert('Failed to purchase Battle Pass. Please try again.');
             });
         }
 
-        // Create snowflakes periodically
-        setInterval(createSnowflake, 100);
-    </script>
-<head>
-    <meta charset="UTF-8">
-    <title>MOBA Game Battle Pass</title>
-    <style>
-        body {
-            background-color: #333;
-            color: white;
-            font-family: Arial, sans-serif;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden; /* Prevent scroll bars */
-        }
+        // Initialize when auth state changes
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const userId = user.uid;
+                const userRef = ref(database, 'users/' + userId);
 
-        /* Snow effect */
-        .snowflake {
-            position: fixed;
-            top: -10px;
-            z-index: 9999;
-            color: white;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
-            animation: fall linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes fall {
-            to {
-                transform: translateY(100vh);
+                get(userRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        const userExp = userData.BattlePassExp || 0;
+                        const claimedItems = userData.BPprogress || {};
+                        document.getElementById('currency-amount').textContent = userData.FM || 0;
+                        document.getElementById('currency-amount-cm').textContent = userData.CM || 0;
+                        
+                        displayBattlePass(userExp, claimedItems);
+                        
+                        if (userData.hasBattlepass) {
+                            document.querySelector('.buy-pass-btn').style.display = 'none';
+                        }
+                    }
+                });
+            } else {
+                displayBattlePass(0, {});
             }
-        }
-
-        #video-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Cover the whole screen */
-            z-index: -1; /* Behind other content */
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: #333;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 400px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .modal-button {
-            background-color: #ffbb00;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-size: 18px;
-            font-weight: bold;
-            text-decoration: none;
-            padding: 10px 20px;
-            margin: 10px;
-            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .modal-button:hover {
-            background-color: #ff8800;
-            transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-        }
-
-        .modal-button.cancel {
-            background-color: #961313;
-        }
-
-        .modal-button.cancel:hover {
-            background-color: #ff0000;
-        }
-
-        #battle-pass-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 350px;
-    height: 85vh;
-    overflow-y: auto;
-    background-color: rgba(0, 0, 0, 0.7);
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-    padding: 20px;
-    position: fixed;
-    margin-top: 5px;
-    left: 785px;
-}
-.greyed-out {
-            filter: grayscale(100%);
-            opacity: 0.5;
-        }
-
-        .price-box {
-            position: fixed;
-            top: 80px;
-            right: 10px;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            z-index: 1;
-        }
-
-        .price-box img {
-            width: 20px;
-            height: 20px;
-            margin-right: 5px;
-        }
-
-        .price-box span {
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-
-        .battle-pass-item {
-            display: flex;
-            align-items: center;
-			width: 100%; /* Ensure items are the same width */
-            margin: 20px 0;
-			background-color: black;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.3s;
-            position: relative;
-            z-index: 1;
-        }
-
-        .battle-pass-item:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
-        }
-
-        .battle-pass-item img {
-            height: 100px;
-            border: 2px solid #444;
-            border-radius: 10px;
-        }
-
-        .item-name {
-            margin-left: 20px;
-            font-size: 1.2em;
-            color: #fff;
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
-        }
-
-        .locked {
-            filter: grayscale(100%);
-        }
-.menu {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 0;
-}
-
-.menu-items {
-    display: flex;
-    justify-content: center;
-    position: relative;
-}
-
-.menu a {
-    color: white;
-    text-decoration: none;
-    padding: 14px 16px;
-    font-family: 'Roboto', sans-serif;
-    font-size: 16px;
-    transition: background-color 0.3s, transform 0.3s;
-}
-
-.menu a:hover {
-    background-color: #111;
-    transform: scale(1.1);
-}
-
-/* Play Button */
-.play-button-container {
-    display: flex;
-    justify-content: flex-start;
-    padding: 20px;
-    z-index: auto;
-    position: fixed;
-}
-
-.play-button {
-    background-color: #ffbb00; /* Modern blue color */
-    color: white;
-    border: none;
-    border-radius: 25px; /* Slightly less rounded corners for a modern look */
-    font-size: 22px; /* Slightly larger font size */
-    font-weight: bold;
-    text-decoration: none;
-    padding: 15px 40px; /* Increased padding for a more prominent button */
-    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* More pronounced shadow for a modern effect */
-    z-index: 1; /* Ensure it is above other elements */
-    top: 5px; /* Adjusted position */
-    position: fixed;
-}
-
-.play-button:hover {
-    background-color: #ff8800;  /* Slightly darker blue on hover */
-    transform: scale(1.05); /* Slightly enlarge the button on hover */
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
-}
-.currency-container {
-            display: flex;
-            align-items: center;
-            top: 180px;
-            left: 10px;
-            z-index: 1;
-            background-color: black;
-            position: fixed;
-            padding: 5px 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .currency-display {
-            display: flex;
-            align-items: center;
-            background-color: black;
-            padding: 5px 8px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            font-size: 16px;
-            font-weight: bold;
-            justify-content: center;
-            margin-left: 10px;
-        }
-        .buy-battlepass-button {
-            background-color: #ff0000;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-size: 22px;
-            font-weight: bold;
-            text-decoration: none;
-            padding: 15px 40px;
-            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            z-index: 1;
-            position: fixed;
-            top: 100px;
-            left: 10px;
-        }
-        .buy-battlepass-button:hover {
-            background-color: #961313;
-            transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-        }
-    </style>
-    <!-- Include Firebase SDK and configuration as module scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
-    <script nomodule>
-        // Fallback for non-module browsers (if needed)
-        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
-        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
-        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+        });
     </script>
-</head>
-<body>
-
-        <!-- Menu -->
-    <!-- Menu -->
-    <div class="menu">
-        <div class="menu-items">
-            <a href="home.html">Home</a>
-            <a href="Store.html">Store</a>
-            <a href="event.html">Event</a>
-            <a href="Team Builder.html">Team Builder</a>
-            <a href="statistics.html">Statistics</a>
-        </div>
-    </div>
-    <div class="play-button-container">
-        <a href="Game Modes.html" class="play-button">Play</a>
-    </div>
-</div>
-    <video id="video-background" autoplay muted loop>
-        <source src="Event/Eventvideo.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-        <!-- Modal for buying battlepass -->
-    <div id="buy-battlepass-modal" class="modal">
-        <div class="modal-content">
-            <h2>Buy Battlepass</h2>
-            <p>Choose your currency:</p>
-            <button id="buy-with-fm" class="modal-button">Buy with FM</button>
-            <button id="buy-with-cm" class="modal-button">Buy with CM</button>
-            <button id="cancel-purchase" class="modal-button cancel">Cancel</button>
-        </div>
-    </div>
-    <div class="currency-container">
-        <img src="res/img/fm.png" alt="FM" style="width: 20px; height: 20px;">
-        <span id="currency-amount" class="currency-display">0</span>
-        <img src="res/img/cm.png" alt="CM" style="width: 20px; height: 20px;">
-        <span id="currency-amount-cm" class="currency-display">0</span>
-        <!-- Add BattlePassExp display -->
-        <span id="battlepass-exp" class="currency-display">0 BP Exp</span>
-    </div>
-    <div class="price-box">
-        Price:    
-        <img src="res/img/fm.png" alt="FM">
-        <span>3000 FM</span>
-        <img src="res/img/cm.png" alt="CM">
-        <span>100000 CM</span>
-    </div>
-    <button class="buy-battlepass-button" onclick="buyBattlepass()">Buy Battlepass</button>
-    <div id="battle-pass-container">
-    </div>
 </body>
 </html>

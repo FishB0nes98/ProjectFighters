@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Champion Buyer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <title>Champion Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
@@ -82,149 +82,272 @@
         }
     </script>
     <style>
+        :root {
+            --primary-bg: #121212;
+            --card-bg: rgba(31, 31, 31, 0.9);
+            --accent-color: #ffbb00;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --gradient-primary: linear-gradient(45deg, #ff416c, #ff4b2b);
+            --gradient-hover: linear-gradient(45deg, #ff4b2b, #ff416c);
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         body {
-            font-family: 'Open Sans', sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
             margin: 0;
             padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
-              /* Transparent Menu */
-              .menu {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 10px 20px;
-        background-color: rgba(0, 0, 0, 0.8);
-        z-index: 0;
-    }
 
-    .menu-items {
-        display: flex;
-        justify-content: center;
-        position: relative;
-    }
-
-    .menu a {
-        color: white;
-        text-decoration: none;
-        padding: 14px 16px;
-        font-family: 'Roboto', sans-serif;
-        font-size: 16px;
-        transition: background-color 0.3s, transform 0.3s;
-    }
-
-    .menu a:hover {
-        background-color: #111;
-        transform: scale(1.1);
-    }
-
-    .play-button-container {
-    display: flex;
-    justify-content: flex-start;
-    padding: 20px;
-    z-index: auto;
-    position: fixed;
-}
-
-    .play-button {
-        background-color: #ffbb00; /* Modern blue color */
-        color: white;
-        border: none;
-        border-radius: 25px; /* Slightly less rounded corners for a modern look */
-        font-size: 22px; /* Slightly larger font size */
-        font-weight: bold;
-        text-decoration: none;
-        padding: 15px 40px; /* Increased padding for a more prominent button */
-        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* More pronounced shadow for a modern effect */
-        z-index: 1; /* Ensure it is above other elements */
-        top: 5px; /* Adjusted position */
-        position: fixed;
-        left: 0px;
-    }
-
-    .play-button:hover {
-        background-color: #ff8800;  /* Slightly darker blue on hover */
-        transform: scale(1.05); /* Slightly enlarge the button on hover */
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
-    }
-        .currency {
-			position: fixed;
-            text-align: right;
+        /* Keep existing menu and play button styles */
+        .menu {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 10px 20px;
             background-color: rgba(0, 0, 0, 0.8);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            color: #e0e0e0;
+            z-index: 0;
         }
-        .champion-list {
+
+        .menu-items {
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
+            position: relative;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 16px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+
+        .play-button-container {
+            display: flex;
+            justify-content: flex-start;
             padding: 20px;
-			margin-top: 70px;
+            z-index: auto;
+            position: fixed;
         }
-        .champion-item {
-            background: #1f1f1f;
-            border: 1px solid #333;
-            border-radius: 8px;
-            margin: 10px;
-            padding: 15px;
-            width: 500px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s;
+
+        .play-button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 22px;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 15px 40px;
+            transition: var(--transition-smooth);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1;
+            top: 5px;
+            position: fixed;
+            left: 0px;
         }
-        .champion-item:hover {
-            transform: translateY(-5px);
+
+        .play-button:hover {
+            background-color: #ff8800;
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
         }
-        .champion-item img {
-            max-width: 100%;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-        .champion-item p {
-            margin: 10px 0;
-            font-size: 1.1em;
-            color: #b0b0b0;
-        }
-        .champion-item .price {
+
+        /* Modernized currency display */
+        .currency {
+            position: fixed;
+            top: 20px;
+            right: 20px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            padding: 12px 24px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            transition: var(--transition-smooth);
         }
-        .champion-item .price img {
+
+        .currency:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .currency img {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+        }
+
+        .currency span {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            -webkit-text-stroke: 0.5px black;
+        }
+
+        /* Modernized champion grid */
+        .champion-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            margin: 80px 20px 20px 20px;
+            max-width: 1800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .champion-item {
+            position: relative;
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition-smooth);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .champion-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .champion-item img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            transition: var(--transition-smooth);
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+            perspective: 1000;
+            filter: brightness(0.95);
+        }
+
+        .champion-item:hover img {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        .champion-info {
+            padding: 16px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .champion-name {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin: 0;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .price {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 8px 0;
+        }
+
+        .price img {
             width: 20px;
             height: 20px;
-            margin-right: 5px;
         }
-        .champion-item .price span {
-            font-size: 0.9em;
+
+        .price span {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            -webkit-text-stroke: 0.5px black;
         }
+
         .champion-item button {
-            background: linear-gradient(45deg, #ff416c, #ff4b2b);
-            color: #fff;
+            width: 100%;
+            padding: 12px;
             border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
+            background: var(--gradient-primary);
+            color: white;
+            font-weight: 600;
+            font-size: 1.1em;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: var(--transition-smooth);
+            border-radius: 8px;
+            margin-top: 8px;
         }
+
+        .champion-item button:hover:not(:disabled) {
+            background: var(--gradient-hover);
+            transform: translateY(-2px);
+        }
+
         .champion-item button:disabled {
             background: #444;
             cursor: not-allowed;
+            opacity: 0.7;
         }
-        .champion-item button:not(:disabled):hover {
-            background: linear-gradient(45deg, #ff4b2b, #ff416c);
+
+        /* Responsive adjustments */
+        @media (max-width: 1400px) {
+            .champion-list {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
         }
-		.gray {
-            filter: grayscale(100%);
+
+        @media (max-width: 768px) {
+            .champion-list {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 15px;
+                padding: 15px;
+                margin-top: 70px;
+            }
+
+            .champion-item img {
+                height: 220px;
+            }
+
+            .champion-name {
+                font-size: 1.2em;
+            }
+
+            .currency {
+                padding: 8px 16px;
+            }
         }
-		.currency img {
-			width: 20px;
-            height: 20px;
-            margin-right: 5px;
-		}
+
+        @media (max-width: 480px) {
+            .champion-list {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 10px;
+            }
+
+            .champion-item img {
+                height: 180px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -241,164 +364,231 @@
     <div class="play-button-container">
         <a href="Game Modes.html" class="play-button">Play</a>
     </div>
-</div>
     <div class="currency">
-		<img src="res/img/cm.png" alt="CM">
+        <img src="res/img/cm.png" alt="CM">
         <span id="currency-amount">0</span>
     </div>
     <div class="champion-list">
         <div class="champion-item" data-champion-name="Ayane" data-champion-price="4500">
             <img src="Default Splash/Ayane.png" alt="Ayane">
-            <div class="price">
-                <img src="res/img/cm.png" alt="CM">
-                <span>4500</span>
+            <div class="champion-info">
+                <h3 class="champion-name">Ayane</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
             </div>
-            <button onclick="purchaseChampion(this)">Buy</button>
         </div>
-		<div class="champion-item" data-champion-name="Siegfried" data-champion-price="4500">
+        <div class="champion-item" data-champion-name="Siegfried" data-champion-price="4500">
             <img src="Default Splash/Siegfried.png" alt="Siegfried">
-            <div class="price">
-                <img src="res/img/cm.png" alt="CM">
-                <span>4500</span>
+            <div class="champion-info">
+                <h3 class="champion-name">Siegfried</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
             </div>
-            <button onclick="purchaseChampion(this)">Buy</button>
         </div>
         <div class="champion-item" data-champion-name="Shoma" data-champion-price="4500">
             <img src="Default Splash/Shoma.png" alt="Shoma">
-            <div class="price">
-                <img src="res/img/cm.png" alt="CM">
-                <span>4500</span>
+            <div class="champion-info">
+                <h3 class="champion-name">Shoma</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
             </div>
-            <button onclick="purchaseChampion(this)">Buy</button>
         </div>
-		<div class="champion-item" data-champion-name="Juri" data-champion-price="4500">
+        <div class="champion-item" data-champion-name="Juri" data-champion-price="4500">
             <img src="Default Splash/Juri.png" alt="Juri">
-            <div class="price">
-                <img src="res/img/cm.png" alt="CM">
-                <span>4500</span>
+            <div class="champion-info">
+                <h3 class="champion-name">Juri</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
             </div>
-            <button onclick="purchaseChampion(this)">Buy</button>
         </div>
-		<div class="champion-item" data-champion-name="Sub Zero" data-champion-price="4500">
-            <img src="Default Splash/Sub Zero.png" alt="Sub Zero"">
-            <div class="price">
-                <img src="res/img/cm.png" alt="CM">
-                <span>4500</span>
+        <div class="champion-item" data-champion-name="Sub Zero" data-champion-price="4500">
+            <img src="Default Splash/Sub Zero.png" alt="Sub Zero">
+            <div class="champion-info">
+                <h3 class="champion-name">Sub Zero</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
             </div>
-             <button onclick="purchaseChampion(this)">Buy</button>
         </div>
-		<div class="champion-item" data-champion-name="Christie" data-champion-price="4500">
+        <div class="champion-item" data-champion-name="Christie" data-champion-price="4500">
             <img src="Default Splash/Christie.png" alt="Christie">
-            <div class="price">
-                <img src="res/img/cm.png" alt="CM">
-                <span>4500</span>
+            <div class="champion-info">
+                <h3 class="champion-name">Christie</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
             </div>
-            <button onclick="purchaseChampion(this)">Buy</button>
         </div>
-		<div class="champion-item" data-champion-name="Kokoro" data-champion-price="4500">
+        <div class="champion-item" data-champion-name="Kokoro" data-champion-price="4500">
             <img src="Default Splash/Kokoro.png" alt="Kokoro">
-            <div class="price">
-                <img src="res/img/cm.png" alt="CM">
-                <span>4500</span>
+            <div class="champion-info">
+                <h3 class="champion-name">Kokoro</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
             </div>
-            <button onclick="purchaseChampion(this)">Buy</button>
         </div>
-		<div class="champion-item" data-champion-name="Eagle" data-champion-price="4500">
+        <div class="champion-item" data-champion-name="Eagle" data-champion-price="4500">
             <img src="Default Splash/Eagle.png" alt="Eagle">
-            <div class="price">
-                <img src="res/img/cm.png" alt="CM">
-                <span>4500</span>
+            <div class="champion-info">
+                <h3 class="champion-name">Eagle</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
             </div>
-            <button onclick="purchaseChampion(this)">Buy</button>
         </div>
         <div class="champion-item" data-champion-name="Sophitia" data-champion-price="4500">
             <img src="Default Splash/Sophitia.jpeg" alt="Sophitia">
-            <div class="price">
-                <img src="res/img/cm.png" alt="CM">
-                <span>4500</span>
+            <div class="champion-info">
+                <h3 class="champion-name">Sophitia</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
             </div>
-            <button onclick="purchaseChampion(this)">Buy</button>
-    </div>
-    <div class="champion-item" data-champion-name="Shizumaru" data-champion-price="4500">
-        <img src="Default Splash/Shizumaru.png" alt="Shizumaru" class="champion-image">
-        <div class="price">
-            <img src="res/img/cm.png" alt="CM">
-            <span>4500</span>
         </div>
-        <button onclick="purchaseChampion(this)">Buy</button>
-    </div>
-    <div class="champion-item" data-champion-name="Kagome" data-champion-price="4500">
-        <img src="Default Splash/Kagome.png" alt="Kagome" class="champion-image">
-        <div class="price">
-            <img src="res/img/cm.png" alt="CM">
-            <span>4500</span>
+        <div class="champion-item" data-champion-name="Shizumaru" data-champion-price="4500">
+            <img src="Default Splash/Shizumaru.png" alt="Shizumaru" class="champion-image">
+            <div class="champion-info">
+                <h3 class="champion-name">Shizumaru</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
+            </div>
         </div>
-        <button onclick="purchaseChampion(this)">Buy</button>
-    </div>
-    <div class="champion-item" data-champion-name="Kabal" data-champion-price="4500">
-        <img src="Default Splash/Kabal.jpeg" alt="Kabal" class="champion-image">
-        <div class="price">
-            <img src="res/img/cm.png" alt="CM">
-            <span>4500</span>
+        <div class="champion-item" data-champion-name="Kagome" data-champion-price="4500">
+            <img src="Default Splash/Kagome.png" alt="Kagome" class="champion-image">
+            <div class="champion-info">
+                <h3 class="champion-name">Kagome</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
+            </div>
         </div>
-        <button onclick="purchaseChampion(this)">Buy</button>
-    </div>
-    <div class="champion-item" data-champion-name="Kuma" data-champion-price="4500">
-        <img src="Default Splash/Kuma.jpeg" alt="Kuma" class="champion-image">
-        <div class="price">
-            <img src="res/img/cm.png" alt="CM">
-            <span>4500</span>
+        <div class="champion-item" data-champion-name="Kabal" data-champion-price="4500">
+            <img src="Default Splash/Kabal.jpeg" alt="Kabal" class="champion-image">
+            <div class="champion-info">
+                <h3 class="champion-name">Kabal</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
+            </div>
         </div>
-        <button onclick="purchaseChampion(this)">Buy</button>
-    </div>
-    <div class="champion-item" data-champion-name="Alice" data-champion-price="4500">
-        <img src="Default Splash/Alice.jpeg" alt="Alice" class="champion-image">
-        <div class="price">
-            <img src="res/img/cm.png" alt="CM">
-            <span>4500</span>
+        <div class="champion-item" data-champion-name="Kuma" data-champion-price="4500">
+            <img src="Default Splash/Kuma.jpeg" alt="Kuma" class="champion-image">
+            <div class="champion-info">
+                <h3 class="champion-name">Kuma</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
+            </div>
         </div>
-        <button onclick="purchaseChampion(this)">Buy</button>
-    </div>
-    <div class="champion-item" data-champion-name="Shinnok" data-champion-price="4500">
-        <img src="Default Splash/Shinnok.jpeg" alt="Shinnok" class="champion-image">
-        <div class="price">
-            <img src="res/img/cm.png" alt="CM">
-            <span>4500</span>
+        <div class="champion-item" data-champion-name="Alice" data-champion-price="4500">
+            <img src="Default Splash/Alice.jpeg" alt="Alice" class="champion-image">
+            <div class="champion-info">
+                <h3 class="champion-name">Alice</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
+            </div>
         </div>
-        <button onclick="purchaseChampion(this)">Buy</button>
-    </div>
-    <div class="champion-item" data-champion-name="FANG" data-champion-price="4500">
-        <img src="Default Splash/FANG.jpeg" alt="FANG" class="champion-image">
-        <div class="price">
-            <img src="res/img/cm.png" alt="CM">
-            <span>4500</span>
+        <div class="champion-item" data-champion-name="Shinnok" data-champion-price="4500">
+            <img src="Default Splash/Shinnok.jpeg" alt="Shinnok" class="champion-image">
+            <div class="champion-info">
+                <h3 class="champion-name">Shinnok</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
+            </div>
         </div>
-        <button onclick="purchaseChampion(this)">Buy</button>
-    </div>
-    <div class="champion-item" data-champion-name="Lili" data-champion-price="4500">
-        <img src="Default Splash/Lili.jpeg" alt="Lili" class="champion-image">
-        <div class="price">
-            <img src="res/img/cm.png" alt="CM">
-            <span>4500</span>
+        <div class="champion-item" data-champion-name="FANG" data-champion-price="4500">
+            <img src="Default Splash/FANG.jpeg" alt="FANG" class="champion-image">
+            <div class="champion-info">
+                <h3 class="champion-name">FANG</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
+            </div>
         </div>
-        <button onclick="purchaseChampion(this)">Buy</button>
-    </div>
-    <div class="champion-item" data-champion-name="Mega Man" data-champion-price="4500">
-        <img src="Default Splash/Mega Man.jpeg" alt="Mega Man" class="champion-image">
-        <div class="price">
-            <img src="res/img/cm.png" alt="CM">
-            <span>4500</span>
+        <div class="champion-item" data-champion-name="Lili" data-champion-price="4500">
+            <img src="Default Splash/Lili.jpeg" alt="Lili" class="champion-image">
+            <div class="champion-info">
+                <h3 class="champion-name">Lili</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
+            </div>
         </div>
-        <button onclick="purchaseChampion(this)">Buy</button>
-    </div>
-    <div class="champion-item" data-champion-name="Mai" data-champion-price="4500">
-        <img src="Default Splash/Mai.jpeg" alt="Mai" class="champion-image">
-        <div class="price">
-            <img src="res/img/cm.png" alt="CM">
-            <span>4500</span>
+        <div class="champion-item" data-champion-name="Mega Man" data-champion-price="4500">
+            <img src="Default Splash/Mega Man.jpeg" alt="Mega Man" class="champion-image">
+            <div class="champion-info">
+                <h3 class="champion-name">Mega Man</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
+            </div>
         </div>
-        <button onclick="purchaseChampion(this)">Buy</button>
-    </div>
+        <div class="champion-item" data-champion-name="Mai" data-champion-price="4500">
+            <img src="Default Splash/Mai.jpeg" alt="Mai" class="champion-image">
+            <div class="champion-info">
+                <h3 class="champion-name">Mai</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
+            </div>
+        </div>
+        <div class="champion-item" data-champion-name="Zasalamel" data-champion-price="4500">
+            <img src="Default Splash/Zasalamel.jpg" alt="Zasalamel" class="champion-image">
+            <div class="champion-info">
+                <h3 class="champion-name">Zasalamel</h3>
+                <div class="price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>4500</span>
+                </div>
+                <button onclick="purchaseChampion(this)">Buy</button>
+            </div>
+        </div>
     </div>
 </body>
 </html>

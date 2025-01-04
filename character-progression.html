@@ -292,7 +292,7 @@
         const database = getDatabase(app);
     
         // Import Julia's rewards
-        import { characterRewards, getJuliaRewards, getkabalRewards, getLiliRewards, getJuriRewards, getAliceRewards, getkumaRewards, getmegamanRewards, getMaiRewards, getFangRewards, getKagomeRewards, getChristieRewards, getShizumaruRewards, getSophitiaRewards, getsubZeroRewards, getKokoroRewards, getEagleRewards, getShomaRewards, getNinaRewards, getSiegfriedRewards, getIbukiRewards, getAyaneRewards, getBlankaRewards, getNoelRewards, getRaidenRewards, getYugoRewards, getTalimRewards, getAstarothRewards, getAngelRewards, getPeacockRewards, getScorpionRewards, getRMikaRewards, getKotalKahnRewards, getElpheltRewards, getAkumaRewards, getBirdieRewards, getReptileRewards, getErronBlackRewards, getChamChamRewards, getJunRewards, getMorriganRewards, isRewardUnlocked, getNextReward, claimReward } from './character-rewards.js';
+        import { characterRewards, getJuliaRewards, getkabalRewards, getLiliRewards, getJuriRewards, getAliceRewards, getkumaRewards, getmegamanRewards, getMaiRewards, getFangRewards, getKagomeRewards, getChristieRewards, getShizumaruRewards, getSophitiaRewards, getsubZeroRewards, getKokoroRewards, getEagleRewards, getShomaRewards, getNinaRewards, getSiegfriedRewards, getIbukiRewards, getAyaneRewards, getBlankaRewards, getNoelRewards, getRaidenRewards, getYugoRewards, getTalimRewards, getAstarothRewards, getAngelRewards, getPeacockRewards, getScorpionRewards, getRMikaRewards, getKotalKahnRewards, getElpheltRewards, getAkumaRewards, getBirdieRewards, getReptileRewards, getErronBlackRewards, getChamChamRewards, getJunRewards, getMorriganRewards, getZasalamelRewards, isRewardUnlocked, getNextReward, claimReward } from './character-rewards.js';
     
         const XP_TIERS = {
             LEGENDARY: 75001,
@@ -327,7 +327,8 @@
             'Blanka', 'Nina', 'Ayane', 'Siegfried', 'Shoma',
             'Juri', 'Sub Zero', 'Christie', 'Kokoro', 'Eagle',
             'Sophitia', 'Shizumaru', 'Kagome', 'Kabal', 'Kuma',
-            'Alice', 'Shinnok', 'FANG', 'Lili', 'Mega Man', 'Mai'
+            'Alice', 'Shinnok', 'FANG', 'Lili', 'Mega Man', 'Mai',
+            'Zasalamel'
         ];
     
         // Add debug mode handler
@@ -512,6 +513,8 @@
                 rewards = await getkabalRewards(user.uid);
             } else if (character === 'Juri') {
                 rewards = await getJuriRewards(user.uid);
+            } else if (character === 'Zasalamel') {
+                rewards = await getZasalamelRewards(user.uid);
             } else {
                 rewards = await characterRewards; // Default rewards for other characters
             }

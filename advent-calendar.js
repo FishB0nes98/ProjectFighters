@@ -392,6 +392,15 @@ async function showReward(day) {
                     [`users/${user.uid}/skins/${selectedRecolor}`]: 1,
                     [`users/${user.uid}/advent2024/day${day}`]: true
                 });
+            } else if (reward.type === 'SKIN') {
+                // Handle skin reward
+                await update(ref(db), {
+                    [`users/${user.uid}/skins/${reward.skinName}`]: 1,
+                    [`users/${user.uid}/advent2024/day${day}`]: true
+                });
+                
+                rewardName.textContent = reward.name;
+                rewardImage.src = reward.image;
             }
 
             // Update the calendar day visual

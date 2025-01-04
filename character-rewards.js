@@ -3421,3 +3421,84 @@ export function getRewardTier(xp) {
     if (xp >= 5000) return 'INTERMEDIATE';
     return 'BEGINNER';
 } 
+
+export const zasalamelRewards = [
+    {
+        xpRequired: "1000",
+        rewardName: "Time Keeper",
+        rewardType: "title",
+        rewardImage: "titles/titleimage.jpeg",
+        databasePath: "titles/time_keeper",
+    },
+    {
+        xpRequired: "2500",
+        rewardName: "Zasalamel Icon",
+        rewardType: "icon",
+        rewardImage: "Icons/Profile/Zasalamel_Icon.png",
+        databasePath: "Icons/Zasalamel_Icon",
+    },
+    {
+        xpRequired: "5000",
+        rewardName: "Free Lootbox",
+        rewardType: "lootbox",
+        rewardImage: "res/img/basicbox.png",
+        databasePath: "freelootbox",
+    },
+    {
+        xpRequired: "8500",
+        rewardName: "Zasalamel Scarlet",
+        rewardType: "skin",
+        rewardImage: "Skins/Zasalamel Scarlet.png",
+        databasePath: "skins/Zasalamel Scarlet",
+    },
+    {
+        xpRequired: "11500",
+        rewardName: "Zasalamel Loading Screen Border",
+        rewardType: "border",
+        rewardImage: "borders/zasalamel_border.png",
+        databasePath: "borders/zasalamel",
+    },
+    {
+        xpRequired: "15000",
+        rewardName: "Eternal Wanderer",
+        rewardType: "title",
+        rewardImage: "titles/titleimage.jpeg",
+        databasePath: "titles/eternal_wanderer",
+    },
+    {
+        xpRequired: "30000",
+        rewardName: "Zasalamel Sorcerer",
+        rewardType: "skin",
+        rewardImage: "Skins/Zasalamel Sorcerer.png",
+        databasePath: "skins/Zasalamel Sorcerer",
+    },
+    {
+        xpRequired: "45000",
+        rewardName: "Free Lootbox",
+        rewardType: "lootbox",
+        rewardImage: "res/img/basicbox.png",
+        databasePath: "freelootbox",
+    },
+    {
+        xpRequired: "50000",
+        rewardName: "Zasalamel Evil",
+        rewardType: "skin",
+        rewardImage: "Skins/Zasalamel Evil.png",
+        databasePath: "skins/Zasalamel Evil",
+    },
+    {
+        xpRequired: "60000",
+        rewardName: "Astral Fissure",
+        rewardType: "title",
+        rewardImage: "titles/titleimage.jpeg",
+        databasePath: "titles/astral_fissure",
+    },
+];
+
+// Helper function to get rewards for Zasalamel
+export function getZasalamelRewards(userId) {
+    return zasalamelRewards.map(reward => ({
+        ...reward,
+        databasePath: `users/${userId}/${reward.databasePath}`
+    }));
+}
