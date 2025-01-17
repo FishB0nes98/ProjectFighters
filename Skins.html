@@ -7,16 +7,397 @@
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
-    <script nomodule>
-        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
-        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
-        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
-    </script>
+    <script src="skins.js" type="module"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0A0A0A;
+            color: #eaeaea;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        /* Menu styles */
+        .menu {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            position: fixed;
+            width: 100%;
+            top: 0;
+    }
+
+    .menu-items {
+        display: flex;
+        justify-content: center;
+    }
+
+    .menu a {
+        color: white;
+        text-decoration: none;
+        padding: 14px 16px;
+            font-family: 'Open Sans', sans-serif;
+        font-size: 16px;
+            transition: all 0.3s ease;
+    }
+
+    .menu a:hover {
+            color: #FFD700;
+        transform: scale(1.1);
+    }
+
+        /* Currency display */
+        .currency-container {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            z-index: 1001;
+    display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #FFD700;
+        }
+
+        .currency-display {
+            color: #FFD700;
+        font-weight: bold;
+            margin-left: 5px;
+        }
+
+        /* Champions grid */
+        .champions-container {
+            margin-top: 80px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .champion-card {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            aspect-ratio: 1;
+        }
+
+        .champion-card img {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            object-fit: cover;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .champion-card:hover img {
+            transform: scale(1.05);
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .champion-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 10px;
+            text-align: center;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* Skins Modal */
+        .skins-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .skins-modal-content {
+            position: relative;
+            width: 90%;
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 20px;
+            background-color: #1A1A1A;
+            border-radius: 15px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #FFD700;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 2001;
+        }
+
+        .skins-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .skin-card {
+			position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            aspect-ratio: 16/9;
+		}
+
+        .skin-card img {
+			width: 100%;
+            height: 100%;
+            object-fit: cover;
+			border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .skin-card:hover img {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .skin-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 15px;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+		}
+
+		.skin-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+		}
+
+		.skin-price {
+            color: #FFD700;
+			display: flex;
+			align-items: center;
+            gap: 5px;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.95);
+            z-index: 3000;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90vh;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox-image {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 10px;
+        }
+
+        .purchase-button {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #FFD700;
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .purchase-button:hover {
+            background-color: #FFC000;
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .purchase-button.disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+
+        .badges-container {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: flex;
+            flex-direction: row;
+            gap: 3px;
+            z-index: 1;
+        }
+
+        .new-skin-badge, .lunar-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+			font-weight: bold;
+            color: white;
+        }
+
+        .new-skin-badge {
+            background: linear-gradient(45deg, #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #4B0082, #8F00FF);
+            animation: rainbow 2s linear infinite;
+        }
+
+        .lunar-badge {
+            background: linear-gradient(45deg, #FF0000, #FFD700);
+            text-shadow: 0 0 3px rgba(0,0,0,0.5);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+            animation: lunarGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes lunarGlow {
+            0% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+            100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
+        }
+
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+		}
+
+        /* Skin tags */
+        .skin-tags {
+			position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 1;
+        }
+
+        .skin-tag {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+			font-weight: bold;
+            color: white;
+            text-shadow: 0 0 3px rgba(0,0,0,0.5);
+        }
+
+        .tag-new {
+            background: linear-gradient(45deg, #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #4B0082, #8F00FF);
+            animation: rainbow 2s linear infinite;
+        }
+
+        .tag-epic {
+            background: linear-gradient(45deg, #7B2BF7, #5D3FD3);
+            box-shadow: 0 0 10px rgba(123, 43, 247, 0.3);
+        }
+
+        .tag-legendary {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            animation: legendaryGlow 2s ease-in-out infinite;
+        }
+
+        .tag-legacy {
+            background: linear-gradient(45deg, #FF0000, #8B0000);
+            box-shadow: 0 0 10px rgba(139, 0, 0, 0.3);
+        }
+
+        .tag-free {
+            background: linear-gradient(45deg, #00FF00, #008000);
+            box-shadow: 0 0 10px rgba(0, 128, 0, 0.3);
+        }
+
+        .tag-rare {
+            background: linear-gradient(45deg, #0066CC, #0099FF);
+            box-shadow: 0 0 10px rgba(0, 102, 204, 0.3);
+        }
+
+        @keyframes legendaryGlow {
+            0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 165, 0, 0.5); }
+            100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+		}
+    </style>
+</head>
+<body>
+    <!-- Menu -->
+    <div class="menu">
+        <div class="menu-items">
+            <a href="home.html">Home</a>
+            <a href="Store.html">Store</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+            <a href="statistics.html">Statistics</a>
+        </div>
+    </div>
+
+    <!-- Currency Display -->
+    <div class="currency-container">
+		<img src="res/img/fm.png" alt="FM" style="width: 20px; height: 20px;">
+		<span id="currency-amount" class="currency-display">0</span>
+        </div>
+
+    <!-- Champions Grid -->
+    <div class="champions-container" id="champions-grid"></div>
+
+    <!-- Skins Modal -->
+    <div class="skins-modal" id="skins-modal">
+        <div class="skins-modal-content">
+            <button class="close-modal" onclick="closeSkinsModal()">×</button>
+            <div class="skins-grid" id="skins-grid"></div>
+    </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <img id="lightbox-image" class="lightbox-image" src="" alt="Skin Preview">
+            <button id="purchase-button" class="purchase-button" onclick="purchaseSkin()">Purchase</button>
+            <button class="close-modal" onclick="closeLightbox()">×</button>
+        </div>
+    </div>
     <script type="module">
+        import skinReference from './skins.js';
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
         import { getDatabase, ref, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
-        
+
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
             authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
@@ -28,1580 +409,249 @@
             measurementId: "G-LNEM6HR842"
         };
 
-         const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const database = getDatabase(app);
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
 
-    window.onload = function() {
-        onAuthStateChanged(auth, async (user) => {
+        // Global variables
+        window.userFM = 0;
+        window.userRef = null;
+        window.userSkins = {};
+        window.currentSkin = null;
+
+        // Initialize champions grid
+        function initChampionsGrid() {
+            const grid = document.getElementById('champions-grid');
+            const newSkins = ["Kokoro", "Lili", "Scorpion", "Reptile", "Noel", "Siegfried"];
+            const lunarSkins = ["Kokoro", "Lili", "Scorpion", "Reptile", "Noel", "Siegfried"];
+            const freeSkins = ["Kuma"];
+            
+            // Fájlnév korrekciók
+            const fileNameCorrections = {
+                "R.Mika": "R Mika",
+                "Mega Man": "Mega Man",
+                "Kotal Kahn": "Kotal Kahn",
+                "Sub Zero": "Sub Zero"
+            };
+            
+            Object.keys(skinReference).forEach(champion => {
+                const card = document.createElement('div');
+                card.className = 'champion-card';
+                card.onclick = () => showSkins(champion);
+                
+                const img = document.createElement('img');
+                const fileName = fileNameCorrections[champion] || champion;
+                img.src = `Icons/${fileName}.png`;
+                img.alt = champion;
+                
+                img.onerror = function() {
+                    this.src = 'Icons/default-icon.jpg';
+                };
+                
+                const name = document.createElement('div');
+                name.className = 'champion-name';
+                name.textContent = champion;
+                
+                // Badges container
+                const badgesContainer = document.createElement('div');
+                badgesContainer.className = 'badges-container';
+                
+                if (newSkins.includes(champion)) {
+                    const newBadge = document.createElement('div');
+                    newBadge.className = 'new-skin-badge';
+                    newBadge.textContent = 'NEW';
+                    badgesContainer.appendChild(newBadge);
+                }
+                
+                if (lunarSkins.includes(champion)) {
+                    const lunarBadge = document.createElement('div');
+                    lunarBadge.className = 'lunar-badge';
+                    lunarBadge.textContent = 'LUNAR';
+                    badgesContainer.appendChild(lunarBadge);
+                }
+
+                if (freeSkins.includes(champion)) {
+                    const freeBadge = document.createElement('div');
+                    freeBadge.className = 'skin-tag tag-free';
+                    freeBadge.textContent = 'FREE';
+                    badgesContainer.appendChild(freeBadge);
+                }
+                
+                if (badgesContainer.children.length > 0) {
+                    card.appendChild(badgesContainer);
+                }
+                
+                card.appendChild(img);
+                card.appendChild(name);
+                grid.appendChild(card);
+            });
+        }
+
+        // Show skins for selected champion
+        window.showSkins = function(champion) {
+            const modal = document.getElementById('skins-modal');
+            const grid = document.getElementById('skins-grid');
+            grid.innerHTML = '';
+            
+            skinReference[champion].forEach(skin => {
+                const card = document.createElement('div');
+                card.className = 'skin-card';
+                card.onclick = () => openLightbox(skin.imagePath, skin.name, skin.price);
+                
+                const img = document.createElement('img');
+                img.src = skin.imagePath;
+                img.alt = skin.name;
+                
+                // Add tags container
+                const tagsContainer = document.createElement('div');
+                tagsContainer.className = 'skin-tags';
+                
+                // Add appropriate tags based on conditions
+                if (skin.name.includes('Lunar Festival')) {
+                    const newTag = document.createElement('div');
+                    newTag.className = 'skin-tag tag-new';
+                    newTag.textContent = 'NEW';
+                    tagsContainer.appendChild(newTag);
+                }
+                
+                if (skin.price === 2000) {
+                    const rareTag = document.createElement('div');
+                    rareTag.className = 'skin-tag tag-rare';
+                    rareTag.textContent = 'RARE';
+                    tagsContainer.appendChild(rareTag);
+                }
+                
+                if (skin.price === 3000) {
+                    const legendaryTag = document.createElement('div');
+                    legendaryTag.className = 'skin-tag tag-legendary';
+                    legendaryTag.textContent = 'LEGENDARY';
+                    tagsContainer.appendChild(legendaryTag);
+                }
+                
+                if (skin.price === 'UNAVAILABLE') {
+                    const legacyTag = document.createElement('div');
+                    legacyTag.className = 'skin-tag tag-legacy';
+                    legacyTag.textContent = 'LEGACY';
+                    tagsContainer.appendChild(legacyTag);
+                }
+                
+                if (skin.price === 0) {
+                    const freeTag = document.createElement('div');
+                    freeTag.className = 'skin-tag tag-free';
+                    freeTag.textContent = 'FREE';
+                    tagsContainer.appendChild(freeTag);
+                }
+                
+                if (tagsContainer.children.length > 0) {
+                    card.appendChild(tagsContainer);
+                }
+                
+                const info = document.createElement('div');
+                info.className = 'skin-info';
+                
+                const name = document.createElement('div');
+                name.className = 'skin-name';
+                name.textContent = skin.name;
+                
+                const price = document.createElement('div');
+                price.className = 'skin-price';
+                const priceImg = document.createElement('img');
+                priceImg.src = 'res/img/fm.png';
+                priceImg.alt = 'FM';
+                priceImg.style.width = '15px';
+                price.appendChild(priceImg);
+                price.appendChild(document.createTextNode(skin.price === 'UNAVAILABLE' ? 'UNAVAILABLE' : skin.price));
+                
+                info.appendChild(name);
+                info.appendChild(price);
+                card.appendChild(img);
+                card.appendChild(info);
+                grid.appendChild(card);
+            });
+            
+            modal.style.display = 'block';
+        }
+
+        // Close skins modal
+        window.closeSkinsModal = function() {
+            document.getElementById('skins-modal').style.display = 'none';
+        }
+
+        // Open lightbox
+        window.openLightbox = function(src, name, price) {
+            const lightbox = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-image');
+            const button = document.getElementById('purchase-button');
+            
+            img.src = src;
+            currentSkin = { name, price };
+            
+            button.textContent = price === 'UNAVAILABLE' ? 'Unavailable' : `Purchase for ${price} FM`;
+            button.className = `purchase-button ${price === 'UNAVAILABLE' || window.userSkins[name] ? 'disabled' : ''}`;
+            
+            lightbox.style.display = 'flex';
+        }
+
+        // Close lightbox
+        window.closeLightbox = function() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+
+        // Purchase skin
+        window.purchaseSkin = async function() {
+            if (!currentSkin || currentSkin.price === 'UNAVAILABLE' || window.userSkins[currentSkin.name]) return;
+            
+            if (window.userFM >= currentSkin.price) {
+                const newFM = window.userFM - currentSkin.price;
+                const updates = {
+                    FM: newFM,
+                    [`skins/${currentSkin.name}`]: 1
+                };
+                
+                try {
+                    const userRef = ref(database, `users/${auth.currentUser.uid}`);
+                    await update(userRef, updates);
+                    window.userFM = newFM;
+                    window.userSkins[currentSkin.name] = 1;
+                    document.getElementById('currency-amount').textContent = newFM;
+                    closeLightbox();
+                    alert(`Successfully purchased ${currentSkin.name}!`);
+                } catch (error) {
+                    alert('Failed to purchase skin. Please try again.');
+                }
+            } else {
+                alert("You don't have enough FM to purchase this skin.");
+            }
+        }
+
+        // Initialize when auth state changes
+        onAuthStateChanged(auth, async user => {
             if (user) {
-                const userRef = ref(database, 'users/' + user.uid);
+                const userRef = ref(database, `users/${user.uid}`);
                 const snapshot = await get(userRef);
                 const userData = snapshot.val();
                 if (userData) {
-                    document.getElementById('currency-amount').textContent = userData.FM || 0;
                     window.userFM = userData.FM || 0;
-                    window.userRef = userRef;
                     window.userSkins = userData.skins || {};
-                    updateSkinsUI();
+                    document.getElementById('currency-amount').textContent = window.userFM;
                 }
             }
         });
-    };
 
-    window.updateSkinsUI = function() {
-        const skins = document.querySelectorAll('.skin');
-        skins.forEach(skin => {
-            const skinName = skin.querySelector('.skin-name').textContent.trim();
-            const purchaseButton = skin.querySelector('.purchase-button');
-            if (window.userSkins[skinName]) {
-                purchaseButton.classList.add('disabled');
-                purchaseButton.textContent = 'Owned';
+        // Initialize the page
+        initChampionsGrid();
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('skins-modal');
+            const lightbox = document.getElementById('lightbox');
+            if (event.target === modal) {
+                closeSkinsModal();
+            } else if (event.target === lightbox) {
+                closeLightbox();
             }
-        });
-    };
-
-    window.openLightbox = function(src, name, price) {
-        const lightbox = document.getElementById('lightbox');
-        lightbox.style.display = 'flex';
-        const img = document.getElementById('lightbox-image');
-        img.src = src;
-        const purchaseButton = document.getElementById('purchase-button');
-        purchaseButton.dataset.skinName = name;
-        purchaseButton.dataset.skinPrice = price;
-        purchaseButton.textContent = `Purchase for ${price} FM`;
-        purchaseButton.className = window.userFM >= price ? 'purchase-button enabled' : 'purchase-button disabled';
-        if (window.userSkins[name]) {
-            purchaseButton.classList.add('disabled');
-            purchaseButton.textContent = 'Owned';
         }
-    };
-
-    window.closeLightbox = function() {
-        const lightbox = document.getElementById('lightbox');
-        lightbox.style.display = 'none';
-    };
-
-    window.purchaseSkin = async function() {
-        const purchaseButton = document.getElementById('purchase-button');
-        const skinName = purchaseButton.dataset.skinName;
-        const skinPrice = parseInt(purchaseButton.dataset.skinPrice, 10);
-
-        if (window.userFM >= skinPrice) {
-            const newFM = window.userFM - skinPrice;
-            const updates = {};
-            updates['FM'] = newFM;
-            updates[`skins/${skinName}`] = 1;
-            await update(window.userRef, updates);
-            document.getElementById('currency-amount').textContent = newFM;
-            window.userFM = newFM;
-            window.userSkins[skinName] = 1;
-            closeLightbox();
-            alert(`You have successfully purchased ${skinName}!`);
-            updateSkinsUI();
-        } else {
-            alert("You don't have enough FM to purchase this skin.");
-        }
-    };
-
-    document.querySelectorAll('.character-icon').forEach(icon => {
-        icon.addEventListener('click', () => {
-            const characterId = icon.dataset.character.replace(' ', '');
-            icon.classList.toggle('active');
-            document.getElementById(characterId).classList.toggle('active');
-        });
-    });
-	document.querySelectorAll('.character-icon').forEach(icon => {
-		const characterName = icon.getAttribute('alt');
-		const newSkins = ["Raiden", "Christie", "Cham Cham", "Sub Zero", "Angel", "Erron Black"];
-
-		if (newSkins.includes(characterName)) {
-			icon.classList.add('new-skin');
-		}
-	});
-	
-</script>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #1b1b1b;
-            color: #eaeaea;
-            font-family: 'Open Sans', sans-serif;
-        }
-        h1 {
-            text-align: center;
-            font-size: 3em;
-            margin-top: 50px;
-            color: #ffcc00;
-        }
-        /* Transparent Menu */
-        .menu {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 10px 20px;
-        background-color: rgba(0, 0, 0, 0.8);
-        z-index: 0;
-    }
-
-    .menu-items {
-        display: flex;
-        justify-content: center;
-        position: relative;
-    }
-
-    .menu a {
-        color: white;
-        text-decoration: none;
-        padding: 14px 16px;
-        font-family: 'Roboto', sans-serif;
-        font-size: 16px;
-        transition: background-color 0.3s, transform 0.3s;
-    }
-
-    .menu a:hover {
-        background-color: #111;
-        transform: scale(1.1);
-    }
-
-    .play-button-container {
-    display: flex;
-    justify-content: flex-start;
-    padding: 20px;
-    z-index: auto;
-    top: -20px; /* Adjusted position */
-        position: absolute;
-        left: 0px;
-}
-
-    .play-button {
-        background-color: #ffbb00; /* Modern blue color */
-        color: white;
-        border: none;
-        border-radius: 25px; /* Slightly less rounded corners for a modern look */
-        font-size: 22px; /* Slightly larger font size */
-        font-weight: bold;
-        text-decoration: none;
-        padding: 15px 40px; /* Increased padding for a more prominent button */
-        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* More pronounced shadow for a modern effect */
-        z-index: 1; /* Ensure it is above other elements */
-    }
-
-    .play-button:hover {
-        background-color: #ff8800;  /* Slightly darker blue on hover */
-        transform: scale(1.05); /* Slightly enlarge the button on hover */
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
-    }
-
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            padding: 65px;
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-		.containerskins {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-        .character-icon {
-            width: 100px;
-            height: 100px;
-            margin: 20px;
-            filter: grayscale(100%);
-            cursor: pointer;
-            transition: filter 0.3s, transform 0.3s;
-            border: 2px solid #444;
-            border-radius: 50%;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .character-icon.active {
-            filter: none;
-            transform: scale(1.1);
-            border-color: #ffcc00;
-            box-shadow: 0 4px 12px rgba(255, 204, 0, 0.5);
-        }
-        .character {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            margin: 20px;
-            background-color: #2c2c2c;
-            border-radius: 10px;
-            padding: 20px;
-            box-sizing: border-box;
-            transition: transform 0.3s;
-        }
-        .character.active {
-            display: flex;
-        }
-        .character h2 {
-            text-align: center;
-            font-size: 1.5em;
-            margin-bottom: 20px;
-            color: #ffcc00;
-        }
-		.skins {
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: center;
-			margin: 0 auto;
-			max-width: 300px;
-		}
-
-		.skin {
-			margin: 10px;
-			text-align: center;
-			cursor: pointer;
-			position: relative;
-		}
-
-		.skin img {
-			width: 100%;
-			border: 2px solid #444;
-			border-radius: 10px;
-			transition: transform 0.2s, box-shadow 0.2s; /* Add box-shadow to the transition */
-		}
-
-		.skin img:hover {
-			transform: scale(1.1); /* Example transform effect on hover */
-			box-shadow: 0 0 12px rgba(255, 255, 0, 0.8); /* Brighter yellow shadow on hover */
-		}
-
-		.skin-name {
-			margin-top: 15px;
-			font-size: 1em;
-			color: #eaeaea;
-		}
-
-		.skin-price {
-			position: absolute;
-			bottom: 45px;
-			right: 2px;
-			background-color: rgba(0, 0, 0, 0.7);
-			color: white;
-			padding: 2px 5px;
-			border-radius: 5px;
-			display: flex;
-			align-items: center;
-			font-size: 0.8em;
-		}
-
-		.skin-price img {
-			width: 10px;
-			height: 10px;
-			margin-right: 3px;
-		}
-        .lightbox {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.3s ease;
-        }
-        .lightbox-content {
-            position: relative;
-            max-width: 80%;
-            max-height: 80%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .lightbox-content img {
-            max-width: 100%;
-            max-height: 100%;
-            border-radius: 10px;
-        }
-        .lightbox .close-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #ffcc00;
-            color: black;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            font-size: 1.5em;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .purchase-button {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            background-color: grey;
-            color: black;
-            border: none;
-            border-radius: 20px;
-            padding: 10px 20px;
-            font-size: 1em;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-        .purchase-button img {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-        }
-        .purchase-button.enabled {
-            background-color: gold;
-        }
-        .purchase-button.disabled {
-            background-color: grey;
-        }
-        .currency-container {
-            display: flex;
-            align-items: center;
-            top: 75px;
-            left: 97%;
-            transform: translateX(-50%);
-            z-index: 0;
-			background-color: black;
-            position: fixed;
-        }
-		.currency-display {
-			display: flex;
-			align-items: center;
-			background-color: black;
-			padding: 5px 8px;
-			border-radius: 5px;
-			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-			font-size: 16px;
-			font-weight: bold;
-			justify-content: center;
-			width: 50px; /* Adjust width as needed */
-		}
-		/* Rainbow "New" text for new skins */
-		.character-icon.new-skin {
-			position: relative;
-		}
-
-		.character-icon.new-skin::before {
-			content: "New";
-			position: absolute;
-			top: -10px; /* Adjust as needed */
-			left: 50%;
-			transform: translateX(-50%);
-			font-size: 14px; /* Adjust as needed */
-			background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
-			background-clip: text; /* Standard property */
-			-webkit-background-clip: text; /* Webkit-specific property */
-			-webkit-text-fill-color: transparent;
-			font-weight: bold;
-		}
-    </style>
-</head>
-<body>
-
-    <!-- Menu -->
-    <div class="menu">
-        <div class="menu-items">
-            <a href="home.html">Home</a>
-            <a href="Store.html">Store</a>
-            <a href="event.html">Event</a>
-            <a href="Team Builder.html">Team Builder</a>
-            <a href="statistics.html">Statistics</a>
-        </div>
-    </div>
-    <div class="play-button-container">
-        <a href="Game Modes.html" class="play-button">Play</a>
-    </div>
-</div>
-    <div class="currency-container">
-		<img src="res/img/fm.png" alt="FM" style="width: 20px; height: 20px;">
-		<span id="currency-amount" class="currency-display">0</span>
-        </div>
-    </div>
-    <div class="container" id="character-icons">
-        <img src="Icons/Julia.png" alt="Julia" class="character-icon" data-character="Julia">
-        <img src="Icons/Birdie.png" alt="Birdie" class="character-icon" data-character="Birdie">
-        <img src="Icons/Erron Black.png" alt="Erron Black" class="character-icon new-skin" data-character="ErronBlack">
-        <img src="Icons/Morrigan.png" alt="Morrigan" class="character-icon" data-character="Morrigan">
-        <img src="Icons/Jun.png" alt="Jun" class="character-icon" data-character="Jun">
-        <img src="Icons/Cham Cham.png" alt="Cham Cham" class="character-icon new-skin" data-character="ChamCham">
-        <img src="Icons/Reptile.png" alt="Reptile" class="character-icon" data-character="Reptile">
-        <img src="Icons/Akuma.png" alt="Akuma" class="character-icon" data-character="Akuma">
-        <img src="Icons/Elphelt.png" alt="Elphelt" class="character-icon" data-character="Elphelt">
-        <img src="Icons/Kotal Kahn.png" alt="Kotal Kahn" class="character-icon" data-character="KotalKahn">
-        <img src="Icons/Scorpion.png" alt="Scorpion" class="character-icon" data-character="Scorpion">
-        <img src="Icons/Peacock.png" alt="Peacock" class="character-icon" data-character="Peacock">
-        <img src="Icons/Angel.png" alt="Angel" class="character-icon new-skin" data-character="Angel">
-        <img src="Icons/Astaroth.png" alt="Astaroth" class="character-icon" data-character="Astaroth">
-        <img src="Icons/Ibuki.png" alt="Ibuki" class="character-icon" data-character="Ibuki">
-        <img src="Icons/R.Mika.png" alt="R.Mika" class="character-icon" data-character="RMika">
-        <img src="Icons/Raiden.png" alt="Raiden" class="character-icon new-skin" data-character="Raiden">
-        <img src="Icons/Yugo.png" alt="Yugo" class="character-icon" data-character="Yugo">
-        <img src="Icons/Talim.png" alt="Talim" class="character-icon" data-character="Talim">
-        <img src="Icons/Noel.png" alt="Noel" class="character-icon" data-character="Noel">
-        <img src="Icons/Blanka.png" alt="Blanka" class="character-icon" data-character="Blanka">
-        <img src="Icons/Nina.png" alt="Nina" class="character-icon" data-character="Nina">
-        <img src="Icons/Ayane.png" alt="Ayane" class="character-icon" data-character="Ayane">
-        <img src="Icons/Siegfried.png" alt="Siegfried" class="character-icon" data-character="Siegfried">
-        <img src="Icons/Shoma.png" alt="Shoma" class="character-icon" data-character="Shoma">
-        <img src="Icons/Juri.png" alt="Juri" class="character-icon" data-character="Juri">
-		<img src="Icons/Sub Zero.png" alt="Sub Zero" class="character-icon new-skin" data-character="SubZero">
-		<img src="Icons/Christie.png" alt="Christie" class="character-icon new-skin" data-character="Christie">
-        <img src="Icons/Kokoro.png" alt="Kokoro" class="character-icon" data-character="Kokoro">
-        <img src="Icons/Eagle.png" alt="Eagle" class="character-icon" data-character="Eagle">
-        <img src="Icons/Sophitia.png" alt="Sophitia" class="character-icon" data-character="Sophitia">
-        <img src="Icons/Shizumaru.png" alt="Shizumaru" class="character-icon" data-character="Shizumaru">
-        <img src="Icons/Kagome.png" alt="Kagome" class="character-icon" data-character="Kagome">
-        <img src="Icons/Kabal.png" alt="Kabal" class="character-icon" data-character="Kabal">
-        <img src="Icons/Kuma.png" alt="Kuma" class="character-icon" data-character="Kuma">
-        <img src="Icons/Alice.png" alt="Alice" class="character-icon" data-character="Alice">
-        <img src="Icons/Shinnok.png" alt="Shinnok" class="character-icon" data-character="Shinnok">
-        <img src="Icons/FANG.png" alt="FANG" class="character-icon" data-character="FANG">
-        <img src="Icons/Lili.png" alt="Lili" class="character-icon" data-character="Lili">
-        <img src="Icons/Mega Man.png" alt="Mega Man" class="character-icon" data-character="MegaMan">
-        <img src="Icons/Mai.png" alt="Mai" class="character-icon" data-character="Mai">
-        <img src="Icons/Zasalamel.png" alt="Zasalamel" class="character-icon" data-character="Zasalamel">
-    </div>
-<div class="containerskins">
-    <!-- Group by Characters -->
-    <div class="character" id="Julia">
-        <h2>Julia</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Sacred Ceremony Julia.jpeg" onclick="openLightbox('Skins/Sacred Ceremony Julia.jpeg', 'Sacred Ceremony Julia', 1000)">
-                <img src="Skins/Sacred Ceremony Julia.jpeg" alt="Sacred Ceremony Julia" class="scaled-image">
-                <div class="skin-name">Sacred Ceremony Julia</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-            <div class="skin" data-src="Skins/Witch Julia.jpeg" onclick="openLightbox('Skins/Witch Julia.jpeg', 'Witch Julia', 'UNAVAILABLE')">
-                <img src="Skins/Witch Julia.jpeg" alt="Witch Julia" class="scaled-image">
-                <div class="skin-name">Witch Julia</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">UNAVAILABLE</div>
-            </div>
-            <div class="skin" data-src="Skins/Rainy Day Julia.jfif" onclick="openLightbox('Skins/Rainy Day Julia.jfif', 'Rainy Day Julia', 1000)">
-                <img src="Skins/Rainy Day Julia.jfif" alt="Rainy Day Julia" class="scaled-image">
-                <div class="skin-name">Rainy Day Julia</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-            <div class="skin" data-src="Skins/Infernal Julia.jpg" onclick="openLightbox('Skins/Infernal Julia.jpg', 'Infernal Julia')">
-                <img src="Skins/Infernal Julia.jpg" alt="Infernal Julia" class="scaled-image">
-                <div class="skin-name">Infernal Julia</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">UNAVAILABLE</div>
-            </div>
-            <div class="skin" data-src="Skins/Schoolgirl Julia.png" onclick="openLightbox('Skins/Schoolgirl Julia.png', 'Schoolgirl Julia', 1000)">
-                <img src="Skins/Schoolgirl Julia.png" alt="Schoolgirl Julia" class="scaled-image">
-                <div class="skin-name">Schoolgirl Julia</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-			<div class="skin" data-src="Skins/Dragon Tamer Julia.jpeg" onclick="openLightbox('Skins/Dragon Tamer Julia.jpeg', 'Dragon Tamer Julia', 2000)">
-                <img src="Skins/Dragon Tamer Julia.jpeg" alt="Dragon Tamer Julia" class="scaled-image">
-                <div class="skin-name">Dragon Tamer Julia</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/River Spirit Julia.jpg" onclick="openLightbox('Skins/River Spirit Julia.jpg', 'River Spirit Julia', 1000)">
-                <img src="Skins/River Spirit Julia.jpg" alt="River Spirit Julia" class="scaled-image">
-                <div class="skin-name">River Spirit Julia</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-            <div class="skin" data-src="Skins/Disco Queen Julia.jpeg" onclick="openLightbox('Skins/Disco Queen Julia.jpeg', 'Disco Queen Julia', 2000)">
-                <img src="Skins/Disco Queen Julia.jpeg" alt="Disco Queen Julia" class="scaled-image">
-                <div class="skin-name">Disco Queen Julia</div>
-                <span class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</span>
-            </div>
-    </div>
-</div>
-    <div class="character" id="Birdie">
-        <h2>Birdie</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Sacred Ceremony Birdie.jpeg" onclick="openLightbox('Skins/Sacred Ceremony Birdie.jpeg', 'Sacred Ceremony Birdie', 2000)">
-                <img src="Skins/Sacred Ceremony Birdie.jpeg" alt="Sacred Ceremony Birdie" class="scaled-image">
-                <div class="skin-name">Sacred Ceremony Birdie</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Warlord Birdie.jpeg" onclick="openLightbox('Skins/Warlord Birdie.jpeg', 'Warlord Birdie', 2000)">
-                <img src="Skins/Warlord Birdie.jpeg" alt="Warlord Birdie" class="scaled-image">
-                <div class="skin-name">Warlord Birdie</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Infernal Birdie.jpeg" onclick="openLightbox('Skins/Infernal Birdie.jpeg', 'Infernal Birdie', 2000)">
-                <img src="Skins/Infernal Birdie.jpeg" alt="Infernal Birdie" class="scaled-image">
-                <div class="skin-name">Infernal Birdie</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-			<div class="skin" data-src="Skins/Professional Weightlifter Birdie.png" onclick="openLightbox('Skins/Professional Weightlifter Birdie.png', 'Professional Weightlifter Birdie', 1000)">
-                <img src="Skins/Professional Weightlifter Birdie.png" alt="Professional Weightlifter Birdie" class="scaled-image">
-                <div class="skin-name">Professional Weightlifter Birdie</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-            <div class="skin" data-src="Skins/Sand Soldier Birdie.jpg" onclick="openLightbox('Skins/Sand Soldier Birdie.jpg', 'Sand Soldier Birdie', 1000)">
-                <img src="Skins/Sand Soldier Birdie.jpg" alt="Sand Soldier Birdie" class="scaled-image">
-                <div class="skin-name">Sand Soldier Birdie</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-            <div class="skin" data-src="Skins/Rockstar Birdie.png" onclick="openLightbox('Skins/Rockstar Birdie.png', 'Rockstar Birdie', 1000)">
-                <img src="Skins/Rockstar Birdie.png" alt="Rockstar Birdie" class="scaled-image">
-                <div class="skin-name">Rockstar Birdie</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-    </div>
-</div>
-    <div class="character" id="ErronBlack">
-        <h2>Erron Black</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Diablo Erron Black.jpeg" onclick="openLightbox('Skins/Diablo Erron Black.jpeg', 'Diablo Erron Black', 'UNAVAILABLE')">
-                <img src="Skins/Diablo Erron Black.jpeg" alt="Diablo Erron Black" class="scaled-image">
-                <div class="skin-name">Diablo Erron Black</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">UNAVAILABLE</div>
-            </div>
-            <div class="skin" data-src="Skins/Neon Core Erron Black.png" onclick="openLightbox('Skins/Neon Core Erron Black.png', 'Neon Core Erron Black', 2000)">
-                <img src="Skins/Neon Core Erron Black.png" alt="Neon Core Erron Black" class="scaled-image">
-                <div class="skin-name">Neon Core Erron Black</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-			<div class="skin" data-src="Skins/Arctic Hunter Erron Black.jpeg" onclick="openLightbox('Skins/Arctic Hunter Erron Black.jpeg', 'Arctic Hunter Erron Black', 1000)">
-                <img src="Skins/Arctic Hunter Erron Black.jpeg" alt="Arctic Hunter Erron Black" class="scaled-image">
-                <div class="skin-name">Arctic Hunter Erron Black</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-            <div class="skin" data-src="Skins/Mafia Leader Erron Black.png" onclick="openLightbox('Skins/Mafia Leader Erron Black.png', 'Mafia Leader Erron Black', 1000)">
-                <img src="Skins/Mafia Leader Erron Black.png" alt="Mafia Leader Erron Black" class="scaled-image">
-                <div class="skin-name">Mafia Leader Erron Black</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-            <div class="skin" data-src="Skins/Country Erron Black.png" onclick="openLightbox('Skins/Country Erron Black.png', 'Country Erron Black', 1000)">
-                <img src="Skins/Country Erron Black.png" alt="Country Erron Black" class="scaled-image">
-                <div class="skin-name">Country Erron Black</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-        </div>
-    </div>
-    <div class="character" id="Morrigan">
-        <h2>Morrigan</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Sacred Ceremony Morrigan.jpeg" onclick="openLightbox('Skins/Sacred Ceremony Morrigan.jpeg', 'Sacred Ceremony Morrigan', 2000)">
-                <img src="Skins/Sacred Ceremony Morrigan.jpeg" alt="Sacred Ceremony Morrigan" class="scaled-image">
-                <div class="skin-name">Sacred Ceremony Morrigan</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Forest Guardian Morrigan.jpeg" onclick="openLightbox('Skins/Forest Guardian Morrigan.jpeg', 'Forest Guardian Morrigan', 2000)">
-                <img src="Skins/Forest Guardian Morrigan.jpeg" alt="Forest Guardian Morrigan" class="scaled-image">
-                <div class="skin-name">Forest Guardian Morrigan</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/High Elf Morrigan.jpeg" onclick="openLightbox('Skins/High Elf Morrigan.jpeg', 'High Elf Morrigan', 2000)">
-                <img src="Skins/High Elf Morrigan.jpeg" alt="High Elf Morrigan" class="scaled-image">
-                <div class="skin-name">High Elf Morrigan</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Dragon Tamer Morrigan.jpeg" onclick="openLightbox('Skins/Dragon Tamer Morrigan.jpeg', 'Dragon Tamer Morrigan', 2000)">
-                <img src="Skins/Dragon Tamer Morrigan.jpeg" alt="Dragon Tamer Morrigan" class="scaled-image">
-                <div class="skin-name">Dragon Tamer Morrigan</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Neon Core Core Morrigan.png" onclick="openLightbox('Skins/Neon Core Morrigan.png', 'Neon Core Morrigan', 1000)">
-                <img src="Skins/Neon Core Morrigan.png" alt="Neon Core Morrigan" class="scaled-image">
-                <div class="skin-name">Neon Core Morrigan</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-        </div>
-    </div>
-    <div class="character" id="Jun">
-        <h2>Jun</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Regal Empress Jun.jpeg" onclick="openLightbox('Skins/Regal Empress Jun.jpeg', 'Regal Empress Jun', 1000)">
-                <img src="Skins/Regal Empress Jun.jpeg" alt="Regal Empress Jun" class="scaled-image">
-                <div class="skin-name">Regal Empress Jun</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-            <div class="skin" data-src="Skins/High Elf Jun.png" onclick="openLightbox('Skins/High Elf Jun.png', 'High Elf Jun', 2000)">
-                <img src="Skins/High Elf Jun.png" alt="High Elf Jun" class="scaled-image">
-                <div class="skin-name">High Elf Jun</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Summertime Jun.png" onclick="openLightbox('Skins/Summertime Jun.png', 'Summertime Jun', 2000)">
-                <img src="Skins/Summertime Jun.png" alt="Summertime Jun" class="scaled-image">
-                <div class="skin-name">Summertime Jun</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-			<div class="skin" data-src="Skins/Dragon Tamer Jun.png" onclick="openLightbox('Skins/Dragon Tamer Jun.png', 'Dragon Tamer Jun', 2000)">
-                <img src="Skins/Dragon Tamer Jun.png" alt="Dragon Tamer Jun" class="scaled-image">
-                <div class="skin-name">Dragon Tamer Jun</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Blossom Jun.png" onclick="openLightbox('Skins/Blossom Jun.png', 'Blossom Jun', 1000)">
-                <img src="Skins/Blossom Jun.png" alt="Blossom Jun" class="scaled-image">
-                <div class="skin-name">Blossom Jun</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-        </div>
-    </div>
-    <div class="character" id="ChamCham">
-        <h2>Cham Cham</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Farmer Cham Cham.jpeg" onclick="openLightbox('Skins/Farmer Cham Cham.jpeg', 'Farmer Cham Cham', 2000)">
-                <img src="Skins/Farmer Cham Cham.jpeg" alt="Farmer Cham Cham" class="scaled-image">
-                <div class="skin-name">Farmer Cham Cham</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Pajama Party Cham Cham.jpg" onclick="openLightbox('Skins/Pajama Party Cham Cham.jpg', 'Pajama Party Cham Cham', 2000)">
-                <img src="Skins/Pajama Party Cham Cham.jpg" alt="Pajama Party Cham Cham" class="scaled-image">
-                <div class="skin-name">Pajama Party Cham Cham</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Neon Core Cham Cham.png" onclick="openLightbox('Skins/Neon Core Cham Cham.png', 'Neon Core Cham Cham', 2000)">
-                <img src="Skins/Neon Core Cham Cham.png" alt="Neon Core Cham Cham" class="scaled-image">
-                <div class="skin-name">Neon Core Cham Cham</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Blossom Cham Cham.png" onclick="openLightbox('Skins/Blossom Cham Cham.png', 'Blossom Cham Cham', 2000)">
-                <img src="Skins/Blossom Cham Cham.png" alt="Blossom Cham Cham" class="scaled-image">
-                <div class="skin-name">Blossom Cham Cham</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-        </div>
-    </div>
-    <div class="character" id="Reptile">
-        <h2>Reptile</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Rainy Day Reptile.jfif" onclick="openLightbox('Skins/Rainy Day Reptile.jfif', 'Rainy Day Reptile', 1000)">
-                <img src="Skins/Rainy Day Reptile.jfif" alt="Rainy Day Reptile" class="scaled-image">
-                <div class="skin-name">Rainy Day Reptile</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-            <div class="skin" data-src="Skins/Goth Reptile.png" onclick="openLightbox('Skins/Goth Reptile.png', 'Goth Reptile', 1000)">
-                <img src="Skins/Goth Reptile.png" alt="Goth Reptile" class="scaled-image">
-                <div class="skin-name">Goth Reptile</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-			<div class="skin" data-src="Skins/Summertime Reptile.png" onclick="openLightbox('Skins/Summertime Reptile.png', 'Summertime Reptile', 2000)">
-                <img src="Skins/Summertime Reptile.png" alt="Summertime Reptile" class="scaled-image">
-                <div class="skin-name">Summertime Reptile</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Cyber Ninja Reptile.png" onclick="openLightbox('Skins/Cyber Ninja Reptile.png', 'Cyber Ninja Reptile', 2000)">
-                <img src="Skins/Cyber Ninja Reptile.png" alt="Cyber Ninja Reptile" class="scaled-image">
-                <div class="skin-name">Cyber Ninja Reptile</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Blood Predator Reptile.png" onclick="openLightbox('Skins/Blood Predator Reptile.png', 'Blood Predator Reptile', 2000)">
-                <img src="Skins/Blood Predator Reptile.png" alt="Blood Predator Reptile" class="scaled-image">
-                <div class="skin-name">Blood Predator Reptile</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-        </div>
-    </div>
-    <div class="character" id="Akuma">
-        <h2>Akuma</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Battle Bistro Akuma.jpeg" onclick="openLightbox('Skins/Battle Bistro Akuma.jpeg', 'Battle Bistro Akuma', 2000)">
-                <img src="Skins/Battle Bistro Akuma.jpeg" alt="Battle Bistro Akuma" class="scaled-image">
-                <div class="skin-name">Battle Bistro Akuma</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Voidborn Akuma.jfif" onclick="openLightbox('Skins/Voidborn Akuma.jfif', 'Voidborn Akuma', 3000)">
-                <img src="Skins/Voidborn Akuma.jfif" alt="Voidborn Akuma" class="scaled-image">
-                <div class="skin-name">Voidborn Akuma</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
-            </div>
-            <div class="skin" data-src="Skins/High Elf Akuma.png" onclick="openLightbox('Skins/High Elf Akuma.png', 'High Elf Akuma', 2000)">
-                <img src="Skins/High Elf Akuma.png" alt="High Elf Akuma" class="scaled-image">
-                <div class="skin-name">High Elf Akuma</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Captain Akuma.png" onclick="openLightbox('Skins/Captain Akuma.png', 'Captain Akuma', 1000)">
-                <img src="Skins/Captain Akuma.png" alt="Captain Akuma" class="scaled-image">
-                <div class="skin-name">Captain Akuma</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-            <div class="skin" data-src="Skins/Thunder God Akuma.png" onclick="openLightbox('Skins/Thunder God Akuma.png', 'Thunder God Akuma', 1000)">
-                <img src="Skins/Thunder God Akuma.png" alt="Thunder God Akuma" class="scaled-image">
-                <div class="skin-name">Thunder God Akuma</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-            <div class="skin" data-src="Skins/Rockstar Akuma.jpg" onclick="openLightbox('Skins/Rockstar Akuma.jpg', 'Rockstar Akuma', 1000)">
-                <img src="Skins/Rockstar Akuma.jpg" alt="Rockstar Akuma" class="scaled-image">
-                <div class="skin-name">Rockstar Akuma</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-	</div>
-	</div>
-	<div class="character" id="Elphelt">
-		<h2>Elphelt</h2>
-		<div class="skins">
-			<div class="skin" data-src="Skins/Maid Elphelt.png" onclick="openLightbox('Skins/Maid Elphelt.png', 'Maid Elphelt', 1000)">
-				<img src="Skins/Maid Elphelt.png" alt="Maid Elphelt" class="scaled-image">
-				<div class="skin-name">Maid Elphelt</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Cyber Hunter Elphelt.png" onclick="openLightbox('Skins/Cyber Hunter Elphelt.png', 'Cyber Hunter Elphelt', 1000)">
-				<img src="Skins/Cyber Hunter Elphelt.png" alt="Cyber Hunter Elphelt" class="scaled-image">
-				<div class="skin-name">Cyber Hunter Elphelt</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Summertime Elphelt.png" onclick="openLightbox('Skins/Summertime Elphelt.png', 'Summertime Elphelt', 2000)">
-				<img src="Skins/Summertime Elphelt.png" alt="Summertime Elphelt" class="scaled-image">
-				<div class="skin-name">Summertime Elphelt</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-            <div class="skin" data-src="Skins/Schoolgirl Elphelt.png" onclick="openLightbox('Skins/Schoolgirl Elphelt.png', 'Schoolgirl Elphelt', 1000)">
-				<img src="Skins/Schoolgirl Elphelt.png" alt="Schoolgirl Elphelt" class="scaled-image">
-				<div class="skin-name">Schoolgirl Elphelt</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000 </div>
-			</div>
-            <div class="skin" data-src="Skins/Goth Elphelt.png" onclick="openLightbox('Skins/Goth Elphelt.png', 'Goth Elphelt', 2000)">
-				<img src="Skins/Goth Elphelt.png" alt="Goth Elphelt" class="scaled-image">
-				<div class="skin-name">Goth Elphelt</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000 </div>
-			</div>
-		</div>
-	</div>
-	<div class="character" id="KotalKahn">
-		<h2>Kotal Kahn</h2>
-		<div class="skins">
-			<div class="skin" data-src="Skins/Atlantean Kotal Kahn.jpeg" onclick="openLightbox('Skins/Atlantean Kotal Kahn.jpeg', 'Atlantean Kotal Kahn', 2000)">
-				<img src="Skins/Atlantean Kotal Kahn.jpeg" alt="Atlantean Kotal Kahn" class="scaled-image">
-				<div class="skin-name">Atlantean Kotal Kahn</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Primal Warrior Kotal Kahn.jpeg" onclick="openLightbox('Skins/Primal Warrior Kotal Kahn.jpeg', 'Primal Warrior Kotal Kahn', 1000)">
-				<img src="Skins/Primal Warrior Kotal Kahn.jpeg" alt="Primal Warrior Kotal Kahn" class="scaled-image">
-				<div class="skin-name">Primal Warrior Kotal Kahn</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Forest Warden Kotal Kahn.jpeg" onclick="openLightbox('Skins/Forest Warden Kotal Kahn.jpeg', 'Forest Warden Kotal Kahn', 2000)">
-				<img src="Skins/Forest Warden Kotal Kahn.jpeg" alt="Forest Warden Kotal Kahn" class="scaled-image">
-				<div class="skin-name">Forest Warden Kotal Kahn</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Summertime Kotal Kahn.png" onclick="openLightbox('Skins/Summertime Kotal Kahn.png', 'Summertime Kotal Kahn', 3000)">
-				<img src="Skins/Summertime Kotal Kahn.png" alt="Summertime Kotal Kahn" class="scaled-image">
-				<div class="skin-name">Summertime Kotal Kahnn</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
-			</div>
-			<div class="skin" data-src="Skins/Cyber Warrior Kotal Kahn.png" onclick="openLightbox('Skins/Cyber Warrior Kotal Kahn.png', 'Cyber Warrior Kotal Kahn', 3000)">
-				<img src="Skins/Cyber Warrior Kotal Kahn.png" alt="Cyber Warrior Kotal Kahn" class="scaled-image">
-				<div class="skin-name">Cyber Warrior Kotal Kahn</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
-			</div>
-			<div class="skin" data-src="Skins/Demon Lord Kotal Kahn.png" onclick="openLightbox('Skins/Demon Lord Kotal Kahn.png', 'Demon Lord Kotal Kahn', 3000)">
-				<img src="Skins/Demon Lord Kotal Kahn.png" alt="Demon Lord Kotal Kahn" class="scaled-image">
-				<div class="skin-name">Demon Lord Kotal Kahn</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
-			</div>
-		</div>
-	</div>
-	<div class="character" id="Scorpion">
-		<h2>Scorpion</h2>
-		<div class="skins">
-			<div class="skin" data-src="Skins/Jade Scorpion.jpeg" onclick="openLightbox('Skins/Jade Scorpion.jpeg', 'Jade Scorpion', 2000)">
-				<img src="Skins/Jade Scorpion.jpeg" alt="Jade Scorpion" class="scaled-image">
-				<div class="skin-name">Jade Scorpion</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Voidborn Scorpion.jfif" onclick="openLightbox('Skins/Voidborn Scorpion.jfif', 'Voidborn Scorpion', 2000)">
-				<img src="Skins/Voidborn Scorpion.jfif" alt="Voidborn Scorpion" class="scaled-image">
-				<div class="skin-name">Voidborn Scorpion</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Primal Warrior Scorpion.jpeg" onclick="openLightbox('Skins/Primal Warrior Scorpion.jpeg', 'Primal Warrior Scorpion', 1000)">
-				<img src="Skins/Primal Warrior Scorpion.jpeg" alt="Primal Warrior Scorpion" class="scaled-image">
-				<div class="skin-name">Primal Warrior Scorpion</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-            <div class="skin" data-src="Skins/Deadpool Scorpion.png" onclick="openLightbox('Skins/Deadpool Scorpion.png', 'Deadpool Scorpion',)">
-				<img src="Skins/Deadpool Scorpion.png" alt="Deadpool Scorpion" class="scaled-image">
-                    <div class="skin-name">Deadpool Scorpion</div>
-                    <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">UNAVAILABLE</div>
-                </div>
-			<div class="skin" data-src="Skins/Infernal Scorpion.png" onclick="openLightbox('Skins/Infernal Scorpion.png', 'Infernal Scorpion', 2000)">
-				<img src="Skins/Infernal Scorpion.png" alt="Infernal Scorpion" class="scaled-image">
-				<div class="skin-name">Infernal Scorpion</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-		</div>
-	</div>
-	<div class="character" id="Peacock">
-		<h2>Peacock</h2>
-		<div class="skins">
-			<div class="skin" data-src="Skins/Voidborn Peacock.jfif" onclick="openLightbox('Skins/Voidborn Peacock.jfif', 'Voidborn Peacock', 2000)">
-				<img src="Skins/Voidborn Peacock.jfif" alt="Voidborn Peacock" class="scaled-image">
-				<div class="skin-name">Voidborn Peacock</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Captain Peacock.png" onclick="openLightbox('Skins/Captain Peacock.png', 'Captain Peacock', 3000)">
-				<img src="Skins/Captain Peacock.png" alt="Captain Peacock" class="scaled-image">
-				<div class="skin-name">Captain Peacock</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
-			</div>
-			<div class="skin" data-src="Skins/Arctic Huntress Peacock.png" onclick="openLightbox('Skins/Arctic Huntress Peacock.png', 'Arctic Huntress Peacock', 2000)">
-				<img src="Skins/Arctic Huntress Peacock.png" alt="Arctic Huntress Peacock" class="scaled-image">
-				<div class="skin-name">Arctic Huntress Peacock</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Cyber Bomber Peacock.jpeg" onclick="openLightbox('Skins/Cyber Bomber Peacock.jpeg', 'Cyber Bomber Peacock', 1000)">
-				<img src="Skins/Cyber Bomber Peacock.jpeg" alt="Cyber Bomber Peacock" class="scaled-image">
-				<div class="skin-name">Cyber Bomber Peacock</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-		</div>
-	</div>
-	<div class="character" id="Angel">
-		<h2>Angel</h2>
-		<div class="skins">
-			<div class="skin" data-src="Skins/Winter Queen Angel.jpeg" onclick="openLightbox('Skins/Winter Queen Angel.jpeg', 'Winter Queen Angel', 2000)">
-				<img src="Skins/Winter Queen Angel.jpeg" alt="Winter Queen Angel" class="scaled-image">
-				<div class="skin-name">Winter Queen Angel</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Blossom Angel.png" onclick="openLightbox('Skins/Blossom Angel.png', 'Blossom Angel', 3000)">
-				<img src="Skins/Blossom Angel.png" alt="Blossom Angel" class="scaled-image">
-				<div class="skin-name">Blossom Angel</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
-			</div>
-			<div class="skin" data-src="Skins/Neon Core Angel.png" onclick="openLightbox('Skins/Neon Core Angel.png', 'Neon Core Angel', 2000)">
-				<img src="Skins/Neon Core Angel.png" alt="Neon Core Angel" class="scaled-image">
-				<div class="skin-name">Neon Core Angel</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Forest Goddess Angel.jpeg" onclick="openLightbox('Skins/Forest Goddess Angel.jpeg', 'Forest Goddess Angel', 2000)">
-				<img src="Skins/Forest Goddess Angel.jpeg" alt="Forest Goddess Angel" class="scaled-image">
-				<div class="skin-name">Forest Goddess Angel</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-            <div class="skin" data-src="Skins/Voidborn Angel.png" onclick="openLightbox('Skins/Voidborn Angel.png', 'Voidborn Angel', 2000)">
-                <img src="Skins/Voidborn Angel.png" alt="Voidborn Angel" class="scaled-image">
-                <div class="skin-name">Voidborn Angel</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-		</div>
-	</div>
-</div>
-	<div class="character" id="Astaroth">
-		<h2>Astaroth</h2>
-		<div class="skins">
-			<div class="skin" data-src="Skins/Zombie Astaroth.jpeg" onclick="openLightbox('Skins/Zombie Astaroth.jpeg', 'Zombie Astaroth', 'UNAVAILABLE')">
-				<img src="Skins/Zombie Astaroth.jpeg" alt="Zombie Astaroth" class="scaled-image">
-				<div class="skin-name">Zombie Astaroth</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">UNAVAILABLE</div>
-			</div>
-			<div class="skin" data-src="Skins/Stonebreaker Astaroth.jpeg" onclick="openLightbox('Skins/Stonebreaker Astaroth.jpeg', 'Stonebreaker Astaroth', 2000)">
-				<img src="Skins/Stonebreaker Astaroth.jpeg" alt="Stonebreaker Astaroth" class="scaled-image">
-				<div class="skin-name">Stonebreaker Astaroth</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-		<div class="skin" data-src="Skins/Forest Behemoth Astaroth.jpeg" onclick="openLightbox('Skins/Forest Behemoth Astaroth.jpeg', 'Forest Behemoth Astaroth', 3000)">
-			<img src="Skins/Forest Behemoth Astaroth.jpeg" alt="Forest Behemoth Astaroth" class="scaled-image">
-			<div class="skin-name">Forest Behemoth Astaroth</div>
-			<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
-		</div>
-		<div class="skin" data-src="Skins/Infernal Astaroth.png" onclick="openLightbox('Skins/Infernal Astaroth.png', 'Infernal Astaroth', 3000)">
-			<img src="Skins/Infernal Astaroth.png" alt="Infernal Astaroth" class="scaled-image">
-			<div class="skin-name">Infernal Astaroth</div>
-			<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
-		</div>
-		<div class="skin" data-src="Skins/Arctic Monster Astaroth.png" onclick="openLightbox('Skins/Arctic Monster Astaroth.png', 'Arctic Monster Astaroth', 2000)">
-			<img src="Skins/Arctic Monster Astaroth.png" alt="Arctic Monster Astaroth" class="scaled-image">
-			<div class="skin-name">Arctic Monster Astaroth</div>
-			<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-		</div>
-		<div class="skin" data-src="Skins/Sand Soldier Astaroth.png" onclick="openLightbox('Skins/Sand Soldier Astaroth.png', 'Sand Soldier Astaroth', 1000)">
-			<img src="Skins/Sand Soldier Astaroth.png" alt="Sand Soldier Astaroth" class="scaled-image">
-			<div class="skin-name">Sand Soldier Astaroth</div>
-			<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-		</div>
-		<div class="skin" data-src="Skins/Royal Guard Astaroth.png" onclick="openLightbox('Skins/Royal Guard Astaroth.png', 'Royal Guard Astaroth', 1000)">
-			<img src="Skins/Royal Guard Astaroth.png" alt="Royal Guard Astaroth" class="scaled-image">
-			<div class="skin-name">Royal Guard Astaroth</div>
-			<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-		</div>
-		</div>
-	</div>
-	<div class="character" id="Ibuki">
-		<h2>Ibuki</h2>
-		<div class="skins">
-			<div class="skin" data-src="Skins/Steampunk Ibuki.jpeg" onclick="openLightbox('Skins/Steampunk Ibuki.jpeg', 'Steampunk Ibuki', 1000)">
-				<img src="Skins/Steampunk Ibuki.jpeg" alt="Steampunk Ibuki" class="scaled-image">
-				<div class="skin-name">Steampunk Ibuki</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/DJ Ibuki.png" onclick="openLightbox('Skins/DJ Ibuki.png', 'DJ Ibuki', 2000)">
-				<img src="Skins/DJ Ibuki.png" alt="DJ Ibuki" class="scaled-image">
-				<div class="skin-name">DJ Ibuki</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Demon Hunter Ibuki.png" onclick="openLightbox('Skins/Demon Hunter Ibuki.png', 'Demon Hunter Ibuki', 1000)">
-				<img src="Skins/Demon Hunter Ibuki.png" alt="Demon Hunter Ibuki" class="scaled-image">
-				<div class="skin-name">Demon Hunter Ibuki</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Professional Athlete Ibuki.png" onclick="openLightbox('Skins/Professional Athlete Ibuki.png', 'Professional Athlete Ibuki', 1000)">
-				<img src="Skins/Professional Athlete Ibuki.png" alt="Professional Athlete Ibuki" class="scaled-image">
-				<div class="skin-name">Professional Athlete Ibuki</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Infernal Ibuki.png" onclick="openLightbox('Skins/Infernal Ibuki.png', 'Infernal Ibuki', 2000)">
-				<img src="Skins/Infernal Ibuki.png" alt="Infernal Ibuki" class="scaled-image">
-				<div class="skin-name">Infernal Ibuki</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-            <div class="skin" data-src="Skins/Lady Deadpool Ibuki.jpeg" onclick="openLightbox('Skins/Lady Deadpool Ibuki.jpeg', 'Lady Deadpool Ibuki',)">
-				<img src="Skins/Lady Deadpool Ibuki.jpeg" alt="Lady Deadpool Ibuki" class="scaled-image">
-				<div class="skin-name">Lady Deadpool Ibuki</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">UNAVAILABLE</div>
-			</div>
-		</div>
-	</div>
-	<div class="character" id="RMika">
-		<h2>R.Mika</h2>
-		<div class="skins">
-			<div class="skin" data-src="Skins/Rainy Day R Mika.jpeg" onclick="openLightbox('Skins/Rainy Day R Mika.jpeg', 'Rainy Day R Mika', 2000)">
-				<img src="Skins/Rainy Day R Mika.jpeg" alt="Rainy Day R Mika" class="scaled-image">
-				<div class="skin-name">Rainy Day R Mika</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-            <div class="skin" data-src="Skins/Goth R Mika.png" onclick="openLightbox('Skins/Goth R Mika.png', 'Goth R Mika', 1000)">
-				<img src="Skins/Goth R Mika.png" alt="Goth R Mika" class="scaled-image">
-				<div class="skin-name small">Goth R Mika</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Professional Tennis Player R Mika.png" onclick="openLightbox('Skins/Professional Tennis Player R Mika.png', 'Professional Tennis Player R Mika', 1000)">
-				<img src="Skins/Professional Tennis Player R Mika.png" alt="Professional Tennis Player R Mika" class="scaled-image">
-				<div class="skin-name small">Professional Tennis Player R Mika</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Pop Star R Mika.png" onclick="openLightbox('Skins/Pop Star R Mika.png', 'Pop Star R.Mika', 1000)">
-				<img src="Skins/Pop Star R Mika.png" alt="Pop Star R.Mika" class="scaled-image">
-				<div class="skin-name">Pop Star R.Mika</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Phoenix R Mika.png" onclick="openLightbox('Skins/Phoenix R Mika.png', 'Phoenix R.Mika', 1000)">
-				<img src="Skins/Phoenix R Mika.png" alt="Phoenix R.Mika" class="scaled-image">
-				<div class="skin-name">Phoenix R.Mika</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-		</div>
-	</div>
-        <div class="character" id="Raiden">
-    <h2>Raiden</h2>
-		<div class="skins">
-            <div class="skin" data-src="Skins/Farmer Raiden.jpeg" onclick="openLightbox('Skins/Farmer Raiden.jpeg', 'Farmer Raiden', 1000)">
-                <img src="Skins/Farmer Raiden.jpeg" alt="Farmer Raiden" class="scaled-image">
-                <div class="skin-name">Farmer Raiden</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-			<div class="skin" data-src="Skins/Arcade Raiden.jpeg" onclick="openLightbox('Skins/Arcade Raiden.jpeg', 'Arcade Raiden', 2000)">
-				<img src="Skins/Arcade Raiden.jpeg" alt="Arcade Raiden" class="scaled-image">
-				<div class="skin-name">Arcade Raiden</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Neon Core Raiden.png" onclick="openLightbox('Skins/Neon Core Raiden.png', 'Neon Core Raiden', 2000)">
-				<img src="Skins/Neon Core Raiden.png" alt="Neon Core Raiden" class="scaled-image">
-				<div class="skin-name">Neon Core Raiden</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Infernal Raiden.png" onclick="openLightbox('Skins/Infernal Raiden.png', 'Infernal Raiden', 2000)">
-				<img src="Skins/Infernal Raiden.png" alt="Infernal Raiden" class="scaled-image">
-				<div class="skin-name">Infernal Raiden</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Dragon Tamer Raiden.png" onclick="openLightbox('Skins/Dragon Tamer Raiden.png', 'Dragon Tamer Raiden', 2000)">
-				<img src="Skins/Dragon Tamer Raiden.png" alt="Dragon Tamer Raiden" class="scaled-image">
-				<div class="skin-name">Dragon Tamer Raiden</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Master of Monks Raiden.jpeg" onclick="openLightbox('Skins/Master of Monks Raiden.jpeg', 'Master of Monks Raiden', 1000)">
-				<img src="Skins/Master of Monks Raiden.jpeg" alt="Master of Monks Raiden" class="scaled-image">
-				<div class="skin-name">Master of Monks Raiden</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-		</div>
-	</div>
-        <div class="character" id="Yugo">
-		<h2>Yugo</h2>
-		<div class="skins">
-            <div class="skin" data-src="Skins/Steamforged Yugo.jpeg" onclick="openLightbox('Skins/Steamforged Yugo.jpeg', 'Steamforged Yugo', 1000)">
-                <img src="Skins/Steamforged Yugo.jpeg" alt="Steamforged Yugo" class="scaled-image">
-                <div class="skin-name">Steamforged Yugo</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-            <div class="skin" data-src="Skins/Jade Yugo.jpeg" onclick="openLightbox('Skins/Jade Yugo.jpeg', 'Jade Yugo', 2000)">
-                <img src="Skins/Jade Yugo.jpeg" alt="Jade Yugo" class="scaled-image">
-                <div class="skin-name">Jade Yugo</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Wolverine Yugo.jpeg" onclick="openLightbox('Skins/Wolverine Yugo.jpeg', 'Wolverine Yugo',)">
-				<img src="Skins/Wolverine Yugo.jpeg" alt="Wolverine Yugo" class="scaled-image">
-				<div class="skin-name">Wolverine Yugo</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">UNAVAILABLE</div>
-			</div>
-			<div class="skin" data-src="Skins/Arctic Beast Yugo.png" onclick="openLightbox('Skins/Arctic Beast Yugo.png', 'Arctic Beast Yugo', 1000)">
-				<img src="Skins/Arctic Beast Yugo.png" alt="Arctic Beast Yugo" class="scaled-image">
-				<div class="skin-name">Arctic Beast Yugo</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Cyber Predator Yugo.png" onclick="openLightbox('Skins/Cyber Predator Yugo.png', 'Cyber Predator Yugo', 2000)">
-				<img src="Skins/Cyber Predator Yugo.png" alt="Cyber Predator Yugo" class="scaled-image">
-				<div class="skin-name">Cyber Predator Yugo</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Street Fighter Yugo.png" onclick="openLightbox('Skins/Street Fighter Yugo.png', 'Street Fighter Yugo', 1000)">
-				<img src="Skins/Street Fighter Yugo.png" alt="Street Fighter Yugo" class="scaled-image">
-				<div class="skin-name">Street Fighter Yugo</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-		</div>
-	</div>
-        <div class="character" id="Talim">
-		<h2>Talim</h2>
-		<div class="skins">
-			<div class="skin" data-src="Skins/Sand Soldier Talim.jpg" onclick="openLightbox('Skins/Sand Soldier Talim.jpg', 'Sand Soldier Talim', 2000)">
-				<img src="Skins/Sand Soldier Talim.jpg" alt="Sand Soldier Talim" class="scaled-image">
-				<div class="skin-name">Sand Soldier Talim</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-		<div class="skin" data-src="Skins/Captain Talim.png" onclick="openLightbox('Skins/Captain Talim.png', 'Captain Talim', 2000)">
-				<img src="Skins/Captain Talim.png">
-				<div class="skin-name">Captain Talim</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-		<div class="skin" data-src="Skins/Windwood Talim.jpeg" onclick="openLightbox('Skins/Windwood Talim.jpeg', 'Windwood Talim', 2000)">
-			<img src="Skins/Windwood Talim.jpeg" alt="Windwood Talim" class="scaled-image">
-			<div class="skin-name">Windwood Talim</div>
-			<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-		</div>
-		</div>
-	</div>
-		 <div class="character" id="Noel">
-		<h2>Noel</h2>
-		<div class="skins">
-            <div class="skin" data-src="Skins/Underworld Demon Noel.jpeg" onclick="openLightbox('Skins/Underworld Demon Noel.jpeg', 'Underworld Demon Noel', 3000)">
-                <img src="Skins/Underworld Demon Noel.jpeg" alt="Underworld Demon Noel" class="scaled-image">
-                <div class="skin-name">Underworld Demon Noel</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
-            </div>
-            <div class="skin" data-src="Skins/Rainy Day Noel.jpeg" onclick="openLightbox('Skins/Rainy Day Noel.jpeg', 'Rainy Day Noel', 1000)">
-				<img src="Skins/Rainy Day Noel.jpeg" alt="Rainy Day Noel" class="scaled-image">
-				<div class="skin-name">Rainy Day Noel</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-            <div class="skin" data-src="Skins/Arcade Noel.jpeg" onclick="openLightbox('Skins/Arcade Noel.jpeg', 'Arcade Noel', 2000)">
-				<img src="Skins/Arcade Noel.jpeg" alt="Arcade Noel" class="scaled-image">
-				<div class="skin-name">Arcade Noel</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-            <div class="skin" data-src="Skins/High Elf Noel.png" onclick="openLightbox('Skins/High Elf Noel.png', 'High Elf Noel', 2000)">
-				<img src="Skins/High Elf Noel.png" alt="High Elf Noel" class="scaled-image">
-				<div class="skin-name">High Elf Noel</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Captain Noel.png" onclick="openLightbox('Skins/Captain Noel.png', 'Captain Noel', 1000)">
-				<img src="Skins/Captain Noel.png" alt="Captain Noel" class="scaled-image">
-				<div class="skin-name">Captain Noel</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Arctic Huntress Noel.png" onclick="openLightbox('Skins/Arctic Huntress Noel.png', 'Arctic Huntress Noel', 2000)">
-				<img src="Skins/Arctic Huntress Noel.png" alt="Arctic Huntress Noel" class="scaled-image">
-				<div class="skin-name">Arctic Huntress Noel</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Officer Noel.jpeg" onclick="openLightbox('Skins/Officer Noel.jpeg', 'Officer Noel', 1000)">
-				<img src="Skins/Officer Noel.jpeg" alt="Officer Noel" class="scaled-image">
-				<div class="skin-name">Officer Noel</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-		</div>
-	</div>
-	<div class="character" id="Blanka">
-		<h2>Blanka</h2>
-		<div class="skins">
-			<div class="skin" data-src="Skins/Jack O Blanka.jpeg" onclick="openLightbox('Skins/Jack O Blanka.jpeg', 'Jack O Blanka', 'UNAVAILABLE')">
-				<img src="Skins/Jack O Blanka.jpeg" alt="Jack O Blanka" class="scaled-image">
-				<div class="skin-name">Jack O Blanka</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">UNAVAILABLE</div>
-			</div>
-			<div class="skin" data-src="Skins/Voidborn Blanka.jfif" onclick="openLightbox('Skins/Voidborn Blanka.jfif', 'Voidborn Blanka', 2000)">
-				<img src="Skins/Voidborn Blanka.jfif" alt="Voidborn Blanka" class="scaled-image">
-				<div class="skin-name">Voidborn Blanka</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Pajama Party Blanka.jpeg" onclick="openLightbox('Skins/Pajama Party Blanka.jpeg', 'Pajama Party Blanka', 1000)">
-				<img src="Skins/Pajama Party Blanka.jpeg" alt="Pajama Party Blanka" class="scaled-image">
-				<div class="skin-name">Pajama Party Blanka</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Professional Baller Blanka.jpg" onclick="openLightbox('Skins/Professional Baller Blanka.jpg', 'Professional Baller Blanka', 1000)">
-				<img src="Skins/Professional Baller Blanka.jpg" alt="Professional Baller Blanka" class="scaled-image">
-				<div class="skin-name">Professional Baller Blanka</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-		</div>
-	</div>
-	<div class="character" id="Nina">
-		<h2>Nina</h2>
-		<div class="skins">
-			<div class="skin" data-src="Skins/Steamforged Nina.jpeg" onclick="openLightbox('Skins/Steamforged Nina.jpeg', 'Steamforged Nina', 1000)">
-				<img src="Skins/Steamforged Nina.jpeg" alt="Steamforged Nina" class="scaled-image">
-				<div class="skin-name">Steamforged Nina</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Sacred Ceremony Nina.jpeg" onclick="openLightbox('Skins/Sacred Ceremony Nina.jpeg', 'Sacred Ceremony Nina', 1000)">
-				<img src="Skins/Sacred Ceremony Nina.jpeg" alt="Sacred Ceremony Nina" class="scaled-image">
-				<div class="skin-name">Sacred Ceremony Nina</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Voidborn Nina.jpeg" onclick="openLightbox('Skins/Voidborn Nina.jpeg', 'Voidborn Nina', 2000)">
-				<img src="Skins/Voidborn Nina.jpeg" alt="Voidborn Nina" class="scaled-image">
-				<div class="skin-name">Voidborn Nina</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Summertime Nina.png" onclick="openLightbox('Skins/Summertime Nina.png', 'Summertime Nina', 3000)">
-				<img src="Skins/Summertime Nina.png" alt="Summertime Nina" class="scaled-image">
-				<div class="skin-name">Summertime Nina</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
-			</div>
-			<div class="skin" data-src="Skins/Arctic Huntress Nina.png" onclick="openLightbox('Skins/Arctic Huntress Nina.png', 'Arctic Huntress Nina', 1000)">
-				<img src="Skins/Arctic Huntress Nina.png" alt="Arctic Huntress Nina" class="scaled-image">
-				<div class="skin-name">Arctic Huntress Nina</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Farmer Nina.png" onclick="openLightbox('Skins/Farmer Nina.png', 'Farmer Nina', 1000)">
-				<img src="Skins/Farmer Nina.png" alt="Farmer Nina" class="scaled-image">
-				<div class="skin-name">Farmer Nina</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-		</div>
-	</div>
-	<div class="character" id="Ayane">
-		<h2>Ayane</h2>
-		<div class="skins">
-            <div class="skin" data-src="Skins/Jade Ayane.png" onclick="openLightbox('Skins/Jade Ayane.png', 'Jade Ayane', 2000)">
-                <img src="Skins/Jade Ayane.png" alt="Jade Ayane" class="scaled-image">
-                <div class="skin-name">Jade Ayane</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Spectral Reaper Ayane.jpeg" onclick="openLightbox('Skins/Spectral Reaper Ayane.jpeg', 'Spectral Reaper Ayane', 'UNAVAILABLE')">
-				<img src="Skins/Spectral Reaper Ayane.jpeg" alt="Spectral Reaper Ayane" class="scaled-image">
-				<div class="skin-name">Spectral Reaper Ayane</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">UNAVAILABLE</div>
-			</div>
-			<div class="skin" data-src="Skins/Shadowbane Ayane.jpeg" onclick="openLightbox('Skins/Shadowbane Ayane.jpeg', 'Shadowbane Ayane', 2000)">
-				<img src="Skins/Shadowbane Ayane.jpeg" alt="Shadowbane Ayane" class="scaled-image">
-				<div class="skin-name">Shadowbane Ayane</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-            <div class="skin" data-src="Skins/Schoolgirl Ayane.png" onclick="openLightbox('Skins/Schoolgirl Ayane.png', 'Schoolgirl Ayane', 1000)">
-				<img src="Skins/Schoolgirl Ayane.png" alt="Schoolgirl Ayane" class="scaled-image">
-				<div class="skin-name">Schoolgirl Ayane</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Obsidian Wraith Ayane.png" onclick="openLightbox('Skins/Obsidian Wraith Ayane.png', 'Obsidian Wraith Ayane', 1000)">
-				<img src="Skins/Obsidian Wraith Ayane.png" alt="Obsidian Wraith Ayane" class="scaled-image">
-				<div class="skin-name">Obsidian Wraith Ayane</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-		</div>
-	</div>
-	<div class="character" id="Siegfried">
-		<h2>Siegfried</h2>
-		<div class="skins">
-            <div class="skin" data-src="Skins/Jade Siegfried.jfif" onclick="openLightbox('Skins/Jade Siegfried.jfif', 'Jade Siegfried', 2000)">
-                <img src="Skins/Jade Siegfried.jfif" alt="Jade Siegfried" class="scaled-image">
-                <div class="skin-name">Jade Siegfried</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/High Elf Siegfried.png" onclick="openLightbox('Skins/High Elf Siegfried.png', 'High Elf Siegfried', 1000)">
-				<img src="Skins/High Elf Siegfried.png" alt="High Elf Siegfried" class="scaled-image">
-				<div class="skin-name small">High Elf Siegfried</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-            <div class="skin" data-src="Skins/Schoolboy Siegfried.png" onclick="openLightbox('Skins/Schoolboy Siegfried.png', 'Schoolboy Siegfried', 1000)">
-				<img src="Skins/Schoolboy Siegfried.png" alt="Schoolboy Siegfried" class="scaled-image">
-				<div class="skin-name small">Schoolboy Siegfried</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Professional Footballer Siegfried.png" onclick="openLightbox('Skins/Professional Footballer Siegfried.png', 'Professional Footballer Siegfried', 1000)">
-				<img src="Skins/Professional Footballer Siegfried.png" alt="Professional Footballer Siegfried" class="scaled-image">
-				<div class="skin-name small">Professional Footballer Siegfried</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-		</div>
-	</div>
-	<div class="character" id="Shoma">
-		<h2>Shoma</h2>
-		<div class="skins">
-            <div class="skin" data-src="Skins/Skater Shoma.jpg" onclick="openLightbox('Skins/Skater Shoma.jpg', 'Skater Shoma', 1000)">
-				<img src="Skins/Skater Shoma.jpg" alt="Skater Shoma" class="scaled-image">
-				<div class="skin-name">Skater Shoma</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-            <div class="skin" data-src="Skins/Farmer Shoma.jpeg" onclick="openLightbox('Skins/Farmer Shoma.jpeg', 'Farmer Shoma', 1000)">
-                <img src="Skins/Farmer Shoma.jpeg" alt="Farmer Shoma" class="scaled-image">
-                <div class="skin-name">Farmer Shoma</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-			<div class="skin" data-src="Skins/Sacred Ceremony Shoma.jpeg" onclick="openLightbox('Skins/Sacred Ceremony Shoma.jpeg', 'Sacred Ceremony Shoma', 1000)">
-				<img src="Skins/Sacred Ceremony Shoma.jpeg" alt="Sacred Ceremony Shoma" class="scaled-image">
-				<div class="skin-name">Sacred Ceremony Shoma</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Primal Warrior Shoma.jpeg" onclick="openLightbox('Skins/Primal Warrior Shoma.jpeg', 'Primal Warrior Shoma', 2000)">
-				<img src="Skins/Primal Warrior Shoma.jpeg" alt="Primal Warrior Shoma" class="scaled-image">
-				<div class="skin-name small">Primal Warrior Shoma</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Pajama Party Shoma.png" onclick="openLightbox('Skins/Pajama Party Shoma.png', 'Pajama Party Shoma', 1000)">
-				<img src="Skins/Pajama Party Shoma.png" alt="Pajama Party Shoma" class="scaled-image">
-				<div class="skin-name small">Pajama Party Shoma</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Pirate Shoma.png" onclick="openLightbox('Skins/Pirate Shoma.png', 'Pirate Shoma', 1000)">
-				<img src="Skins/Pirate Shoma.png" alt="Pirate Shoma" class="scaled-image">
-				<div class="skin-name small">Pirate Shoma</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Summertime Shoma.png" onclick="openLightbox('Skins/Summertime Shoma.png', 'Summertime Shoma', 2000)">
-				<img src="Skins/Summertime Shoma.png" alt="Summertime Shoma" class="scaled-image">
-				<div class="skin-name small">Summertime Shoma</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-		</div>
-	</div>
-	<div class="character" id="Juri">
-		<h2>Juri</h2>
-		<div class="skins">
-			<div class="skin" data-src="Skins/Winter Festival Juri.jpeg" onclick="openLightbox('Skins/Winter Festival Juri.jpeg', 'Winter Festival Juri', 2000)">
-				<img src="Skins/Winter Festival Juri.jpeg" alt="Winter Festival Juri" class="scaled-image">
-				<div class="skin-name">Winter Festival Juri</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Primal Warrior Juri.png" onclick="openLightbox('Skins/Primal Warrior Juri.png', 'Primal Warrior Juri', 1000)">
-				<img src="Skins/Primal Warrior Juri.png" alt="Primal Warrior Juri" class="scaled-image">
-				<div class="skin-name small">Primal Warrior Juri</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Casual Wear Juri.png" onclick="openLightbox('Skins/Casual Wear Juri.png', 'Casual Wear Juri', 1000)">
-				<img src="Skins/Casual Wear Juri.png" alt="Casual Wear Juri" class="scaled-image">
-				<div class="skin-name small">Casual Wear Juri</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-		</div>
-	</div>
-	<div class="character" id="SubZero">
-		<h2>Subzero</h2>
-		<div class="skins">
-			<div class="skin" data-src="Skins/Atlantean Sub Zero.jpeg" onclick="openLightbox('Skins/Atlantean Sub Zero.jpeg', 'Atlantean Sub Zero', 2000)">
-				<img src="Skins/Atlantean Sub Zero.jpeg" alt="Atlantean Sub Zero" class="scaled-image">
-				<div class="skin-name">Atlantean Sub Zero</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Neon Core Sub Zero.png" onclick="openLightbox('Skins/Neon Core Sub Zero.png', 'Neon Core Sub Zero', 1000)">
-				<img src="Skins/Neon Core Sub Zero.png" alt="Neon Core Sub Zero" class="scaled-image">
-				<div class="skin-name small">Neon Core Sub Zero</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Arcane Sorcerer Sub Zero.png" onclick="openLightbox('Skins/Arcane Sorcerer Sub Zero.png', 'Arcane Sorcerer Sub Zero', 2000)">
-				<img src="Skins/Arcane Sorcerer Sub Zero.png" alt="Arcane Sorcerer Sub Zero" class="scaled-image">
-				<div class="skin-name small">Arcane Sorcerer Sub Zero</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-		</div>
-	</div>
-	<div class="character" id="Christie">
-		<h2>Christie</h2>
-		<div class="skins">
-            <div class="skin" data-src="Skins/Atlantean Christie.jpeg" onclick="openLightbox('Skins/Atlantean Christie.jpeg', 'Atlantean Christie', 2000)">
-				<img src="Skins/Atlantean Christie.jpeg" alt="Atlantean Christie" class="scaled-image">
-				<div class="skin-name">Atlantean Christie</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-            <div class="skin" data-src="Skins/Pajama Party Christie.jpeg" onclick="openLightbox('Skins/Pajama Party Christie.jpeg', 'Pajama Party Christie', 1000)">
-				<img src="Skins/Pajama Party Christie.jpeg" alt="Pajama Party Christie" class="scaled-image">
-				<div class="skin-name small">Pajama Party Christie</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-			<div class="skin" data-src="Skins/Chris T.png" onclick="openLightbox('Skins/Chris T.png', 'Chris T', 1000)">
-				<img src="Skins/Chris T.png" alt="Chris T" class="scaled-image">
-				<div class="skin-name small">Chris T</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-		</div>
-	</div>
-	<div class="character" id="Kokoro">
-        <h2>Kokoro</h2>
-		<div class="skins">
-			<div class="skin" data-src="Skins/Schoolgirl Kokoro.png" onclick="openLightbox('Skins/Schoolgirl Kokoro.png', 'Schoolgirl Kokoro', 1000)">
-				<img src="Skins/Schoolgirl Kokoro.png" alt="Schoolgirl Kokoro" class="scaled-image">
-				<div class="skin-name small">Schoolgirl Kokoro</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-            <div class="skin" data-src="Skins/Pajama Party Kokoro.jpeg" onclick="openLightbox('Skins/Pajama Party Kokoro.jpeg', 'Pajama Party Kokoro', 1000)">
-				<img src="Skins/Pajama Party Kokoro.jpeg" alt="Pajama Party Kokoro" class="scaled-image">
-				<div class="skin-name small">Pajama Party Kokoro</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-			</div>
-		</div>
-	</div>
-    <div class="character" id="Eagle">
-        <h2>Eagle</h2>
-		<div class="skins">
-			<div class="skin" data-src="Skins/High Elf Eagle.png" onclick="openLightbox('Skins/High Elf Eagle.png', 'High Elf Eagle', 2000)">
-				<img src="Skins/High Elf Eagle.png" alt="High Elf Eagle" class="scaled-image">
-				<div class="skin-name small">High Elf Eagle</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-            <div class="skin" data-src="Skins/Goth Eagle.png" onclick="openLightbox('Skins/Goth Eagle.png', 'Goth Eagle', 2000)">
-				<img src="Skins/Goth Eagle.png" alt="Goth Eagle" class="scaled-image">
-				<div class="skin-name small">Goth Eagle</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-		</div>
-	</div>
-</div>
-    <div class="character" id="Sophitia">
-        <h2>Sophitia</h2>
-		<div class="skins">
-			<div class="skin" data-src="Skins/Battle Bistro Sophitia.jpeg" onclick="openLightbox('Skins/Battle Bistro Sophitia.jpeg', 'Battle Bistro Sophitia', 2000)">
-				<img src="Skins/Battle Bistro Sophitia.jpeg" alt="Battle Bistro Sophitia" class="scaled-image">
-				<div class="skin-name small">Battle Bistro Sophitia</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Arcade Sophitia.jpeg" onclick="openLightbox('Skins/Arcade Sophitia.jpeg', 'Arcade Sophitia', 2000)">
-				<img src="Skins/Arcade Sophitia.jpeg" alt="Arcade Sophitia" class="scaled-image">
-				<div class="skin-name small">Arcade Sophitia</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-			<div class="skin" data-src="Skins/Goth Sophitia.png" onclick="openLightbox('Skins/Goth Sophitia.png', 'Goth Sophitia', 2000)">
-				<img src="Skins/Goth Sophitia.png" alt="Goth Sophitia" class="scaled-image">
-				<div class="skin-name small">Goth Sophitia</div>
-				<div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-			</div>
-		</div>
-	</div>
-    <div class="character" id="Shizumaru">
-        <h2>Shizumaru</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Winter Festival Shizumaru.jpeg" onclick="openLightbox('Skins/Winter Festival Shizumaru.jpeg', 'Winter Festival Shizumaru', 2000)">
-                <img src="Skins/Winter Festival Shizumaru.jpeg" alt="Winter Festival Shizumaru" class="scaled-image">
-                <div class="skin-name">Winter Festival Shizumaru</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Desert Demon Shizumaru.jpg" onclick="openLightbox('Skins/Desert Demon Shizumaru.jpg', 'Desert Demon Shizumaru', 3000)">
-                <img src="Skins/Desert Demon Shizumaru.jpg" alt="Desert Demon Shizumaru" class="scaled-image">
-                <div class="skin-name">Desert Demon Shizumaru</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
-            </div>
-            <div class="skin" data-src="Skins/Superhero Shizumaru.jpeg" onclick="openLightbox('Skins/Superhero Shizumaru.jpeg', 'Superhero Shizumaru', 3000)">
-                <img src="Skins/Superhero Shizumaru.jpeg" alt="Superhero Shizumaru" class="scaled-image">
-                <div class="skin-name">Superhero Shizumaru</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
-            </div>
-            <div class="skin" data-src="Skins/Battle Bistro Shizumaru.jpeg" onclick="openLightbox('Skins/Battle Bistro Shizumaru.jpeg', 'Battle Bistro Shizumaru', 2000)">
-                <img src="Skins/Battle Bistro Shizumaru.jpeg" alt="Battle Bistro Shizumaru" class="scaled-image">
-                <div class="skin-name">Battle Bistro Shizumaru</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Rainy Day Shizumaru.jfif" onclick="openLightbox('Skins/Rainy Day Shizumaru.jfif', 'Rainy Day Shizumaru', 2000)">
-                <img src="Skins/Rainy Day Shizumaru.jfif" alt="Rainy Day Shizumaru" class="scaled-image">
-                <div class="skin-name">Rainy Day Shizumaru</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Samurai Shizumaru.jpeg" onclick="openLightbox('Skins/Samurai Shizumaru.jpeg', 'Samurai Shizumaru', 1000)">
-                <img src="Skins/Samurai Shizumaru.jpeg" alt="Samurai Shizumaru" class="scaled-image">
-                <div class="skin-name">Samurai Shizumaru</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-        </div>
-    </div>
-    <div class="character" id="Kagome">
-        <h2>Kagome</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Atlantean Kagome.jpeg" onclick="openLightbox('Skins/Atlantean Kagome.jpeg', 'Atlantean Kagome', 2000)">
-                <img src="Skins/Atlantean Kagome.jpeg" alt="Atlantean Kagome" class="scaled-image">
-                <div class="skin-name">Atlantean Kagome</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Primal Huntress Kagome.jpeg" onclick="openLightbox('Skins/Primal Huntress Kagome.jpeg', 'Primal Huntress Kagome', 1000)">
-                <img src="Skins/Primal Huntress Kagome.jpeg" alt="Primal Huntress Kagome" class="scaled-image">
-                <div class="skin-name">Primal Huntress Kagome</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-            <div class="skin" data-src="Skins/Spectral Archer Kagome.jpeg" onclick="openLightbox('Skins/Spectral Archer Kagome.jpeg', 'Spectral Archer Kagome', 2000)">
-                <img src="Skins/Spectral Archer Kagome.jpeg" alt="Spectral Archer Kagome" class="scaled-image">
-                <div class="skin-name">Spectral Archer Kagome</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-        </div>
-    </div>
-    <div class="character" id="Kabal">
-        <h2>Kabal</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Winter Festival Kabal.jpeg" onclick="openLightbox('Skins/Winter Festival Kabal.jpeg', 'Winter Festival Kabal', 2000)">
-                <img src="Skins/Winter Festival Kabal.jpeg" alt="Winter Festival Kabal" class="scaled-image">
-                <div class="skin-name">Winter Festival Kabal</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Steamforged Kabal.jpeg" onclick="openLightbox('Skins/Steamforged Kabal.jpeg', 'Steamforged Kabal', 1000)">
-                <img src="Skins/Steamforged Kabal.jpeg" alt="Steamforged Kabal" class="scaled-image">
-                <div class="skin-name">Steamforged Kabal</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-            <div class="skin" data-src="Skins/Executioner Kabal.jpeg" onclick="openLightbox('Skins/Executioner Kabal.jpeg', 'Executioner Kabal', 1000)">
-                <img src="Skins/Executioner Kabal.jpeg" alt="Executioner Kabal" class="scaled-image">
-                <div class="skin-name">Executioner Kabal</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-            <div class="skin" data-src="Skins/Frosted Kabal.jpeg" onclick="openLightbox('Skins/Frosted Kabal.jpeg', 'Frosted Kabal', 2000)">
-                <img src="Skins/Frosted Kabal.jpeg" alt="Frosted Kabal" class="scaled-image">
-                <div class="skin-name">Frosted Kabal</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Atlantean Kotal Kahn.jpeg" onclick="openLightbox('Skins/Atlantean Kotal Kahn.jpeg', 'Atlantean Kotal Kahn', 2000)">
-                <img src="Skins/Atlantean Kotal Kahn.jpeg" alt="Atlantean Kotal Kahn" class="scaled-image">
-                <div class="skin-name">Atlantean Kotal Kahn</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-        </div>
-    </div>
-    <div class="character" id="Kuma">
-        <h2>Kuma / Panda</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Winter Festival Kuma.jpeg" onclick="openLightbox('Skins/Winter Festival Kuma.jpeg', 'Winter Festival Kuma', 1000)">
-                <img src="Skins/Winter Festival Kuma.jpeg" alt="Winter Festival Kuma" class="scaled-image">
-                <div class="skin-name">Winter Festival Kuma</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-            <div class="skin" data-src="Skins/Jade Panda.jpeg" onclick="openLightbox('Skins/Jade Panda.jpeg', 'Jade Panda', 2000)">
-                <img src="Skins/Jade Panda.jpeg" alt="Jade Panda" class="scaled-image">
-                <div class="skin-name">Jade Panda</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Battle Bistro Kuma.jpeg" onclick="openLightbox('Skins/Battle Bistro Kuma.jpeg', 'Battle Bistro Kuma', 1000)">
-                <img src="Skins/Battle Bistro Kuma.jpeg" alt="Battle Bistro Kuma" class="scaled-image">
-                <div class="skin-name">Battle Bistro Kuma</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-            <div class="skin" data-src="Skins/Panda.jpeg" onclick="openLightbox('Skins/Panda.jpeg', 'Panda', 0)">
-                <img src="Skins/Panda.jpeg" alt="Panda" class="scaled-image">
-                <div class="skin-name">Panda</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">FREE</div>
-            </div>
-        </div>
-    </div>
-    <div class="character" id="Alice">
-        <h2>Alice</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Farmer Alice.jpeg" onclick="openLightbox('Skins/Farmer Alice.jpeg', 'Farmer Alice', 2000)">
-                <img src="Skins/Farmer Alice.jpeg" alt="Farmer Alice" class="scaled-image">
-                <div class="skin-name">Farmer Alice</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Mythic Sentinel Alice.jpeg" onclick="openLightbox('Skins/Mythic Sentinel Alice.jpeg', 'Mythic Sentinel Alice', 1000)">
-                <img src="Skins/Mythic Sentinel Alice.jpeg" alt="Mythic Sentinel Alice" class="scaled-image">
-                <div class="skin-name">Mythic Sentinel Alice</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-        </div>
-    </div>
-    <div class="character" id="FANG">
-        <h2>FANG</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Farmer FANG.jpeg" onclick="openLightbox('Skins/Farmer FANG.jpeg', 'Farmer FANG', 3000)">
-                <img src="Skins/Farmer FANG.jpeg" alt="Farmer FANG" class="scaled-image">
-                <div class="skin-name">Farmer FANG</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">3000</div>
-            </div>
-            <div class="skin" data-src="Skins/Voidborn FANG.jpeg" onclick="openLightbox('Skins/Voidborn FANG.jpeg', 'Voidborn FANG', 2000)">
-                <img src="Skins/Voidborn FANG.jpeg" alt="Voidborn FANG" class="scaled-image">
-                <div class="skin-name">Voidborn FANG</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-        </div>
-    </div>
-    <div class="character" id="Lili">
-        <h2>Lili</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Winter Festival Lili.jpg" onclick="openLightbox('Skins/Winter Festival Lili.jpg', 'Winter Festival Lili', 0)">
-                <img src="Skins/Winter Festival Lili.jpg" alt="Winter Festival Lili" class="scaled-image">
-                <div class="skin-name">Winter Festival Lili</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">FREE</div>
-            </div>
-            <div class="skin" data-src="Skins/Battle Bistro Lili.jpeg" onclick="openLightbox('Skins/Battle Bistro Lili.jpeg', 'Battle Bistro Lili', 1000)">
-                <img src="Skins/Battle Bistro Lili.jpeg" alt="Battle Bistro Lili" class="scaled-image">
-                <div class="skin-name">Battle Bistro Lili</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-        </div>
-    </div>
-    <div class="character" id="MegaMan">
-        <h2>Mega Man</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Steamcore Megaman.jpeg" onclick="openLightbox('Skins/Steamcore Megaman.jpeg', 'Steamcore Megaman', 2000)">
-                <img src="Skins/Steamcore Megaman.jpeg" alt="Steamcore Megaman" class="scaled-image">
-                <div class="skin-name">Steamcore Megaman</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Pyromancer Mega Man.jpeg" onclick="openLightbox('Skins/Pyromancer Mega Man.jpeg', 'Pyromancer Mega Man', 2000)">
-                <img src="Skins/Pyromancer Mega Man.jpeg" alt="Pyromancer Mega Man" class="scaled-image">
-                <div class="skin-name">Pyromancer Mega Man</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-        </div>
-    </div>
-    <div class="character" id="Mai">
-        <h2>Mai</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Winter Festival Mai.jpeg" onclick="openLightbox('Skins/Winter Festival Mai.jpeg', 'Winter Festival Mai', 2000)">
-                <img src="Skins/Winter Festival Mai.jpeg" alt="Winter Festival Mai" class="scaled-image">
-                <div class="skin-name">Winter Festival Mai</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Feather Dancer Mai.jpeg" onclick="openLightbox('Skins/Feather Dancer Mai.jpeg', 'Feather Dancer Mai', 1000)">
-                <img src="Skins/Feather Dancer Mai.jpeg" alt="Feather Dancer Mai" class="scaled-image">
-                <div class="skin-name">Feather Dancer Mai</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">1000</div>
-            </div>
-        </div>
-    </div>
-    <div class="character" id="Shinnok">
-        <h2>Shinnok</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Atlantean Shinnok.jpeg" onclick="openLightbox('Skins/Atlantean Shinnok.jpeg', 'Atlantean Shinnok', 2000)">
-                <img src="Skins/Atlantean Shinnok.jpeg" alt="Atlantean Shinnok" class="scaled-image">
-                <div class="skin-name">Atlantean Shinnok</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-            <div class="skin" data-src="Skins/Rainy Day Shinnok.jpeg" onclick="openLightbox('Skins/Rainy Day Shinnok.jpeg', 'Rainy Day Shinnok', 2000)">
-                <img src="Skins/Rainy Day Shinnok.jpeg" alt="Rainy Day Shinnok" class="scaled-image">
-                <div class="skin-name">Rainy Day Shinnok</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-        </div>
-    </div>
-    <div class="character" id="Zasalamel">
-        <h2>Zasalamel</h2>
-        <div class="skins">
-            <div class="skin" data-src="Skins/Atlantean Zasalamel.jpg" onclick="openLightbox('Skins/Atlantean Zasalamel.jpg', 'Atlantean Zasalamel', 2000)">
-                <img src="Skins/Atlantean Zasalamel.jpg" alt="Atlantean Zasalamel" class="scaled-image">
-                <div class="skin-name">Atlantean Zasalamel</div>
-                <div class="skin-price"><img src="res/img/fm.png" alt="Coin Icon">2000</div>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="lightbox" class="lightbox">
-        <div class="lightbox-content">
-            <img id="lightbox-image" src="" alt="Skin Image">
-            <button id="purchase-button" class="purchase-button" onclick="purchaseSkin()"></button>
-            <button class="close-button" onclick="closeLightbox()">x</button>
-        </div>
-    </div>
+    </script>
 </body>
 </html>

@@ -1,5 +1,17 @@
 const songs = [
     {
+        title: "Lunar Festival 2024",
+        artist: "Event",
+        path: "Songs/Lunar Festival 2024 (Event Theme).mp3",
+        cover: "Event/Lunar Festival 2024 Event.png"
+    },
+    {
+        title: "Moonlight",
+        artist: "Lunar Festival Kokoro",
+        path: "Songs/Moonlight (Lunar Festival Kokoro Theme).mp3",
+        cover: "Loading Screen/Lunar Festival Kokoro.png"
+    },
+    {
         title: "Under The Sea",
         artist: "Atlantean Christie",
         path: "Songs/Under The Sea (Atlantean Christie Theme).mp3",

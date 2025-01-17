@@ -14,16 +14,13 @@
             background-color: #121212;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             height: 100vh;
             color: #e0e0e0;
             overflow: hidden;
         }
 
         #background-video {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -32,248 +29,224 @@
             z-index: -1;
         }
 
-        #profile-page {
-            display: flex;
-            align-items: center;
-            width: 80%;
-            max-width: 1600px;
-            background-color: rgba(0, 0, 0, 0.8);
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            flex-direction: column;
-        }
-
-        #main-content {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            padding: 50px;
-            justify-content: space-between;
-            flex-grow: 1;
-        }
-
-        #left-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 250px;
-            text-align: center;
-            background-color: #007bff;
-            color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px;
-        }
-
-        #left-container img {
-            border-radius: 50%;
-            border: 5px solid #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: 100px;
-            height: 100px;
-        }
-
-        #bottom-mid-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 20px;
-            margin-right: 20px;
-        }
-
-        .skin-container {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            max-width: 1080px;
-        }
-
-        .skin-slot {
-            width: 200px;
-            height: 280px;
-            border: 2px solid #444;
-            border-radius: 10px;
-            background-color: #3e3e3e;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            margin: 10px;
-            position: relative;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .skin-slot img {
-            max-width: 100%;
-            max-height: 100%;
-            border-radius: 10px;
-        }
-
-        .skin-slot:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-        }
-
-        .skin-options {
-            display: none;
-            position: absolute;
-            top: 160px;
-            left: 0;
-            right: 0;
-            background-color: #3e3e3e;
-            border: 1px solid #444;
-            border-radius: 10px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 10;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .skin-options img {
-            width: 100%;
-            cursor: pointer;
-            padding: 5px;
-            transition: background-color 0.2s;
-        }
-
-        .background-selection {
-            margin: 20px;
-        }
-        .color-selection {
-            margin: 20px;
-        }
-        /* Transparent Menu */
+        /* Keep existing menu styles */
         .menu {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 10px 20px;
-        background-color: rgba(0, 0, 0, 0.8);
-        z-index: 0;
-        position: fixed;
-        top: 0px;
-    }
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            position: fixed;
+            top: 0;
+            width: 100%;
+        }
 
-    .menu-items {
-        display: flex;
-        justify-content: center;
-        position: relative;
-    }
+        .menu-items {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
 
-    .menu a {
-        color: white;
-        text-decoration: none;
-        padding: 14px 16px;
-        font-family: 'Roboto', sans-serif;
-        font-size: 16px;
-        transition: background-color 0.3s, transform 0.3s;
-    }
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 16px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
 
-    .menu a:hover {
-        background-color: #111;
-        transform: scale(1.1);
-    }
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
 
-    .play-button-container {
-    display: flex;
-    justify-content: flex-start;
-    padding: 20px;
-    z-index: auto;
-    position: fixed;
-}
-
-    .play-button {
-        background-color: #ffbb00; /* Modern blue color */
-        color: white;
-        border: none;
-        border-radius: 25px; /* Slightly less rounded corners for a modern look */
-        font-size: 22px; /* Slightly larger font size */
-        font-weight: bold;
-        text-decoration: none;
-        padding: 15px 40px; /* Increased padding for a more prominent button */
-        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* More pronounced shadow for a modern effect */
-        z-index: 1; /* Ensure it is above other elements */
-        top: 5px; /* Adjusted position */
-        position: fixed;
-        left: 0px;
-    }
-
-    .play-button:hover {
-        background-color: #ff8800;  /* Slightly darker blue on hover */
-        transform: scale(1.05); /* Slightly enlarge the button on hover */
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
-    }
-
+        /* Search bar styles */
         #search-bar {
             position: fixed;
             top: 75px;
+            left: 50%;
+            transform: translateX(-50%);
             width: 300px;
-            padding: 10px;
-            margin: 20px;
-            border-radius: 5px;
-            border: none;
+            padding: 12px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
             font-size: 16px;
+            z-index: 100;
         }
-        #bottom-mid-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 20px;
-        margin-right: 20px;
-    }
 
-    .character-stat {
-        display: flex;
-        align-items: center;
-        background-color: #2c2c2c;
-        border-radius: 10px;
-        padding: 10px;
-        margin: 10px 0;
-        width: 100%;
-        max-width: 300px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
+        #search-bar:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+        }
 
-    .character-stat img {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        margin-right: 10px;
-    }
+        /* New modern layout */
+        .profile-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            padding: 80px 40px 20px;
+            height: calc(100vh - 100px);
+            max-width: 1600px;
+            margin: 0 auto;
+        }
 
-    .character-stat h3 {
-        margin: 0;
-        font-size: 18px;
-        color: #fff;
-    }
+        .profile-sidebar {
+            background: var(--profile-color, linear-gradient(135deg, rgba(0, 123, 255, 0.9), rgba(0, 80, 200, 0.9)));
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
 
-    .character-stat p {
-        margin: 5px 0 0;
-        font-size: 14px;
-        color: #ccc;
-    }
+        .profile-image-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin-bottom: 20px;
+        }
 
-    .username-title-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 2px;
-        margin-bottom: 15px;
-    }
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
 
-    #username-display {
-        font-size: 1.2em;
-        font-weight: bold;
-        margin: 0;
-    }
+        .profile-sticker {
+            position: absolute;
+            bottom: -10px;
+            right: -10px;
+            width: 60px;
+            height: 60px;
+            z-index: 2;
+        }
 
-    #title-display {
-        font-size: 0.8em;
-        color: #ffbb00;  /* Gold color for the title */
-        font-style: italic;
-    }
+        .username-title-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .username {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        #title-display {
+            font-size: 16px;
+            color: #ffbb00;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .rank-points {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 20px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 30px;
+        }
+
+        .top-characters {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .character-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .character-stat {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.2s;
+        }
+
+        .character-stat:hover {
+            transform: translateY(-5px);
+        }
+
+        .character-stat img {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .featured-skins {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .skins-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            height: calc(100vh - 300px);
+        }
+
+        .skin-slot {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            aspect-ratio: 1080/1500;
+            height: 100%;
+            max-height: 500px;
+        }
+
+        .skin-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-button {
+            position: fixed;
+            top: 15px;
+            left: 20px;
+            background: linear-gradient(135deg, #ffbb00, #ff8800);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+            z-index: 101;
+        }
+
+        .play-button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #ff8800, #ff6600);
+        }
     </style>
 </head>
 <body>
@@ -287,259 +260,221 @@
             <a href="statistics.html">Statistics</a>
         </div>
     </div>
-    <div class="play-button-container">
-        <a href="Game Modes.html" class="play-button">Play</a>
-    </div>
-</div>
-<input type="text" id="search-bar" placeholder="Search for a username...">
-<video id="background-video" autoplay loop muted></video>
-<div id="profile-page">
-    <div id="main-content">
-        <div id="left-container">
-            <img id="profile-image" src="" alt="Profile Icon">
+
+    <a href="Game Modes.html" class="play-button">Play</a>
+    <input type="text" id="search-bar" placeholder="Search for a username...">
+    <video id="background-video" autoplay loop muted></video>
+
+    <div class="profile-container">
+        <div class="profile-sidebar">
+            <div class="profile-image-container">
+                <img id="profile-image" class="profile-image" src="" alt="Profile Icon">
+                <img id="profile-sticker" class="profile-sticker" src="" alt="Profile Sticker" style="display: none;">
+            </div>
             <div class="username-title-container">
-                <h2 id="username-display">Username</h2>
+                <h2 id="username-display" class="username">Username</h2>
                 <div id="title-display"></div>
             </div>
-            <div class="background-selection">
-                <select id="background-select" disabled>
-                    <option value="">Select Background</option>
-                    <option value="Arcade Event">Arcade Event</option>
-                    <option value="Arctic Hunting Event">Arctic Hunting Event</option>
-                    <option value="Atlantis Event">Atlantis Event</option>
-                    <option value="Bistro Event">Bistro Event</option>
-                    <option value="Blossom Event">Blossom Event</option>
-                    <option value="Cyber City Event">Cyber City Event</option>
-                    <option value="Desert Wars Event">Desert Wars Event</option>
-                    <option value="Dragonlands Event">Dragonlands Event</option>
-                    <option value="Farm Event">Farm Event</option>
-                    <option value="Goth Event">Goth Event</option>
-                    <option value="Halloween Event 2024">Halloween Event 2024</option>
-                    <option value="High Elf Event">High Elf Event</option>
-                    <option value="Infernal Event">Infernal Event</option>
-                    <option value="Jade Event">Jade Event</option>
-                    <option value="Medieval Kingdom Event">Medieval Kingdom Event</option>
-                    <option value="MOVE Event">MOVE Event</option>
-                    <option value="Music Event">Music Event</option>
-                    <option value="Mystical Forest Event">Mystical Forest Event</option>
-                    <option value="Neon Core Event">Neon Core Event</option>
-                    <option value="Pajama Party Event">Pajama Party Event</option>
-                    <option value="Pirate Event">Pirate Event</option>
-                    <option value="Rainy Day Event">Rainy Day Event</option>
-                    <option value="Sacred Ceremony Event">Sacred Ceremony Event</option>
-                    <option value="School Event">School Event</option>
-                    <option value="Steampunk Event">Steampunk Event</option>
-                    <option value="Stone Age Event">Stone Age Event</option>
-                    <option value="Summer Event">Summer Event</option>
-                    <option value="Void Event">Void Event</option>
-                    <option value="Christmas 2024 Event">Christmas 2024 Event</option>
-                </select>
-                <div class="color-selection">
-                    <label for="color-picker"></label>
-                    <input type="color" id="color-picker" value="#007bff" disabled>
-                </div>
+            <p id="rank-points-display" class="rank-points">Rank Points: 0</p>
+        </div>
+
+        <div class="main-content">
+            <div class="top-characters">
+                <h2>Top 3 Fighters</h2>
+                <div id="top-characters" class="character-stats"></div>
             </div>
-        </div>
-        <div id="bottom-mid-container">
-            <p id="rank-points-display">Rank Points: 0</p>
-            <h2>Top 3 Fighters:</h2>
-            <div id="top-characters"></div>
-        </div>
-            <div class="skin-container">
-                <div class="skin-slot" data-slot="1">
-                    <img src="" alt="Skin 1">
-                    <div class="skin-options"></div>
-                </div>
-                <div class="skin-slot" data-slot="2">
-                    <img src="" alt="Skin 2">
-                    <div class="skin-options"></div>
-                </div>
-                <div class="skin-slot" data-slot="3">
-                    <img src="" alt="Skin 3">
-                    <div class="skin-options"></div>
+
+            <div class="featured-skins">
+                <h2>Featured Skins</h2>
+                <div class="skins-grid">
+                    <div class="skin-slot" data-slot="1">
+                        <img src="" alt="Skin 1">
+                    </div>
+                    <div class="skin-slot" data-slot="2">
+                        <img src="" alt="Skin 2">
+                    </div>
+                    <div class="skin-slot" data-slot="3">
+                        <img src="" alt="Skin 3">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<script type="module">
-    // Initialize Firebase
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
-    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
-    import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+    <script type="module">
+        // Initialize Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
-        authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
-        databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "project-fighters-by-fishb0nes",
-        storageBucket: "project-fighters-by-fishb0nes.appspot.com",
-        messagingSenderId: "867339299995",
-        appId: "1:867339299995:web:99c379940014b9c05cea3e",
-        measurementId: "G-LNEM6HR842"
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const database = getDatabase(app);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
 
-    const userProfile = {
-        username: '',
-        icon: '',
-        skins: {},
-        selectedSkins: {},
-        background: '',
-        profileColor: '#007bff'
-    };
+        const userProfile = {
+            username: '',
+            icon: '',
+            skins: {},
+            selectedSkins: {},
+            background: '',
+            profileColor: '#007bff'
+        };
 
         async function fetchTopCharacters(userId) {
-        const userRef = ref(database, 'users/' + userId);
-        const snapshot = await get(userRef);
-        const userData = snapshot.val();
-        const characters = userData.characters || {};
+            const userRef = ref(database, 'users/' + userId);
+            const snapshot = await get(userRef);
+            const userData = snapshot.val();
+            const characters = userData.characters || {};
 
-        const characterStats = Object.keys(characters).map(character => {
-            const { win, lose } = characters[character];
-            const totalGames = win + lose;
-            const winrate = (win / totalGames) * 100;
-            return { character, winrate, totalGames };
-        });
-
-        characterStats.sort((a, b) => b.winrate - a.winrate);
-        return characterStats.slice(0, 3);
-    }
-
-    document.getElementById('search-bar').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            const username = e.target.value.trim();
-            if (username) {
-                loadUserProfile(username);
-            }
-        }
-    });
-
-    async function loadUserProfile(username) {
-    const usersRef = ref(database, 'users');
-    const snapshot = await get(usersRef);
-    let userId = null;
-
-    snapshot.forEach(childSnapshot => {
-        const userData = childSnapshot.val();
-        if (userData.username === username) {
-            userId = childSnapshot.key;
-        }
-    });
-
-    if (userId) {
-        const userRef = ref(database, 'users/' + userId);
-        const userSnapshot = await get(userRef);
-        const userData = userSnapshot.val();
-        if (userData) {
-            userProfile.username = userData.username || username;
-            userProfile.icon = userData.icon || 'default-icon.png';
-            userProfile.skins = typeof userData.skins === 'object' ? userData.skins : {};
-            userProfile.selectedSkins = userData.selectedSkins || {};
-            userProfile.background = userData.background || '';
-            userProfile.profileColor = userData.profileColor || '#007bff';
-            userProfile.rankPoints = userData.rankPoints || 0; // Fetch rank points
-
-            const rankPointsRef = ref(database, `users/${userId}/Rank points`);
-            const rankPointsSnapshot = await get(rankPointsRef);
-            const rankPoints = rankPointsSnapshot.val() || 0;
-document.getElementById('rank-points-display').textContent = `Rank Points: ${rankPoints}`;
-
-            document.getElementById('username-display').textContent = userProfile.username;
-            document.getElementById('profile-image').src = `Icons/Profile/${userProfile.icon}`;
-            document.getElementById('profile-image').alt = 'Profile Icon';
-
-            updateSkinSlots();
-            updateBackgroundSelection();
-            updateProfileColor();
-
-            const topCharacters = await fetchTopCharacters(userId);
-            const topCharactersContainer = document.getElementById('top-characters');
-            topCharactersContainer.innerHTML = '';
-
-            topCharacters.forEach(character => {
-                const characterElement = document.createElement('div');
-                characterElement.classList.add('character-stat');
-                characterElement.innerHTML = `
-                    <img src="Icons/${character.character}.png" alt="${character.character} Icon">
-                    <div>
-                        <h3>${character.character}</h3>
-                        <p>Winrate: ${character.winrate.toFixed(2)}%</p>
-                        <p>Total Games: ${character.totalGames}</p>
-                    </div>
-                `;
-                topCharactersContainer.appendChild(characterElement);
+            const characterStats = Object.keys(characters).map(character => {
+                const { win, lose } = characters[character];
+                const totalGames = win + lose;
+                const winrate = (win / totalGames) * 100;
+                return { character, winrate, totalGames };
             });
 
-            // Fetch and display the profile sticker
-            const stickerRef = ref(database, 'users/' + userId + '/profileSticker');
-            const stickerSnapshot = await get(stickerRef);
-            const stickerName = stickerSnapshot.val();
-            if (stickerName) {
-                setProfileSticker(stickerName);
-            }
-
-            // Add title display
-            const titleDisplay = document.getElementById('title-display');
-            if (userData.activeTitle) {
-                titleDisplay.textContent = `(${userData.activeTitle})`;
-                titleDisplay.style.display = 'block';
-            } else {
-                titleDisplay.style.display = 'none';
-            }
-        } else {
-            console.log("No user data found");
+            characterStats.sort((a, b) => b.winrate - a.winrate);
+            return characterStats.slice(0, 3);
         }
-    } else {
-        console.log("Username not found");
-    }
-}
 
-function setProfileSticker(stickerName) {
-    const profileSticker = document.getElementById('profile-sticker');
-    profileSticker.src = `Stickers/${stickerName}.png`;
-    profileSticker.style.display = 'block';
-}
-
-    function updateSkinSlots() {
-        Object.keys(userProfile.selectedSkins).forEach(slot => {
-            const skinName = userProfile.selectedSkins[slot];
-            const skinImage = document.querySelector(`.skin-slot[data-slot="${slot}"] img`);
-            skinImage.src = `Loading Screen/${skinName}.png`;
-            skinImage.alt = skinName;
+        document.getElementById('search-bar').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const username = e.target.value.trim();
+                if (username) {
+                    loadUserProfile(username);
+                }
+            }
         });
-    }
 
-    function updateBackgroundSelection() {
-        if (userProfile.background) {
-            const video = document.getElementById('background-video');
-            video.src = `Event/${userProfile.background}.mp4`;
+        async function loadUserProfile(username) {
+            const usersRef = ref(database, 'users');
+            const snapshot = await get(usersRef);
+            let userId = null;
+
+            snapshot.forEach(childSnapshot => {
+                const userData = childSnapshot.val();
+                if (userData.username === username) {
+                    userId = childSnapshot.key;
+                }
+            });
+
+            if (userId) {
+                const userRef = ref(database, 'users/' + userId);
+                const userSnapshot = await get(userRef);
+                const userData = userSnapshot.val();
+                if (userData) {
+                    userProfile.username = userData.username || username;
+                    userProfile.icon = userData.icon || 'default-icon.png';
+                    userProfile.skins = typeof userData.skins === 'object' ? userData.skins : {};
+                    userProfile.selectedSkins = userData.selectedSkins || {};
+                    userProfile.background = userData.background || '';
+                    userProfile.profileColor = userData.profileColor || '#007bff';
+                    userProfile.rankPoints = userData.rankPoints || 0; // Fetch rank points
+
+                    const rankPointsRef = ref(database, `users/${userId}/Rank points`);
+                    const rankPointsSnapshot = await get(rankPointsRef);
+                    const rankPoints = rankPointsSnapshot.val() || 0;
+document.getElementById('rank-points-display').textContent = `Rank Points: ${rankPoints}`;
+
+                    document.getElementById('username-display').textContent = userProfile.username;
+                    document.getElementById('profile-image').src = `Icons/Profile/${userProfile.icon}`;
+                    document.getElementById('profile-image').alt = 'Profile Icon';
+
+                    updateSkinSlots();
+                    updateBackgroundSelection();
+                    updateProfileColor();
+
+                    const topCharacters = await fetchTopCharacters(userId);
+                    const topCharactersContainer = document.getElementById('top-characters');
+                    topCharactersContainer.innerHTML = '';
+
+                    topCharacters.forEach(character => {
+                        const characterElement = document.createElement('div');
+                        characterElement.classList.add('character-stat');
+                        characterElement.innerHTML = `
+                            <img src="Icons/${character.character}.png" alt="${character.character} Icon">
+                            <div>
+                                <h3>${character.character}</h3>
+                                <p>Winrate: ${character.winrate.toFixed(2)}%</p>
+                                <p>Total Games: ${character.totalGames}</p>
+                            </div>
+                        `;
+                        topCharactersContainer.appendChild(characterElement);
+                    });
+
+                    // Fetch and display the profile sticker
+                    const stickerRef = ref(database, 'users/' + userId + '/profileSticker');
+                    const stickerSnapshot = await get(stickerRef);
+                    const stickerName = stickerSnapshot.val();
+                    if (stickerName) {
+                        setProfileSticker(stickerName);
+                    }
+
+                    // Add title display
+                    const titleDisplay = document.getElementById('title-display');
+                    if (userData.activeTitle) {
+                        titleDisplay.textContent = `(${userData.activeTitle})`;
+                        titleDisplay.style.display = 'block';
+                    } else {
+                        titleDisplay.style.display = 'none';
+                    }
+                } else {
+                    console.log("No user data found");
+                }
+            } else {
+                console.log("Username not found");
+            }
         }
 
-        const backgroundSelect = document.getElementById('background-select');
-        if (userProfile.background) {
-            backgroundSelect.value = userProfile.background;
+        function setProfileSticker(stickerName) {
+            const profileSticker = document.getElementById('profile-sticker');
+            profileSticker.src = `Stickers/${stickerName}.png`;
+            profileSticker.style.display = 'block';
         }
-    }
 
-    function updateProfileColor() {
-        const leftContainer = document.getElementById('left-container');
-        leftContainer.style.backgroundColor = userProfile.profileColor;
+        function updateSkinSlots() {
+            Object.keys(userProfile.selectedSkins).forEach(slot => {
+                const skinName = userProfile.selectedSkins[slot];
+                const skinImage = document.querySelector(`.skin-slot[data-slot="${slot}"] img`);
+                if (skinName) {
+                    skinImage.src = `Loading Screen/${skinName}.png`;
+                    skinImage.alt = skinName;
+                }
+            });
+        }
 
-        const colorPicker = document.getElementById('color-picker');
-        colorPicker.value = userProfile.profileColor;
-    }
+        function updateBackgroundSelection() {
+            if (userProfile.background) {
+                const video = document.getElementById('background-video');
+                video.src = `Event/${userProfile.background}.mp4`;
+            }
+        }
 
-    // Load profile if username is in URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const username = urlParams.get('username');
-    if (username) {
-        loadUserProfile(username);
-    }
-</script>
+        function updateProfileColor() {
+            const leftContainer = document.getElementById('left-container');
+            leftContainer.style.backgroundColor = userProfile.profileColor;
+
+            const colorPicker = document.getElementById('color-picker');
+            colorPicker.value = userProfile.profileColor;
+        }
+
+        // Load profile if username is in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+        if (username) {
+            loadUserProfile(username);
+        }
+    </script>
 </body>
 </html>

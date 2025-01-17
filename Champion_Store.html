@@ -32,6 +32,69 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
+        // Add debug mode variables
+        let lastPressTime = 0;
+        let debugButtonVisible = false;
+        const debugButton = document.createElement('button');
+        debugButton.style.position = 'fixed';
+        debugButton.style.top = '10px';
+        debugButton.style.left = '50%';
+        debugButton.style.transform = 'translateX(-50%)';
+        debugButton.style.padding = '10px 20px';
+        debugButton.style.backgroundColor = '#ff0000';
+        debugButton.style.color = 'white';
+        debugButton.style.border = 'none';
+        debugButton.style.borderRadius = '5px';
+        debugButton.style.cursor = 'pointer';
+        debugButton.style.display = 'none';
+        debugButton.style.zIndex = '9999';
+        debugButton.textContent = 'Add All Characters';
+        document.body.appendChild(debugButton);
+
+        // Add key press listener
+        document.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'p') {
+                const currentTime = new Date().getTime();
+                if (currentTime - lastPressTime <= 2000) { // 2 seconds
+                    debugButton.style.display = 'block';
+                    debugButtonVisible = true;
+                }
+                lastPressTime = currentTime;
+            }
+        });
+
+        // Add debug button click handler
+        debugButton.addEventListener('click', async () => {
+            const user = auth.currentUser;
+            if (user) {
+                const updates = {};
+                const characters = [
+                    'Julia', 'Birdie', 'Erron Black', 'Cham Cham', 'Morrigan',
+                    'Jun', 'Reptile', 'Akuma', 'Elphelt', 'Kotal Kahn',
+                    'Scorpion', 'Peacock', 'Angel', 'Astaroth', 'Ibuki',
+                    'R Mika', 'Raiden', 'Yugo', 'Talim', 'Noel',
+                    'Blanka', 'Nina', 'Ayane', 'Siegfried', 'Shoma',
+                    'Juri', 'Sub Zero', 'Christie', 'Kokoro', 'Eagle',
+                    'Sophitia', 'Shizumaru', 'Kagome', 'Kabal', 'Kuma',
+                    'Alice', 'Shinnok', 'FANG', 'Lili', 'Mega Man', 'Mai',
+                    'Zasalamel'
+                ];
+
+                characters.forEach(character => {
+                    updates[`users/${user.uid}/skins/${character}`] = 1;
+                });
+
+                try {
+                    await update(ref(database), updates);
+                    alert('All characters have been added to your collection!');
+                    location.reload(); // Refresh the page to show the changes
+                } catch (error) {
+                    console.error('Error adding characters:', error);
+                    alert('Error adding characters. Please try again.');
+                }
+            }
+        });
+
         window.onload = function() {
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
@@ -57,7 +120,7 @@
                 const newCM = window.userCM - championPrice;
                 const updates = {};
                 updates['CM'] = newCM;
-                updates[`skins/${championName}`] = 1; // Adding the champion to the skins folder with a value of 1
+                updates[`skins/${championName}`] = 1;
                 await update(window.userRef, updates);
                 document.getElementById('currency-amount').textContent = newCM;
                 window.userCM = newCM;

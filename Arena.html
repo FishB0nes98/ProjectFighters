@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Fighters - Arena Mode (1v1)</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script nomodule>
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"><\/script>');
+        document.write('<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"><\/script>');
+    </script>
+    <style>
+        .arena-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 10px;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .team {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 46%;
+            gap: 20px;
+        }
+
+        .player-slot {
+            width: 260px;
+            height: 450px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 40px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .player-slot img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 100px);
+            object-fit: cover;
+            border-radius: 12px 12px 0 0;
+            display: block;
+            z-index: 1;
+        }
+
+        .character-portrait {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 100px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px 12px 0 0;
+            z-index: 0;
+        }
+
+        .character-portrait:not(:empty) {
+            z-index: 2;
+        }
+
+        .status-bars {
+            position: absolute;
+            bottom: 70px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px;
+            border-radius: 6px;
+        }
+
+        .hp-bar, .mana-bar {
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hp-bar {
+            background: linear-gradient(90deg, #ff4757 50%, #2f3542 50%);
+        }
+
+        .mana-bar {
+            background: linear-gradient(90deg, #2e86de 70%, #2f3542 30%);
+        }
+
+        .abilities {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            z-index: 2;
+        }
+
+        .ability {
+            position: relative;
+            width: 45px;
+            height: 45px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-size: cover;
+            background-position: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .ability:hover {
+            transform: scale(1.1);
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .ability-level {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 16px;
+            height: 16px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 50%;
+            color: #ffbb00;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .ability-values {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #aaa;
+            text-align: left;
+            padding: 5px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        .ability-values span {
+            color: #4CAF50;
+        }
+
+        /* Karakter választó modal stílusok */
+        #skin-selection-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+
+        #skin-selection-content {
+            width: 60%;
+            max-height: 600px;
+            background-color: #2c2f33;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            padding: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            border: 2px solid #444;
+            transition: transform 0.3s ease-in-out;
+            transform: translateY(0);
+            left: 20%;
+            top: 12%;
+        }
+
+        #skin-search {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #skin-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            width: 100%;
+            max-height: calc(100% - 80px);
+            overflow-y: auto;
+            gap: 15px;
+            padding: 10px;
+        }
+
+        .role-section {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .role-header {
+            font-size: 24px;
+            color: #ffbb00;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .role-characters {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .character-card, .skin-card {
+            background-color: #444;
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+        }
+
+        .character-card:hover, .skin-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .character-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        .skin-image {
+            width: 150px;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .character-name, .skin-name {
+            color: white;
+            font-size: 14px;
+        }
+
+        .back-button {
+            background-color: #ffbb00;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #ff8800;
+        }
+
+        #close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .timer-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            z-index: 3;
+        }
+
+        .level-display {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3;
+        }
+
+        .level-circle {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .level-number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffbb00;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .level-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .level-progress svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .level-progress circle {
+            fill: none;
+            stroke-width: 3;
+            stroke-linecap: round;
+        }
+
+        .level-progress .bg {
+            stroke: rgba(255, 255, 255, 0.1);
+        }
+
+        .level-progress .fg {
+            stroke: #ffbb00;
+            stroke-dasharray: 138.2;
+            stroke-dashoffset: 138.2;
+            transition: stroke-dashoffset 0.3s ease;
+        }
+
+        .xp-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+            z-index: 1000;
+        }
+
+        .ability.locked {
+            background-color: rgba(50, 50, 50, 0.5);
+            cursor: not-allowed;
+            position: relative;
+        }
+
+        .ability.locked::after {
+            content: "🔒";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+        }
+
+        .level-up-indicator {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 215, 0, 0.9);
+            padding: 5px 15px;
+            border-radius: 15px;
+            color: black;
+            font-weight: bold;
+            display: none;
+            z-index: 4;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.1); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+
+        .ability-upgrade-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1001;
+        }
+
+        .ability-upgrade-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2c2f33;
+            padding: 20px;
+            border-radius: 15px;
+            width: 400px;
+            color: white;
+        }
+
+        .ability-upgrade-title {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #ffbb00;
+        }
+
+        .ability-upgrade-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .ability-upgrade-option {
+            background: #444;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ability-upgrade-option:hover {
+            background: #555;
+            transform: scale(1.05);
+        }
+
+        .ability-upgrade-option.selected {
+            border: 2px solid #ffbb00;
+            background: #666;
+        }
+
+        .ability-icon {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 10px;
+            background-size: cover;
+            border-radius: 5px;
+        }
+
+        .ability-name {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .ability-upgrade-description {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .confirm-upgrade-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #ffbb00;
+            border: none;
+            border-radius: 5px;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .confirm-upgrade-btn:hover {
+            background: #ff8800;
+        }
+
+        .ability-container {
+            position: relative;
+        }
+
+        .upgrade-button {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffbb00;
+            color: black;
+            border: none;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: none;
+            z-index: 3;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            animation: glowPulse 1.5s infinite;
+        }
+
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 5px #ffbb00; filter: brightness(1); }
+            50% { box-shadow: 0 0 15px #ffbb00; filter: brightness(1.3); }
+            100% { box-shadow: 0 0 5px #ffbb00; filter: brightness(1); }
+        }
+
+        .upgrade-button:hover {
+            background: #ffd700;
+            transform: translateX(-50%) scale(1.2);
+        }
+
+        .upgrade-button.show {
+            display: block;
+            animation: bounceIn 0.3s ease;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: translateX(-50%) scale(0); }
+            50% { transform: translateX(-50%) scale(1.2); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="arena-container">
+        <div class="timer-display">00:00</div>
+        <div class="team team-1">
+            <div class="player-slot" data-player-id="player">
+                <div class="level-display">
+                    <div class="level-circle">
+                        <div class="level-number">1</div>
+                        <div class="level-progress">
+                            <svg>
+                                <circle class="bg" cx="25" cy="25" r="22" />
+                                <circle class="fg" cx="25" cy="25" r="22" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="level-up-indicator">Level Up!</div>
+                <div class="character-portrait">Kattints karakter választáshoz</div>
+                <img src="" alt="Player Character" style="display: none;">
+                <div class="status-bars">
+                    <div class="hp-bar"></div>
+                    <div class="mana-bar"></div>
+                </div>
+                <div class="abilities">
+                    <div class="ability-container">
+                        <button class="upgrade-button"></button>
+                        <div class="ability" data-ability="1"></div>
+                    </div>
+                    <div class="ability-container">
+                        <button class="upgrade-button"></button>
+                        <div class="ability" data-ability="2"></div>
+                    </div>
+                    <div class="ability-container">
+                        <button class="upgrade-button"></button>
+                        <div class="ability" data-ability="3"></div>
+                    </div>
+                    <div class="ability-container">
+                        <button class="upgrade-button"></button>
+                        <div class="ability" data-ability="4"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="player-slot" data-player-id="ai1">
+                <div class="level-display">
+                    <div class="level-circle">
+                        <div class="level-number">1</div>
+                        <div class="level-progress">
+                            <svg>
+                                <circle class="bg" cx="25" cy="25" r="22" />
+                                <circle class="fg" cx="25" cy="25" r="22" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="level-up-indicator">Level Up!</div>
+                <div class="character-portrait"></div>
+                <img src="" alt="AI Character" style="display: none;">
+                <div class="status-bars">
+                    <div class="hp-bar"></div>
+                    <div class="mana-bar"></div>
+                </div>
+                <div class="abilities">
+                    <div class="ability-container">
+                        <button class="upgrade-button"></button>
+                        <div class="ability" data-ability="1"></div>
+                    </div>
+                    <div class="ability-container">
+                        <button class="upgrade-button"></button>
+                        <div class="ability" data-ability="2"></div>
+                    </div>
+                    <div class="ability-container">
+                        <button class="upgrade-button"></button>
+                        <div class="ability" data-ability="3"></div>
+                    </div>
+                    <div class="ability-container">
+                        <button class="upgrade-button"></button>
+                        <div class="ability" data-ability="4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="team team-2">
+            <div class="player-slot" data-player-id="ai2">
+                <div class="level-display">
+                    <div class="level-circle">
+                        <div class="level-number">1</div>
+                        <div class="level-progress">
+                            <svg>
+                                <circle class="bg" cx="25" cy="25" r="22" />
+                                <circle class="fg" cx="25" cy="25" r="22" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="level-up-indicator">Level Up!</div>
+                <div class="character-portrait"></div>
+                <img src="" alt="AI Character" style="display: none;">
+                <div class="status-bars">
+                    <div class="hp-bar"></div>
+                    <div class="mana-bar"></div>
+                </div>
+                <div class="abilities">
+                    <div class="ability-container">
+                        <button class="upgrade-button"></button>
+                        <div class="ability" data-ability="1"></div>
+                    </div>
+                    <div class="ability-container">
+                        <button class="upgrade-button"></button>
+                        <div class="ability" data-ability="2"></div>
+                    </div>
+                    <div class="ability-container">
+                        <button class="upgrade-button"></button>
+                        <div class="ability" data-ability="3"></div>
+                    </div>
+                    <div class="ability-container">
+                        <button class="upgrade-button"></button>
+                        <div class="ability" data-ability="4"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="player-slot" data-player-id="ai3">
+                <div class="level-display">
+                    <div class="level-circle">
+                        <div class="level-number">1</div>
+                        <div class="level-progress">
+                            <svg>
+                                <circle class="bg" cx="25" cy="25" r="22" />
+                                <circle class="fg" cx="25" cy="25" r="22" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="level-up-indicator">Level Up!</div>
+                <div class="character-portrait"></div>
+                <img src="" alt="AI Character" style="display: none;">
+                <div class="status-bars">
+                    <div class="hp-bar"></div>
+                    <div class="mana-bar"></div>
+                </div>
+                <div class="abilities">
+                    <div class="ability-container">
+                        <button class="upgrade-button"></button>
+                        <div class="ability" data-ability="1"></div>
+                    </div>
+                    <div class="ability-container">
+                        <button class="upgrade-button"></button>
+                        <div class="ability" data-ability="2"></div>
+                    </div>
+                    <div class="ability-container">
+                        <button class="upgrade-button"></button>
+                        <div class="ability" data-ability="3"></div>
+                    </div>
+                    <div class="ability-container">
+                        <button class="upgrade-button"></button>
+                        <div class="ability" data-ability="4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="skin-selection-modal">
+        <div id="skin-selection-content">
+            <input type="text" id="skin-search" placeholder="Search characters...">
+            <div id="skin-container"></div>
+            <button id="close-modal">&times;</button>
+        </div>
+    </div>
+
+    <div id="ability-upgrade-modal" class="ability-upgrade-modal">
+        <div class="ability-upgrade-content">
+            <div class="ability-upgrade-title">Képesség Fejlesztése</div>
+            <div class="ability-upgrade-options">
+                <!-- Az opciók dinamikusan lesznek hozzáadva -->
+            </div>
+            <button class="confirm-upgrade-btn">Fejlesztés Megerősítése</button>
+        </div>
+    </div>
+
+    <script src="roles.js" type="module"></script>
+    <script src="characterskinref.js" type="module"></script>
+    <script src="skinmapping.js" type="module"></script>
+    <script src="Arena/arena.js" type="module"></script>
+</body>
+</html> 

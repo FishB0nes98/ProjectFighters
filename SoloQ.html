@@ -1992,6 +1992,34 @@ async function updateQuestsAfterGame(userId, selectedCharacter, isWin) {
         await updateQuestProgress('play3games');
         await updateQuestProgress('play15Games');
 
+        // Get current win streak
+        const userRef = ref(database, `users/${userId}`);
+        const snapshot = await get(userRef);
+        const userData = snapshot.val();
+        let currentWinStreak = userData.winStreak || 0;
+
+        if (isWin) {
+            // Increment win streak
+            currentWinStreak++;
+            await update(userRef, { winStreak: currentWinStreak });
+
+            // Update win streak quest if we have 2 or more wins
+            if (currentWinStreak >= 2) {
+                const questRef = ref(database, `users/${userId}/quests/win-streak`);
+                const questSnapshot = await get(questRef);
+                const questData = questSnapshot.val() || { progress: 0, completed: false, claimed: false };
+                
+                if (!questData.claimed && !questData.completed) {
+                    questData.progress = 2;
+                    questData.completed = true;
+                    await set(questRef, questData);
+                }
+            }
+        } else {
+            // Reset win streak on loss
+            await update(userRef, { winStreak: 0 });
+        }
+
         // Update Steampunk event quest
         const steampunkChampions = ['Nina', 'Yugo', 'Mega Man', 'Kabal', 'Ibuki'];
         if (steampunkChampions.includes(selectedCharacter)) {
@@ -1999,11 +2027,7 @@ async function updateQuestsAfterGame(userId, selectedCharacter, isWin) {
         }
 
         // Update Enchanter quest
-        const userRef = ref(database, `users/${userId}`);
-        const snapshot = await get(userRef);
-        const userData = snapshot.val();
-
-        // Get enchanter champions from roles
+        // Reuse the existing userData from above instead of fetching again
         const enchanters = Object.keys(roles).reduce((acc, role) => {
             if (role === 'Support') {
                 return [...acc, ...roles[role].filter(champion => {

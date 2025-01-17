@@ -446,5 +446,11 @@ export const skinToBaseCharacterMap = {
     'Atlantean Shinnok': 'Shinnok',
     'Atlantean Sub Zero': 'Sub Zero',
     'Atlantean Kagome': 'Kagome',
-    
+    'Lunar Festival Lili': 'Lili',
+    'Lunar Festival Scorpion': 'Scorpion',
+    'Lunar Festival Kokoro': 'Kokoro',
+    'Lunar Festival Kokoro Sweet': 'Kokoro',
+    'Lunar Festival Reptile': 'Reptile',
+    'Lunar Festival Noel': 'Noel',
+    'Lunar Festival Siegfried': 'Siegfried',
 };

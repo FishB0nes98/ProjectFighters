@@ -2,154 +2,340 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Collection</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #333333;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-         /* Transparent Menu */
-         .menu {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 10px 20px;
-        background-color: rgba(0, 0, 0, 0.8);
-        z-index: 0;
-    }
-
-    .menu-items {
-        display: flex;
-        justify-content: center;
-        position: relative;
-    }
-
-    .menu a {
-        color: white;
-        text-decoration: none;
-        padding: 14px 16px;
-        font-family: 'Roboto', sans-serif;
-        font-size: 16px;
-        transition: background-color 0.3s, transform 0.3s;
-    }
-
-    .menu a:hover {
-        background-color: #111;
-        transform: scale(1.1);
-    }
-
-    .play-button-container {
-    display: flex;
-    justify-content: flex-start;
-    padding: 20px;
-    z-index: auto;
-    position: fixed;
-}
-
-    .play-button {
-        background-color: #ffbb00; /* Modern blue color */
-        color: white;
-        border: none;
-        border-radius: 25px; /* Slightly less rounded corners for a modern look */
-        font-size: 22px; /* Slightly larger font size */
-        font-weight: bold;
-        text-decoration: none;
-        padding: 15px 40px; /* Increased padding for a more prominent button */
-        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* More pronounced shadow for a modern effect */
-        z-index: 1; /* Ensure it is above other elements */
-        top: 5px; /* Adjusted position */
-        position: fixed;
-        left: 0px;
-    }
-
-    .play-button:hover {
-        background-color: #ff8800;  /* Slightly darker blue on hover */
-        transform: scale(1.05); /* Slightly enlarge the button on hover */
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
-    }
-
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: calc(100vh - 48px); /* Adjusted for menu height */
-			overflow-y: auto; /* Enable scrolling if content overflows */
-        }
-        .box {
-            width: 90%;
-            background-color: #555555;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
-        }
-        #collection-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            padding: 20px;
-        }
-        .skin-image {
-            width: 240px;
-            height: 135px; /* 16:9 aspect ratio */
-            margin: 10px;
-            border: 2px solid #444;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.3s;
-        }
-        .skin-image:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
-        }
-        .lightbox {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .lightbox img {
-            max-width: 90%;
-            max-height: 90%;
-        }
-        .lightbox:target {
-            display: flex;
-        }
-        .lightbox-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: white;
-            font-size: 24px;
-            text-decoration: none;
-        }
-		.battlepass-button {
-			background-color: red; /* Gold background */
-			color: #000; /* Black text */
-			border-radius: 25px; /* Rounded corners */
-			font-size: 12px;
-			text-transform: uppercase; /* Uppercase text */
-			margin-right: 300px;
-		}
-
-		.battlepass-button::before {
-			content: "🔥 "; /* emoji */
-			margin-right: 5px;
-		}
-    </style>
-    <!-- Include Firebase SDK and configuration as module scripts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Include Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .collection-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            transition: transform 0.3s ease;
+        }
+
+        /* Skins aspect ratio 16:9 */
+        .collection-item.skin-item {
+            aspect-ratio: 16/9;
+        }
+
+        /* Icons aspect ratio 1:1 (square) */
+        .collection-item.icon-item {
+            aspect-ratio: 1/1;
+        }
+
+        .collection-item:hover {
+            transform: translateY(-4px);
+        }
+
+        .shimmer {
+            background: linear-gradient(90deg, #1e293b 0%, #334155 50%, #1e293b 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .tab-active {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        /* Modern scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Album styles */
+        .collection-item.song-item {
+            aspect-ratio: 1/1;
+            background: #1e293b;
+            border: 1px solid #334155;
+        }
+
+        .song-item .album-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .song-item:hover .album-info {
+            transform: translateY(0);
+        }
+
+        .song-item .album-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: white;
+        }
+
+        .song-item .album-artist {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .song-item .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            opacity: 0;
+            transition: all 0.3s ease;
+            background: #2563eb;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+        }
+
+        .song-item:hover .play-button {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .song-item .play-button:hover {
+            background: #1d4ed8;
+        }
+
+        /* Grid adjustments for songs */
+        .collection-grid.songs-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+
+        /* Title styles */
+        .collection-item.title-item {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            padding: 1.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            overflow: visible;
+        }
+
+        .title-item:hover {
+            transform: translateY(-4px) scale(1.02);
+            border-color: rgba(148, 163, 184, 0.2);
+            box-shadow: 
+                0 10px 30px -5px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(37, 99, 235, 0.2);
+        }
+
+        .title-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .title-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .title-description {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+
+        .title-rarity {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .title-rarity.legendary {
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            color: #fff;
+        }
+
+        .title-rarity.epic {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            color: #fff;
+        }
+
+        .title-rarity.rare {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: #fff;
+        }
+
+        .title-rarity.common {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: #fff;
+        }
+
+        /* Grid adjustments for titles */
+        .collection-grid.titles-grid {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+
+        /* Glow effect on hover */
+        .title-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 0.75rem;
+            background: radial-gradient(
+                800px circle at var(--mouse-x) var(--mouse-y),
+                rgba(37, 99, 235, 0.1),
+                transparent 40%
+            );
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .title-item:hover::before {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Menu Bar -->
+    <nav class="bg-slate-900/95 backdrop-blur-sm fixed w-full z-50 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-8">
+                    <!-- Play Button -->
+                    <a href="Game Modes.html" class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-2 rounded-full font-semibold hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-orange-500/25">
+                        Play
+                    </a>
+                    
+                    <!-- Navigation Links -->
+                    <div class="flex space-x-4">
+                        <a href="home.html" class="text-slate-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</a>
+                        <a href="Store.html" class="text-slate-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Store</a>
+                        <a href="event.html" class="text-slate-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Event</a>
+                        <a href="Team Builder.html" class="text-slate-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Team Builder</a>
+                        <a href="statistics.html" class="text-slate-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Statistics</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-20 px-4 pb-8 max-w-7xl mx-auto">
+        <!-- Collection Type Tabs -->
+        <div class="mb-8">
+            <div class="flex space-x-2 bg-slate-800/50 p-1 rounded-lg inline-flex">
+                <button class="tab-active px-4 py-2 rounded-md text-sm font-medium transition-all duration-200" data-tab="skins">
+                    Skins
+                </button>
+                <button class="text-slate-300 hover:bg-slate-700 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200" data-tab="icons">
+                    Icons
+                </button>
+                <button class="text-slate-300 hover:bg-slate-700 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200" data-tab="songs">
+                    Songs
+                </button>
+                <button class="text-slate-300 hover:bg-slate-700 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200" data-tab="titles">
+                    Titles
+                </button>
+            </div>
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div class="mb-8 flex flex-wrap gap-4">
+            <div class="flex-1 min-w-[200px]">
+                <input type="text" placeholder="Search collection..." class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2 text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="flex gap-4">
+                <select class="bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2 text-slate-300">
+                    <option value="">All Rarities</option>
+                    <option value="legendary">Legendary</option>
+                    <option value="epic">Epic</option>
+                    <option value="rare">Rare</option>
+                </select>
+                <select class="bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2 text-slate-300">
+                    <option value="">Sort By</option>
+                    <option value="newest">Newest</option>
+                    <option value="oldest">Oldest</option>
+                    <option value="rarity">Rarity</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Collection Grid -->
+        <div id="collection-container" class="collection-grid">
+            <!-- Items will be dynamically loaded here -->
+        </div>
+
+        <!-- Show More Button -->
+        <div id="show-more-container" class="mt-8 flex justify-center hidden">
+            <button id="show-more-button" class="bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                Show More
+            </button>
+        </div>
+
+        <!-- Lightbox Modal -->
+        <div id="lightbox" class="fixed inset-0 bg-black/90 z-50 hidden items-center justify-center">
+            <div class="max-w-4xl w-full p-4">
+                <div class="relative">
+                    <img id="lightbox-image" class="w-full h-auto rounded-lg" src="" alt="">
+                    <button class="absolute top-4 right-4 text-white hover:text-gray-300" onclick="closeLightbox()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
@@ -166,106 +352,370 @@
             measurementId: "G-LNEM6HR842"
         };
 
-       const app = initializeApp(firebaseConfig);
+        const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        window.onload = function() {
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    const userId = user.uid;
-                    const userRef = ref(database, 'users/' + userId + '/skins');
-                    const snapshot = await get(userRef);
-                    const skins = snapshot.val() || {};
-                    displaySkins(skins);
-                } else {
-                    console.log("User is not authenticated");
-                }
-            });
+        // Intersection Observer for lazy loading
+        const observerOptions = {
+            root: null,
+            rootMargin: '50px',
+            threshold: 0.1
         };
 
-function displaySkins(skins) {
-            const collectionContainer = document.getElementById('collection-container');
-            const defaultSkins = ["Nina"]; // List of default skins to exclude
-            const skinNames = Object.keys(skins).filter(skin => skins[skin] === 1);
-
-            skinNames.forEach(skin => {
-                if (!defaultSkins.includes(skin)) {
-                    const skinContainer = document.createElement('div');
-                    skinContainer.classList.add('skin-container');
-
-                    const img = document.createElement('img');
-                    img.src = `Skins/${skin}.png`;
-                    img.alt = skin;
-                    img.classList.add('skin-image');
-                    img.onerror = () => {
-                        img.src = `Skins/${skin}.jpg`; // Try jpg if png not found
-                        img.onerror = () => {
-                            img.src = `Skins/${skin}.jpeg`; // Try jpeg if jpg not found
-                            img.onerror = () => {
-                                img.style.display = 'none'; // Hide if all not found
-                            };
-                        };
-                    };
-
-                    const lightboxLink = document.createElement('a');
-                    lightboxLink.href = `#lightbox-${skin}`;
-                    lightboxLink.appendChild(img);
-
-                    skinContainer.appendChild(lightboxLink);
-                    collectionContainer.appendChild(skinContainer);
-
-                    // Lightbox
-                    const lightbox = document.createElement('div');
-                    lightbox.classList.add('lightbox');
-                    lightbox.id = `lightbox-${skin}`;
-
-                    const lightboxImg = document.createElement('img');
-                    lightboxImg.src = `Skins/${skin}.png`; // Set initial src to png
-                    lightboxImg.onerror = () => {
-                        lightboxImg.src = `Skins/${skin}.jpg`; // Try jpg if png not found
-                        lightboxImg.onerror = () => {
-                            lightboxImg.src = `Skins/${skin}.jpeg`; // Try jpeg if jpg not found
-                            lightboxImg.onerror = () => {
-                                lightboxImg.style.display = 'none'; // Hide if all not found
-                            };
-                        };
-                    };
-
-                    const closeButton = document.createElement('a');
-                    closeButton.href = '#';
-                    closeButton.classList.add('lightbox-close');
-                    closeButton.textContent = '✖';
-
-                    lightbox.appendChild(lightboxImg);
-                    lightbox.appendChild(closeButton);
-
-                    document.body.appendChild(lightbox);
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.classList.remove('shimmer');
+                        observer.unobserve(img);
+                    }
                 }
             });
+        }, observerOptions);
+
+        // Tab switching
+        const tabs = document.querySelectorAll('[data-tab]');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('tab-active'));
+                tab.classList.add('tab-active');
+                loadCollectionItems(tab.dataset.tab);
+            });
+        });
+
+        // Add these variables at the start of the script
+        let currentItems = [];
+        let currentPage = 1;
+        const itemsPerPage = 20;
+
+        // Update the loadCollectionItems function
+        async function loadCollectionItems(type) {
+            const container = document.getElementById('collection-container');
+            const showMoreContainer = document.getElementById('show-more-container');
+            container.innerHTML = ''; // Clear existing items
+            currentPage = 1; // Reset pagination
+            showMoreContainer.classList.add('hidden');
+
+            // Update grid class based on type
+            container.className = `collection-grid ${type === 'songs' ? 'songs-grid' : type === 'titles' ? 'titles-grid' : ''}`;
+
+            if (!auth.currentUser) return;
+
+            const userId = auth.currentUser.uid;
+            // Different path for different types
+            let collectionRef;
+            if (type === 'icons') {
+                collectionRef = ref(database, `users/${userId}/Icons`);
+            } else if (type === 'songs') {
+                collectionRef = ref(database, `users/${userId}/Songs`);
+            } else if (type === 'titles') {
+                collectionRef = ref(database, `users/${userId}/titles`);
+            } else {
+                collectionRef = ref(database, `users/${userId}/${type}`);
+            }
+            
+            const snapshot = await get(collectionRef);
+            const items = snapshot.val() || {};
+
+            // Get the keys (item names) from the items object
+            // For songs, only check for value === 1
+            currentItems = type === 'songs' 
+                ? Object.keys(items).filter(name => items[name] === 1)
+                : Object.keys(items).filter(name => items[name] === true || items[name] === 1);
+            
+            // Show items based on type
+            if (type === 'songs' || type === 'titles') {
+                // Show all songs and titles at once
+                showItems(type);
+            } else {
+                // Show paginated items for skins and icons
+                showItems(type);
+                // Show "Show More" button only for skins if there are more items
+                if (type === 'skins' && currentItems.length > itemsPerPage) {
+                    showMoreContainer.classList.remove('hidden');
+                }
+            }
+        }
+
+        // Update showItems function to handle different types
+        function showItems(type) {
+            const container = document.getElementById('collection-container');
+            const startIndex = 0;
+            const endIndex = type === 'skins' ? currentPage * itemsPerPage : currentItems.length;
+            
+            const itemsToShow = currentItems.slice(startIndex, endIndex);
+            
+            itemsToShow.forEach(itemName => {
+                const itemElement = createCollectionItem(itemName, type);
+                container.appendChild(itemElement);
+            });
+
+            // Hide "Show More" button if all items are shown
+            const showMoreContainer = document.getElementById('show-more-container');
+            if (type === 'skins' && endIndex >= currentItems.length) {
+                showMoreContainer.classList.add('hidden');
+            }
+        }
+
+        // Add Show More button click handler
+        document.getElementById('show-more-button').addEventListener('click', () => {
+            currentPage++;
+            const activeTab = document.querySelector('[data-tab].tab-active');
+            showItems(activeTab.dataset.tab);
+        });
+
+        // Update search functionality to work with pagination
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const showMoreContainer = document.getElementById('show-more-container');
+            
+            if (searchTerm) {
+                // Hide show more button during search
+                showMoreContainer.classList.add('hidden');
+                
+                const items = document.querySelectorAll('.collection-item');
+                items.forEach(item => {
+                    const itemName = item.querySelector('.item-name').textContent.toLowerCase();
+                    item.style.display = itemName.includes(searchTerm) ? 'block' : 'none';
+                });
+            } else {
+                // Reset to paginated view when search is cleared
+                const activeTab = document.querySelector('[data-tab].tab-active');
+                if (activeTab.dataset.tab === 'skins' && currentItems.length > currentPage * itemsPerPage) {
+                    showMoreContainer.classList.remove('hidden');
+                }
+                
+                const items = document.querySelectorAll('.collection-item');
+                items.forEach(item => {
+                    item.style.display = 'block';
+                });
+            }
+        });
+
+        // Create collection item
+        function createCollectionItem(itemId, type) {
+            const div = document.createElement('div');
+            
+            if (type === 'titles') {
+                // Create title item
+                div.className = 'collection-item title-item group cursor-pointer relative';
+                
+                // Get title info (rarity would come from your database)
+                const titleInfo = getTitleInfo(itemId);
+                
+                const content = document.createElement('div');
+                content.className = 'title-content';
+                content.innerHTML = `
+                    <div class="title-name">${titleInfo.name}</div>
+                    <div class="title-description">${titleInfo.description}</div>
+                    <div class="title-rarity ${titleInfo.rarity}">${titleInfo.rarity}</div>
+                `;
+                
+                div.appendChild(content);
+                
+            } else if (type === 'songs') {
+                // Create song/album item with image
+                div.className = 'collection-item song-item group cursor-pointer relative';
+                
+                const img = document.createElement('img');
+                img.className = 'w-full h-full object-cover shimmer rounded-lg';
+                img.alt = itemId;
+                
+                // Extract song info from the ID
+                const songInfo = getSongInfo(itemId);
+                
+                // Play button overlay
+                const playButton = document.createElement('div');
+                playButton.className = 'play-button shadow-lg';
+                playButton.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                    </svg>
+                `;
+                
+                // Album info
+                const albumInfo = document.createElement('div');
+                albumInfo.className = 'album-info';
+                albumInfo.innerHTML = `
+                    <div class="album-title">${songInfo.title}</div>
+                    <div class="album-artist">${songInfo.artist}</div>
+                `;
+                
+                // Try loading album cover from Loading Screen directory
+                tryLoadImage(img, songInfo.coverPath, '', ['png', 'jpeg', 'jpg']);
+                
+                div.appendChild(img);
+                div.appendChild(playButton);
+                div.appendChild(albumInfo);
+                
+                // Add click handler for playing song
+                div.addEventListener('click', () => playSong(songInfo.path));
+
+                // Observe image loading
+                observer.observe(img);
+                
+            } else {
+                // Original code for skins and icons
+                div.className = `collection-item group cursor-pointer relative ${type === 'icons' ? 'icon-item' : 'skin-item'}`;
+                
+                const img = document.createElement('img');
+                img.className = 'w-full h-full object-cover shimmer';
+                img.alt = itemId;
+                
+                const nameOverlay = document.createElement('div');
+                nameOverlay.className = 'absolute bottom-0 left-0 right-0 bg-black/50 text-white p-2 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity item-name';
+                nameOverlay.textContent = itemId.replace(/_/g, ' ');
+                
+                const basePath = type === 'icons' ? 'Icons/Profile' : 'Skins';
+                const extensions = ['png', 'jpeg', 'jpg', 'jfif'];
+                tryLoadImage(img, itemId, basePath, extensions);
+                
+                div.appendChild(img);
+                div.appendChild(nameOverlay);
+                div.addEventListener('click', () => openLightbox(img.dataset.currentSrc));
+
+                // Observe image loading
+                observer.observe(img);
+            }
+            
+            return div;
+        }
+
+        // Helper function to get song info
+        function getSongInfo(songId) {
+            // Remove the file extension if present
+            const baseName = songId.replace(/\.[^/.]+$/, "");
+            
+            // Extract title and artist from the theme format
+            const match = baseName.match(/(.*?)\s*\((.*?)\s*Theme\)/);
+            if (match) {
+                const [, title, artist] = match;
+                return {
+                    title: title.trim(),
+                    artist: artist.trim(),
+                    path: `Songs/${songId}`,
+                    coverPath: `Loading Screen/${artist.trim()}`
+                };
+            }
+            
+            // Fallback if the format doesn't match
+            return {
+                title: baseName,
+                artist: 'Unknown Artist',
+                path: `Songs/${songId}`,
+                coverPath: 'Loading Screen/default'
+            };
+        }
+
+        // Helper function to try different image formats
+        function tryLoadImage(img, itemId, basePath, formats, currentIndex = 0) {
+            if (currentIndex >= formats.length) {
+                // If all formats fail, try to load default icon for icons
+                if (basePath === 'Icons') {
+                    img.src = 'Icons/default-icon.jpg';
+                    img.classList.remove('shimmer');
+                } else {
+                    img.style.display = 'none';
+                }
+                return;
+            }
+
+            const format = formats[currentIndex];
+            const src = `${basePath}/${itemId}.${format}`;
+            img.dataset.src = src;
+            
+            // Create a temporary image to test loading
+            const tempImg = new Image();
+            tempImg.onload = () => {
+                img.dataset.currentSrc = src;
+                if (img.classList.contains('shimmer')) {
+                    img.src = src;
+                    img.classList.remove('shimmer');
+                }
+            };
+            tempImg.onerror = () => {
+                tryLoadImage(img, itemId, basePath, formats, currentIndex + 1);
+            };
+            tempImg.src = src;
+        }
+
+        // Lightbox functions
+        window.openLightbox = function(src) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImage = document.getElementById('lightbox-image');
+            lightboxImage.src = src;
+            lightbox.classList.remove('hidden');
+            lightbox.classList.add('flex');
+        }
+
+        window.closeLightbox = function() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.add('hidden');
+            lightbox.classList.remove('flex');
+        }
+
+        // Initialize
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loadCollectionItems('skins'); // Load skins by default
+            }
+        });
+
+        // Update playSong function
+        let currentAudio = null;
+        function playSong(songPath) {
+            if (currentAudio) {
+                currentAudio.pause();
+                if (currentAudio.src === songPath) {
+                    currentAudio = null;
+                    return;
+                }
+            }
+
+            const audio = new Audio(songPath);
+            audio.play().catch(error => {
+                console.error('Error playing song:', error);
+            });
+            currentAudio = audio;
+
+            // Add ended event listener
+            audio.addEventListener('ended', () => {
+                currentAudio = null;
+            });
+        }
+
+        // Add mouse move effect for titles
+        document.addEventListener('mousemove', (e) => {
+            document.querySelectorAll('.title-item').forEach(title => {
+                const rect = title.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                title.style.setProperty('--mouse-x', `${x}px`);
+                title.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // Helper function to get title info
+        function getTitleInfo(titleId) {
+            // Remove underscores and format the title
+            const name = titleId.replace(/_/g, ' ');
+            
+            // You would typically get this info from your database
+            // For now, we'll generate some sample data
+            const rarities = ['common', 'rare', 'epic', 'legendary'];
+            const rarity = rarities[Math.floor(Math.random() * rarities.length)];
+            
+            return {
+                name: name,
+                description: `A prestigious title earned through great achievements.`,
+                rarity: rarity
+            };
         }
     </script>
-    </script>
-</head>
-<body>
-    <!-- Menu -->
-    <div class="menu">
-        <div class="menu-items">
-            <a href="home.html">Home</a>
-            <a href="Store.html">Store</a>
-            <a href="event.html">Event</a>
-            <a href="Team Builder.html">Team Builder</a>
-            <a href="statistics.html">Statistics</a>
-        </div>
-    </div>
-    <div class="play-button-container">
-        <a href="Game Modes.html" class="play-button">Play</a>
-    </div>
-</div>
-    <div class="container">
-        <div class="box">
-            <div id="collection-container"></div>
-        </div>
-    </div>
 </body>
 </html>

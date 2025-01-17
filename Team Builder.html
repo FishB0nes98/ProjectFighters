@@ -1,187 +1,461 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Team Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            background-color: #222;
-            color: white;
-            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary: #ffbb00;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --dark: #1a1a2e;
+            --darker: #16213e;
+            --light: rgba(255, 255, 255, 0.1);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
+            color: #fff;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
+            overflow-x: hidden;
         }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.8) 100%);
+            opacity: 0.5;
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .menu {
+            width: 100%;
+            padding: 1.5rem;
+            background: var(--light);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            z-index: 100;
+        }
+
+        .menu-items {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .menu a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .menu a:hover::after {
+            width: 80%;
+        }
+
+        .play-button {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            padding: 0.8rem 2rem;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 101;
+            box-shadow: 0 5px 15px rgba(255, 187, 0, 0.3);
+        }
+
+        .play-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 187, 0, 0.4);
+        }
+
         h1 {
             text-align: center;
-            font-size: 36px;
-            margin-top: 25px;
+            font-size: 2.5rem;
+            margin-top: 120px;
+            margin-bottom: 2rem;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
+
         #team-builder-container {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             width: 100%;
             max-width: 1500px;
-            margin-top: 5px;
+            padding: 0 2rem;
+            gap: 2rem;
+            margin-bottom: 2rem;
         }
+
         .team-container {
+            flex: 1;
+            background: var(--light);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .team-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .team-container h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .team, .ban {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #333;
-            padding: 20px;
-            border-radius: 10px;
-            width: 40%;
-        }
-        .champion-pool {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #333;
-            padding: 10px;
-            max-width: 1300px;
-            margin: 20px auto;
-            border-radius: 10px;
-            overflow-y: auto;
-        }
-        .role-container {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        .role-container h3 {
-            cursor: pointer;
-            background-color: #444;
-            padding: 10px;
-            margin: 0;
-            border-radius: 5px;
-        }
-        .role-container .champion-list {
-            display: none;
-            flex-wrap: wrap;
             justify-content: center;
-            align-items: center;
-            background-color: #333;
-            padding: 10px;
-            border-radius: 5px;
+            gap: 1rem;
+            margin: 1rem 0;
         }
-        .champion-image {
-            margin: 5px;
-            border: 2px solid #444;
+
+        .champion-slot {
+            background: rgba(0, 0, 0, 0.2);
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            overflow: hidden;
             cursor: pointer;
-            transition: transform 0.2s;
-            flex: 1 1 100px;
-            max-width: 100px;
-            max-height: 100px;
             position: relative;
         }
-        .champion-image:hover {
-            transform: scale(1.15);
+
+        .champion-slot::before {
+            content: '+';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.3);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
-        .selected {
-            border-color: green;
+
+        .champion-slot:empty::before {
+            opacity: 1;
         }
-        .banned {
-            border-color: red;
-        }
-        .team, .ban {
-            margin: 20px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .team .champion-slot, .ban .champion-slot {
+
+        .team .champion-slot {
             width: 100px;
             height: 100px;
-            margin: 0 10px;
-            border: 2px dashed #555;
+        }
+
+        .ban .champion-slot {
+            width: 60px;
+            height: 60px;
+        }
+
+        .champion-slot:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(255, 187, 0, 0.3);
+        }
+
+        .champion-slot.selected {
+            border: 2px solid var(--success);
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .champion-slot.banned {
+            border: 2px solid var(--danger);
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .champion-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .champion-slot:hover img {
+            transform: scale(1.1);
+        }
+
+        .champion-pool {
+            width: 100%;
+            max-width: 1500px;
+            background: var(--light);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            margin: 0 2rem 2rem;
+            box-shadow: var(--shadow);
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .role-section {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .role-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .role-header {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .champions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .champion-card {
+            position: relative;
+            cursor: grab;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .champion-card:active {
+            cursor: grabbing;
+        }
+
+        .champion-card img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .champion-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .champion-card .champion-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            font-size: 0.8rem;
+            text-align: center;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .champion-card:hover .champion-name {
+            transform: translateY(0);
+        }
+
+        .champion-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .champion-card.disabled:hover img {
+            transform: none;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: background-color 0.2s;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
         }
-        .ban .champion-slot {
-            width: 50px;
-            height: 50px;
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
         }
-        .team .champion-slot.selected, .ban .champion-slot.banned {
-            border-color: transparent;
+
+        .modal {
+            background: var(--dark);
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: var(--shadow);
+            position: relative;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
         }
-        .team .champion-slot img, .ban .champion-slot img {
-            max-width: 100%;
-            max-height: 100%;
+
+        .modal.show {
+            transform: translateY(0);
         }
-        .ban .champion-slot img {
-            max-width: 50px;
-            max-height: 50px;
+
+        .modal h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
         }
-        .menu {
+
+        .modal-content {
+            margin: 1rem 0;
+            color: #fff;
+        }
+
+        .modal-content h3 {
+            color: var(--primary);
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        .modal-content p {
+            margin: 0.5rem 0;
+            opacity: 0.8;
+        }
+
+        .modal-close {
+            display: block;
+            margin: 2rem auto 0;
+            padding: 0.8rem 3rem;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 187, 0, 0.3);
+        }
+
+        .modal-close:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 187, 0, 0.4);
+        }
+
+        .phase-indicator {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--light);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            z-index: 99;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .phase-indicator h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .phase-steps {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 10px 20px;
-        background-color: rgba(0, 0, 0, 0.8);
-        z-index: 0;
-    }
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
 
-    .menu-items {
+        .phase-step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
         display: flex;
+            align-items: center;
         justify-content: center;
-        position: relative;
-    }
+            font-size: 0.8rem;
+        }
 
-    .menu a {
-        color: white;
-        text-decoration: none;
-        padding: 14px 16px;
-        font-family: 'Roboto', sans-serif;
-        font-size: 16px;
-        transition: background-color 0.3s, transform 0.3s;
-    }
+        .phase-step.active {
+            background: var(--primary);
+            color: #000;
+        }
 
-    .menu a:hover {
-        background-color: #111;
-        transform: scale(1.1);
-    }
+        .phase-step.completed {
+            background: var(--success);
+            color: #fff;
+        }
 
-    .play-button-container {
-    display: flex;
-    justify-content: flex-start;
-    padding: 20px;
-    z-index: auto;
-    position: fixed;
-}
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
 
-    .play-button {
-        background-color: #ffbb00; /* Modern blue color */
-        color: white;
-        border: none;
-        border-radius: 25px; /* Slightly less rounded corners for a modern look */
-        font-size: 22px; /* Slightly larger font size */
-        font-weight: bold;
-        text-decoration: none;
-        padding: 15px 40px; /* Increased padding for a more prominent button */
-        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* More pronounced shadow for a modern effect */
-        z-index: 1; /* Ensure it is above other elements */
-        top: 5px; /* Adjusted position */
-        position: fixed;
-        left: 0px;
-    }
-
-    .play-button:hover {
-        background-color: #ff8800;  /* Slightly darker blue on hover */
-        transform: scale(1.05); /* Slightly enlarge the button on hover */
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
+        .tooltip.show {
+            opacity: 1;
     }
     </style>
 </head>
 <body>
-    <!-- Menu -->
+    <div class="background-animation"></div>
     <div class="menu">
         <div class="menu-items">
             <a href="home.html">Home</a>
@@ -191,114 +465,383 @@
             <a href="statistics.html">Statistics</a>
         </div>
     </div>
-    <div class="play-button-container">
+    
         <a href="Game Modes.html" class="play-button">Play</a>
-    </div>
-</div>
+
     <h1>Team Builder</h1>
+    
     <div id="team-builder-container">
         <div class="team-container" id="my-team-container">
             <h2>Team 1</h2>
             <div id="my-bans" class="ban">
-                <div class="champion-slot" onclick="banChampion('my', 0)"></div>
+                <div class="champion-slot" data-team="my" data-slot="0" data-type="ban"></div>
+                <div class="champion-slot" data-team="my" data-slot="1" data-type="ban"></div>
+                <div class="champion-slot" data-team="my" data-slot="2" data-type="ban"></div>
             </div>
             <div id="my-team" class="team">
-                <div class="champion-slot" onclick="selectForTeam('my', 0)"></div>
-                <div class="champion-slot" onclick="selectForTeam('my', 1)"></div>
-                <div class="champion-slot" onclick="selectForTeam('my', 2)"></div>
-                <div class="champion-slot" onclick="selectForTeam('my', 3)"></div>
-                <div class="champion-slot" onclick="selectForTeam('my', 4)"></div>
+                <div class="champion-slot" data-team="my" data-slot="0" data-type="pick"></div>
+                <div class="champion-slot" data-team="my" data-slot="1" data-type="pick"></div>
+                <div class="champion-slot" data-team="my" data-slot="2" data-type="pick"></div>
+                <div class="champion-slot" data-team="my" data-slot="3" data-type="pick"></div>
+                <div class="champion-slot" data-team="my" data-slot="4" data-type="pick"></div>
             </div>
         </div>
+        
         <div class="team-container" id="enemy-team-container">
             <h2>Team 2</h2>
             <div id="enemy-bans" class="ban">
-                <div class="champion-slot" onclick="banChampion('enemy', 0)"></div>
+                <div class="champion-slot" data-team="enemy" data-slot="0" data-type="ban"></div>
+                <div class="champion-slot" data-team="enemy" data-slot="1" data-type="ban"></div>
+                <div class="champion-slot" data-team="enemy" data-slot="2" data-type="ban"></div>
             </div>
             <div id="enemy-team" class="team">
-                <div class="champion-slot" onclick="selectForTeam('enemy', 0)"></div>
-                <div class="champion-slot" onclick="selectForTeam('enemy', 1)"></div>
-                <div class="champion-slot" onclick="selectForTeam('enemy', 2)"></div>
-                <div class="champion-slot" onclick="selectForTeam('enemy', 3)"></div>
-                <div class="champion-slot" onclick="selectForTeam('enemy', 4)"></div>
+                <div class="champion-slot" data-team="enemy" data-slot="0" data-type="pick"></div>
+                <div class="champion-slot" data-team="enemy" data-slot="1" data-type="pick"></div>
+                <div class="champion-slot" data-team="enemy" data-slot="2" data-type="pick"></div>
+                <div class="champion-slot" data-team="enemy" data-slot="3" data-type="pick"></div>
+                <div class="champion-slot" data-team="enemy" data-slot="4" data-type="pick"></div>
             </div>
         </div>
     </div>
+
+    <div class="phase-indicator">
+        <h3>Current Phase</h3>
+        <div id="phase-text">Team 1 Banning Phase</div>
+        <div class="phase-steps">
+            <div class="phase-step active">1</div>
+            <div class="phase-step">2</div>
+            <div class="phase-step">3</div>
+            <div class="phase-step">4</div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="instructions-modal">
+        <div class="modal">
+            <h2>Team Builder Instructions</h2>
+            <div class="modal-content">
+                <h3>Phase 1: Banning</h3>
+                <p>Each team bans 2 characters they don't want to face.</p>
+                <h3>Phase 2: Picking</h3>
+                <p>Teams take turns picking their characters.</p>
+                <p>Drag and drop characters or click to select them.</p>
+            </div>
+            <button class="modal-close" id="close-instructions">Got it!</button>
+        </div>
+    </div>
+
     <div class="champion-pool" id="champion-pool">
+        <!-- Will be populated by JavaScript -->
+    </div>
 
     <script type="module">
         import { roles } from './roles.js';
 
-        let selectedChampion = null;
-        const teamSlots = {
+        class TeamBuilder {
+            constructor() {
+                this.selectedChampion = null;
+                this.teamSlots = {
             my: Array(5).fill(null),
             enemy: Array(5).fill(null)
         };
-        const banSlots = {
-            my: Array(3).fill(null),
-            enemy: Array(3).fill(null)
-        };
+                this.banSlots = {
+                    my: Array(2).fill(null),
+                    enemy: Array(2).fill(null)
+                };
+                this.currentPhase = 'ban'; // 'ban' or 'pick'
+                this.currentTeam = 'my';
+                this.init();
+            }
 
-        function createChampionPool() {
+            init() {
+                this.createChampionPool();
+                this.setupEventListeners();
+                this.showInstructions();
+                this.updatePhaseIndicator();
+            }
+
+            createChampionPool() {
             const championPool = document.getElementById('champion-pool');
-            for (const [role, champions] of Object.entries(roles)) {
-                const roleContainer = document.createElement('div');
-                roleContainer.classList.add('role-container');
-                roleContainer.innerHTML = `<h3 onclick="toggleRole('${role}')">${role}</h3><div class="champion-list" id="${role}-list"></div>`;
+                Object.entries(roles).forEach(([role, champions]) => {
+                    const section = document.createElement('div');
+                    section.classList.add('role-section');
+                    
+                    const header = document.createElement('h3');
+                    header.classList.add('role-header');
+                    header.textContent = role;
+                    
+                    const grid = document.createElement('div');
+                    grid.classList.add('champions-grid');
+
                 champions.forEach(champion => {
+                        const card = this.createChampionCard(champion);
+                        grid.appendChild(card);
+                    });
+
+                    section.appendChild(header);
+                    section.appendChild(grid);
+                    championPool.appendChild(section);
+                });
+            }
+
+            createChampionCard(champion) {
+                const card = document.createElement('div');
+                card.classList.add('champion-card');
+                card.draggable = true;
+                card.dataset.champion = champion;
+
                     const img = document.createElement('img');
                     img.src = `Icons/${champion}.png`;
                     img.alt = champion;
-                    img.classList.add('champion-image');
-                    img.onclick = () => selectChampion(champion);
-                    roleContainer.querySelector('.champion-list').appendChild(img);
+
+                const name = document.createElement('div');
+                name.classList.add('champion-name');
+                name.textContent = champion;
+
+                card.appendChild(img);
+                card.appendChild(name);
+
+                // Drag events
+                card.addEventListener('dragstart', (e) => this.handleDragStart(e, champion));
+                card.addEventListener('dragend', () => this.handleDragEnd());
+                card.addEventListener('click', () => this.selectChampion(champion));
+
+                return card;
+            }
+
+            setupEventListeners() {
+                document.querySelectorAll('.champion-slot').forEach(slot => {
+                    slot.addEventListener('dragover', (e) => this.handleDragOver(e));
+                    slot.addEventListener('drop', (e) => this.handleDrop(e));
+                    slot.addEventListener('click', (e) => this.handleSlotClick(e));
+                    slot.addEventListener('mouseenter', (e) => this.showTooltip(e));
+                    slot.addEventListener('mouseleave', () => this.hideTooltip());
                 });
-                championPool.appendChild(roleContainer);
             }
-        }
 
-        window.toggleRole = function(role) {
-            const list = document.getElementById(`${role}-list`);
-            list.style.display = list.style.display === 'none' ? 'flex' : 'none';
-        }
-
-        createChampionPool();
-
-        window.selectChampion = function(championName) {
-            selectedChampion = championName;
-        }
-
-        window.banChampion = function(team, slotIndex) {
-            if (selectedChampion && !banSlots[team].includes(selectedChampion) && !teamSlots.my.includes(selectedChampion) && !teamSlots.enemy.includes(selectedChampion)) {
-                banSlots[team][slotIndex] = selectedChampion;
-                updateBans(team);
-                selectedChampion = null;
+            handleDragStart(e, champion) {
+                if (!this.isValidMove(champion)) {
+                    e.preventDefault();
+                    return;
+                }
+                e.dataTransfer.setData('text/plain', champion);
+                e.target.classList.add('dragging');
             }
-        }
 
-        window.selectForTeam = function(team, slotIndex) {
-            if (selectedChampion && !teamSlots[team].includes(selectedChampion) && !banSlots.my.includes(selectedChampion) && !banSlots.enemy.includes(selectedChampion)) {
-                teamSlots[team][slotIndex] = selectedChampion;
-                updateTeam(team);
-                selectedChampion = null;
+            handleDragEnd() {
+                document.querySelectorAll('.champion-card').forEach(card => {
+                    card.classList.remove('dragging');
+                });
             }
-        }
 
-        window.updateBans = function(team) {
+            handleDragOver(e) {
+                e.preventDefault();
+            }
+
+            handleDrop(e) {
+                e.preventDefault();
+                const champion = e.dataTransfer.getData('text/plain');
+                const slot = e.target.closest('.champion-slot');
+                if (!slot) return;
+
+                const team = slot.dataset.team;
+                const slotIndex = parseInt(slot.dataset.slot);
+                const type = slot.dataset.type;
+
+                if (this.isValidMove(champion)) {
+                    if (type === 'ban' && this.currentPhase === 'ban') {
+                        this.banChampion(team, slotIndex, champion);
+                    } else if (type === 'pick' && this.currentPhase === 'pick') {
+                        this.selectForTeam(team, slotIndex, champion);
+                    }
+                }
+            }
+
+            handleSlotClick(e) {
+                if (!this.selectedChampion) return;
+
+                const slot = e.target.closest('.champion-slot');
+                const team = slot.dataset.team;
+                const slotIndex = parseInt(slot.dataset.slot);
+                const type = slot.dataset.type;
+
+                if (this.isValidMove(this.selectedChampion)) {
+                    if (type === 'ban' && this.currentPhase === 'ban') {
+                        this.banChampion(team, slotIndex, this.selectedChampion);
+                    } else if (type === 'pick' && this.currentPhase === 'pick') {
+                        this.selectForTeam(team, slotIndex, this.selectedChampion);
+                    }
+                }
+            }
+
+            isValidMove(champion) {
+                if (!this.isChampionAvailable(champion)) return false;
+                
+                // Check if it's the correct phase and team's turn
+                if (this.currentPhase === 'ban') {
+                    return this.banSlots[this.currentTeam].includes(null);
+                } else {
+                    return this.teamSlots[this.currentTeam].includes(null);
+                }
+            }
+
+            updatePhaseIndicator() {
+                const phaseText = document.getElementById('phase-text');
+                const steps = document.querySelectorAll('.phase-step');
+                let currentStep = 0;
+
+                if (this.currentPhase === 'ban') {
+                    phaseText.textContent = `${this.currentTeam === 'my' ? 'Team 1' : 'Team 2'} Banning Phase`;
+                    currentStep = this.currentTeam === 'my' ? 1 : 2;
+                } else {
+                    phaseText.textContent = `${this.currentTeam === 'my' ? 'Team 1' : 'Team 2'} Picking Phase`;
+                    currentStep = this.currentTeam === 'my' ? 3 : 4;
+                }
+
+                steps.forEach((step, index) => {
+                    step.classList.remove('active', 'completed');
+                    if (index + 1 < currentStep) {
+                        step.classList.add('completed');
+                    } else if (index + 1 === currentStep) {
+                        step.classList.add('active');
+                    }
+                });
+            }
+
+            showInstructions() {
+                const modal = document.getElementById('instructions-modal');
+                modal.classList.add('show');
+                modal.querySelector('.modal').classList.add('show');
+            }
+
+            selectChampion(championName) {
+                if (this.selectedChampion === championName) {
+                    this.selectedChampion = null;
+                    document.querySelectorAll('.champion-image').forEach(img => {
+                        if (img.alt === championName) {
+                            img.classList.remove('selected');
+                        }
+                    });
+                } else {
+                    this.selectedChampion = championName;
+                    document.querySelectorAll('.champion-image').forEach(img => {
+                        img.classList.remove('selected');
+                        if (img.alt === championName) {
+                            img.classList.add('selected');
+                        }
+                    });
+                }
+            }
+
+            banChampion(team, slotIndex, champion) {
+                if (!this.selectedChampion) return;
+                
+                if (!this.isChampionAvailable(this.selectedChampion)) {
+                    this.showNotification('This champion is already picked or banned!');
+                    return;
+                }
+
+                this.banSlots[team][slotIndex] = this.selectedChampion;
+                this.updateBans(team);
+                this.clearSelection();
+            }
+
+            selectForTeam(team, slotIndex, champion) {
+                if (!this.selectedChampion) return;
+                
+                if (!this.isChampionAvailable(this.selectedChampion)) {
+                    this.showNotification('This champion is already picked or banned!');
+                    return;
+                }
+
+                this.teamSlots[team][slotIndex] = this.selectedChampion;
+                this.updateTeam(team);
+                this.clearSelection();
+            }
+
+            isChampionAvailable(champion) {
+                return !this.teamSlots.my.includes(champion) && 
+                       !this.teamSlots.enemy.includes(champion) && 
+                       !this.banSlots.my.includes(champion) && 
+                       !this.banSlots.enemy.includes(champion);
+            }
+
+            updateBans(team) {
             const banElements = document.querySelectorAll(`#${team}-bans .champion-slot`);
             banElements.forEach((el, index) => {
-                el.innerHTML = banSlots[team][index] ? `<img src="Icons/${banSlots[team][index]}.png" alt="${banSlots[team][index]}">` : '';
-                el.classList.toggle('banned', Boolean(banSlots[team][index]));
-            });
-        }
+                    const champion = this.banSlots[team][index];
+                    if (champion) {
+                        el.innerHTML = `<img src="Icons/${champion}.png" alt="${champion}">`;
+                        el.classList.add('banned');
+                    } else {
+                        el.innerHTML = '';
+                        el.classList.remove('banned');
+                    }
+                });
+            }
 
-        window.updateTeam = function(team) {
+            updateTeam(team) {
             const teamElements = document.querySelectorAll(`#${team}-team .champion-slot`);
             teamElements.forEach((el, index) => {
-                el.innerHTML = teamSlots[team][index] ? `<img src="Icons/${teamSlots[team][index]}.png" alt="${teamSlots[team][index]}">` : '';
-                el.classList.toggle('selected', Boolean(teamSlots[team][index]));
-            });
+                    const champion = this.teamSlots[team][index];
+                    if (champion) {
+                        el.innerHTML = `<img src="Icons/${champion}.png" alt="${champion}">`;
+                        el.classList.add('selected');
+                    } else {
+                        el.innerHTML = '';
+                        el.classList.remove('selected');
+                    }
+                });
+            }
+
+            clearSelection() {
+                this.selectedChampion = null;
+                document.querySelectorAll('.champion-image').forEach(img => {
+                    img.classList.remove('selected');
+                });
+            }
+
+            showTooltip(event) {
+                const slot = event.target;
+                const team = slot.dataset.team;
+                const type = slot.dataset.type;
+                const action = type === 'ban' ? 'Ban' : 'Pick';
+                const teamName = team === 'my' ? 'Team 1' : 'Team 2';
+
+                const tooltip = document.createElement('div');
+                tooltip.classList.add('tooltip');
+                tooltip.textContent = `${action} for ${teamName}`;
+
+                document.body.appendChild(tooltip);
+
+                const rect = slot.getBoundingClientRect();
+                tooltip.style.top = `${rect.top - tooltip.offsetHeight - 5}px`;
+                tooltip.style.left = `${rect.left + (rect.width - tooltip.offsetWidth) / 2}px`;
+
+                setTimeout(() => tooltip.classList.add('show'), 10);
+            }
+
+            hideTooltip() {
+                const tooltip = document.querySelector('.tooltip');
+                if (tooltip) {
+                    tooltip.remove();
+                }
+            }
+
+            showNotification(message) {
+                // You can implement a notification system here
+                alert(message);
+            }
         }
+
+        // Initialize the Team Builder
+        const teamBuilder = new TeamBuilder();
+
+        // Add event listener for the close button
+        document.getElementById('close-instructions').addEventListener('click', () => {
+            const modal = document.getElementById('instructions-modal');
+            modal.classList.remove('show');
+            modal.querySelector('.modal').classList.remove('show');
+        });
     </script>
 </body>
 </html>

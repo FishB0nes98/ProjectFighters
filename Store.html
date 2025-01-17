@@ -139,24 +139,37 @@
         }
         .bundle-container {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             padding: 20px;
             max-width: 1800px;
+            margin: 0 auto;
+            justify-items: center;
+        }
+
+        @media (max-width: 1800px) {
+            .bundle-container {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                justify-content: center;
+            }
+        }
+
+        .bundle-item {
+            width: 220px;
             margin: 0 auto;
         }
 
         .bundle-item {
             background: linear-gradient(145deg, rgba(40, 40, 40, 0.9), rgba(25, 25, 25, 0.95));
             border: 1px solid rgba(0, 206, 209, 0.3);
-            border-radius: 12px;
-            padding: 15px;
+            border-radius: 10px;
+            padding: 12px;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 15px rgba(0, 206, 209, 0.1);
-            min-width: 200px;
+            min-width: 180px;
         }
 
         .bundle-item:hover {
@@ -182,8 +195,8 @@
         }
 
         .bundle-name {
-            font-size: 1.1em;
-            margin-bottom: 10px;
+            font-size: 1em;
+            margin-bottom: 8px;
             color: white;
             font-weight: bold;
             text-shadow: 0 0 8px rgba(0, 206, 209, 0.5);
@@ -194,14 +207,14 @@
         .bundle-item .images-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin: 8px 0;
+            gap: 6px;
+            margin: 6px 0;
         }
 
         .bundle-item .images-grid img {
-            width: 70px;
-            height: 70px;
-            border-radius: 8px;
+            width: 55px;
+            height: 55px;
+            border-radius: 6px;
             transition: transform 0.3s ease;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             object-fit: cover;
@@ -212,9 +225,9 @@
             position: relative;
             width: 100%;
             padding-bottom: 56.25%;
-            border-radius: 8px;
+            border-radius: 4px;
             overflow: hidden;
-            margin: 10px 0;
+            margin: 6px 0;
         }
 
         .bundle-item .image-container img {
@@ -246,7 +259,7 @@
             color: white;
             background: linear-gradient(45deg, #00ced1, #20b2aa);
             border: none;
-            border-radius: 20px;
+            border-radius: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
@@ -622,6 +635,107 @@
             justify-content: center;
             background: rgba(0, 206, 209, 0.05);
         }
+
+        .price-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 6px;
+            border-radius: 6px;
+            margin: 6px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .original-price {
+            color: #888;
+            text-decoration: line-through;
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .discount-badge {
+            background: linear-gradient(45deg, #ff4e50, #f9d423);
+            color: white;
+            padding: 2px 5px;
+            border-radius: 8px;
+            font-size: 0.75em;
+            font-weight: bold;
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .final-price {
+            color: #FFD700;
+            font-size: 1.1em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .price-divider {
+            width: 80%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.5), transparent);
+            margin: 5px 0;
+        }
+
+        .stacked-tickets {
+            position: relative;
+            width: 100%;
+            height: 100px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .stacked-tickets img {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .stacked-tickets img:nth-child(1) { transform: translateY(-2px); }
+        .stacked-tickets img:nth-child(2) { transform: translateY(-1px); }
+        .stacked-tickets img:nth-child(3) { transform: translateY(0px); }
+        .stacked-tickets img:nth-child(4) { transform: translateY(1px); }
+        .stacked-tickets img:nth-child(5) { transform: translateY(2px); }
+        .stacked-tickets img:nth-child(6) { transform: translateY(3px); }
+        .stacked-tickets img:nth-child(7) { transform: translateY(4px); }
+        .stacked-tickets img:nth-child(8) { transform: translateY(5px); }
+        .stacked-tickets img:nth-child(9) { transform: translateY(6px); }
+        .stacked-tickets img:nth-child(10) { transform: translateY(7px); }
+
+        .bundle-item:hover .stacked-tickets img {
+            transform: translateY(0);
+            transition-duration: 0.3s;
+        }
+
+        .price-container img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .original-price img {
+            width: 15px;
+            height: 15px;
+        }
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
@@ -663,7 +777,17 @@
                     skins['Winter Festival Mai'] === 1 && 
                     skins['Winter Festival Kuma'] === 1 && 
                     skins['Winter Festival Shizumaru'] === 1 && 
-                    skins['Winter Queen Angel'] === 1)) {
+                    skins['Winter Queen Angel'] === 1) ||
+                (bundleName === 'LunarFestivalBundle' && 
+                    skins['Lunar Festival Lili'] === 1 && 
+                    skins['Lunar Festival Scorpion'] === 1 && 
+                    skins['Lunar Festival Noel'] === 1 && 
+                    skins['Lunar Festival Reptile'] === 1 && 
+                    skins['Lunar Festival Kokoro'] === 1 && 
+                    skins['Lunar Festival Siegfried'] === 1) ||
+                (bundleName === 'PhoenixRMika' && skins['Phoenix R Mika'] === 1) ||
+                (bundleName === 'CaptainTalim' && skins['Captain Talim'] === 1) ||
+                (bundleName === 'FeatherDancerMai' && skins['Feather Dancer Mai'] === 1)) {
                 button.disabled = true;
                 button.textContent = 'Owned';
             }
@@ -691,99 +815,65 @@
 
 
     window.purchaseBundle = async function(button) {
+        // Get bundle info either from the store view or modal view
         const bundleItem = button.closest('.bundle-item');
-        const bundleName = bundleItem.dataset.bundleName;
-        const priceElement = bundleItem.querySelector('.price span');
-        const currencyElement = bundleItem.querySelector('.price img');
+        const bundleName = bundleItem ? bundleItem.dataset.bundleName : button.dataset.bundleName;
+        const priceElement = bundleItem ? 
+            bundleItem.querySelector('.final-price span') : 
+            button.closest('.bundle-purchase').querySelector('.final-price span');
+        const currencyElement = bundleItem ? 
+            bundleItem.querySelector('.final-price img') : 
+            button.closest('.bundle-purchase').querySelector('.final-price img');
+        
         const bundlePrice = parseInt(priceElement.textContent);
         const currencyType = currencyElement.alt; // 'FM' or 'CM'
 
         const userCurrency = currencyType === 'FM' ? window.userFM : window.userCM;
         const userCurrencyElement = document.getElementById(`${currencyType.toLowerCase()}-amount`);
 
-        // Check if the user already owns the Arctic Huntress Peacock skin
-        if (bundleName === 'ArcticHuntressPeacock') {
-            const skinSnapshot = await get(ref(window.userRef, 'skins/Arctic Huntress Peacock'));
-            if (skinSnapshot.exists() && skinSnapshot.val() === 1) {
-                alert('You already own the Arctic Huntress Peacock skin.');
-                return;
-            }
-        }
-
-        // Check if the user already owns the Arcade Sub Zero skin
-        if (bundleName === 'ArcadeSubZero') {
-            const skinSnapshot = await get(ref(window.userRef, 'skins/Arcade Sub Zero'));
-            if (skinSnapshot.exists() && skinSnapshot.val() === 1) {
-                alert('You already own the Arcade Sub Zero skin.');
-                return;
-            }
-        }
-
-        // Check if the user already owns the skins in the Winter Recolor Duo Pack
-        if (bundleName === 'WinterRecolorDuoPack') {
-            const skin1Snapshot = await get(ref(window.userRef, 'skins/Jade Scorpion Agate'));
-            const skin2Snapshot = await get(ref(window.userRef, 'skins/Arcade Sub Zero Frosty Forest'));
-            if (skin1Snapshot.exists() && skin1Snapshot.val() === 1 && 
-                skin2Snapshot.exists() && skin2Snapshot.val() === 1) {
-                alert('You already own the skins in the Winter Recolor Duo Pack.');
-                return;
-            }
-        }
-
         if (userCurrency >= bundlePrice) {
             const newCurrencyAmount = userCurrency - bundlePrice;
             const updates = {};
             updates[currencyType] = newCurrencyAmount;
-            updates[`Bundles/${bundleName}`] = 1; // Adding the bundle to the Bundles folder with a value of 1
 
-            // Define the list of stickers for Bundle 1
-            if (bundleName === 'StarterStickers') {
-                const stickers = [
-                    'Ayane_Isthisa',
-                    'Ayane_Side_Eye',
-                    'Birdie_Ate',
-                    'Blanka_Scared',
-                    'ChamCham_V',
-                    'Christie_Heart',
-                    'Juri_Selfie',
-                    'Rmika_Gum',
-                    'Shizumaru_Lmao',
-                    'Shoma_Surprised'
-                ];
-                stickers.forEach(sticker => {
-                    updates[`Stickers/${sticker}`] = 1; // Adding each sticker to the Stickers folder with a value of 1
-                });
+            // Rest of your existing bundle purchase logic...
+            if (bundleName === 'LunarTicket') {
+                const userRef = ref(database, 'users/' + auth.currentUser.uid);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+                const currentTickets = userData.lunarTickets || 0;
+                updates['lunarTickets'] = currentTickets + 1;
             }
 
-            // Add Arctic Huntress Peacock to the Skins database
-            if (bundleName === 'ArcticHuntressPeacock') {
-                updates[`skins/Arctic Huntress Peacock`] = 1;
+            // Add 10 Lunar Tickets to the database
+            if (bundleName === 'LunarTicketBundle') {
+                const userRef = ref(database, 'users/' + auth.currentUser.uid);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+                const currentTickets = userData.lunarTickets || 0;
+                updates['lunarTickets'] = currentTickets + 10;
             }
 
-            // Add Winter Festival Bundle skins to the Skins database
-            if (bundleName === 'WinterFestivalBundle') {
-                const skins = [
-                    'Winter Festival Juri',
-                    'Winter Festival Kabal',
-                    'Winter Festival Mai',
-                    'Winter Festival Kuma',
-                    'Winter Festival Shizumaru',
-                    'Winter Queen Angel'
-                ];
-                skins.forEach(skin => {
-                    updates[`skins/${skin}`] = 1;
-                });
+            // Add Phoenix R Mika to the Skins database
+            if (bundleName === 'PhoenixRMika') {
+                updates[`skins/Phoenix R Mika`] = 1;
             }
 
-            // Add Arcade Sub Zero to the Skins database
-            if (bundleName === 'ArcadeSubZero') {
-                updates[`skins/Arcade Sub Zero`] = 1;
+            // Add Feather Dancer Mai to the Skins database
+            if (bundleName === 'FeatherDancerMai') {
+                updates[`skins/Feather Dancer Mai`] = 1;
             }
 
-            // Add Winter Recolor Duo Pack skins to the Skins database
-            if (bundleName === 'WinterRecolorDuoPack') {
-                updates[`skins/Jade Scorpion Agate`] = 1;
-                updates[`skins/Arcade Sub Zero Frosty Forest`] = 1;
+            // Add Lunar Festival Lili Bundle contents
+            if (bundleName === 'LunarFestivalLiliBundle') {
+                const userRef = ref(database, 'users/' + auth.currentUser.uid);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+                const currentTickets = userData.lunarTickets || 0;
+                updates['lunarTickets'] = currentTickets + 3;
+                updates[`skins/Lunar Festival Lili`] = 1;
+                updates[`titles/Snake`] = true;
+                updates[`Bundles/${bundleName}`] = 1;
             }
 
             await update(window.userRef, updates);
@@ -796,6 +886,7 @@
             button.disabled = true;
             button.textContent = 'Owned';
             alert(`You have successfully purchased ${bundleName}!`);
+            closeStarterBundlesModal(); // Close the modal after purchase
         } else {
             alert(`You don't have enough ${currencyType} to purchase this bundle.`);
         }
@@ -922,97 +1013,51 @@
             let currency = 'fm';
             
             switch(bundleName) {
-                case 'StarterStickers':
-                    title = 'Sticker Starter Bundle';
-                    content = `
-                        <div class="bundle-grid">
-                            <div class="bundle-character sticker-item">
-                                <img class="sticker-img" src="Stickers/Ayane_Isthisa.png" alt="Ayane Isthisa">
-                                <p>Ayane Isthisa</p>
-                            </div>
-                            <div class="bundle-character sticker-item">
-                                <img class="sticker-img" src="Stickers/Ayane_Side_Eye.png" alt="Ayane Side Eye">
-                                <p>Ayane Side Eye</p>
-                            </div>
-                            <div class="bundle-character sticker-item">
-                                <img class="sticker-img" src="Stickers/Birdie_Ate.png" alt="Birdie Ate">
-                                <p>Birdie Ate</p>
-                            </div>
-                            <div class="bundle-character sticker-item">
-                                <img class="sticker-img" src="Stickers/Blanka_Scared.png" alt="Blanka Scared">
-                                <p>Blanka Scared</p>
-                            </div>
-                            <div class="bundle-character sticker-item">
-                                <img class="sticker-img" src="Stickers/ChamCham_V.png" alt="ChamCham V">
-                                <p>ChamCham V</p>
-                            </div>
-                            <div class="bundle-character sticker-item">
-                                <img class="sticker-img" src="Stickers/Christie_Heart.png" alt="Christie Heart">
-                                <p>Christie Heart</p>
-                            </div>
-                            <div class="bundle-character sticker-item">
-                                <img class="sticker-img" src="Stickers/Juri_Selfie.png" alt="Juri Selfie">
-                                <p>Juri Selfie</p>
-                            </div>
-                            <div class="bundle-character sticker-item">
-                                <img class="sticker-img" src="Stickers/Rmika_Gum.png" alt="Rmika Gum">
-                                <p>Rmika Gum</p>
-                            </div>
-                            <div class="bundle-character sticker-item">
-                                <img class="sticker-img" src="Stickers/Shizumaru_Lmao.png" alt="Shizumaru Lmao">
-                                <p>Shizumaru Lmao</p>
-                            </div>
-                            <div class="bundle-character sticker-item">
-                                <img class="sticker-img" src="Stickers/Shoma_Surprised.png" alt="Shoma Surprised">
-                                <p>Shoma Surprised</p>
-                            </div>
-                        </div>`;
-                    break;
-                case 'AtlanteanBundle':
-                    title = 'Atlantean Bundle';
+                case 'LunarFestivalBundle':
+                    title = 'Lunar Festival Bundle';
                     content = `
                         <div class="bundle-grid">
                             <div class="bundle-character">
                                 <div class="image-container">
-                                    <img src="Skins/Atlantean Christie.jpeg" alt="Atlantean Christie">
+                                    <img src="Skins/Lunar Festival Lili.jpg" alt="Lunar Festival Lili">
                                 </div>
-                                <h3>Christie</h3>
-                                <p>Atlantean Christie Skin</p>
+                                <h3>Lili</h3>
+                                <p>Lunar Festival Lili Skin</p>
                             </div>
                             <div class="bundle-character">
                                 <div class="image-container">
-                                    <img src="Skins/Atlantean Kotal Kahn.jpeg" alt="Atlantean Kotal Kahn">
+                                    <img src="Skins/Lunar Festival Scorpion.jpeg" alt="Lunar Festival Scorpion">
                                 </div>
-                                <h3>Kotal Kahn</h3>
-                                <p>Atlantean Kotal Kahn Skin</p>
+                                <h3>Scorpion</h3>
+                                <p>Lunar Festival Scorpion Skin</p>
                             </div>
                             <div class="bundle-character">
                                 <div class="image-container">
-                                    <img src="Skins/Atlantean Zasalamel.jpg" alt="Atlantean Zasalamel">
+                                    <img src="Skins/Lunar Festival Noel.jpg" alt="Lunar Festival Noel">
                                 </div>
-                                <h3>Zasalamel</h3>
-                                <p>Atlantean Zasalamel Skin</p>
+                                <h3>Noel</h3>
+                                <p>Lunar Festival Noel Skin</p>
                             </div>
                             <div class="bundle-character">
                                 <div class="image-container">
-                                    <img src="Skins/Atlantean Sub Zero.jpeg" alt="Atlantean Sub Zero">
+                                    <img src="Skins/Lunar Festival Reptile.jpeg" alt="Lunar Festival Reptile">
                                 </div>
-                                <h3>Sub Zero</h3>
-                                <p>Atlantean Sub Zero Skin</p>
+                                <h3>Reptile</h3>
+                                <p>Lunar Festival Reptile Skin</p>
                             </div>
                             <div class="bundle-character">
                                 <div class="image-container">
-                                    <img src="Skins/Atlantean Shinnok.jpeg" alt="Atlantean Shinnok">
+                                    <img src="Skins/Lunar Festival Kokoro.jpg" alt="Lunar Festival Kokoro">
                                 </div>
-                                <h3>Shinnok</h3>
-                                <p>Atlantean Shinnok Skin</p>
+                                <h3>Kokoro</h3>
+                                <p>Lunar Festival Kokoro Skin</p>
                             </div>
                             <div class="bundle-character">
                                 <div class="image-container">
-                                    <img src="Skins/Atlantean Kagome.jpeg" alt="Atlantean Kagome">
+                                    <img src="Skins/Lunar Festival Siegfried.jpg" alt="Lunar Festival Siegfried">
                                 </div>
-                                <h3>Kagome</h3>
-                                <p>Atlantean Kagome Skin</p>
+                                <h3>Siegfried</h3>
+                                <p>Lunar Festival Siegfried Skin</p>
                             </div>
                         </div>`;
                     break;
@@ -1022,30 +1067,30 @@
                         <div class="bundle-grid">
                             <div class="bundle-character">
                                 <div class="image-container">
-                                    <img src="Skins/Rainy Day R Mika Ocean.jpeg" alt="Rainy Day R Mika Ocean">
+                                    <img src="Skins/Blanka Red.png" alt="Blanka Red">
                                 </div>
-                                <h3>R Mika</h3>
-                                <p>Rainy Day R Mika Ocean Recolor</p>
+                                <h3>Blanka Red</h3>
+                                <p>Blanka Red Recolor</p>
                             </div>
                             <div class="bundle-character">
                                 <div class="image-container">
-                                    <img src="Skins/Pajama Party Cham Cham Aqua Dream.png" alt="Pajama Party Cham Cham Aqua Dream">
+                                    <img src="Skins/Sacred Ceremony Julia Champagne.jpeg" alt="Sacred Ceremony Julia Champagne">
                                 </div>
-                                <h3>Cham Cham</h3>
-                                <p>Pajama Party Cham Cham Aqua Dream Recolor</p>
+                                <h3>Sacred Ceremony Julia Champagne</h3>
+                                <p>Sacred Ceremony Julia Champagne Recolor</p>
                             </div>
                         </div>`;
                     break;
-                case 'RainyDayShizumaru':
-                    title = 'Rainy Day Shizumaru';
+                case 'PhoenixRMika':
+                    title = 'Phoenix R Mika';
                     content = `
                         <div class="bundle-grid">
                             <div class="bundle-character">
                                 <div class="image-container">
-                                    <img src="Skins/Rainy Day Shizumaru.jfif" alt="Rainy Day Shizumaru">
+                                    <img src="Skins/Phoenix R Mika.png" alt="Phoenix R Mika">
                                 </div>
-                                <h3>Shizumaru</h3>
-                                <p>Rainy Day Shizumaru Skin</p>
+                                <h3>R Mika</h3>
+                                <p>Phoenix R Mika Skin</p>
                             </div>
                         </div>`;
                     break;
@@ -1063,6 +1108,49 @@
                         </div>`;
                     currency = 'cm';
                     break;
+                case 'FeatherDancerMai':
+                    title = 'Feather Dancer Mai';
+                    content = `
+                        <div class="bundle-grid">
+                            <div class="bundle-character">
+                                <div class="image-container">
+                                    <img src="Skins/Feather Dancer Mai.jpeg" alt="Feather Dancer Mai">
+                                </div>
+                                <h3>Mai</h3>
+                                <p>Feather Dancer Mai Skin</p>
+                            </div>
+                        </div>`;
+                    currency = 'cm';
+                    break;
+                case 'LunarFestivalLiliBundle':
+                    title = 'Lunar Festival Lili Bundle';
+                    content = `
+                        <div class="bundle-grid">
+                            <div class="bundle-character">
+                                <div class="image-container">
+                                    <img src="Skins/Lunar Festival Lili.jpg" alt="Lunar Festival Lili">
+                                </div>
+                                <h3>Lili</h3>
+                                <p>Lunar Festival Lili Skin</p>
+                            </div>
+                            <div class="bundle-character">
+                                <div class="image-container" style="display: flex; justify-content: center; align-items: center; gap: 10px; height: auto; padding: 20px 0;">
+                                    <img src="res/img/lunar_ticket.png" alt="Lunar Ticket" style="width: 60px; height: 60px; position: static;">
+                                    <img src="res/img/lunar_ticket.png" alt="Lunar Ticket" style="width: 60px; height: 60px; position: static;">
+                                    <img src="res/img/lunar_ticket.png" alt="Lunar Ticket" style="width: 60px; height: 60px; position: static;">
+                                </div>
+                                <h3>Lunar Tickets</h3>
+                                <p>3x Lunar Tickets</p>
+                            </div>
+                            <div class="bundle-character">
+                                <div class="image-container">
+                                    <img src="titles/titleimage.jpeg" alt="Snake Title">
+                                </div>
+                                <h3>Title</h3>
+                                <p>Snake Title</p>
+                            </div>
+                        </div>`;
+                    break;
             }
 
             if (content) {
@@ -1073,11 +1161,18 @@
                     <h2 style="color: white; text-align: center; margin-bottom: 30px;">${title}</h2>
                     ${content}
                     <div class="bundle-purchase">
-                        <div class="bundle-price">
-                            <img src="res/img/${currency}.png" alt="${currency.toUpperCase()}">
-                            <span>${getBundlePrice(bundleName)}</span>
+                        <div class="price-container">
+                            <div class="original-price">
+                                <img src="res/img/fm.png" alt="FM">
+                                <span>${getOriginalPrice(bundleName)}</span>
+                            </div>
+                            <div class="price-divider"></div>
+                            <div class="final-price">
+                                <img src="res/img/fm.png" alt="FM">
+                                <span>${getBundlePrice(bundleName)}</span>
+                            </div>
                         </div>
-                        <button class="purchase-bundle-btn" onclick="purchaseBundle(this)" data-bundle="${bundleName}">Purchase Bundle</button>
+                        <button class="purchase-bundle-btn" onclick="purchaseBundle(this)" data-bundle-name="${bundleName}">Purchase Bundle</button>
                     </div>
                 `;
             }
@@ -1085,18 +1180,31 @@
 
         function getBundlePrice(bundleName) {
             switch(bundleName) {
-                case 'StarterStickers':
-                    return '1500';
-                case 'AtlanteanBundle':
-                    return '8550';
-                case 'RecolorDuoPack':
-                    return '750';
-                case 'RainyDayShizumaru':
-                    return '600';
-                case 'CaptainTalim':
-                    return '100000';
+                case 'LunarFestivalBundle':
+                    return '8640';
+                case 'LunarFestivalLiliBundle':
+                    return '3250';
+                case 'PhoenixRMika':
+                    return '350';
+                case 'FeatherDancerMai':
+                    return '65000';
                 default:
                     return '2000';
+            }
+        }
+
+        function getOriginalPrice(bundleName) {
+            switch(bundleName) {
+                case 'LunarFestivalBundle':
+                    return '12000';
+                case 'LunarFestivalLiliBundle':
+                    return '4400';
+                case 'PhoenixRMika':
+                    return '1000';
+                case 'FeatherDancerMai':
+                    return '1000';
+                default:
+                    return '2500';
             }
         }
     </script>
@@ -1178,79 +1286,120 @@
             Songs
         </a>
     </div>
-    <h2 class="bundle-section-title">Bundles and Sales</h2>
     <div class="bundle-container">
-        <div class="bundle-item" data-bundle-name="StarterBundles">
-            <div class="bundle-name">Laner Starter Bundles</div>
-            <div class="images-grid">
-                <img src="Icons/Siegfried.png" alt="Siegfried">
-                <img src="Icons/Sub Zero.png" alt="Sub Zero">
-                <img src="Icons/Kokoro.png" alt="Kokoro">
-                <img src="Icons/Eagle.png" alt="Eagle">
-            </div>
-            <button onclick="openStarterBundlesModal()">View Bundles</button>
-        </div>
-        <div class="bundle-item" data-bundle-name="StarterStickers" onclick="showBundleDetails('StarterStickers')">
-            <div class="bundle-name">Sticker Starter Bundle</div>
-            <div class="images-grid">
-                <img src="Stickers/Christie_Heart.png" alt="Christie Heart">
-                <img src="Stickers/Juri_Selfie.png" alt="Juri Selfie">
-                <img src="Stickers/Blanka_Scared.png" alt="Blanka Scared">
-                <img src="Stickers/Ayane_Side_Eye.png" alt="Ayane Side Eye">
-            </div>
-            <div class="price">
-                <img src="res/img/fm.png" alt="FM">
-                <span>1500</span>
-            </div>
-            <button onclick="purchaseBundle(this)">Buy Bundle</button>
-        </div>
-        <div class="bundle-item" data-bundle-name="RainyDayShizumaru" onclick="showBundleDetails('RainyDayShizumaru')">
-            <div class="bundle-name">Rainy Day Shizumaru</div>
+        <div class="bundle-item" data-bundle-name="LunarTicket">
+            <div class="bundle-name">Lunar Ticket</div>
             <div class="image-container">
-                <img src="Skins/Rainy Day Shizumaru.jfif" alt="Rainy Day Shizumaru">
+                <img src="res/img/lunar_ticket.png" alt="Lunar Ticket">
             </div>
-            <div class="price">
-                <img src="res/img/fm.png" alt="FM">
-                <span>600</span>
+            <div class="price-container">
+                <div class="final-price">
+                    <img src="res/img/fm.png" alt="FM">
+                    <span class="price">800</span>
+                </div>
             </div>
             <button onclick="purchaseBundle(this)">Buy Now</button>
         </div>
-        <div class="bundle-item" data-bundle-name="AtlanteanBundle" onclick="showBundleDetails('AtlanteanBundle')">
-            <div class="bundle-name">Atlantean Bundle</div>
-            <div class="images-grid">
-                <img src="Skins/Atlantean Christie.jpeg" alt="Atlantean Christie">
-                <img src="Skins/Atlantean Kotal Kahn.jpeg" alt="Atlantean Kotal Kahn">
-                <img src="Skins/Atlantean Zasalamel.jpg" alt="Atlantean Zasalamel">
-                <img src="Skins/Atlantean Sub Zero.jpeg" alt="Atlantean Sub Zero">
+        <div class="bundle-item" data-bundle-name="LunarTicketBundle">
+            <div class="bundle-name">10x Lunar Ticket Bundle</div>
+            <div class="image-container">
+                <img src="res/img/lunar_ticket.png" alt="Lunar Ticket Bundle">
             </div>
-            <div class="price">
-                <img src="res/img/fm.png" alt="FM">
-                <span>8550</span>
+            <div class="price-container">
+                <div class="original-price">
+                    <img src="res/img/fm.png" alt="FM">
+                    <span class="price">8000</span>
+                </div>
+                <div class="price-divider"></div>
+                <div class="final-price">
+                    <img src="res/img/fm.png" alt="FM">
+                    <span class="price">6000</span>
+                </div>
             </div>
+            <div class="discount-badge">-25%</div>
             <button onclick="purchaseBundle(this)">Buy Bundle</button>
         </div>
-        <div class="bundle-item" data-bundle-name="CaptainTalim" onclick="showBundleDetails('CaptainTalim')">
-            <div class="bundle-name">Captain Talim</div>
+        <div class="bundle-item" data-bundle-name="PhoenixRMika" onclick="showBundleDetails('PhoenixRMika')">
+            <div class="bundle-name">Phoenix R Mika</div>
             <div class="image-container">
-                <img src="Skins/Captain Talim.png" alt="Captain Talim">
+                <img src="Skins/Phoenix R Mika.png" alt="Phoenix R Mika">
             </div>
-            <div class="price">
-                <img src="res/img/cm.png" alt="CM">
-                <span>100000</span>
+            <div class="price-container">
+                <div class="original-price">
+                    <img src="res/img/fm.png" alt="FM">
+                    <span>1000</span>
+                </div>
+                <div class="price-divider"></div>
+                <div class="final-price">
+                    <img src="res/img/fm.png" alt="FM">
+                    <span>350</span>
+                </div>
             </div>
+            <div class="discount-badge">-65%</div>
             <button onclick="purchaseBundle(this)">Buy Now</button>
         </div>
-        <div class="bundle-item" data-bundle-name="RecolorDuoPack" onclick="showBundleDetails('RecolorDuoPack')">
-            <div class="bundle-name">Random Recolor Duo Pack</div>
+        <div class="bundle-item" data-bundle-name="LunarFestivalBundle" onclick="showBundleDetails('LunarFestivalBundle')">
+            <div class="bundle-name">Lunar Festival Bundle</div>
+            <div class="discount-badge">-28%</div>
             <div class="images-grid">
-                <img src="Skins/Rainy Day R Mika Ocean.jpeg" alt="Rainy Day R Mika Ocean">
-                <img src="Skins/Pajama Party Cham Cham Aqua Dream.png" alt="Pajama Party Cham Cham Aqua Dream">
+                <img src="Skins/Lunar Festival Lili.jpg" alt="Lunar Festival Lili">
+                <img src="Skins/Lunar Festival Scorpion.jpeg" alt="Lunar Festival Scorpion">
+                <img src="Skins/Lunar Festival Noel.jpg" alt="Lunar Festival Noel">
+                <img src="Skins/Lunar Festival Reptile.jpeg" alt="Lunar Festival Reptile">
             </div>
-            <div class="price">
-                <img src="res/img/fm.png" alt="FM">
-                <span>750</span>
+            <div class="price-container">
+                <div class="original-price">
+                    <img src="res/img/fm.png" alt="FM">
+                    <span>12000</span>
+                </div>
+                <div class="price-divider"></div>
+                <div class="final-price">
+                    <img src="res/img/fm.png" alt="FM">
+                    <span>8640</span>
+                </div>
             </div>
             <button onclick="purchaseBundle(this)">Buy Bundle</button>
+        </div>
+        <div class="bundle-item" data-bundle-name="FeatherDancerMai" onclick="showBundleDetails('FeatherDancerMai')">
+            <div class="bundle-name">Feather Dancer Mai</div>
+            <div class="image-container">
+                <img src="Skins/Feather Dancer Mai.jpeg" alt="Feather Dancer Mai">
+            </div>
+            <div class="price-container">
+                <div class="original-price">
+                    <img src="res/img/fm.png" alt="FM">
+                    <span>1000</span>
+                </div>
+                <div class="price-divider"></div>
+                <div class="final-price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>65000</span>
+                </div>
+            </div>
+            <div class="discount-badge">CM SALE</div>
+            <button onclick="purchaseBundle(this)">Buy Now</button>
+        </div>
+        <div class="bundle-item" data-bundle-name="LunarFestivalLiliBundle" onclick="showBundleDetails('LunarFestivalLiliBundle')">
+            <div class="bundle-name">Lunar Festival Lili Bundle</div>
+            <div class="images-grid">
+                <img src="Skins/Lunar Festival Lili.jpg" alt="Lunar Festival Lili">
+                <img src="res/img/lunar_ticket.png" alt="Lunar Ticket">
+                <img src="res/img/lunar_ticket.png" alt="Lunar Ticket">
+                <img src="res/img/lunar_ticket.png" alt="Lunar Ticket">
+            </div>
+            <div class="price-container">
+                <div class="original-price">
+                    <img src="res/img/fm.png" alt="FM">
+                    <span>4400</span>
+                </div>
+                <div class="price-divider"></div>
+                <div class="final-price">
+                    <img src="res/img/fm.png" alt="FM">
+                    <span>3250</span>
+                </div>
+            </div>
+            <div class="discount-badge">-26%</div>
+            <button onclick="purchaseBundle(this)">Buy Now</button>
         </div>
     </div>
 
@@ -1293,9 +1442,16 @@
                     </div>
                 </div>
                 <div class="bundle-purchase">
-                    <div class="bundle-price">
-                        <img src="res/img/fm.png" alt="FM">
-                        <span>2000</span>
+                    <div class="price-container">
+                        <div class="original-price">
+                            <img src="res/img/fm.png" alt="FM">
+                            <span>${getOriginalPrice('TopStarterBundle')}</span>
+                        </div>
+                        <div class="price-divider"></div>
+                        <div class="final-price">
+                            <img src="res/img/fm.png" alt="FM">
+                            <span>${getBundlePrice('TopStarterBundle')}</span>
+                        </div>
                     </div>
                     <button class="purchase-bundle-btn" onclick="purchaseStarterBundle('top')">Purchase Bundle</button>
                 </div>
@@ -1326,9 +1482,16 @@
                     </div>
                 </div>
                 <div class="bundle-purchase">
-                    <div class="bundle-price">
-                        <img src="res/img/fm.png" alt="FM">
-                        <span>2000</span>
+                    <div class="price-container">
+                        <div class="original-price">
+                            <img src="res/img/fm.png" alt="FM">
+                            <span>${getOriginalPrice('JungleStarterBundle')}</span>
+                        </div>
+                        <div class="price-divider"></div>
+                        <div class="final-price">
+                            <img src="res/img/fm.png" alt="FM">
+                            <span>${getBundlePrice('JungleStarterBundle')}</span>
+                        </div>
                     </div>
                     <button class="purchase-bundle-btn" onclick="purchaseStarterBundle('jungle')">Purchase Bundle</button>
                 </div>
@@ -1359,9 +1522,16 @@
                     </div>
                 </div>
                 <div class="bundle-purchase">
-                    <div class="bundle-price">
-                        <img src="res/img/fm.png" alt="FM">
-                        <span>2000</span>
+                    <div class="price-container">
+                        <div class="original-price">
+                            <img src="res/img/fm.png" alt="FM">
+                            <span>${getOriginalPrice('MidStarterBundle')}</span>
+                        </div>
+                        <div class="price-divider"></div>
+                        <div class="final-price">
+                            <img src="res/img/fm.png" alt="FM">
+                            <span>${getBundlePrice('MidStarterBundle')}</span>
+                        </div>
                     </div>
                     <button class="purchase-bundle-btn" onclick="purchaseStarterBundle('mid')">Purchase Bundle</button>
                 </div>
@@ -1392,9 +1562,16 @@
                     </div>
                 </div>
                 <div class="bundle-purchase">
-                    <div class="bundle-price">
-                        <img src="res/img/fm.png" alt="FM">
-                        <span>2000</span>
+                    <div class="price-container">
+                        <div class="original-price">
+                            <img src="res/img/fm.png" alt="FM">
+                            <span>${getOriginalPrice('ADCStarterBundle')}</span>
+                        </div>
+                        <div class="price-divider"></div>
+                        <div class="final-price">
+                            <img src="res/img/fm.png" alt="FM">
+                            <span>${getBundlePrice('ADCStarterBundle')}</span>
+                        </div>
                     </div>
                     <button class="purchase-bundle-btn" onclick="purchaseStarterBundle('adc')">Purchase Bundle</button>
                 </div>
@@ -1424,9 +1601,16 @@
                     </div>
                 </div>
                 <div class="bundle-purchase">
-                    <div class="bundle-price">
-                        <img src="res/img/fm.png" alt="FM">
-                        <span>2000</span>
+                    <div class="price-container">
+                        <div class="original-price">
+                            <img src="res/img/fm.png" alt="FM">
+                            <span>${getOriginalPrice('SupportStarterBundle')}</span>
+                        </div>
+                        <div class="price-divider"></div>
+                        <div class="final-price">
+                            <img src="res/img/fm.png" alt="FM">
+                            <span>${getBundlePrice('SupportStarterBundle')}</span>
+                        </div>
                     </div>
                     <button class="purchase-bundle-btn" onclick="purchaseStarterBundle('support')">Purchase Bundle</button>
                 </div>

@@ -6,104 +6,54 @@
     <!-- Updated Font Links -->
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet"> <!-- Updated for sacredceremony theme -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
+        :root {
+            --primary-color: #FFD700;
+            --secondary-color: #FF0000;
+            --accent-color: #8B0000;
+            --text-color: #E0FFFF;
+            --transition-speed: 0.3s;
+        }
+
         body {
             margin: 0;
             padding: 0;
-            background: url('Event/Christmas 2024 Event.jpeg') no-repeat center center fixed;
+            background: url('Event/Lunar Festival 2024 Event.png') no-repeat center center fixed;
             background-size: cover;
-            color: #E0FFFF;
+            color: var(--text-color);
             font-family: 'Orbitron', sans-serif;
-            transition: background-image 0.5s ease-in-out;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        /* Enhanced Snow effect */
-        .snowflake {
+        body::before {
+            content: '';
             position: fixed;
-            top: -10px;
-            z-index: 9999;
-            color: white;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
-            animation: fall linear infinite;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
             pointer-events: none;
-            font-size: 1.5em;
+            z-index: 0;
         }
 
-        @keyframes fall {
-            0% {
-                transform: translateY(-10vh) rotate(0deg);
-            }
-            100% {
-                transform: translateY(100vh) rotate(360deg);
-            }
-        }
-
-        h1, h2 {
-            text-align: center;
-            margin-top: 55px;
-            text-shadow: 2px 2px 4px #550000; /* Darker Red Shadow */
-            font-family: 'Lobster', cursive; /* Handwritten style */
-        }
-        h1 {
-            font-size: 72px;
-            color: #8B4513; /* Saddle Brown */
-        }
-        h2 {
-            font-size: 60px;
-            color: #D2B48C; /* Tan */
-            font-family: 'Lobster', cursive; /* Handwritten style */
-            animation: flicker 2s infinite;
-        }
-        #skin-gallery {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            max-width: 1920px;
-            margin: 0 auto;
-        }
-        .skin-item {
-            margin: 30px;
-            text-align: center;
-            transition: transform 0.3s;
-        }
-        .skin-item:hover {
-            transform: scale(1.05);
-        }
-        .skin-item img {
-            border: 2px solid #444;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            width: 300px; /* Adjusted for better responsiveness */
-            height: auto;
-            border-radius: 10px;
-        }
-        .skin-item img:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7); /* Gold Glow */
-        }
-        .skin-name {
-            margin-top: 10px;
-            font-size: 24px;
-            color: #8B4513; /* Saddle Brown */
-            text-shadow: 2px 2px 4px #550000, 0 0 5px #fff; /* Darker Red Shadow with White Outline */
-            font-family: 'Amatic SC', cursive; /* Rustic font */
-        }
-
-        /* Transparent Menu */
+        /* Keep existing menu styles */
         .menu {
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 10px 20px;
-            background-color: rgba(25, 48, 90, 0.8); /* Deep winter blue with transparency */
-            z-index: 0;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            background-color: rgba(139, 0, 0, 0.8);
+            z-index: 1000;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.2);
         }
 
         .menu-items {
@@ -113,14 +63,14 @@
         }
 
         .menu a {
-            color: #E0FFFF; /* Light cyan */
+            color: #FFD700;
             text-decoration: none;
             padding: 14px 16px;
-            font-family: 'Amatic SC', cursive; /* Rustic font */
+            font-family: 'Cinzel', serif;
             font-size: 16px;
             transition: background-color 0.3s, transform 0.3s;
             position: relative;
-            text-shadow: 0 0 5px rgba(65, 105, 225, 0.5); /* Royal blue glow */
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
         }
 
         .menu a::after {
@@ -128,7 +78,7 @@
             display: block;
             width: 0;
             height: 2px;
-            background: #fff;
+            background: #FFD700;
             transition: width .3s;
             margin: auto;
         }
@@ -138,8 +88,8 @@
         }
 
         .menu a:hover {
-            background-color: rgba(65, 105, 225, 0.3); /* Royal blue with transparency */
-            color: white;
+            background-color: rgba(255, 0, 0, 0.3);
+            color: #FFD700;
             transform: scale(1.05);
         }
 
@@ -147,109 +97,185 @@
             display: flex;
             justify-content: flex-start;
             padding: 20px;
-            z-index: auto;
+            z-index: 1000;
             position: fixed;
         }
 
         .play-button {
-            background-color: #4169E1; /* Royal blue */
-            color: white;
+            background-color: #8B0000;
+            color: #FFD700;
             border: none;
-            border-radius: 25px; /* Slightly less rounded corners for a modern look */
-            font-size: 22px; /* Slightly larger font size */
+            border-radius: 25px;
+            font-size: 22px;
             font-weight: bold;
             text-decoration: none;
-            padding: 15px 40px; /* Increased padding for a more prominent button */
+            padding: 15px 40px;
             transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 8px 20px rgba(65, 105, 225, 0.4);
-            z-index: 1; /* Ensure it is above other elements */
-            top: 5px; /* Adjusted position */
+            box-shadow: 0 8px 20px rgba(139, 0, 0, 0.4);
+            z-index: 1;
+            top: 5px;
             position: fixed;
             left: 0px;
-            font-family: 'Amatic SC', cursive; /* Rustic font */
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            font-family: 'Cinzel', serif;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
         }
 
         .play-button:hover {
-            background-color: #1E90FF; /* Dodger blue */
-            transform: scale(1.05); /* Slightly enlarge the button on hover */
-            box-shadow: 0 10px 25px rgba(65, 105, 225, 0.6);
+            background-color: #FF0000;
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(255, 0, 0, 0.6);
         }
 
-        /* Lightbox styles */
-        .lightbox {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
+        /* New Modern Event Title */
+        .event-title {
             text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin: 80px 0 40px;
+            position: relative;
+            z-index: 2;
         }
 
-        .lightbox img {
-            max-width: 90%;
-            max-height: 90%;
-            border: 3px solid white;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-            cursor: pointer;
-            border-radius: 10px;
+        .event-title h1 {
+            font-size: 72px;
+            color: var(--primary-color);
+            margin: 0;
+            font-family: 'Cinzel', serif;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            animation: titleGlow 3s infinite;
+            position: relative;
+            display: inline-block;
         }
-        .lightbox .close-btn {
+
+        .event-title h1::before,
+        .event-title h1::after {
+            content: '';
             position: absolute;
-            top: 20px;
-            right: 20px;
-            color: white;
-            font-size: 36px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .lightbox .close-btn:hover {
-            transform: rotate(90deg);
-        }
-        .lightbox .prev, .lightbox .next {
-            position: absolute;
+            width: 60px;
+            height: 2px;
+            background: var(--primary-color);
             top: 50%;
             transform: translateY(-50%);
-            color: white;
-            font-size: 48px;
-            cursor: pointer;
-            user-select: none;
-            transition: color 0.2s;
-        }
-        .lightbox .prev:hover, .lightbox .next:hover {
-            color: #FFD700; /* Gold for highlight */
-        }
-        .lightbox .prev {
-            left: 20px;
-        }
-        .lightbox .next {
-            right: 20px;
         }
 
+        .event-title h1::before {
+            left: -80px;
+        }
+
+        .event-title h1::after {
+            right: -80px;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 20px var(--primary-color), 0 0 30px var(--primary-color); }
+            50% { text-shadow: 0 0 30px var(--secondary-color), 0 0 40px var(--secondary-color); }
+        }
+
+        /* Modernized Skin Gallery */
+        .skin-gallery-container {
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .skin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            padding: 20px;
+        }
+
+        .skin-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--primary-color);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all var(--transition-speed) ease;
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+
+        .skin-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .skin-image {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+
+        .skin-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition-speed);
+        }
+
+        .skin-card:hover .skin-image img {
+            transform: scale(1.1);
+        }
+
+        .skin-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform var(--transition-speed);
+        }
+
+        .skin-card:hover .skin-overlay {
+            transform: translateY(0);
+        }
+
+        .skin-details {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .skin-name {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin: 0;
+            font-family: 'Cinzel', serif;
+            position: relative;
+            display: inline-block;
+        }
+
+        .skin-name::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--secondary-color);
+            transition: all var(--transition-speed);
+            transform: translateX(-50%);
+        }
+
+        .skin-card:hover .skin-name::after {
+            width: 100%;
+        }
+
+        /* Modern Battlepass Button */
         .battlepass-button {
             position: fixed;
             top: 125px;
             left: 75px;
-            background: url('Event/Christmas 2024 Event.jpeg') no-repeat center center;
-            background-size: cover;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(139, 0, 0, 0.8);
+            border: none;
             border-radius: 15px;
             cursor: pointer;
             z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-            width: 250px;
-            height: 100px;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 20px rgba(65, 105, 225, 0.5);
+            padding: 20px 40px;
+            backdrop-filter: blur(10px);
+            transition: all var(--transition-speed);
             overflow: hidden;
         }
 
@@ -257,349 +283,130 @@
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
+            left: -100%;
             width: 100%;
             height: 100%;
-            background: rgba(65, 105, 225, 0.2);
-            backdrop-filter: blur(5px);
-            z-index: -1;
+            background: linear-gradient(
+                120deg,
+                transparent,
+                rgba(255, 215, 0, 0.4),
+                transparent
+            );
+            transition: all 0.6s;
+        }
+
+        .battlepass-button:hover::before {
+            left: 100%;
         }
 
         .battlepass-button span {
-            color: #FFFFFF;
+            color: var(--primary-color);
             font-size: 28px;
             font-weight: bold;
-            font-family: 'Great Vibes', cursive;
-            text-shadow: 
-                0 0 10px #4169E1,
-                0 0 20px #4169E1,
-                0 0 30px #4169E1;
-            letter-spacing: 2px;
-            animation: winterGlow 2s infinite;
+            font-family: 'Cinzel', serif;
             text-transform: uppercase;
-            z-index: 2;
-        }
-
-        .battlepass-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(65, 105, 225, 0.8);
-            border-color: rgba(255, 255, 255, 0.5);
-        }
-
-        .battlepass-button:hover span {
-            color: #E0FFFF;
-        }
-
-        /* New Styles for Event Buttons */
-        .event-buttons {
-            display: flex;
-            position: fixed;
-            justify-content: center;
-            margin: 20px 0;
-            z-index: 50;
-            left: 50%; /* Center horizontally */
-            transform: translateX(-50%);
-        }
-
-        .event-button {
-            background-color: rgba(65, 105, 225, 0.8); /* Royal blue with transparency */
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 15px 30px;
-            margin: 0 10px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.2);
-            z-index: 50;
-            font-family: 'Amatic SC', cursive; /* Rustic font */
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-        }
-
-        .event-button:hover {
-            background-color: rgba(30, 144, 255, 0.8); /* Dodger blue with transparency */
-            transform: scale(1.05);
-        }
-
-        /* Styles for Event Sections */
-        .event-section {
-            display: none; /* Hidden by default */
-            padding: 20px;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        .active-section {
-            display: block;
-        }
-
-        /* Styles for sacredceremony Event Section */
-        .sacredceremony-section {
-            background: url('Event/sacredceremony Event.jpeg') no-repeat center center fixed;
-            background-size: cover;
-            color: #D2B48C; /* Tan */
-            font-family: 'Amatic SC', cursive; /* Rustic font */
-            position: relative;
-        }
-
-        /* sacredceremony Specific Styles */
-        .sacredceremony-section::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.3); /* Light overlay for elegance */
-            z-index: 0;
-        }
-
-        .sacredceremony-section > * {
+            letter-spacing: 2px;
             position: relative;
             z-index: 1;
         }
 
-        .sacredceremony-section h1 {
-            font-size: 80px;
-            color: #8B4513; /* Saddle Brown */
-            text-shadow: 2px 2px 10px #550000;
-            animation: flicker 1.5s infinite;
+        /* Modern Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
         }
 
-        .sacredceremony-gallery .skin-item {
-            margin: 40px;
+        .lightbox.active {
+            opacity: 1;
         }
 
-        .sacredceremony-gallery .skin-name {
-            color: #8B4513; /* Saddle Brown */
-            font-size: 28px;
-            text-shadow: 2px 2px 5px #000;
-            font-family: 'Amatic SC', cursive; /* Rustic font */
-            transition: color 0.3s;
+        .lightbox-content {
+            position: relative;
+            width: 90%;
+            max-width: 1200px;
+            margin: 40px auto;
+            text-align: center;
         }
 
-        .sacredceremony-gallery .skin-name:hover {
-            color: #FFA500; /* Orange on hover */
+        .lightbox img {
+            max-width: 100%;
+            max-height: 80vh;
+            border: 3px solid var(--primary-color);
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
         }
 
-        /* Animations */
+        .lightbox-controls {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .lightbox-btn {
+            color: var(--primary-color);
+            font-size: 24px;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            padding: 10px;
+        }
+
+        .lightbox-btn:hover {
+            color: var(--secondary-color);
+            transform: scale(1.2);
+        }
+
+        /* Floating Lanterns Animation */
         @keyframes float {
-            0% {
-                transform: translateY(0px);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
-            100% {
-                transform: translateY(0px);
-            }
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
         }
 
-        @keyframes flicker {
-            0% { opacity: 1; }
-            50% { opacity: 0.8; }
-            100% { opacity: 1; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .lantern {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.6;
+            animation: float 4s ease-in-out infinite;
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            .event-buttons {
-                flex-direction: column;
-            }
-
-            .event-button {
-                margin: 10px 0;
-                width: 80%;
-            }
-
-            .skin-item img {
-                width: 80%;
-                height: auto;
-            }
-
-            .battlepass-button img {
-                width: 150px;
-                height: 60px;
-            }
-
-            h1 {
+            .event-title h1 {
                 font-size: 48px;
-                margin-top: 30px;
             }
 
-            h2 {
-                font-size: 36px;
+            .skin-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+            }
+
+            .battlepass-button {
+                padding: 15px 30px;
+            }
+
+            .battlepass-button span {
+                font-size: 20px;
             }
         }
-
-        .hidden {
-            display: none;
-        }
-
-        /* Winter Festival Event Styles */
-        .winter-festival-section {
-            background: url('Event/Winter Festival Event.jpeg') no-repeat center center fixed;
-            background-size: cover;
-            color: #E0FFFF; /* Light cyan */
-            font-family: 'Playfair Display', serif;
-            position: relative;
-        }
-
-        .winter-festival-section::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.1); /* Light snow overlay */
-            z-index: 0;
-        }
-
-        .winter-festival-section > * {
-            position: relative;
-            z-index: 1;
-        }
-
-        .winter-festival-section h1 {
-            font-size: 72px;
-            color: #E0FFFF; /* Light cyan */
-            text-shadow: 
-                0 0 10px #4169E1, /* Royal blue glow */
-                0 0 20px #4169E1,
-                0 0 30px #4169E1;
-            font-family: 'Great Vibes', cursive;
-            letter-spacing: 4px;
-            animation: winterGlow 2s infinite;
-        }
-
-        .winter-festival-gallery .skin-item {
-            margin: 40px;
-        }
-
-        .winter-festival-gallery .skin-name {
-            color: #E0FFFF; /* Light cyan */
-            font-size: 24px;
-            font-family: 'Playfair Display', serif;
-            text-shadow: 
-                0 0 5px #4169E1,
-                0 0 10px #4169E1;
-            letter-spacing: 2px;
-            transition: all 0.3s ease;
-        }
-
-        .winter-festival-gallery .skin-name:hover {
-            color: #F0F8FF; /* Alice Blue */
-            text-shadow: 
-                0 0 10px #4169E1,
-                0 0 20px #4169E1;
-            transform: scale(1.1);
-        }
-
-        @keyframes winterGlow {
-            0% { text-shadow: 0 0 10px #4169E1, 0 0 20px #4169E1, 0 0 30px #4169E1; }
-            50% { text-shadow: 0 0 20px #4169E1, 0 0 30px #4169E1, 0 0 40px #4169E1; }
-            100% { text-shadow: 0 0 10px #4169E1, 0 0 20px #4169E1, 0 0 30px #4169E1; }
-        }
-
-        /* Add Atlantis Event Styles */
-        .atlantis-section {
-            background: url('Event/Atlantis Event.jpeg') no-repeat center center fixed;
-            background-size: cover;
-            color: #00FFFF; /* Cyan for underwater theme */
-            font-family: 'Playfair Display', serif;
-            position: relative;
-        }
-
-        .atlantis-section::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                rgba(0, 40, 80, 0.4),
-                rgba(0, 20, 40, 0.6)
-            );
-            z-index: 0;
-        }
-
-        .atlantis-section > * {
-            position: relative;
-            z-index: 1;
-        }
-
-        .atlantis-section h1 {
-            font-size: 72px;
-            color: #00FFFF;
-            text-shadow: 
-                0 0 10px #0088FF,
-                0 0 20px #0088FF,
-                0 0 30px #0088FF;
-            font-family: 'Cinzel', serif;
-            letter-spacing: 4px;
-            animation: waterGlow 3s infinite;
-        }
-
-        .atlantis-gallery .skin-item {
-            margin: 40px;
-        }
-
-        .atlantis-gallery .skin-name {
-            color: #00FFFF;
-            font-size: 24px;
-            font-family: 'Cinzel', serif;
-            text-shadow: 
-                0 0 5px #0088FF,
-                0 0 10px #0088FF;
-            letter-spacing: 2px;
-            transition: all 0.3s ease;
-        }
-
-        .atlantis-gallery .skin-name:hover {
-            color: #80FFFF;
-            text-shadow: 
-                0 0 10px #00FFFF,
-                0 0 20px #00FFFF;
-            transform: scale(1.1);
-        }
-
-        @keyframes waterGlow {
-            0% { text-shadow: 0 0 10px #0088FF, 0 0 20px #0088FF, 0 0 30px #0088FF; }
-            50% { text-shadow: 0 0 20px #00FFFF, 0 0 30px #00FFFF, 0 0 40px #00FFFF; }
-            100% { text-shadow: 0 0 10px #0088FF, 0 0 20px #0088FF, 0 0 30px #0088FF; }
-        }
-
-        /* Bubble animation for Atlantis theme */
-        .bubble {
-            position: fixed;
-            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2));
-            border-radius: 50%;
-            pointer-events: none;
-            animation: float-up linear infinite;
-        }
-
-        @keyframes float-up {
-            0% {
-                transform: translateY(100vh) translateX(0px);
-                opacity: 0.8;
-            }
-            100% {
-                transform: translateY(-100px) translateX(20px);
-                opacity: 0;
-            }
-        }
-
     </style>
 </head>
 <body>
-    <!-- Menu -->
+    <!-- Keep existing menu -->
     <div class="menu">
         <div class="menu-items">
             <a href="home.html">Home</a>
@@ -609,259 +416,176 @@
             <a href="statistics.html">Statistics</a>
         </div>
     </div>
-    <div class="event-buttons">
-        <button class="event-button" id="atlantisEventBtn" aria-controls="atlantisEventSection" aria-expanded="true">Atlantis Event</button>
-        <button class="event-button" id="winterFestivalEventBtn" aria-controls="winterFestivalEventSection" aria-expanded="false">Winter Festival Event</button>
-    </div>
+
+    <!-- Keep existing play button -->
     <div class="play-button-container">
         <a href="Game Modes.html" class="play-button">Play</a>
     </div>
+
+    <!-- Modern Battlepass Button -->
     <button class="battlepass-button" onclick="window.location.href='battlepass.html'">
         <span>Battlepass</span>
     </button>
 
-    <!-- Atlantis Event Section -->
-    <div id="atlantisEventSection" class="event-section active-section atlantis-section">
-        <h1>Atlantis Event</h1>
-        <div id="skin-gallery" class="atlantis-gallery">
-            <div class="skin-item">
-                <a href="Skins/Atlantean Christie.jpeg" class="lightbox-link" data-caption="Atlantean Christie">
-                    <img src="Skins/Atlantean Christie.jpeg" alt="Atlantean Christie">
-                </a>
-                <div class="skin-name">Atlantean Christie</div>
+    <!-- Modern Event Title -->
+    <div class="event-title">
+        <h1>Lunar Festival Event</h1>
+    </div>
+
+    <!-- Modern Skin Gallery -->
+    <div class="skin-gallery-container">
+        <div class="skin-grid">
+            <div class="skin-card">
+                <div class="skin-image">
+                    <img src="Skins/Lunar Festival Lili.jpg" alt="Lunar Festival Lili">
+                    <div class="skin-overlay">
+                        <p>Click to view details</p>
+                    </div>
+                </div>
+                <div class="skin-details">
+                    <h3 class="skin-name">Lunar Festival Lili</h3>
+                </div>
             </div>
-            <div class="skin-item">
-                <a href="Skins/Atlantean Kotal Kahn.jpeg" class="lightbox-link" data-caption="Atlantean Kotal Kahn">
-                    <img src="Skins/Atlantean Kotal Kahn.jpeg" alt="Atlantean Kotal Kahn">
-                </a>
-                <div class="skin-name">Atlantean Kotal Kahn</div>
+            <div class="skin-card">
+                <div class="skin-image">
+                    <img src="Skins/Lunar Festival Scorpion.jpeg" alt="Lunar Festival Scorpion">
+                    <div class="skin-overlay">
+                        <p>Click to view details</p>
+                    </div>
+                </div>
+                <div class="skin-details">
+                    <h3 class="skin-name">Lunar Festival Scorpion</h3>
+                </div>
             </div>
-            <div class="skin-item">
-                <a href="Skins/Atlantean Zasalamel.jpg" class="lightbox-link" data-caption="Atlantean Zasalamel">
-                    <img src="Skins/Atlantean Zasalamel.jpg" alt="Atlantean Zasalamel">
-                </a>
-                <div class="skin-name">Atlantean Zasalamel</div>
+            <div class="skin-card">
+                <div class="skin-image">
+                    <img src="Skins/Lunar Festival Noel.jpg" alt="Lunar Festival Noel">
+                    <div class="skin-overlay">
+                        <p>Click to view details</p>
+                    </div>
+                </div>
+                <div class="skin-details">
+                    <h3 class="skin-name">Lunar Festival Noel</h3>
+                </div>
             </div>
-            <div class="skin-item">
-                <a href="Skins/Atlantean Sub Zero.jpeg" class="lightbox-link" data-caption="Atlantean Sub Zero">
-                    <img src="Skins/Atlantean Sub Zero.jpeg" alt="Atlantean Sub Zero">
-                </a>
-                <div class="skin-name">Atlantean Sub Zero</div>
+            <div class="skin-card">
+                <div class="skin-image">
+                    <img src="Skins/Lunar Festival Reptile.jpeg" alt="Lunar Festival Reptile">
+                    <div class="skin-overlay">
+                        <p>Click to view details</p>
+                    </div>
+                </div>
+                <div class="skin-details">
+                    <h3 class="skin-name">Lunar Festival Reptile</h3>
+                </div>
             </div>
-            <div class="skin-item">
-                <a href="Skins/Atlantean Shinnok.jpeg" class="lightbox-link" data-caption="Atlantean Shinnok">
-                    <img src="Skins/Atlantean Shinnok.jpeg" alt="Atlantean Shinnok">
-                </a>
-                <div class="skin-name">Atlantean Shinnok</div>
+            <div class="skin-card">
+                <div class="skin-image">
+                    <img src="Skins/Lunar Festival Kokoro.jpg" alt="Lunar Festival Kokoro">
+                    <div class="skin-overlay">
+                        <p>Click to view details</p>
+                    </div>
+                </div>
+                <div class="skin-details">
+                    <h3 class="skin-name">Lunar Festival Kokoro</h3>
+                </div>
             </div>
-            <div class="skin-item">
-                <a href="Skins/Atlantean Kagome.jpeg" class="lightbox-link" data-caption="Atlantean Kagome">
-                    <img src="Skins/Atlantean Kagome.jpeg" alt="Atlantean Kagome">
-                </a>
-                <div class="skin-name">Atlantean Kagome</div>
+            <div class="skin-card">
+                <div class="skin-image">
+                    <img src="Skins/Lunar Festival Siegfried.jpg" alt="Lunar Festival Siegfried">
+                    <div class="skin-overlay">
+                        <p>Click to view details</p>
+                    </div>
+                </div>
+                <div class="skin-details">
+                    <h3 class="skin-name">Lunar Festival Siegfried</h3>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Winter Festival Event Section -->
-    <div id="winterFestivalEventSection" class="event-section winter-festival-section">
-        <h1>Winter Festival Event</h1>
-        <div id="skin-gallery" class="winter-festival-gallery">
-            <div class="skin-item">
-                <a href="Skins/Winter Festival Lili.jpg" class="lightbox-link" data-caption="Winter Festival Lili">
-                    <img src="Skins/Winter Festival Lili.jpg" alt="Winter Festival Lili">
-                </a>
-                <div class="skin-name">Winter Festival Lili</div>
-            </div>
-            <div class="skin-item">
-                <a href="Skins/Winter Festival Juri.jpeg" class="lightbox-link" data-caption="Winter Festival Juri">
-                    <img src="Skins/Winter Festival Juri.jpeg" alt="Winter Festival Juri">
-                </a>
-                <div class="skin-name">Winter Festival Juri</div>
-            </div>
-            <div class="skin-item">
-                <a href="Skins/Winter Festival Kabal.jpeg" class="lightbox-link" data-caption="Winter Festival Kabal">
-                    <img src="Skins/Winter Festival Kabal.jpeg" alt="Winter Festival Kabal">
-                </a>
-                <div class="skin-name">Winter Festival Kabal</div>
-            </div>
-            <div class="skin-item">
-                <a href="Skins/Winter Festival Mai.jpeg" class="lightbox-link" data-caption="Winter Festival Mai">
-                    <img src="Skins/Winter Festival Mai.jpeg" alt="Winter Festival Mai">
-                </a>
-                <div class="skin-name">Winter Festival Mai</div>
-            </div>
-            <div class="skin-item">
-                <a href="Skins/Winter Festival Kuma.jpeg" class="lightbox-link" data-caption="Winter Festival Kuma">
-                    <img src="Skins/Winter Festival Kuma.jpeg" alt="Winter Festival Kuma">
-                </a>
-                <div class="skin-name">Winter Festival Kuma</div>
-            </div>
-            <div class="skin-item">
-                <a href="Skins/Winter Queen Angel.jpeg" class="lightbox-link" data-caption="Winter Queen Angel">
-                    <img src="Skins/Winter Queen Angel.jpeg" alt="Winter Queen Angel">
-                </a>
-                <div class="skin-name">Winter Queen Angel</div>
-            </div>
-            <div class="skin-item">
-                <a href="Skins/Winter Festival Shizumaru.jpeg" class="lightbox-link" data-caption="Winter Festival Shizumaru">
-                    <img src="Skins/Winter Festival Shizumaru.jpeg" alt="Winter Festival Shizumaru">
-                </a>
-                <div class="skin-name">Winter Festival Shizumaru</div>
+    <!-- Modern Lightbox -->
+    <div class="lightbox">
+        <div class="lightbox-content">
+            <img id="lightbox-image" src="" alt="">
+            <div class="lightbox-controls">
+                <span class="lightbox-btn prev-btn"><i class="fas fa-chevron-left"></i></span>
+                <span class="lightbox-btn close-btn"><i class="fas fa-times"></i></span>
+                <span class="lightbox-btn next-btn"><i class="fas fa-chevron-right"></i></span>
             </div>
         </div>
     </div>
 
-    <!-- Lightbox HTML -->
-    <div id="lightbox" class="lightbox">
-        <span class="close-btn" onclick="closeLightbox()">&times;</span>
-        <img id="lightbox-image" src="" alt="">
-        <span class="prev" onclick="prevImage()">&#10094;</span>
-        <span class="next" onclick="nextImage()">&#10095;</span>
-    </div>
-    <!-- JavaScript to control the lightbox -->
     <script>
-        const lightbox = document.getElementById('lightbox');
+        // Floating Lanterns
+        function createLanterns() {
+            const lanternColors = ['#FFD700', '#FF0000', '#FF4500'];
+            const numLanterns = 10;
+
+            for (let i = 0; i < numLanterns; i++) {
+                const lantern = document.createElement('div');
+                lantern.className = 'lantern';
+                lantern.style.left = Math.random() * 100 + 'vw';
+                lantern.style.top = Math.random() * 100 + 'vh';
+                lantern.style.animationDelay = Math.random() * 4 + 's';
+                lantern.style.color = lanternColors[Math.floor(Math.random() * lanternColors.length)];
+                lantern.innerHTML = '🏮';
+                document.body.appendChild(lantern);
+            }
+        }
+
+        // Modern Lightbox Functionality
+        const lightbox = document.querySelector('.lightbox');
         const lightboxImage = document.getElementById('lightbox-image');
+        const skinCards = document.querySelectorAll('.skin-card');
         let currentImageIndex = 0;
-        const lightboxLinks = document.querySelectorAll('.lightbox-link');
-        const lightboxArray = Array.from(lightboxLinks);
 
-        // Ensure lightbox is hidden initially
-        window.addEventListener('load', () => {
-            lightbox.style.display = 'none';
-        });
-
-        // Add event listener to each lightbox link
-        lightboxLinks.forEach((link, index) => {
-            link.addEventListener('click', function(event) {
-                event.preventDefault();
+        skinCards.forEach((card, index) => {
+            card.addEventListener('click', () => {
                 currentImageIndex = index;
-                const imageUrl = link.getAttribute('href');
-                const caption = link.getAttribute('data-caption');
-                openLightbox(imageUrl, caption);
+                const imgSrc = card.querySelector('img').src;
+                openLightbox(imgSrc);
             });
         });
 
-        function openLightbox(imageUrl, caption) {
-            lightboxImage.src = imageUrl;
-            lightboxImage.alt = caption;
+        function openLightbox(imgSrc) {
+            lightboxImage.src = imgSrc;
             lightbox.style.display = 'flex';
+            setTimeout(() => lightbox.classList.add('active'), 10);
         }
 
         function closeLightbox() {
-            lightbox.style.display = 'none';
+            lightbox.classList.remove('active');
+            setTimeout(() => lightbox.style.display = 'none', 300);
         }
 
-        function prevImage() {
-            currentImageIndex = (currentImageIndex - 1 + lightboxLinks.length) % lightboxLinks.length;
-            const imageUrl = lightboxLinks[currentImageIndex].getAttribute('href');
-            const caption = lightboxLinks[currentImageIndex].getAttribute('data-caption');
-            openLightbox(imageUrl, caption);
+        function showNextImage() {
+            currentImageIndex = (currentImageIndex + 1) % skinCards.length;
+            const nextImgSrc = skinCards[currentImageIndex].querySelector('img').src;
+            lightboxImage.src = nextImgSrc;
         }
 
-        function nextImage() {
-            currentImageIndex = (currentImageIndex + 1) % lightboxLinks.length;
-            const imageUrl = lightboxLinks[currentImageIndex].getAttribute('href');
-            const caption = lightboxLinks[currentImageIndex].getAttribute('data-caption');
-            openLightbox(imageUrl, caption);
+        function showPrevImage() {
+            currentImageIndex = (currentImageIndex - 1 + skinCards.length) % skinCards.length;
+            const prevImgSrc = skinCards[currentImageIndex].querySelector('img').src;
+            lightboxImage.src = prevImgSrc;
         }
 
-        // Enhanced Snow effect
-        function createSnowflake() {
-            const snowflake = document.createElement('div');
-            snowflake.classList.add('snowflake');
-            snowflake.innerHTML = '❄';
-            snowflake.style.left = Math.random() * 100 + 'vw';
-            snowflake.style.opacity = Math.random() * 0.8 + 0.2;
-            snowflake.style.fontSize = (Math.random() * 15 + 8) + 'px';
-            snowflake.style.filter = 'blur(' + Math.random() * 2 + 'px)';
-            snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            snowflake.style.transform = `rotate(${Math.random() * 360}deg)`;
-            document.body.appendChild(snowflake);
+        document.querySelector('.close-btn').addEventListener('click', closeLightbox);
+        document.querySelector('.next-btn').addEventListener('click', showNextImage);
+        document.querySelector('.prev-btn').addEventListener('click', showPrevImage);
 
-            snowflake.addEventListener('animationend', () => {
-                snowflake.remove();
-            });
-        }
+        // Initialize lanterns
+        createLanterns();
 
-        function startSnowflakes() {
-            if (document.getElementById('winterFestivalEventSection').classList.contains('active-section')) {
-                setInterval(createSnowflake, 50);
-                for(let i = 0; i < 50; i++) {
-                    setTimeout(createSnowflake, Math.random() * 2000);
-                }
-            }
-        }
-
-        // Bubble effect for Atlantis theme
-        function createBubble() {
-            const bubble = document.createElement('div');
-            bubble.classList.add('bubble');
-            const size = Math.random() * 30 + 10;
-            bubble.style.width = size + 'px';
-            bubble.style.height = size + 'px';
-            bubble.style.left = Math.random() * 100 + 'vw';
-            bubble.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            document.body.appendChild(bubble);
-
-            bubble.addEventListener('animationend', () => {
-                bubble.remove();
-            });
-        }
-
-        function startBubbles() {
-            if (document.getElementById('atlantisEventSection').classList.contains('active-section')) {
-                setInterval(createBubble, 500);
-                for(let i = 0; i < 20; i++) {
-                    setTimeout(createBubble, Math.random() * 2000);
-                }
-            }
-        }
-
-        function stopBubbles() {
-            const bubbles = document.querySelectorAll('.bubble');
-            bubbles.forEach(bubble => bubble.remove());
-        }
-
-        function stopSnowflakes() {
-            const snowflakes = document.querySelectorAll('.snowflake');
-            snowflakes.forEach(snowflake => snowflake.remove());
-        }
-
-        // Initialize events and handle switching
-        document.addEventListener('DOMContentLoaded', () => {
-            // Set initial state
-            document.body.style.backgroundImage = "url('Event/Atlantis Event.jpeg')";
-            const atlantisSection = document.getElementById('atlantisEventSection');
-            const winterSection = document.getElementById('winterFestivalEventSection');
-            
-            atlantisSection.classList.add('active-section');
-            winterSection.classList.remove('active-section');
-            startBubbles();
-
-            // Event button handlers
-            const atlantisBtn = document.getElementById('atlantisEventBtn');
-            const winterBtn = document.getElementById('winterFestivalEventBtn');
-
-            atlantisBtn.addEventListener('click', () => {
-                document.body.style.backgroundImage = "url('Event/Atlantis Event.jpeg')";
-                atlantisSection.classList.add('active-section');
-                winterSection.classList.remove('active-section');
-                atlantisBtn.setAttribute('aria-expanded', 'true');
-                winterBtn.setAttribute('aria-expanded', 'false');
-                stopSnowflakes();
-                startBubbles();
+        // Hover effect for skin cards
+        skinCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-10px)';
             });
 
-            winterBtn.addEventListener('click', () => {
-                document.body.style.backgroundImage = "url('Event/Winter Festival Event.jpeg')";
-                winterSection.classList.add('active-section');
-                atlantisSection.classList.remove('active-section');
-                winterBtn.setAttribute('aria-expanded', 'true');
-                atlantisBtn.setAttribute('aria-expanded', 'false');
-                stopBubbles();
-                startSnowflakes();
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
             });
         });
     </script>

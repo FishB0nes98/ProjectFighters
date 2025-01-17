@@ -1,7 +1,24 @@
 const recolorData = {
+    "Lunar Festival Kokoro": {
+        base: "Lunar Festival Kokoro",
+        recolors: ["Sweet"],
+        availability: {
+            "Sweet": false
+        }
+    },
+    "Winter Festival Lili": {
+        base: "Winter Festival Lili",
+        recolors: ["Holiday", "Snowy Blush", "Golden", "Snowflake"],
+        availability: {
+            "Holiday": false,
+            "Snowy Blush": false,
+            "Golden": false,
+            "Snowflake": false
+        }
+    },
     "Steamcore MegaMan": {
         base: "Steamcore MegaMan",
-        recolors: ["Copper", "Silver"]
+        recolors: ["Copper", "Silver", "Golden", "Metal"]
     },
     "Sacred Ceremony Julia": {
         base: "Sacred Ceremony Julia",
@@ -21,7 +38,7 @@ const recolorData = {
     },
     "Voidborn Nina": {
         base: "Voidborn Nina",
-        recolors: ["Warlock"]
+        recolors: ["Warlock", "Eclipse", "Devil Countess", "Desert"]
     },
     "Arcade Sub Zero": {
         base: "Arcade Sub Zero",
@@ -29,7 +46,10 @@ const recolorData = {
     },
     "River Spirit Julia": {
         base: "River Spirit Julia",
-        recolors: ["Golden"]
+        recolors: ["Golden"],
+        availability: {
+            "Golden": false
+        }
     },
     "Forest Behemoth Astaroth": {
         base: "Forest Behemoth Astaroth",
@@ -63,18 +83,38 @@ const recolorData = {
         base: "Infernal Ibuki",
         recolors: ["Greenfire", "Blue Flame", "Silver Flame", "Golden Flame"]
     },
-    "Basic Recolors": {
-        base: "Basic",
-        recolors: [
-            "Shoma Schoolboy",
-            "Raiden Red",
-            "Cham Cham Monochrome",
-            "Reptile Sand",
-            "Blanka Red",
-            "Ibuki Red",
-            "Scorpion Spider",
-            "Talim Bloody"
-        ]
+    // Basic recolors as separate sections
+    "Shoma Basic": {
+        base: "Shoma",
+        recolors: ["Schoolboy"]
+    },
+    "Raiden Basic": {
+        base: "Raiden",
+        recolors: ["Red"]
+    },
+    "Cham Cham Basic": {
+        base: "Cham Cham",
+        recolors: ["Monochrome"]
+    },
+    "Reptile Basic": {
+        base: "Reptile",
+        recolors: ["Sand"]
+    },
+    "Blanka Basic": {
+        base: "Blanka",
+        recolors: ["Red"]
+    },
+    "Ibuki Basic": {
+        base: "Ibuki",
+        recolors: ["Red"]
+    },
+    "Scorpion Basic": {
+        base: "Scorpion",
+        recolors: ["Spider", "Blossom"]
+    },
+    "Talim Basic": {
+        base: "Talim",
+        recolors: ["Bloody"]
     }
 };
 

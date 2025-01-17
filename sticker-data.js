@@ -148,6 +148,26 @@ export const stickers = {
     }
 };
 
+// Export bundle information
+export const starterBundle = {
+    name: "Sticker Starter Bundle",
+    stickers: [
+        "Ayane_Isthisa",
+        "Ayane_Side_Eye",
+        "Birdie_Ate",
+        "Blanka_Scared",
+        "ChamCham_V",
+        "Christie_Heart",
+        "Juri_Selfie",
+        "Rmika_Gum",
+        "Shizumaru_Lmao",
+        "Shoma_Surprised"
+    ],
+    originalPrice: 3500, // 10 stickers * 350 FM each
+    salePrice: 1500,    // Bundle discounted price
+    discount: 57        // Percentage discount
+};
+
 // Helper functions
 export function getStickersByCategory(category) {
     return Object.entries(stickers)

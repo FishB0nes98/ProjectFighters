@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patch 1.2 Notes - Balance Update</title>
+    <title>Patch 1.6 Notes - Balance Update</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@400;700&family=Raleway:wght@400;600&display=swap');
 
@@ -22,37 +22,105 @@
             color: var(--text-light);
         }
 
-        .video-background {
+        .menu {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 0;
+        }
+
+        .menu-items {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 16px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+
+        .play-button-container {
+            display: flex;
+            justify-content: flex-start;
+            padding: 20px;
+            z-index: auto;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.3;
+        }
+
+        .play-button {
+            background-color: #ffbb00;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 22px;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 15px 40px;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1;
+            top: 5px;
+            position: fixed;
+            left: 0px;
+        }
+
+        .play-button:hover {
+            background-color: #ff8800;
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
         }
 
         .container {
             max-width: 1200px;
-            margin: 0 auto;
+            margin: 60px auto 0;
             padding: 20px;
         }
 
-        .header {
-            text-align: center;
-            padding: 40px 0;
-            background: rgba(0, 0, 0, 0.7);
+        .patch-header {
+            position: relative;
+            height: 500px;
             margin-bottom: 40px;
+            border-radius: 15px;
+            overflow: hidden;
         }
 
-        h1 {
+        .patch-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .patch-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 40px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+            text-align: center;
+        }
+
+        .patch-title h1 {
             font-family: 'Orbitron', sans-serif;
-            color: var(--primary-color);
-            font-size: 3em;
-            margin-bottom: 20px;
+            font-size: 3.5em;
+            margin: 0;
+            color: var(--text-light);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        .patch-section {
+        .balance-section {
             background: rgba(34, 34, 34, 0.9);
             border-radius: 15px;
             padding: 30px;
@@ -60,1555 +128,165 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
         }
 
-        .champion-card {
-            display: flex;
-            align-items: center;
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--secondary-color);
+            font-size: 2em;
             margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .champion-changes {
             background: rgba(0, 0, 0, 0.3);
             border-radius: 10px;
             padding: 20px;
+            margin-bottom: 20px;
         }
 
-        .champion-image {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin-right: 20px;
-            border: 3px solid var(--primary-color);
-        }
-
-        .champion-info {
-            flex: 1;
-        }
-
-        h2 {
-            color: var(--secondary-color);
-            font-family: 'Orbitron', sans-serif;
+        .champion-header {
+            display: flex;
+            align-items: center;
             margin-bottom: 15px;
+        }
+
+        .champion-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 15px;
+            border: 2px solid var(--primary-color);
+        }
+
+        .champion-name {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary-color);
+            font-size: 1.5em;
+            margin: 0;
         }
 
         .change-list {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
 
         .change-item {
-            margin: 10px 0;
             padding: 10px;
+            margin: 5px 0;
             background: rgba(255, 69, 0, 0.1);
             border-left: 4px solid var(--primary-color);
             border-radius: 0 5px 5px 0;
         }
 
-        .reasoning {
+        .buff { color: #32cd32; }
+        .nerf { color: #ff4500; }
+
+        .change-reasoning {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
             font-style: italic;
             color: #888;
-            margin-top: 10px;
+            line-height: 1.4;
         }
 
-        .buff {
-            color: #32cd32;
-        }
-
-        .nerf {
-            color: #ff4500;
-        }
-
-        /* Adding modern menu styling from home.html */
-        .menu {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-        }
-
-        .menu-items {
-            display: flex;
-            justify-content: center;
-            padding: 15px;
-        }
-
-        .menu-items a {
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            margin: 0 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-
-        .menu-items a:hover {
-            background-color: #ffbb00;
-        }
-
-        /* Enhanced article styling */
-        .article-header {
-            text-align: center;
-            margin: 40px 0;
-            position: relative;
-        }
-
-        .article-header h2 {
-            font-size: 2.5em;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-        }
-
-        .article-section {
-            margin: 30px 0;
-            padding: 20px;
-            border-left: 4px solid var(--primary-color);
-            background: rgba(255, 69, 0, 0.05);
-            border-radius: 0 10px 10px 0;
-        }
-
-        .highlight-text {
-            color: var(--secondary-color);
-            font-weight: 600;
-        }
-
-        .feature-grid {
+        .skin-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .feature-card {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 69, 0, 0.2);
-            transition: transform 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .skin-preview {
-            display: flex;
-            gap: 20px;
-            overflow-x: auto;
-            padding: 20px;
-        }
-
-        .skin-image {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 3px solid var(--primary-color);
-        }
-
-        .header-splash {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-
-        .feature-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin-bottom: 15px;
-            border: 3px solid var(--primary-color);
-        }
-
-        .skin-preview {
-            display: flex;
-            gap: 20px;
-            overflow-x: auto;
-            padding: 20px 0;
-        }
-
-        .skin-image {
-            width: 200px;
-            height: 300px;
-            object-fit: cover;
-            border-radius: 10px;
-            transition: transform 0.3s ease;
-        }
-
-        .skin-image:hover {
-            transform: scale(1.05);
-        }
-
-        .change-card {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            margin: 10px 0;
-        }
-
-        .content-grid {
-            display: grid;
-            gap: 2rem;
-            padding: 2rem 0;
-        }
-
-        .major-section {
-            position: relative;
-            padding: 1rem;
-        }
-
-        .section-icon {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        .content-card {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .content-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .gradient-border {
-            position: relative;
-            background: linear-gradient(45deg, rgba(255, 69, 0, 0.1), rgba(255, 160, 122, 0.1));
-            border: 1px solid transparent;
-            background-clip: padding-box;
-        }
-
-        .meta-stat {
-            margin: 1rem 0;
-        }
-
-        .stat-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--secondary-color);
-        }
-
-        .stat-bar {
-            height: 20px;
-            background: linear-gradient(90deg, var(--primary-color) var(--percentage), rgba(255,255,255,0.1) var(--percentage));
-            border-radius: 10px;
-            flex: 1;
-            margin: 0 10px;
-        }
-
-        .meta-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-
-        .meta-card {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 1rem;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 69, 0, 0.2);
-            transition: transform 0.3s ease;
-        }
-
-        .meta-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .philosophy-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-
-        .philosophy-card {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 1rem;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 69, 0, 0.2);
-            transition: transform 0.3s ease;
-        }
-
-        .philosophy-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .card-header {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--secondary-color);
-        }
-
-        .title-tag {
-            display: inline-block;
-            padding: 5px 15px;
-            background: linear-gradient(45deg, rgba(255, 69, 0, 0.2), rgba(255, 160, 122, 0.2));
-            border-radius: 20px;
-            margin: 5px;
-            border: 1px solid var(--primary-color);
-        }
-
-        .progression-preview {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
-        }
-
-        .progression-milestone {
-            text-align: center;
-        }
-
-        .milestone-level {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            line-height: 40px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            color: white;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .meta-stats {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .meta-table table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .meta-table th, .meta-table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .meta-table th {
-            color: var(--primary-color);
-        }
-
-        .highlight-card {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 10px 0;
-        }
-
-        .highlight-card.strong {
-            border-left: 4px solid #32cd32;
-        }
-
-        .highlight-card.weak {
-            border-left: 4px solid #ff4500;
-        }
-
-        .role-stat {
-            display: flex;
-            align-items: center;
-            margin: 10px 0;
-        }
-
-        .role-label {
-            flex: 1;
-            font-weight: 600;
-        }
-
-        .win-rate {
-            font-style: italic;
-            color: #888;
-        }
-
-        .stat-bar-container {
-            display: flex;
-            align-items: center;
-        }
-
-        .role-icon, .lane-icon, .character-icon {
-            width: 24px;
-            height: 24px;
-            margin-right: 5px;
-        }
-
-        .role-emoji,
-        .lane-emoji {
-            font-size: 24px;
-            margin-right: 5px;
-        }
-
-        .role-rows {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .role-row {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 10px;
-        }
-
-        .meta-analysis {
-            background: linear-gradient(180deg, rgba(15, 15, 25, 0.95) 0%, rgba(25, 25, 35, 0.95) 100%);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .meta-header {
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
-            padding-bottom: 20px;
-        }
-
-        .meta-header:after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            border-radius: 3px;
-        }
-
-        .meta-header h3 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .meta-subtitle {
-            font-size: 1.2em;
-            color: #90caf9;
-            opacity: 0.8;
-        }
-
-        .meta-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
-
-        .meta-card {
-            background: rgba(30, 30, 40, 0.6);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .meta-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        .card-header {
-            font-size: 1.5em;
-            color: #FFD700;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
-        }
-
-        .highlight-card {
-            background: rgba(40, 40, 50, 0.6);
-            border-radius: 12px;
-            padding: 15px;
-            margin: 10px 0;
-            transition: transform 0.2s ease;
-        }
-
-        .highlight-card:hover {
-            transform: translateX(10px);
-        }
-
-        .highlight-card.strong {
-            border-left: 4px solid #32cd32;
-        }
-
-        .highlight-card.weak {
-            border-left: 4px solid #ff4500;
-        }
-
-        .character-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            vertical-align: middle;
-            margin-right: 10px;
-        }
-
-        .champion-name {
-            font-size: 1.1em;
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .win-rate {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.9em;
-            margin-left: 10px;
-        }
-
-        .win-rate.positive {
-            background: rgba(50, 205, 50, 0.2);
-            color: #32cd32;
-        }
-
-        .win-rate.negative {
-            background: rgba(255, 69, 0, 0.2);
-            color: #ff4500;
-        }
-
-        .role-tags {
-            display: block;
-            margin-top: 5px;
-            font-size: 0.9em;
-            color: #90caf9;
-        }
-
-        .detailed-analysis {
-            list-style: none;
-            padding-left: 0;
-            margin: 15px 0;
-        }
-
-        .detailed-analysis li {
-            margin: 8px 0;
-            padding-left: 20px;
-            position: relative;
-        }
-
-        .detailed-analysis li:before {
-            content: '•';
-            position: absolute;
-            left: 0;
-            color: var(--primary-color);
-        }
-
-        .matchup-section {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-
-        .matchup-section h4 {
-            color: #90caf9;
-            margin-bottom: 10px;
-        }
-
-        .role-distribution {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .role-group {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
-            padding: 15px;
-        }
-
-        .role-group h4 {
-            color: #90caf9;
-            margin-bottom: 15px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid rgba(144, 202, 249, 0.3);
-        }
-
-        .role-stat {
-            display: flex;
-            align-items: center;
-            margin: 10px 0;
-            gap: 15px;
-        }
-
-        .stat-bar {
-            height: 8px;
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: var(--percentage);
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            border-radius: 4px;
-        }
-
-        .performance-stats {
-            display: grid;
-            gap: 15px;
-        }
-
-        .stat-item {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .stat-name {
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .stat-value {
-            font-size: 0.9em;
-            color: #90caf9;
-        }
-
-        @media (max-width: 768px) {
-            .meta-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .tier-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .tier-section {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .tier-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .tier-badge {
-            font-size: 1.5rem;
-            font-weight: bold;
-            width: 2rem;
-            height: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-            margin-right: 10px;
-        }
-
-        .tier-desc {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .tier-content {
-            padding: 0.5rem;
-            line-height: 1.5;
-        }
-
-        .champion-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 10px;
-        }
-
-        .champion-tile {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 5px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.3s ease;
-        }
-
-        .champion-tile:hover {
-            transform: translateY(-5px);
-        }
-
-        .champion-portrait {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        .champion-stats {
-            text-align: center;
-        }
-
-        .champion-name {
-            font-weight: bold;
-        }
-
-        .win-rate.positive {
-            color: #32cd32;
-        }
-
-        .win-rate.negative {
-            color: #ff4500;
-        }
-
-        .role-tags {
-            display: block;
-            font-size: 0.7em;
-            color: var(--secondary-color);
-            margin-top: 4px;
-            opacity: 0.8;
-        }
-
-        .champion-tile {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 12px;
-        }
-
-        .champion-stats {
-            text-align: center;
-            margin-top: 8px;
-        }
-
-        .table-of-contents {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px auto;
-            max-width: 800px;
-            text-align: left;
-        }
-
-        .table-of-contents h3 {
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-
-        .table-of-contents ul {
-            list-style: none;
-            padding-left: 20px;
-        }
-
-        .table-of-contents ul ul {
-            padding-left: 30px;
-        }
-
-        .table-of-contents li {
-            margin: 8px 0;
-        }
-
-        .table-of-contents a {
-            color: var(--text-light);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .table-of-contents a:hover {
-            color: var(--primary-color);
-        }
-
-        .champion-name a {
-            color: inherit;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .champion-name a:hover {
-            color: var(--primary-color);
-        }
-
-        .champion-info h2 a {
-            color: inherit;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .champion-info h2 a:hover {
-            color: var(--primary-color);
-        }
-
-        /* For text mentions in paragraphs */
-        .meta-analysis a, .philosophy-cards a {
-            color: var(--secondary-color);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .meta-analysis a:hover, .philosophy-cards a:hover {
-            color: var(--primary-color);
-        }
-
-        .feature-card h3 a {
-            color: red;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .feature-card h3 a:hover {
-            color: var(--primary-color);
-        }
-
-        .toc-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            vertical-align: middle;
-            margin-right: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .table-of-contents li a {
-            display: flex;
-            align-items: center;
-            padding: 4px 0;
-        }
-
-        .chart-section {
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-        }
-
-        .role-chart {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .role-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .role-label {
-            flex: 1;
-        }
-
-        .percentage {
-            text-align: right;
-        }
-
-        .damage-chart {
-            display: flex;
-            justify-content: space-around;
-        }
-
-        .damage-circle {
-            text-align: center;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 2px solid var(--primary-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .damage-type {
-            font-weight: bold;
-        }
-
-        .damage-value {
-            font-size: 0.8em;
-        }
-
-        .timeline-chart {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .timeline-point {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .time {
-            flex: 1;
-        }
-
-        .point-stat {
-            display: flex;
-            align-items: center;
-        }
-
-        .mini-icon {
-            width: 24px;
-            height: 24px;
-            margin-right: 5px;
-        }
-
-        .comp-cards {
-            display: flex;
-            justify-content: space-around;
-        }
-
-        .comp-card {
-            text-align: center;
-            width: 150px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 5px;
-        }
-
-        .comp-icons {
-            display: flex;
-            justify-content: space-around;
-        }
-
-        .metrics-grid {
-            display: flex;
-            justify-content: space-around;
-        }
-
-        .metric-card {
-            text-align: center;
-            width: 150px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 5px;
-        }
-
-        .metric-label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .metric-value {
-            font-weight: bold;
-        }
-
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .chart-section {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .role-chart {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: 100%;
-        }
-
-        .role-bar {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 5px;
-        }
-
-        .role-label {
-            min-width: 80px;
-        }
-
-        .stat-bar {
-            flex: 1;
-            height: 20px;
-            background: rgba(255, 69, 0, 0.2);
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-bar::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: var(--percentage);
-            background: var(--primary-color);
-            border-radius: 10px;
-        }
-
-        .percentage {
-            min-width: 50px;
-            text-align: right;
-        }
-
-        .damage-chart {
-            display: flex;
-            justify-content: space-around;
-            gap: 20px;
-            padding: 15px 0;
-        }
-
-        .damage-circle {
-            width: 80px;
-            height: 80px;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        .comp-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .comp-card {
-            padding: 12px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-        }
-
-        .comp-icons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .mini-icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .metric-card {
-            padding: 12px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .timeline-chart {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .timeline-point {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px;
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-        }
-
-        .time {
-            min-width: 120px;
-        }
-
-        .point-stat {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        @media (max-width: 1200px) {
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .comp-cards, .metrics-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .awards-showcase {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 30px;
-            padding: 20px;
-        }
-
-        .award-category {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            transition: transform 0.3s ease;
-        }
-
-        .award-category:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
-        }
-
-        .award-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
-        }
-
-        .award-icon {
-            font-size: 2em;
-            background: rgba(255, 215, 0, 0.1);
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-
-        .award-header h4 {
-            margin: 0;
-            color: #FFD700;
-            font-size: 1.2em;
-        }
-
-        .winner-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .winner-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid #FFD700;
-        }
-
-        .winner-name {
-            font-size: 1.1em;
-            color: #fff;
-        }
-
-        .celebration-skin {
-            position: relative;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .skin-splash {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            object-position: top center;
-            border-radius: 10px;
-            transition: transform 0.3s ease;
-        }
-
-        .celebration-skin:hover .skin-splash {
-            transform: scale(1.05);
-        }
-
-        .skin-info {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 15px;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-            color: #fff;
-        }
-
-        .skin-info h5 {
-            margin: 0 0 10px 0;
-            font-size: 1.1em;
-        }
-
-        .price-tag {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .original-price {
-            text-decoration: line-through;
-            color: #999;
-        }
-
-        .sale-price {
-            color: #32CD32;
-            font-weight: bold;
-        }
-
-        .discount-badge {
-            background: #FF4500;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.8em;
-        }
-
-        @media (max-width: 1200px) {
-            .awards-showcase {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .meta-highlight {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .priority-list {
-            display: grid;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .priority-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .priority-label {
-            min-width: 120px;
-            font-weight: bold;
-        }
-
-        .priority-bar {
-            height: 12px;
-            background: linear-gradient(90deg, #00ced1 var(--priority), rgba(0, 206, 209, 0.2) var(--priority));
-            border-radius: 6px;
-            flex-grow: 1;
-            transition: background 0.3s ease;
-        }
-
-        .meta-stat {
-            margin-bottom: 15px;
-        }
-
-        .stat-bar {
-            height: 20px;
-            background: linear-gradient(90deg, #ffd700 var(--percentage), rgba(255, 215, 0, 0.2) var(--percentage));
-            border-radius: 10px;
-            margin-top: 5px;
-            transition: background 0.3s ease;
-        }
-
-        .crafting-introduction {
-            margin-bottom: 40px;
-        }
-
-        .crafting-banner {
-            position: relative;
-            border-radius: 15px;
-            overflow: hidden;
-            margin-bottom: 30px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            text-align: center;
-        }
-
-        .crafting-splash {
-            width: 200px;
-            height: 200px;
-            object-fit: contain;
-            margin-bottom: 20px;
-        }
-
-        .crafting-overlay {
-            text-align: center;
-            color: white;
-        }
-
-        .crafting-overlay h4 {
-            font-size: 2em;
-            color: #FFD700;
-            margin-bottom: 10px;
-        }
-
-        .crafting-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            padding: 20px;
-        }
-
-        .recipe-card {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            transition: transform 0.3s ease;
-        }
-
-        .recipe-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
-        }
-
-        .recipe-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
-        }
-
-        .recipe-icon {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
-        }
-
-        .recipe-header h4 {
-            flex: 1;
-            margin: 0;
-            color: #FFD700;
-            font-size: 1.2em;
-        }
-
-        .rarity-badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: bold;
-        }
-
-        .rarity-badge.legendary {
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            color: white;
-        }
-
-        .rarity-badge.epic {
-            background: linear-gradient(45deg, #9400D3, #4B0082);
-            color: white;
-        }
-
-        .rarity-badge.rare {
-            background: linear-gradient(45deg, #0000FF, #000080);
-            color: white;
-        }
-
-        .recipe-materials {
-            margin-bottom: 20px;
-        }
-
-        .recipe-materials h5 {
-            color: #FFD700;
-            margin-bottom: 10px;
-        }
-
-        .recipe-materials ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .recipe-materials li {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 8px;
-            border-radius: 8px;
-        }
-
-        .recipe-materials img {
-            width: 30px;
-            height: 30px;
-            object-fit: contain;
-        }
-
-        .recipe-stats {
-            display: grid;
-            gap: 10px;
-        }
-
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-        }
-
-        .stat-item.special {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-        }
-
-        .stat-label {
-            color: #90caf9;
-        }
-
-        .stat-value {
-            color: #32CD32;
-            font-weight: bold;
-        }
-
-        @media (max-width: 768px) {
-            .crafting-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .recipe-header {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .recipe-header h4 {
-                margin-top: 10px;
-            }
-        }
-
-        .event-showcase {
-            padding: 40px 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            margin: 40px 0;
-        }
-
-        .event-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .event-header h3 {
-            font-size: 2.5em;
-            color: #00FFFF;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-        }
-
-        .event-description {
-            color: #90caf9;
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        .atlantis-skin-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            gap: 40px;
             padding: 20px;
         }
 
         .skin-card {
-            position: relative;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--primary-color);
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
         }
 
         .skin-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 255, 255, 0.4);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
         }
 
-        .skin-image-container {
-            position: relative;
+        .skin-image {
             width: 100%;
-            padding-top: 150%; /* 3:2 Aspect Ratio */
-            overflow: hidden;
+            height: 100%;
         }
 
-        .skin-splash {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .skin-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
+            transition: transform 0.3s;
+            display: block;
         }
 
-        .skin-card:hover .skin-splash {
+        .skin-card:hover .skin-image img {
             transform: scale(1.1);
         }
 
-        .skin-overlay {
+        .skin-details {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
             padding: 20px;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-            color: white;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+                            display: flex;
+            justify-content: space-between;
+                            align-items: center;
+                        }
+
+                        .skin-name {
+            font-size: 24px;
+                            color: #FFD700;
+            margin: 0;
+            font-family: 'Cinzel', serif;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
-        .skin-card:hover .skin-overlay {
-            transform: translateY(0);
+        .skin-price {
+                                display: flex;
+                                align-items: center;
+            gap: 5px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px 15px;
+                                border-radius: 20px;
+            border: 1px solid #FFD700;
         }
 
-        .skin-overlay h4 {
+        .skin-price img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .skin-price span {
+                                color: #FFD700;
+                                font-weight: bold;
+            font-size: 18px;
+        }
+
+        .event-description {
+                                    text-align: center;
+                            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(139, 0, 0, 0.8);
+                            border-radius: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .event-description p {
             font-size: 1.5em;
-            margin-bottom: 10px;
-            color: #00FFFF;
-            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
-        }
-
-        .skin-description {
-            font-size: 1em;
-            color: #90caf9;
-            opacity: 0.9;
-        }
-
-        @media (max-width: 768px) {
-            .atlantis-skin-grid {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            }
-
-            .event-header h3 {
-                font-size: 2em;
-            }
-        }
-    </style>
+                            color: #FFD700;
+                            margin: 0;
+            font-family: 'Cinzel', serif;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+                        }
+                    </style>
 </head>
 <body>
     <div class="menu">
@@ -1618,2806 +296,280 @@
             <a href="event.html">Event</a>
             <a href="Team Builder.html">Team Builder</a>
             <a href="statistics.html">Statistics</a>
-        </div>
-    </div>
-
-    <video class="video-background" autoplay muted loop>
-        <source src="background.mp4" type="video/mp4">
-    </video>
-
-    <div class="header">
-        <h1>Patch 1.5 Notes</h1>
-    </div>
-
+                </div>
+            </div>
+    <div class="play-button-container">
+        <a href="Game Modes.html" class="play-button">Play</a>
+                    </div>
+                    
     <div class="container">
-        <div class="patch-section">
-            <div class="article-header">
-                <h2>Atlantis: Patch 1.5</h2>
-                <div class="header-image">
-                    <img src="Default Splash/Talim.jpeg" alt="Patch 1.4 Header" class="header-splash" style="object-position: top center;">
-                </div>
-                <p class="highlight-text">The Atlantis Raid is here! Join the fight against the mythical sea creatures and claim your share of the treasures!</p>
+        <div class="patch-header">
+            <img src="Default Splash/Shoma.png" alt="Patch 1.6 Header">
+            <div class="patch-title">
+                <h1>Patch 1.6</h1>
+                        </div>
+                    </div>
+                    
+        <div class="balance-section">
+            <h2 class="section-title">Lunar Festival Event</h2>
+
+            <div class="event-description">
+                <p>Welcome to the Lunar Festival! Light up your path to victory with new skins, rewards, and the mystical Lunar Lantern system.</p>
             </div>
 
-            <div class="feature-grid" id="feature-highlights">
-
-                <div class="feature-card">
-                    <img src="Icons/Zasalamel.png" alt="Zasalamel" class="feature-icon">
-                    <h3>⌛ Zasalamel has arrived</h3>
-                    <p>Master time itself with the mysterious Time Reaper, wielding his deadly scythe in battle!</p>
-                </div>
-
-                <div class="feature-card">
-                    <img src="res/img/raiditem/atlantean_trident_of_time_manipulation.png" alt="Crafting System" class="feature-icon">
-                    <h3>⚒️ Crafting System</h3>
-                    <p>Forge powerful artifacts using materials from your raid adventures!</p>
-                </div>
-
-                <div class="feature-card">
-                    <img src="Event/Atlantis Event.jpeg" alt="Atlantis" class="feature-icon">
-                    <h3>🌊 Atlantis Raid Arrives</h3>
-                    <p>Dive into our second epic raid event with unique rewards and challenging encounters.</p>
-                </div>
-            </div>
-
-            <div class="table-of-contents">
-                <h3>Contents</h3>
-                <ul>
-                    <li><a href="#feature-highlights">🌟 New Features</a>
-                        <ul>
-                            <li><a href="#zasalamel-release">⌛ Zasalamel Release</a></li>
-                            <li><a href="#crafting-system">⚒️ Crafting System</a></li>
-                            <li><a href="#atlantis-raid">🌊 Atlantis Raid</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="#balance-changes">⚖️ Balance Changes</a>
-                        <ul>
-                            <li><a href="#talim-changes"><img src="Icons/Talim.png" alt="Talim" class="toc-icon">Talim</a></li>
-                            <li><a href="#shoma-changes"><img src="Icons/Shoma.png" alt="Shoma" class="toc-icon">Shoma</a></li>
-                            <li><a href="#christie-changes"><img src="Icons/Christie.png" alt="Christie" class="toc-icon">Christie</a></li>
-                            <li><a href="#blanka-changes"><img src="Icons/Blanka.png" alt="Blanka" class="toc-icon">Blanka</a></li>
-                            <li><a href="#ibuki-changes"><img src="Icons/Ibuki.png" alt="Ibuki" class="toc-icon">Ibuki</a></li>
-                            <li><a href="#sub-zero-changes"><img src="Icons/Sub Zero.png" alt="Sub Zero" class="toc-icon">Sub Zero</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="#new-content">🎮 New Content</a>
-                        <ul>
-                            <li><a href="#atlantis-event">🌊 Atlantis Event</a></li>
-                            <li><a href="#atlantean-skins">👕 Atlantean Skins</a></li>
-                            <li><a href="#crafting-recipes">⚒️ New Crafting Recipes</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="#store-updates">🛍️ Store Updates</a>
-                        <ul>
-                            <li><a href="#atlantean-bundle">🌊 Atlantean Bundle</a></li>
-                            <li><a href="#rainy-day-shizumaru">🌧️ Rainy Day Shizumaru</a></li>
-                            <li><a href="#captain-talim">⚓ Captain Talim</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="#system-changes">⚙️ System Changes</a>
-                        <ul>
-                            <li><a href="#crafting-system">⚒️ Crafting System Overview</a></li>
-                            <li><a href="#raid-mechanics">🌊 Raid Mechanics</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="#bug-fixes">🐛 Bug Fixes</a></li>
-                    <li><a href="#known-issues">⚠️ Known Issues</a></li>
+            <div style="background: rgba(0, 0, 0, 0.5); padding: 30px; border-radius: 15px; margin-bottom: 30px;">
+                <h3 style="color: #FFD700; font-family: 'Cinzel', serif; margin-bottom: 20px;">🏮 Lunar Lantern System</h3>
+                <p style="color: #e1e1e1; line-height: 1.6;">
+                    Collect Lunar Tickets through the Battle Pass and Event Quests to light up your Lunar Lantern. Each ticket allows one pull from the Lunar Lantern, offering exclusive rewards:
+                </p>
+                <ul style="list-style: none; padding: 20px; background: rgba(255, 215, 0, 0.1); border-radius: 10px; margin-top: 15px;">
+                    <li style="margin: 10px 0; color: #FFD700;">✨ Exclusive Lunar Festival Skins</li>
+                    <li style="margin: 10px 0; color: #FFD700;">🎵 Themed Music Tracks</li>
+                    <li style="margin: 10px 0; color: #FFD700;">🎨 Profile Icons and Borders</li>
+                    <li style="margin: 10px 0; color: #FFD700;">💰 FM and CM Currency Bundles</li>
                 </ul>
             </div>
 
-            <div class="content-grid">
-                <div class="major-section" id="state-of-game">
-                    <div class="section-icon">💫</div>
-                    <h3>State of the Game</h3>
-                    <div class="content-card gradient-border">
-                        <div class="meta-stat">
-                            <span class="stat-label">Tank Presence</span>
-                            <div class="stat-bar" style="--percentage: 35%"></div>
-                        </div>
-                        <div class="meta-stat">
-                            <span class="stat-label">Carry Impact</span>
-                            <div class="stat-bar" style="--percentage: 65%"></div>
-                        </div>
-                        <p>The competitive landscape continues to evolve with some surprising shifts in character performance. Our data shows several notable trends:</p>
-                        <ul style="list-style: none; padding-left: 0;">
-                            <li>• Mega Man dominates with a 61% win rate (39W/25L), showing strong carry potential</li>
-                            <li>• Nina maintains high performance with a 71% win rate (22W/9L)</li>
-                            <li>• Christie excels with a 71% win rate (20W/8L)</li>
-                            <li>• Raiden shows impressive results with a 76% win rate (19W/6L)</li>
+            <div style="background: rgba(0, 0, 0, 0.5); padding: 30px; border-radius: 15px; margin-bottom: 30px;">
+                <h3 style="color: #FFD700; font-family: 'Cinzel', serif; margin-bottom: 20px;">🎁 Event Bundles</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div style="background: rgba(255, 215, 0, 0.1); padding: 20px; border-radius: 10px;">
+                        <h4 style="color: #FFD700; margin: 0 0 10px 0;">Lunar Festival Lili Bundle</h4>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>🎭 Lunar Festival Lili</li>
+                            <li>🎫 3 Lunar Tickets</li>
+                            <li>🛡️ Snake Title</li>
+                            <div style="margin-top: 10px; padding: 5px 10px; background: rgba(0, 0, 0, 0.3); border-radius: 5px; display: inline-block;">
+                                <img src="res/img/fm.png" style="width: 20px; vertical-align: middle;"> 3250
+                            </div>
                         </ul>
-                        <p>However, some characters are struggling in the current meta:</p>
-                        <ul style="list-style: none; padding-left: 0;">
-                            <li>• Mai significantly underperforms with a 5% win rate (1W/18L)</li>
-                            <li>• Noel struggles with a 15% win rate (4W/22L)</li>
-                            <li>• Shoma faces difficulties with a 25% win rate (9W/27L)</li>
-                            <li>• Sophitia and Talim both show concerning win rates around 30% (13W/31L)</li>
+                    </div>
+                    <div style="background: rgba(255, 215, 0, 0.1); padding: 20px; border-radius: 10px;">
+                        <h4 style="color: #FFD700; margin: 0 0 10px 0;">Lunar Festival Bundle</h4>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>🎭 6 Lunar Festival Skins</li>
+                            <li>🎭 Lili, Scorpion, Noel</li>
+                            <li>🎭 Reptile, Kokoro, Siegfried</li>
+                            <div style="margin-top: 10px; padding: 5px 10px; background: rgba(0, 0, 0, 0.3); border-radius: 5px; display: inline-block;">
+                                <img src="res/img/fm.png" style="width: 20px; vertical-align: middle;"> 8640
+                            </div>
                         </ul>
-
-                        <p>Key Meta Observations:</p>
-                        <ul style="list-style: none; padding-left: 0;">
-                            <li>• High mobility carries are dominating the current meta</li>
-                            <li>• Tank effectiveness has decreased due to the damage-heavy environment</li>
-                            <li>• Characters with strong self-peel abilities show higher success rates</li>
-                            <li>• Early game pressure remains crucial for victory</li>
-                        </ul>
-
-                        <div class="meta-highlight">
-                            <h4>Current Meta Priorities</h4>
-                            <div class="priority-list">
-                                <div class="priority-item">
-                                    <span class="priority-label">Burst Damage</span>
-                                    <div class="priority-bar" style="--priority: 85%"></div>
-                                </div>
-                                <div class="priority-item">
-                                    <span class="priority-label">Mobility</span>
-                                    <div class="priority-bar" style="--priority: 80%"></div>
-                                </div>
-                                <div class="priority-item">
-                                    <span class="priority-label">Crowd Control</span>
-                                    <div class="priority-bar" style="--priority: 65%"></div>
-                                </div>
-                                <div class="priority-item">
-                                    <span class="priority-label">Sustain</span>
-                                    <div class="priority-bar" style="--priority: 45%"></div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-                </div>
-
-                <div class="meta-analysis" id="meta-analysis">
-                    <style>
-                        .meta-analysis {
-                            background: linear-gradient(180deg, rgba(15, 15, 25, 0.95) 0%, rgba(25, 25, 35, 0.95) 100%);
-                            border-radius: 20px;
-                            padding: 30px;
-                            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-                        }
-
-                        .meta-header {
-                            text-align: center;
-                            margin-bottom: 40px;
-                            position: relative;
-                            padding-bottom: 20px;
-                        }
-
-                        .meta-header:after {
-                            content: '';
-                            position: absolute;
-                            bottom: 0;
-                            left: 50%;
-                            transform: translateX(-50%);
-                            width: 100px;
-                            height: 3px;
-                            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-                            border-radius: 3px;
-                        }
-
-                        .meta-header h3 {
-                            font-size: 2.5em;
-                            margin-bottom: 10px;
-                            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-                            background-clip: text;
-                            -webkit-text-fill-color: transparent;
-                        }
-
-                        .meta-subtitle {
-                            font-size: 1.2em;
-                            color: #90caf9;
-                            opacity: 0.8;
-                        }
-
-                        .meta-grid {
-                            display: grid;
-                            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                            gap: 25px;
-                            margin-top: 30px;
-                        }
-
-                        .meta-card {
-                            background: rgba(30, 30, 40, 0.6);
-                            border-radius: 15px;
-                            padding: 25px;
-                            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-                            border: 1px solid rgba(255, 255, 255, 0.1);
-                            transition: transform 0.3s ease, box-shadow 0.3s ease;
-                        }
-
-                        .meta-card:hover {
-                            transform: translateY(-5px);
-                            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-                        }
-
-                        .card-header {
-                            font-size: 1.5em;
-                            color: #FFD700;
-                            margin-bottom: 20px;
-                            padding-bottom: 10px;
-                            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
-                        }
-
-                        .highlight-card {
-                            background: rgba(40, 40, 50, 0.6);
-                            border-radius: 12px;
-                            padding: 15px;
-                            margin: 10px 0;
-                            transition: transform 0.2s ease;
-                        }
-
-                        .highlight-card:hover {
-                            transform: translateX(10px);
-                        }
-
-                        .highlight-card.strong {
-                            border-left: 4px solid #32cd32;
-                        }
-
-                        .highlight-card.weak {
-                            border-left: 4px solid #ff4500;
-                        }
-
-                        .character-icon {
-                            width: 32px;
-                            height: 32px;
-                            border-radius: 50%;
-                            border: 2px solid rgba(255, 255, 255, 0.2);
-                            vertical-align: middle;
-                            margin-right: 10px;
-                        }
-
-                        .champion-name {
-                            font-size: 1.1em;
-                            font-weight: 600;
-                            color: #fff;
-                        }
-
-                        .win-rate {
-                            display: inline-block;
-                            padding: 3px 8px;
-                            border-radius: 12px;
-                            font-size: 0.9em;
-                            margin-left: 10px;
-                        }
-
-                        .win-rate.positive {
-                            background: rgba(50, 205, 50, 0.2);
-                            color: #32cd32;
-                        }
-
-                        .win-rate.negative {
-                            background: rgba(255, 69, 0, 0.2);
-                            color: #ff4500;
-                        }
-
-                        .role-tags {
-                            display: block;
-                            margin-top: 5px;
-                            font-size: 0.9em;
-                            color: #90caf9;
-                        }
-
-                        .detailed-analysis {
-                            list-style: none;
-                            padding-left: 0;
-                            margin: 15px 0;
-                        }
-
-                        .detailed-analysis li {
-                            margin: 8px 0;
-                            padding-left: 20px;
-                            position: relative;
-                        }
-
-                        .detailed-analysis li:before {
-                            content: '•';
-                            position: absolute;
-                            left: 0;
-                            color: var(--primary-color);
-                        }
-
-                        .matchup-section {
-                            background: rgba(0, 0, 0, 0.2);
-                            border-radius: 10px;
-                            padding: 15px;
-                            margin-top: 15px;
-                        }
-
-                        .matchup-section h4 {
-                            color: #90caf9;
-                            margin-bottom: 10px;
-                        }
-
-                        .role-distribution {
-                            display: flex;
-                            flex-direction: column;
-                            gap: 20px;
-                        }
-
-                        .role-group {
-                            background: rgba(0, 0, 0, 0.2);
-                            border-radius: 12px;
-                            padding: 15px;
-                        }
-
-                        .role-group h4 {
-                            color: #90caf9;
-                            margin-bottom: 15px;
-                            padding-bottom: 5px;
-                            border-bottom: 1px solid rgba(144, 202, 249, 0.3);
-                        }
-
-                        .role-stat {
-                            display: flex;
-                            align-items: center;
-                            margin: 10px 0;
-                            gap: 15px;
-                        }
-
-                        .stat-bar {
-                            height: 8px;
-                            border-radius: 4px;
-                            background: rgba(255, 255, 255, 0.1);
-                            position: relative;
-                            overflow: hidden;
-                        }
-
-                        .stat-bar::after {
-                            content: '';
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            height: 100%;
-                            width: var(--percentage);
-                            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-                            border-radius: 4px;
-                        }
-
-                        .performance-stats {
-                            display: grid;
-                            gap: 15px;
-                        }
-
-                        .stat-item {
-                            background: rgba(0, 0, 0, 0.2);
-                            border-radius: 10px;
-                            padding: 15px;
-                            display: flex;
-                            flex-direction: column;
-                            gap: 8px;
-                        }
-
-                        .stat-name {
-                            font-weight: 600;
-                            color: #fff;
-                        }
-
-                        .stat-value {
-                            font-size: 0.9em;
-                            color: #90caf9;
-                        }
-
-                        @media (max-width: 768px) {
-                            .meta-grid {
-                                grid-template-columns: 1fr;
-                            }
-                        }
-                    </style>
-
-                    <div class="meta-header">
-                        <h3>Meta Analysis</h3>
-                        <p class="meta-subtitle">Patch 1.4 Comprehensive Meta Overview</p>
-                    </div>
-
-                    <div class="meta-grid">
-                        <!-- S-Tier Analysis -->
-                        <div class="meta-card">
-                            <div class="card-header">S-Tier Dominance</div>
-                            <div class="highlight-card strong">
-                                <img src="Icons/Mega Man.png" alt="Mega Man" class="character-icon">
-                                <span class="champion-name"><a href="characters/Mega Man Page.html">Mega Man</a></span>
-                                <span class="win-rate positive">61% Win Rate (41W/26L)</span>
-                                <span class="role-tags">ADC, Spell-based</span>
-                            </div>
-                            <p class="analysis-text">Mega Man has risen to become the most dominant force in the current meta, showcasing unprecedented success with a 61% win rate. His dominance stems from:</p>
-                            <ul class="detailed-analysis">
-                                <li>Superior poke damage and wave control</li>
-                                <li>Strong objective control capabilities</li>
-                                <li>Versatile build paths adapting to team needs</li>
-                                <li>Safe positioning while maintaining high damage output</li>
-                            </ul>
-                            <div class="matchup-section">
-                                <h4>Key Matchups</h4>
-                                <p>Strong against: Immobile carries, tank compositions</p>
-                                <p>Weak against: High mobility assassins, dive compositions</p>
-                            </div>
-                        </div>
-
-                        <!-- A-Tier Analysis -->
-                        <div class="meta-card">
-                            <div class="card-header">A-Tier Meta Shapers</div>
-                            <div class="role-distribution">
-                                <div class="role-group">
-                                    <h4>Carries (Power Rating: Very High)</h4>
-                                    <ul>
-                                        <li>
-                                            <strong><img src="Icons/Nina.png" alt="Nina" class="character-icon"> Nina (71% WR)</strong>
-                                            <p>- Exceptional performance: 32W/13L</p>
-                                            <p>- Key strength: Consistent damage output</p>
-                                            <p>- Strong lane dominance and scaling</p>
-                                        </li>
-                                        <li>
-                                            <strong><img src="Icons/Raiden.png" alt="Raiden" class="character-icon"> Raiden (75% WR)</strong>
-                                            <p>- Impressive win rate: 21W/7L</p>
-                                            <p>- Excellent map pressure</p>
-                                            <p>- Strong roaming potential</p>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="role-group">
-                                    <h4>Support/Control (Power Rating: High)</h4>
-                                    <ul>
-                                        <li>
-                                            <strong><img src="Icons/Julia.png" alt="Julia" class="character-icon"> Julia (56% WR)</strong>
-                                            <p>- Consistent performance: 29W/23L</p>
-                                            <p>- Strong vision control</p>
-                                            <p>- Excellent team fight utility</p>
-                                        </li>
-                                        <li>
-                                            <strong><img src="Icons/Christie.png" alt="Christie" class="character-icon"> Christie (73% WR)</strong>
-                                            <p>- Outstanding win rate: 22W/8L</p>
-                                            <p>- Strong early game presence</p>
-                                            <p>- Excellent roaming potential</p>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- B-Tier Analysis -->
-                        <div class="meta-card">
-                            <div class="card-header">B-Tier Solid Picks</div>
-                            <div class="role-analysis">
-                                <div class="support-analysis">
-                                    <h4>Flex Picks (Average Power Rating: 48)</h4>
-                                    <div class="role-stat">
-                                        <span class="role-label">Flex Pick Impact</span>
-                                        <div class="stat-bar" style="--percentage: 70%"></div>
-                                    </div>
-                                    <ul>
-                                        <li>
-                                            <strong><img src="Icons/Birdie.png" alt="Birdie" class="character-icon"> Birdie (53% WR)</strong>
-                                            <p>- Balanced performance: 27W/24L</p>
-                                            <p>- Versatile role coverage</p>
-                                        </li>
-                                        <li>
-                                            <strong><img src="Icons/Reptile.png" alt="Reptile" class="character-icon"> Reptile (67% WR)</strong>
-                                            <p>- Strong showing: 16W/8L</p>
-                                            <p>- Excellent pick potential</p>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Struggling Picks Analysis -->
-                        <div class="meta-card">
-                            <div class="card-header">Struggling Picks (C & D Tier)</div>
-                            <div class="performance-stats">
-                                <div class="stat-item negative">
-                                    <img src="Icons/Mai.png" alt="Mai" class="character-icon">
-                                    <span class="stat-name">Mai</span>
-                                    <span class="stat-value">23% Win Rate (6W/20L)</span>
-                                    <p>- Struggles in current burst meta</p>
-                                    <p>- Limited escape options</p>
-                                </div>
-                                <div class="stat-item negative">
-                                    <img src="Icons/Noel.png" alt="Noel" class="character-icon">
-                                    <span class="stat-name">Noel</span>
-                                    <span class="stat-value">17% Win Rate (5W/25L)</span>
-                                    <p>- Weak early game presence</p>
-                                    <p>- Vulnerable to meta picks</p>
-                                </div>
-                                <div class="stat-item negative">
-                                    <img src="Icons/Shoma.png" alt="Shoma" class="character-icon">
-                                    <span class="stat-name">Shoma</span>
-                                    <span class="stat-value">29% Win Rate (12W/29L)</span>
-                                    <p>- Struggles against mobile champions</p>
-                                    <p>- Limited team fight impact</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Statistical Deep Dive -->
-                    <div class="meta-header">
-                        <h3>Statistical Deep Dive</h3>
-                        <p class="meta-subtitle">Patch 1.4 Performance Analysis</p>
-                    </div>
-                    <div class="stats-container">
-                        <!-- Role Distribution Chart -->
-                        <div class="chart-section">
-                            <h4>Role Distribution in High Elo</h4>
-                            <div class="role-chart">
-                                <div class="role-bar">
-                                    <span class="role-label">ADC</span>
-                                    <div class="stat-bar" style="--percentage: 90%"></div>
-                                    <span class="percentage">90%</span>
-                                </div>
-                                <div class="role-bar">
-                                    <span class="role-label">Mid</span>
-                                    <div class="stat-bar" style="--percentage: 75%"></div>
-                                    <span class="percentage">75%</span>
-                                </div>
-                                <div class="role-bar">
-                                    <span class="role-label">Support</span>
-                                    <div class="stat-bar" style="--percentage: 65%"></div>
-                                    <span class="percentage">65%</span>
-                                </div>
-                                <div class="role-bar">
-                                    <span class="role-label">Jungle</span>
-                                    <div class="stat-bar" style="--percentage: 55%"></div>
-                                    <span class="percentage">55%</span>
-                                </div>
-                                <div class="role-bar">
-                                    <span class="role-label">Top</span>
-                                    <div class="stat-bar" style="--percentage: 45%"></div>
-                                    <span class="percentage">45%</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Most Successful Team Compositions -->
-                        <div class="chart-section">
-                            <h4>Most Successful Team Compositions</h4>
-                            <div class="comp-cards">
-                                <div class="comp-card">
-                                    <h5>Poke Comp (78% WR)</h5>
-                                    <div class="comp-icons">
-                                        <img src="Icons/Birdie.png" alt="Birdie" class="mini-icon" title="Top: Tank, CC">
-                                        <img src="Icons/Christie.png" alt="Christie" class="mini-icon" title="Jungle: Assassin">
-                                        <img src="Icons/Mega Man.png" alt="Mega Man" class="mini-icon" title="Mid: Poke">
-                                        <img src="Icons/Nina.png" alt="Nina" class="mini-icon" title="ADC: Consistent DPS">
-                                        <img src="Icons/Julia.png" alt="Julia" class="mini-icon" title="Support: Utility">
-                                    </div>
-                                    <p class="comp-description">Strong siege and objective control</p>
-                                </div>
-                                <div class="comp-card">
-                                    <h5>Pick Comp (72% WR)</h5>
-                                    <div class="comp-icons">
-                                        <img src="Icons/Reptile.png" alt="Reptile" class="mini-icon" title="Top: Assassin">
-                                        <img src="Icons/Raiden.png" alt="Raiden" class="mini-icon" title="Jungle: Control">
-                                        <img src="Icons/Christie.png" alt="Christie" class="mini-icon" title="Mid: Burst">
-                                        <img src="Icons/Mega Man.png" alt="Mega Man" class="mini-icon" title="ADC: Poke">
-                                        <img src="Icons/Julia.png" alt="Julia" class="mini-icon" title="Support: Vision">
-                                    </div>
-                                    <p class="comp-description">Excellent pick potential and map control</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Performance Metrics -->
-                        <div class="chart-section">
-                            <h4>Key Performance Metrics</h4>
-                            <div class="metrics-grid">
-                                <div class="metric-card">
-                                    <span class="metric-label">Average Game Length</span>
-                                    <span class="metric-value">22:15</span>
-                                </div>
-                                <div class="metric-card">
-                                    <span class="metric-label">First Blood Rate</span>
-                                    <span class="metric-value">ADC: 40%</span>
-                                </div>
-                                <div class="metric-card">
-                                    <span class="metric-label">Objective Control</span>
-                                    <span class="metric-value">Mid: 55%</span>
-                                </div>
-                                <div class="metric-card">
-                                    <span class="metric-label">Vision Score</span>
-                                    <span class="metric-value">Support: 75</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="major-section" id="ranked-system">
-                    <div class="section-icon">🏆</div>
-                    <h3>Current Store Sales</h3>
-                    <div class="sales-showcase">
-                        <!-- Rainy Day Shizumaru -->
-                        <div class="sale-category">
-                            <div class="sale-header">
-                                <div class="sale-icon">🌧️</div>
-                                <h4>Rainy Day Shizumaru - 70% OFF!</h4>
-                            </div>
-                            <div class="sale-content">
-                                <div class="sale-info">
-                                    <img src="Skins/Rainy Day Shizumaru.jfif" alt="Rainy Day Shizumaru" class="sale-splash">
-                                        <div class="price-tag">
-                                        <span class="original-price">2000 FM</span>
-                                        <span class="sale-price">600 FM</span>
-                                        <span class="discount-badge">-70%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            </div>
-
-                        <!-- Atlantean Bundle -->
-                        <div class="sale-category">
-                            <div class="sale-header">
-                                <div class="sale-icon">🌊</div>
-                                <h4>Atlantean Bundle - Limited Time!</h4>
-                                </div>
-                            <div class="sale-content">
-                                <div class="skin-grid">
-                                    <div class="skin-preview">
-                                        <img src="Skins/Atlantean Christie.jpeg" alt="Atlantean Christie">
-                                        <span class="skin-name">Christie</span>
-                                </div>
-                                    <div class="skin-preview">
-                                        <img src="Skins/Atlantean Kotal Kahn.jpeg" alt="Atlantean Kotal Kahn">
-                                        <span class="skin-name">Kotal Kahn</span>
-                                </div>
-                                    <div class="skin-preview">
-                                        <img src="Skins/Atlantean Zasalamel.jpg" alt="Atlantean Zasalamel">
-                                        <span class="skin-name">Zasalamel</span>
-                                </div>
-                                    <div class="skin-preview">
-                                        <img src="Skins/Atlantean Sub Zero.jpeg" alt="Atlantean Sub Zero">
-                                        <span class="skin-name">Sub Zero</span>
-                                </div>
-                                    <div class="skin-preview">
-                                        <img src="Skins/Atlantean Shinnok.jpeg" alt="Atlantean Shinnok">
-                                        <span class="skin-name">Shinnok</span>
-                            </div>
-                                    <div class="skin-preview">
-                                        <img src="Skins/Atlantean Kagome.jpeg" alt="Atlantean Kagome">
-                                        <span class="skin-name">Kagome</span>
-                        </div>
-                            </div>
-                                <div class="bundle-price">
-                                    <span class="price-value">8550 FM</span>
-                                    <span class="bundle-note">Save 25% compared to individual purchases!</span>
-                                </div>
-                                        </div>
-                                    </div>
-
-                        <!-- Captain Talim -->
-                        <div class="sale-category">
-                            <div class="sale-header">
-                                <div class="sale-icon">⚓</div>
-                                <h4>Captain Talim - CM Special!</h4>
-                            </div>
-                            <div class="sale-content">
-                                <div class="sale-info">
-                                    <img src="Skins/Captain Talim.png" alt="Captain Talim" class="sale-splash">
-                                    <div class="price-tag">
-                                        <span class="cm-price">100,000 CM</span>
-                                        <span class="limited-badge">Limited Time!</span>
-                                    </div>
-                                </div>
-                    </div>
-                </div>
-
-                        <!-- Sticker Starter Bundle -->
-                        <div class="sale-category">
-                            <div class="sale-header">
-                                <div class="sale-icon">🎭</div>
-                                <h4>Sticker Starter Bundle</h4>
-                        </div>
-                            <div class="sale-content">
-                                <div class="sticker-grid">
-                                    <img src="Stickers/Christie_Heart.png" alt="Christie Heart">
-                                    <img src="Stickers/Juri_Selfie.png" alt="Juri Selfie">
-                                    <img src="Stickers/Blanka_Scared.png" alt="Blanka Scared">
-                                    <img src="Stickers/Ayane_Side_Eye.png" alt="Ayane Side Eye">
-                                </div>
-                                <div class="bundle-price">
-                                    <span class="price-value">1500 FM</span>
-                                    <span class="bundle-note">10 Premium Stickers Included!</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                        <!-- Random Recolor Duo Pack -->
-                        <div class="sale-category">
-                            <div class="sale-header">
-                                <div class="sale-icon">🎨</div>
-                                <h4>Random Recolor Duo Pack</h4>
-                            </div>
-                            <div class="sale-content">
-                                <div class="recolor-preview">
-                                    <img src="Loading Screen/Rainy Day R Mika Ocean.png" alt="Rainy Day R Mika Ocean">
-                                    <img src="Loading Screen/Pajama Party Cham Cham Aqua Dream.png" alt="Pajama Party Cham Cham Aqua Dream">
-                                </div>
-                                <div class="bundle-price">
-                                    <span class="price-value">750 FM</span>
-                                    <span class="bundle-note">Random Premium Recolors!</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="article-header">
-                        <h2>Atlantis Event Quests</h2>
-                    </div>
-        
-                    <div class="event-content">
-                        <div class="atlantis-quest-grid">
-                            <div class="quest-card">
-                                <div class="quest-header">
-                                    <h3>Daily Quests</h3>
-                                    <div class="quest-reward">
-                                        <img src="res/img/qp.png" alt="Quest Points">
-                                        <span>25-200 QP</span>
-                                    </div>
-                                </div>
-                                <ul class="quest-list">
-                                    <li>Win 2 Games (75 QP)</li>
-                                    <li>Lose 2 Games (25 QP)</li>
-                                    <li>Win against Shinnok or Zasalamel (200 QP)</li>
-                                    <li>Win as Atlantean Champion (100 QP)</li>
-                                </ul>
-                            </div>
-        
-                            <div class="atlantis-rewards">
-                                <div class="reward-item featured">
-                                    <img src="Skins/Atlantean Kagome.jpeg" alt="Atlantean Kagome">
-                                    <div class="reward-info">
-                                        <h4>Atlantean Kagome</h4>
-                                        <div class="reward-cost">
-                                            <span>2000 QP</span>
-                                        </div>
-                                    </div>
-                                </div>
-        
-                                <div class="reward-item">
-                                    <img src="Event/Atlantis Event.jpeg" alt="Welcome To Atlantis">
-                                    <div class="reward-info">
-                                        <h4>Welcome To Atlantis</h4>
-                                        <p class="reward-desc">Event Theme Song</p>
-                                        <div class="reward-cost">
-                                            <img src="res/img/qp.png" alt="Quest Points">
-                                            <span>450 QP</span>
-                                        </div>
-                                    </div>
-                                </div>
-        
-                                <div class="reward-item">
-                                    <img src="res/img/basicbox.png" alt="Free Lootbox">
-                                    <div class="reward-info">
-                                        <h4>Free Lootbox</h4>
-                                        <div class="reward-cost">
-                                            <img src="res/img/qp.png" alt="Quest Points">
-                                            <span>1500 QP</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-                    <style>
-                        .sales-showcase {
-                            display: grid;
-                            grid-template-columns: repeat(2, 1fr);
-                            gap: 30px;
-                            padding: 20px;
-                        }
-
-                        .sale-category {
-                            background: rgba(0, 0, 0, 0.3);
-                            border-radius: 15px;
-                            padding: 20px;
-                            border: 1px solid rgba(255, 215, 0, 0.3);
-                            transition: transform 0.3s ease;
-                        }
-
-                        .sale-category:hover {
-                            transform: translateY(-5px);
-                            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
-                        }
-
-                        .sale-header {
-                            display: flex;
-                            align-items: center;
-                            gap: 15px;
-                            margin-bottom: 20px;
-                            padding-bottom: 10px;
-                            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
-                        }
-
-                        .sale-icon {
-                            font-size: 2em;
-                            background: rgba(255, 215, 0, 0.1);
-                            width: 50px;
-                            height: 50px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            border-radius: 50%;
-                        }
-
-                        .sale-header h4 {
-                            margin: 0;
-                            color: #FFD700;
-                            font-size: 1.2em;
-                        }
-
-                        .sale-splash {
-                            width: 100%;
-                            height: 300px;
-                            object-fit: cover;
-                            border-radius: 10px;
-                            margin-bottom: 15px;
-                        }
-
-                        .price-tag {
-                            display: flex;
-                            align-items: center;
-                            gap: 10px;
-                            justify-content: center;
-                            margin-top: 10px;
-                        }
-
-                        .original-price {
-                            text-decoration: line-through;
-                            color: #999;
-                        }
-
-                        .sale-price {
-                            color: #32CD32;
-                            font-weight: bold;
-                            font-size: 1.2em;
-                        }
-
-                        .cm-price {
-                            color: #00BFFF;
-                            font-weight: bold;
-                            font-size: 1.2em;
-                        }
-
-                        .discount-badge {
-                            background: #FF4500;
-                            padding: 5px 10px;
-                            border-radius: 20px;
-                            font-size: 0.9em;
-                            color: white;
-                        }
-
-                        .limited-badge {
-                            background: #FFD700;
-                            padding: 5px 10px;
-                            border-radius: 20px;
-                            font-size: 0.9em;
-                            color: black;
-                            font-weight: bold;
-                        }
-
-                        .skin-grid {
-                            display: grid;
-                            grid-template-columns: repeat(3, 1fr);
-                            gap: 10px;
-                            margin-bottom: 15px;
-                        }
-
-                        .skin-preview {
-                            position: relative;
-                            border-radius: 8px;
-                            overflow: hidden;
-                        }
-
-                        .skin-preview img {
-                            width: 100%;
-                            height: 120px;
-                            object-fit: cover;
-                            transition: transform 0.3s ease;
-                        }
-
-                        .skin-preview:hover img {
-                            transform: scale(1.1);
-                        }
-
-                        .skin-name {
-                            position: absolute;
-                            bottom: 0;
-                            left: 0;
-                            right: 0;
-                            background: rgba(0, 0, 0, 0.7);
-                            color: white;
-                            padding: 5px;
-                            text-align: center;
-                            font-size: 0.9em;
-                        }
-
-                        .bundle-price {
-                            text-align: center;
-                            margin-top: 15px;
-                        }
-
-                        .price-value {
-                            display: block;
-                            font-size: 1.3em;
-                            color: #32CD32;
-                            font-weight: bold;
-                            margin-bottom: 5px;
-                        }
-
-                        .bundle-note {
-                            color: #FFD700;
-                            font-size: 0.9em;
-                        }
-
-                        .sticker-grid {
-                            display: grid;
-                            grid-template-columns: repeat(4, 1fr);
-                            gap: 10px;
-                            margin-bottom: 15px;
-                        }
-
-                        .sticker-grid img {
-                            width: 100%;
-                            height: auto;
-                            border-radius: 8px;
-                            transition: transform 0.3s ease;
-                        }
-
-                        .sticker-grid img:hover {
-                            transform: scale(1.1);
-                        }
-
-                        .recolor-preview {
-                            display: flex;
-                            gap: 15px;
-                            margin-bottom: 15px;
-                        }
-
-                        .recolor-preview img {
-                            width: 50%;
-                            height: 200px;
-                            object-fit: cover;
-                            border-radius: 8px;
-                            transition: transform 0.3s ease;
-                        }
-
-                        .recolor-preview img:hover {
-                            transform: scale(1.05);
-                        }
-
-                        @media (max-width: 1200px) {
-                            .sales-showcase {
-                                grid-template-columns: 1fr;
-                            }
-
-                            .skin-grid {
-                                grid-template-columns: repeat(2, 1fr);
-                            }
-                        }
-
-                        @media (max-width: 768px) {
-                            .sticker-grid {
-                                grid-template-columns: repeat(2, 1fr);
-                            }
-
-                            .recolor-preview {
-                                flex-direction: column;
-                            }
-
-                            .recolor-preview img {
-                                width: 100%;
-                            }
-                        }
-                    </style>
-                </div>
-
-                <div class="major-section" id="quest-points">
-                    <div class="section-icon">✨</div>
-                    <h3>Winter Festival Lili - Still Available!</h3>
-                    <div class="content-card gradient-border">
-                        <div class="winter-festival-showcase">
-                            <div class="skin-preview-section">
-                                <img src="Loading Screen/Winter Festival Lili.png" alt="Winter Festival Lili" class="showcase-splash">
-                                <div class="time-remaining">
-                                    <div class="timer-badge">Available until Patch 1.5</div>
-                                </div>
-                            </div>
-                            <div class="skin-details">
-                                <div class="main-skin-info">
-                                    <h4>Winter Festival Lili <span class="free-tag">FREE</span></h4>
-                                    <p>Log in during the Winter Festival Event to claim this magical winter-themed skin!</p>
-                                </div>
-                                
-                                <div class="recolors-section">
-                                    <div class="recolors-header">
-                                        <h4>Exclusive Recolors - Still Obtainable! 🎉</h4>
-                                        <span class="availability-note">Complete these quests before Patch 1.5 to unlock all variants!</span>
-                                    </div>
-                                    <div class="recolors-grid">
-                                        <div class="recolor-item">
-                                            <span class="recolor-icon">❄️</span>
-                                            <div class="recolor-info">
-                                                <h5>Winter Festival Lili Holiday</h5>
-                                               
-                                            </div>
-                                        </div>
-                                        <div class="recolor-item">
-                                            <span class="recolor-icon">🌟</span>
-                                            <div class="recolor-info">
-                                                <h5>Winter Festival Lili Snowy Blush</h5>
-                                                
-                                            </div>
-                                        </div>
-                                        <div class="recolor-item">
-                                            <span class="recolor-icon">🌙</span>
-                                            <div class="recolor-info">
-                                                <h5>Winter Festival Lili Golden</h5>
-                                                
-                                            </div>
-                                        </div>
-                                        <div class="recolor-item">
-                                            <span class="recolor-icon">✨</span>
-                                            <div class="recolor-info">
-                                                <h5>Winter Festival Lili Snowflake</h5>
-                                                
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <style>
-                            .winter-festival-showcase {
-                                display: flex;
-                                gap: 30px;
-                                padding: 20px;
-                                align-items: flex-start;
-                            }
-
-                            .skin-preview-section {
-                                position: relative;
-                                flex-shrink: 0;
-                            }
-
-                            .showcase-splash {
-                                width: 300px;
-                                height: 400px;
-                                object-fit: cover;
-                                object-position: top center;
-                                border-radius: 15px;
-                                box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-                            }
-
-                            .time-remaining {
-                                position: absolute;
-                                bottom: 20px;
-                                left: 50%;
-                                transform: translateX(-50%);
-                                width: 90%;
-                            }
-
-                            .timer-badge {
-                                background: rgba(255, 69, 0, 0.9);
-                                color: white;
-                                padding: 10px 20px;
-                                border-radius: 20px;
-                                text-align: center;
-                                font-weight: bold;
-                                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-                            }
-
-                            .skin-details {
-                                flex: 1;
-                            }
-
-                            .main-skin-info {
-                                margin-bottom: 30px;
-                            }
-
-                            .main-skin-info h4 {
-                                color: #FFD700;
-                                font-size: 1.8em;
-                                margin-bottom: 15px;
-                                display: flex;
-                                align-items: center;
-                                gap: 15px;
-                            }
-
-                            .free-tag {
-                                background: linear-gradient(45deg, #32CD32, #228B22);
-                                color: white;
-                                padding: 5px 15px;
-                                border-radius: 20px;
-                                font-size: 0.6em;
-                                font-weight: bold;
-                            }
-
-                            .recolors-section {
-                                background: rgba(0, 0, 0, 0.3);
-                                padding: 25px;
-                                border-radius: 15px;
-                                border: 1px solid rgba(255, 215, 0, 0.2);
-                            }
-
-                            .recolors-header {
-                                margin-bottom: 20px;
-                                text-align: center;
-                            }
-
-                            .recolors-header h4 {
-                                color: #FFD700;
-                                font-size: 1.4em;
-                                margin-bottom: 10px;
-                            }
-
-                            .availability-note {
-                                color: #FF6B6B;
-                                font-size: 0.9em;
-                                font-weight: bold;
-                            }
-
-                            .recolors-grid {
-                                display: grid;
-                                gap: 15px;
-                            }
-
-                            .recolor-item {
-                                display: flex;
-                                align-items: center;
-                                gap: 15px;
-                                background: rgba(255, 255, 255, 0.1);
-                                padding: 15px;
-                                border-radius: 10px;
-                                transition: transform 0.3s ease, background-color 0.3s ease;
-                            }
-
-                            .recolor-item:hover {
-                                transform: translateX(10px);
-                                background: rgba(255, 255, 255, 0.15);
-                            }
-
-                            .recolor-icon {
-                                font-size: 2em;
-                                width: 50px;
-                                height: 50px;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                background: rgba(0, 0, 0, 0.3);
-                                border-radius: 50%;
-                            }
-
-                            .recolor-info {
-                                flex: 1;
-                            }
-
-                            .recolor-info h5 {
-                                color: white;
-                                margin: 0 0 5px 0;
-                                font-size: 1.1em;
-                            }
-
-                            .quest-requirement {
-                                color: #90caf9;
-                                font-size: 0.9em;
-                            }
-
-                            @media (max-width: 1200px) {
-                                .winter-festival-showcase {
-                                    flex-direction: column;
-                                    align-items: center;
-                                    text-align: center;
-                                }
-
-                                .skin-preview-section {
-                                    margin-bottom: 30px;
-                                }
-
-                                .main-skin-info h4 {
-                                    justify-content: center;
-                                }
-                            }
-
-                            @media (max-width: 768px) {
-                                .showcase-splash {
-                                    width: 100%;
-                                    max-width: 300px;
-                                }
-
-                                .recolors-grid {
-                                    grid-template-columns: 1fr;
-                                }
-
-                                .recolor-item {
-                                    flex-direction: column;
-                                    text-align: center;
-                                }
-
-                                .recolor-icon {
-                                    margin: 0 auto;
-                                }
-                            }
-                        </style>
-                    </div>
-                </div>
-
-                <div class="major-section" id="atlantis-raid">
-                    <div class="section-icon">🌊</div>
-                    <h3>Atlantis Raid - The Depths Await</h3>
-                    
-                    <div class="raid-introduction">
-                        <div class="raid-banner">
-                            <img src="Event/Atlantis Event.jpeg" alt="Atlantis Raid Banner" class="full-width-img">
-                            <div class="raid-difficulty">
-                                <span class="difficulty-badge extreme">Extreme</span>
-                                <span class="player-count">4 Characters</span>
-                            </div>
-                        </div>
-                        <p class="raid-description">Dive into the depths of the ancient city of Atlantis, where corrupted guardians and mythical creatures await. Face the wrath of Shadowfin and his minions in this challenging 6-player raid experience spanning across multiple unique stages.</p>
-                    </div>
-
-                    <div class="raid-stages-grid">
-                        <!-- Stage 1: The Dark Waters -->
-                        <div class="stage-card">
-                            <div class="stage-header">
-                                <h4>Stage 1: The Dark Waters</h4>
-                                <span class="stage-difficulty medium">Medium</span>
-                            </div>
-                            <img src="Project Fighter Raids/assets/backgrounds/stage1.jpeg" alt="The Dark Waters" class="stage-img">
-                            <div class="stage-content">
-                                <p>Face off against Shadowfin, the terror of the deep, while dealing with waves of deadly piranhas. Master the underwater currents and coordinate with your team to survive.</p>
-                                <div class="stage-mechanics">
-                                    <h5>Key Mechanics</h5>
-                                    <ul>
-                                        <li>Piranha Wave at Turn 30</li>
-                                        <li>Position-based Combat</li>
-                                        <li>Underwater Current Management</li>
-                                    </ul>
-                                </div>
-                                <div class="stage-rewards">
-                                    <h5>Notable Rewards</h5>
-                                    <div class="reward-items">
-                                        <div class="reward-item">
-                                            <img src="res/img/raiditem/murky_water_vial.png" alt="Murky Water Vial">
-                                            <span>Murky Water Vial (70%)</span>
-                                        </div>
-                                        <div class="reward-item">
-                                            <img src="res/img/raiditem/tidal_charm.png" alt="Tidal Charm">
-                                            <span>Tidal Charm (50%)</span>
-                                        </div>
-                                        <div class="reward-item">
-                                            <img src="res/img/raiditem/void_essence.png" alt="Void Essence">
-                                            <span>Void Essence (25%)</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Stage 2: The Frozen Depths -->
-                        <div class="stage-card">
-                            <div class="stage-header">
-                                <h4>Stage 2: The Frozen Depths</h4>
-                                <span class="stage-difficulty hard">Hard</span>
-                            </div>
-                            <img src="Project Fighter Raids/assets/backgrounds/stage2_ice.png" alt="The Frozen Depths" class="stage-img">
-                            <div class="stage-content">
-                                <p>Face off against Atlantean Sub Zero and his frozen warriors in a battle of ice and strategy.</p>
-                                <div class="stage-mechanics">
-                                    <h5>Key Mechanics</h5>
-                                    <ul>
-                                        <li>Ice Strike - Heals Sub Zero for 50% of damage dealt</li>
-                                        <li>Ice Warriors Summoning (Turn 25)</li>
-                                        <li>Coordinated Ice Attacks</li>
-                                    </ul>
-                                </div>
-                                <div class="stage-rewards">
-                                    <h5>Notable Rewards</h5>
-                                    <div class="reward-items">
-                                        <div class="reward-item">
-                                            <img src="res/img/raiditem/ice_dagger.png" alt="Ice Dagger">
-                                            <span>Ice Dagger (25%)</span>
-                                        </div>
-                                        <div class="reward-item">
-                                            <img src="res/img/raiditem/ice_shard.png" alt="Ice Shard">
-                                            <span>Ice Shard (70%)</span>
-                                        </div>
-                                        <div class="reward-item">
-                                            <img src="res/img/raiditem/ice_flask.png" alt="Ice Flask">
-                                            <span>Ice Flask (90%)</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Stage 3: The Assassins' Ambush -->
-                        <div class="stage-card">
-                            <div class="stage-header">
-                                <h4>Stage 3: The Assassins' Ambush</h4>
-                                <span class="stage-difficulty extreme">Extreme</span>
-                            </div>
-                            <img src="Project Fighter Raids/assets/backgrounds/stage3.png" alt="The Assassins' Ambush" class="stage-img">
-                            <div class="stage-content">
-                                <p>Face off against four deadly assassins, each with unique abilities and tactics.</p>
-                                <div class="stage-mechanics">
-                                    <h5>Key Mechanics</h5>
-                                    <ul>
-                                        <li>Death Mark - 45% increased damage taken</li>
-                                        <li>Venomous Blade - Poison DoT</li>
-                                        <li>Fan of Knives - AoE damage</li>
-                                        <li>Drain Life - Damage and healing</li>
-                                    </ul>
-                                </div>
-                                <div class="stage-rewards">
-                                    <h5>Notable Rewards</h5>
-                                    <div class="reward-items">
-                                        <div class="reward-item">
-                                            <img src="res/img/raiditem/shadow_essence.png" alt="Shadow Essence">
-                                            <span>Shadow Essence (40%)</span>
-                                        </div>
-                                        <div class="reward-item">
-                                            <img src="res/img/raiditem/shadow_dagger.png" alt="Shadow Dagger">
-                                            <span>Shadow Dagger (5%)</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Stage 4: The Abyssal Depths -->
-                        <div class="stage-card">
-                            <div class="stage-header">
-                                <h4>Stage 4: The Abyssal Depths</h4>
-                                <span class="stage-difficulty extreme">Extreme</span>
-                            </div>
-                            <img src="Project Fighter Raids/assets/backgrounds/stage4.png" alt="The Abyssal Depths" class="stage-img">
-                            <div class="stage-content">
-                                <p>Challenge the Dark Leviathan, a massive creature with devastating abilities and regenerative powers.</p>
-                                <div class="stage-mechanics">
-                                    <h5>Key Mechanics</h5>
-                                    <ul>
-                                        <li>Abyssal Slam - Increases ability cooldowns</li>
-                                        <li>Wave Crush - Stacking damage vulnerability</li>
-                                        <li>Monstrous Scream - Disables random abilities</li>
-                                        <li>Passive: Abyssal Regeneration (88 HP/turn)</li>
-                                    </ul>
-                                </div>
-                                <div class="stage-rewards">
-                                    <h5>Notable Rewards</h5>
-                                    <div class="reward-items">
-                                        <div class="reward-item">
-                                            <img src="res/img/raiditem/leviathan_scale.png" alt="Leviathan Scale">
-                                            <span>Leviathan Scale (35%)</span>
-                                        </div>
-                                        <div class="reward-item">
-                                            <img src="res/img/raiditem/leviathan_mist_vial.png" alt="Leviathan's Mist">
-                                            <span>Leviathan's Mist (30%)</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Stage 5: The Shadow's Domain -->
-                        <div class="stage-card">
-                            <div class="stage-header">
-                                <h4>Stage 5: The Shadow's Domain</h4>
-                                <span class="stage-difficulty extreme">Extreme</span>
-                            </div>
-                            <img src="Project Fighter Raids/assets/backgrounds/stage5.png" alt="The Shadow's Domain" class="stage-img">
-                            <div class="stage-content">
-                                <p>Confront Atlantean Zasalamel and his shadow assassins in a battle of attrition.</p>
-                                <div class="stage-mechanics">
-                                    <h5>Key Mechanics</h5>
-                                    <ul>
-                                        <li>Shadow Protection - Boss immune while assassins live</li>
-                                        <li>Assassin Spawning (Every 6 turns)</li>
-                                        <li>Coordinated Shadow Attacks</li>
-                                        <li>Anti-Summoning Mechanics</li>
-                                    </ul>
-                                </div>
-                                <div class="stage-rewards">
-                                    <h5>Notable Rewards</h5>
-                                    <div class="reward-items">
-                                        <div class="reward-item">
-                                            <img src="res/img/raiditem/zasalamel_scythe.png" alt="Zasalamel's Scythe">
-                                            <span>Zasalamel's Scythe (2%)</span>
-                                        </div>
-                                        <div class="reward-item">
-                                            <img src="res/img/raiditem/cursed_water_vial.png" alt="Cursed Water Vial">
-                                            <span>Cursed Water Vial (100%)</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Stage 6: The Final Battle -->
-                        <div class="stage-card">
-                            <div class="stage-header">
-                                <h4>Stage 6: The Final Battle</h4>
-                                <span class="stage-difficulty impossible">Impossible</span>
-                            </div>
-                            <img src="Project Fighter Raids/assets/backgrounds/stage6.png" alt="The Final Battle" class="stage-img">
-                            <div class="stage-content">
-                                <p>The ultimate showdown against Atlantean Shinnok, where all previous mechanics culminate in an epic battle.</p>
-                                <div class="stage-mechanics">
-                                    <h5>Key Mechanics</h5>
-                                    <ul>
-                                        <li>Dark Bubble Prison - Ability Disabling</li>
-                                        <li>Anti-Summoning Curse - No companions</li>
-                                        <li>Maximum Difficulty (5.0)</li>
-                                        <li>All Previous Stage Modifiers Active</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Raid Rewards -->
-                    <div class="raid-rewards">
-                        <h4>Exclusive Rewards</h4>
-                        <div class="rewards-grid">
-                            <div class="reward-card">
-                                <img src="res/img/raiditem/atlantean_trident_of_time_manipulation.png" alt="Atlantean Trident" class="reward-img">
-                                <div class="reward-info">
-                                    <h5>Atlantean Trident</h5>
-                                    <p>Legendary Weapon</p>
-                                    <span class="drop-rate">Drop Rate: 5%</span>
-                                </div>
-                            </div>
-                            <div class="reward-card">
-                                <img src="res/img/raiditem/deep_sea_essence.png" alt="Deep Sea Essence" class="reward-img">
-                                <div class="reward-info">
-                                    <h5>Deep Sea Essence</h5>
-                                    <p>Rare Material</p>
-                                    <span class="drop-rate">Drop Rate: 40%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <style>
-                        .raid-introduction {
-                            margin-bottom: 40px;
-                        }
-
-                        .raid-banner {
-                            position: relative;
-                            border-radius: 15px;
-                            overflow: hidden;
-                            margin-bottom: 20px;
-                        }
-
-                        .full-width-img {
-                            width: 100%;
-                            height: 400px;
-                            object-fit: cover;
-                            border-radius: 15px;
-                        }
-
-                        .raid-difficulty {
-                            position: absolute;
-                            bottom: 20px;
-                            left: 20px;
-                            display: flex;
-                            gap: 15px;
-                        }
-
-                        .difficulty-badge {
-                            padding: 8px 16px;
-                            border-radius: 20px;
-                            font-weight: bold;
-                            text-transform: uppercase;
-                            font-size: 0.9em;
-                        }
-
-                        .difficulty-badge.extreme {
-                            background: linear-gradient(45deg, #ff4500, #ff8c00);
-                            color: white;
-                        }
-
-                        .player-count, .time-limit {
-                            background: rgba(0, 0, 0, 0.7);
-                            color: white;
-                            padding: 8px 16px;
-                            border-radius: 20px;
-                        }
-
-                        .raid-stages-grid {
-                            display: grid;
-                            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                            gap: 30px;
-                            margin: 40px 0;
-                        }
-
-                        .stage-card {
-                            background: rgba(0, 0, 0, 0.3);
-                            border-radius: 15px;
-                            overflow: hidden;
-                            transition: transform 0.3s ease;
-                        }
-
-                        .stage-card:hover {
-                            transform: translateY(-5px);
-                        }
-
-                        .stage-header {
-                            padding: 20px;
-                            background: rgba(0, 0, 0, 0.5);
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                        }
-
-                        .stage-difficulty {
-                            padding: 5px 10px;
-                            border-radius: 10px;
-                            font-size: 0.8em;
-                            font-weight: bold;
-                        }
-
-                        .stage-difficulty.medium { background: #4CAF50; }
-                        .stage-difficulty.hard { background: #FFA500; }
-                        .stage-difficulty.extreme { background: #FF4500; }
-
-                        .stage-img {
-                            width: 100%;
-                            height: 200px;
-                            object-fit: cover;
-                        }
-
-                        .stage-content {
-                            padding: 20px;
-                        }
-
-                        .stage-mechanics {
-                            margin-top: 20px;
-                        }
-
-                        .stage-mechanics ul {
-                            list-style: none;
-                            padding-left: 0;
-                        }
-
-                        .stage-mechanics li {
-                            margin: 10px 0;
-                            padding-left: 20px;
-                            position: relative;
-                        }
-
-                        .stage-mechanics li:before {
-                            content: '•';
-                            position: absolute;
-                            left: 0;
-                            color: var(--primary-color);
-                        }
-
-                        .stage-rewards {
-                            margin-top: 20px;
-                            padding-top: 20px;
-                            border-top: 1px solid rgba(255, 255, 255, 0.1);
-                        }
-
-                        .reward-items {
-                            display: flex;
-                            gap: 15px;
-                            margin-top: 10px;
-                        }
-
-                        .reward-item {
-                            display: flex;
-                            align-items: center;
-                            gap: 10px;
-                            background: rgba(0, 0, 0, 0.3);
-                            padding: 8px;
-                            border-radius: 10px;
-                        }
-
-                        .reward-item img {
-                            width: 30px;
-                            height: 30px;
-                            border-radius: 5px;
-                        }
-
-                        .raid-rewards {
-                            margin-top: 40px;
-                        }
-
-                        .rewards-grid {
-                            display: grid;
-                            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                            gap: 20px;
-                            margin-top: 20px;
-                        }
-
-                        .reward-card {
-                            background: rgba(0, 0, 0, 0.3);
-                            border-radius: 15px;
-                            padding: 20px;
-                            display: flex;
-                            align-items: center;
-                            gap: 20px;
-                            transition: transform 0.3s ease;
-                        }
-
-                        .reward-card:hover {
-                            transform: translateY(-5px);
-                        }
-
-                        .reward-img {
-                            width: 80px;
-                            height: 80px;
-                            border-radius: 10px;
-                            border: 2px solid var(--primary-color);
-                        }
-
-                        .reward-info h5 {
-                            margin: 0 0 5px 0;
-                            color: var(--primary-color);
-                        }
-
-                        .drop-rate {
-                            display: inline-block;
-                            margin-top: 5px;
-                            font-size: 0.9em;
-                            color: #888;
-                        }
-
-                        .raid-requirements {
-                            margin-top: 40px;
-                        }
-
-                        .requirements-grid {
-                            display: grid;
-                            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                            gap: 20px;
-                            margin-top: 20px;
-                        }
-
-                        .requirement-card {
-                            background: rgba(0, 0, 0, 0.3);
-                            border-radius: 15px;
-                            padding: 20px;
-                        }
-
-                        .requirement-icon {
-                            font-size: 2em;
-                            margin-bottom: 10px;
-                        }
-
-                        .requirement-card ul {
-                            list-style: none;
-                            padding-left: 0;
-                        }
-
-                        .requirement-card li {
-                            margin: 8px 0;
-                            padding-left: 20px;
-                            position: relative;
-                        }
-
-                        .requirement-card li:before {
-                            content: '•';
-                            position: absolute;
-                            left: 0;
-                            color: var(--primary-color);
-                        }
-
-                        @media (max-width: 768px) {
-                            .raid-stages-grid {
-                                grid-template-columns: 1fr;
-                            }
-                            
-                            .rewards-grid {
-                                grid-template-columns: 1fr;
-                            }
-                            
-                            .requirements-grid {
-                                grid-template-columns: 1fr;
-                            }
-                        }
-                    </style>
-                </div>
-
-                <div class="major-section" id="crafting">
-                    <div class="section-icon">⚒️</div>
-                    <h3>New Crafting System</h3>
-                    
-                    <div class="crafting-introduction">
-                        <div class="crafting-banner">
-                            <img src="res/img/raiditem/atlantean_trident_of_time_manipulation.png" alt="Crafting Banner" class="crafting-splash">
-                            <div class="crafting-overlay">
-                                <h4>Forge Your Destiny</h4>
-                                <p>Transform raid materials into powerful artifacts!</p>
-                            </div>
-                        </div>
-
-                        <div class="crafting-grid">
-                            <!-- Atlantean Trident -->
-                            <div class="recipe-card">
-                                <div class="recipe-header">
-                                    <img src="res/img/raiditem/atlantean_trident_of_time_manipulation.png" alt="Atlantean Trident" class="recipe-icon">
-                                    <h4>Atlantean Trident of Time Manipulation</h4>
-                                    <span class="rarity-badge legendary">Legendary</span>
-                                </div>
-                                <div class="recipe-materials">
-                                    <h5>Required Materials:</h5>
-                                    <ul>
-                                        <li>
-                                            <img src="res/img/raiditem/deep_sea_essence.png" alt="Deep Sea Essence">
-                                            <span>Deep Sea Essence x5</span>
-                                        </li>
-                                        <li>
-                                            <img src="res/img/raiditem/leviathan_scale.png" alt="Leviathan Scale">
-                                            <span>Leviathan Scale x3</span>
-                                        </li>
-                                        <li>
-                                            <img src="res/img/raiditem/zasalamel_scythe.png" alt="Zasalamel's Scythe Fragment">
-                                            <span>Zasalamel's Scythe Fragment x1</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="recipe-stats">
-                                    <div class="stat-item">
-                                        <span class="stat-label">Ability Haste</span>
-                                        <span class="stat-value">+30</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">Ability Power</span>
-                                        <span class="stat-value">+80</span>
-                                    </div>
-                                    <div class="stat-item special">
-                                        <span class="stat-label">Unique Passive - Time Manipulation</span>
-                                        <span class="stat-value">Reduces enemy ability cooldowns by 15%</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Tidal Charm -->
-                            <div class="recipe-card">
-                                <div class="recipe-header">
-                                    <img src="res/img/raiditem/tidal_charm.png" alt="Tidal Charm" class="recipe-icon">
-                                    <h4>Tidal Charm</h4>
-                                    <span class="rarity-badge rare">Rare</span>
-                                </div>
-                                <div class="recipe-materials">
-                                    <h5>Required Materials:</h5>
-                                    <ul>
-                                        <li>
-                                            <img src="res/img/raiditem/murky_water_vial.png" alt="Murky Water Vial">
-                                            <span>Murky Water Vial x3</span>
-                                        </li>
-                                        <li>
-                                            <img src="res/img/raiditem/deep_sea_essence.png" alt="Deep Sea Essence">
-                                            <span>Deep Sea Essence x2</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="recipe-stats">
-                                    <div class="stat-item">
-                                        <span class="stat-label">Health</span>
-                                        <span class="stat-value">+250</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">Magic Resist</span>
-                                        <span class="stat-value">+40</span>
-                                    </div>
-                                    <div class="stat-item special">
-                                        <span class="stat-label">Unique Passive - Tidal Wave</span>
-                                        <span class="stat-value">Gain a shield when below 30% HP</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Shadow Dagger -->
-                            <div class="recipe-card">
-                                <div class="recipe-header">
-                                    <img src="res/img/raiditem/shadow_dagger.png" alt="Shadow Dagger" class="recipe-icon">
-                                    <h4>Shadow Dagger</h4>
-                                    <span class="rarity-badge epic">Epic</span>
-                                </div>
-                                <div class="recipe-materials">
-                                    <h5>Required Materials:</h5>
-                                    <ul>
-                                        <li>
-                                            <img src="res/img/raiditem/shadow_essence.png" alt="Shadow Essence">
-                                            <span>Shadow Essence x4</span>
-                                        </li>
-                                        <li>
-                                            <img src="res/img/raiditem/void_essence.png" alt="Void Essence">
-                                            <span>Void Essence x2</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="recipe-stats">
-                                    <div class="stat-item">
-                                        <span class="stat-label">Attack Damage</span>
-                                        <span class="stat-value">+60</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">Lethality</span>
-                                        <span class="stat-value">+12</span>
-                                    </div>
-                                    <div class="stat-item special">
-                                        <span class="stat-label">Unique Passive - Shadow Strike</span>
-                                        <span class="stat-value">First attack deals bonus damage</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <style>
-                        .crafting-introduction {
-                            margin-bottom: 40px;
-                        }
-
-                        .crafting-banner {
-                            position: relative;
-                            border-radius: 15px;
-                            overflow: hidden;
-                            margin-bottom: 30px;
-                            background: rgba(0, 0, 0, 0.3);
-                            padding: 40px;
-                            text-align: center;
-                        }
-
-                        .crafting-splash {
-                            width: 200px;
-                            height: 200px;
-                            object-fit: contain;
-                            margin-bottom: 20px;
-                        }
-
-                        .crafting-overlay {
-                            text-align: center;
-                            color: white;
-                        }
-
-                        .crafting-overlay h4 {
-                            font-size: 2em;
-                            color: #FFD700;
-                            margin-bottom: 10px;
-                        }
-
-                        .crafting-grid {
-                            display: grid;
-                            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                            gap: 30px;
-                            padding: 20px;
-                        }
-
-                        .recipe-card {
-                            background: rgba(0, 0, 0, 0.3);
-                            border-radius: 15px;
-                            padding: 20px;
-                            border: 1px solid rgba(255, 215, 0, 0.2);
-                            transition: transform 0.3s ease;
-                        }
-
-                        .recipe-card:hover {
-                            transform: translateY(-5px);
-                            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
-                        }
-
-                        .recipe-header {
-                            display: flex;
-                            align-items: center;
-                            gap: 15px;
-                            margin-bottom: 20px;
-                            padding-bottom: 10px;
-                            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
-                        }
-
-                        .recipe-icon {
-                            width: 50px;
-                            height: 50px;
-                            object-fit: contain;
-                        }
-
-                        .recipe-header h4 {
-                            flex: 1;
-                            margin: 0;
-                            color: #FFD700;
-                            font-size: 1.2em;
-                        }
-
-                        .rarity-badge {
-                            padding: 5px 10px;
-                            border-radius: 20px;
-                            font-size: 0.8em;
-                            font-weight: bold;
-                        }
-
-                        .rarity-badge.legendary {
-                            background: linear-gradient(45deg, #FFD700, #FFA500);
-                            color: white;
-                        }
-
-                        .rarity-badge.epic {
-                            background: linear-gradient(45deg, #9400D3, #4B0082);
-                            color: white;
-                        }
-
-                        .rarity-badge.rare {
-                            background: linear-gradient(45deg, #0000FF, #000080);
-                            color: white;
-                        }
-
-                        .recipe-materials {
-                            margin-bottom: 20px;
-                        }
-
-                        .recipe-materials h5 {
-                            color: #FFD700;
-                            margin-bottom: 10px;
-                        }
-
-                        .recipe-materials ul {
-                            list-style: none;
-                            padding: 0;
-                        }
-
-                        .recipe-materials li {
-                            display: flex;
-                            align-items: center;
-                            gap: 10px;
-                            margin-bottom: 10px;
-                            background: rgba(255, 255, 255, 0.1);
-                            padding: 8px;
-                            border-radius: 8px;
-                        }
-
-                        .recipe-materials img {
-                            width: 30px;
-                            height: 30px;
-                            object-fit: contain;
-                        }
-
-                        .recipe-stats {
-                            display: grid;
-                            gap: 10px;
-                        }
-
-                        .stat-item {
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                            padding: 8px;
-                            background: rgba(255, 255, 255, 0.1);
-                            border-radius: 8px;
-                        }
-
-                        .stat-item.special {
-                            background: rgba(255, 215, 0, 0.1);
-                            border: 1px solid rgba(255, 215, 0, 0.3);
-                        }
-
-                        .stat-label {
-                            color: #90caf9;
-                        }
-
-                        .stat-value {
-                            color: #32CD32;
-                            font-weight: bold;
-                        }
-
-                        @media (max-width: 768px) {
-                            .crafting-grid {
-                                grid-template-columns: 1fr;
-                            }
-
-                            .recipe-header {
-                                flex-direction: column;
-                                text-align: center;
-                            }
-
-                            .recipe-header h4 {
-                                margin-top: 10px;
-                            }
-                        }
-                    </style>
                 </div>
             </div>
 
-            <div class="article-section" id="looking-forward">
-                <h3>🎯 2025: A Year of Epic Adventures Awaits</h3>
-                <p class="intro-text">As we step into 2025, prepare yourselves for an extraordinary journey filled with new champions, thrilling events, and epic battles that will reshape the future of Project Fighters!</p>
-                
-                <div class="upcoming-timeline">
-                    <!-- Lunar Event -->
-                    <div class="timeline-card">
-                        <div class="event-date">January 20th</div>
-                        <div class="event-content">
-                            <h4>🏮 Lunar Event</h4>
-                            <p>Embrace the Year of the Snake with mystical celebrations and legendary rewards!</p>
-                            <img src="Not Shipping/Lunar Festival Lili.jpg" alt="Lunar Event Teaser" class="event-teaser">
-                            <p>Lunar Festival Lili</p>
-                        </div>
+            <div style="background: rgba(0, 0, 0, 0.5); padding: 30px; border-radius: 15px; margin-bottom: 30px;">
+                <h3 style="color: #FFD700; font-family: 'Cinzel', serif; margin-bottom: 20px;">⭐ Battle Pass Highlights</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div style="background: rgba(255, 215, 0, 0.1); padding: 15px; border-radius: 10px; position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('Loading Screen/Lunar Festival Kokoro.png') center/cover; opacity: 0.2;"></div>
+                        <p style="color: #FFD700; margin: 0; position: relative;">Level 1</p>
+                        <p style="position: relative; margin: 5px 0 0 0;">Lunar Festival Kokoro</p>
                     </div>
-                    
-                    <!-- Love Day Event -->
-                    <div class="timeline-card">
-                        <div class="event-date">February 3rd</div>
-                        <div class="event-content">
-                            <h4>💘 Love Day Event</h4>
-                            <p>Romance blooms on the battlefield with heartwarming challenges and enchanting rewards.</p>
-                            <img src="Not Shipping/Date Night Mega Man.jpeg" alt="Love Day Event Teaser" class="event-teaser">
-                            <p>Date Night Mega Man</p>
-                        </div>
+                    <div style="background: rgba(255, 215, 0, 0.1); padding: 15px; border-radius: 10px; position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('Loading Screen/Lunar Festival Reptile.png') center/cover; opacity: 0.2;"></div>
+                        <p style="color: #FFD700; margin: 0; position: relative;">Level 12</p>
+                        <p style="position: relative; margin: 5px 0 0 0;">Lunar Festival Reptile</p>
                     </div>
-                    
-                    <!-- Celestial Protector Event -->
-                    <div class="timeline-card">
-                        <div class="event-date">February 17th</div>
-                        <div class="event-content">
-                            <h4>✨ Celestial Protector Event</h4>
-                            <p>Ascend beyond mortal bounds in this divine celebration of cosmic power.</p>
-                            <img src="Not Shipping/Cosmic Protector Cham Cham.jpeg" alt="Celestial Event Teaser" class="event-teaser">
-                            <p>Cosmic Protector Cham Cham</p>
-                        </div>
+                    <div style="background: rgba(255, 215, 0, 0.1); padding: 15px; border-radius: 10px; position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('Loading Screen/Lunar Festival Scorpion.png') center/cover; opacity: 0.2;"></div>
+                        <p style="color: #FFD700; margin: 0; position: relative;">Level 15</p>
+                        <p style="position: relative; margin: 5px 0 0 0;">Lunar Festival Scorpion</p>
                     </div>
-                    
-                    <!-- Battleborn Event + Shao Kahn -->
-                    <div class="timeline-card featured">
-                        <div class="event-date">March 3rd</div>
-                        <div class="event-content">
-                            <h4>⚔️ Battleborn Event & New Season</h4>
-                            <div class="character-spotlight">
-                                <img src="Not Shipping/Shao Kahn.jpg" alt="Shao Kahn" class="character-teaser">
-                                <div class="spotlight-text">
-                                    <h5>Shao Kahn Arrives!</h5>
-                                    <p>The Emperor of Outworld himself joins the roster, bringing unparalleled might and dominance to the battlefield!</p>
-                                </div>
-                            </div>
-                            <img src="Not Shipping/Battleborn Zasalamel.jpeg" alt="Battleborn Event Teaser" class="event-teaser">
-                            <p>Battleborn Zasalamel</p>
+                    <div style="background: rgba(255, 215, 0, 0.1); padding: 15px; border-radius: 10px; position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('Loading Screen/Lunar Festival Kokoro Sweet.png') center/cover; opacity: 0.2;"></div>
+                        <p style="color: #FFD700; margin: 0; position: relative;">Level 20</p>
+                        <p style="position: relative; margin: 5px 0 0 0;">Lunar Festival Kokoro Sweet</p>
                     </div>
                 </div>
-                
-                    <!-- Bandits vs. Gangsters -->
-                    <div class="timeline-card">
-                        <div class="event-date">March 17th</div>
-                        <div class="event-content">
-                            <h4>🎭 Bandits vs. Gangsters</h4>
-                            <p>Choose your side in this thrilling clash between outlaws and mobsters!</p>
-                            <img src="Not Shipping/Bandito Reptile.jpg" alt="Bandits Event Teaser" class="event-teaser">
-                            <p>Bandito Reptile</p>
-                        </div>
+                <div style="margin-top: 20px; background: rgba(255, 215, 0, 0.05); padding: 15px; border-radius: 10px; text-align: center;">
+                    <p style="color: #FFD700; margin: 0 0 5px 0; font-size: 1.1em;">Additional Rewards:</p>
+                    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                        <span style="color: #e1e1e1;">🎫 13 Lunar Tickets</span>
+                        <span style="color: #e1e1e1;">💰 70,000 CM</span>
+                        <span style="color: #e1e1e1;">🎨 Exclusive Icons</span>
+                        <span style="color: #e1e1e1;">🏆 Unique Titles</span>
                     </div>
-
-                    <!-- Blossom Event -->
-                    <div class="timeline-card">
-                        <div class="event-date">March 31st</div>
-                        <div class="event-content">
-                            <h4>🌸 Blossom Event</h4>
-                            <p>Welcome spring with beautiful cherry blossoms and serene celebrations.</p>
-                            <img src="Not Shipping/Blossom Mai.jfif" alt="Blossom Event Teaser" class="event-teaser">
-                            <p>Blossom Mai</p>
-                        </div>
-                    </div>
-
-                    <!-- Easter Event -->
-                    <div class="timeline-card">
-                        <div class="event-date">April 14th</div>
-                        <div class="event-content">
-                            <h4>🐰 Easter Event</h4>
-                            <p>Hop into spring with festive challenges and colorful rewards!</p>
-                            <img src="Not Shipping/Easter Bunny Peacock.jpg" alt="Easter Event Teaser" class="event-teaser">
-                            <p>Easter Bunny Peacock</p>
-                        </div>
-                    </div>
-
-                    <!-- Sand Wars Event + Tanya -->
-                    <div class="timeline-card featured">
-                        <div class="event-date">April 28th</div>
-                        <div class="event-content">
-                            <h4>🏜️ Sand Wars 2025</h4>
-                            <div class="character-spotlight">
-                                <img src="Not Shipping/Tanya.jpg" alt="Tanya" class="character-teaser">
-                                <div class="spotlight-text">
-                                    <h5>Tanya Emerges!</h5>
-                                    <p>The deadly Edenian assassin joins the fray, bringing deception and lethal precision to the arena!</p>
-                                </div>
-                            </div>
-                            <img src="Not Shipping/Sand Warrior Shoma.jpg" alt="Battleborn Event Teaser" class="event-teaser">
-                                <p>Sand Warrior Shoma</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                <style>
-                    .intro-text {
-                        font-size: 1.2em;
-                        color: #90caf9;
-                        text-align: center;
-                        margin: 20px 0 40px;
-                    }
-
-                    .upcoming-timeline {
-                        display: flex;
-                        flex-direction: column;
-                        gap: 30px;
-                        padding: 20px;
-                    }
-
-                    .timeline-card {
-                        background: rgba(0, 0, 0, 0.3);
-                        border-radius: 15px;
-                        padding: 20px;
-                        display: flex;
-                        gap: 20px;
-                        transition: transform 0.3s ease;
-                        border: 1px solid rgba(255, 215, 0, 0.2);
-                    }
-
-                    .timeline-card:hover {
-                        transform: translateY(-5px);
-                        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
-                    }
-
-                    .timeline-card.featured {
-                        background: linear-gradient(45deg, rgba(0, 0, 0, 0.5), rgba(255, 69, 0, 0.2));
-                        border: 2px solid var(--primary-color);
-                    }
-
-                    .event-date {
-                        background: var(--primary-color);
-                        color: white;
-                        padding: 10px 20px;
-                        border-radius: 20px;
-                        font-weight: bold;
-                        text-align: center;
-                        min-width: 120px;
-                        height: fit-content;
-                    }
-
-                    .event-content {
-                        flex: 1;
-                    }
-
-                    .event-content h4 {
-                        color: #FFD700;
-                        margin-bottom: 10px;
-                        font-size: 1.3em;
-                    }
-
-                    .event-teaser {
-                        width: 100%;
-                        max-width: 480px;
-                        height: 270px;
-                        object-fit: cover;
-                        border-radius: 10px;
-                        margin-top: 15px;
-                    }
-
-                    .character-spotlight {
-                        display: flex;
-                        gap: 20px;
-                        background: rgba(0, 0, 0, 0.3);
-                        padding: 15px;
-                        border-radius: 10px;
-                        margin: 15px 0;
-                    }
-
-                    .character-teaser {
-                        width: 240px;
-                        height: 135px;
-                        object-fit: cover;
-                        border-radius: 8px;
-                    }
-
-                    .spotlight-text {
-                        flex: 1;
-                    }
-
-                    .spotlight-text h5 {
-                        color: var(--primary-color);
-                        font-size: 1.2em;
-                        margin-bottom: 10px;
-                    }
-
-                    @media (max-width: 768px) {
-                        .timeline-card {
-                            flex-direction: column;
-                        }
-
-                        .event-date {
-                            width: fit-content;
-                        }
-
-                        .character-spotlight {
-                            flex-direction: column;
-                            text-align: center;
-                        }
-
-                        .character-teaser {
-                            margin: 0 auto;
-                        }
-                    }
-                </style>
-
-                    <style>
-                        .free-skin-showcase {
-                            display: flex;
-                            gap: 30px;
-                            padding: 20px;
-                            align-items: center;
-                        }
-
-                        .showcase-splash {
-                            width: 300px;
-                            height: 400px;
-                            object-fit: cover;
-                            object-position: top center;
-                            border-radius: 15px;
-                            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-                        }
-
-                        .skin-details {
-                            flex: 1;
-                        }
-
-                        .skin-details h4 {
-                            color: #FFD700;
-                            font-size: 1.5em;
-                            margin-bottom: 15px;
-                        }
-
-                        .quest-system {
-                            margin-top: 30px;
-                            background: rgba(0, 0, 0, 0.3);
-                            padding: 20px;
-                            border-radius: 10px;
-                        }
-
-                        .quest-rewards {
-                            list-style: none;
-                            padding: 0;
-                            margin-top: 15px;
-                        }
-
-                        .quest-rewards li {
-                            margin: 10px 0;
-                            padding: 10px;
-                            background: rgba(255, 255, 255, 0.1);
-                            border-radius: 5px;
-                            transition: transform 0.3s ease;
-                        }
-
-                        .quest-rewards li:hover {
-                            transform: translateX(10px);
-                            background: rgba(255, 255, 255, 0.15);
-                        }
-
-                        @media (max-width: 768px) {
-                            .free-skin-showcase {
-                                flex-direction: column;
-                                text-align: center;
-                            }
-
-                            .showcase-splash {
-                                width: 100%;
-                                max-width: 300px;
-                                margin: 0 auto;
-                            }
-                        }
-                    </style>
-         <style>
-            .atlantis-quest-grid {
-                display: grid;
-                grid-template-columns: 300px 1fr;
-                gap: 30px;
-                margin: 20px 0;
-            }
-
-            .quest-card {
-                background: rgba(0, 206, 209, 0.1);
-                border: 1px solid rgba(0, 206, 209, 0.3);
-                border-radius: 10px;
-                padding: 20px;
-            }
-
-            .quest-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 15px;
-            }
-
-            .quest-reward {
-                display: flex;
-                align-items: center;
-                gap: 5px;
-            }
-
-            .quest-reward img {
-                width: 20px;
-                height: 20px;
-            }
-
-            .quest-list {
-                list-style: none;
-                padding: 0;
-            }
-
-            .quest-list li {
-                padding: 10px 0;
-                border-bottom: 1px solid rgba(0, 206, 209, 0.2);
-                color: #e0ffff;
-            }
-
-            .quest-list li:last-child {
-                border-bottom: none;
-            }
-
-            .atlantis-rewards {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 20px;
-            }
-
-            .reward-item {
-                background: rgba(0, 206, 209, 0.1);
-                border: 1px solid rgba(0, 206, 209, 0.3);
-                border-radius: 10px;
-                overflow: hidden;
-                transition: transform 0.3s ease;
-            }
-
-            .reward-item:hover {
-                transform: translateY(-5px);
-            }
-
-            .reward-item.featured {
-                grid-column: span 2;
-            }
-
-            .reward-item img {
-                width: 100%;
-                height: 200px;
-                object-fit: cover;
-            }
-
-            .reward-item.featured img {
-                height: 300px;
-            }
-
-            .reward-info {
-                padding: 15px;
-            }
-
-            .reward-info h4 {
-                color: #90caf9;
-                margin: 0 0 10px 0;
-            }
-
-            .reward-desc {
-                color: #e0ffff;
-                font-size: 0.9em;
-                margin: 5px 0;
-            }
-
-            .reward-cost {
-                display: flex;
-                align-items: center;
-                gap: 5px;
-                margin-top: 10px;
-            }
-
-            .reward-cost img {
-                width: 20px;
-                height: 20px;
-            }
-
-            .event-description {
-                margin-top: 30px;
-                padding: 20px;
-                background: rgba(0, 206, 209, 0.1);
-                border-radius: 10px;
-                border-left: 4px solid #00ced1;
-            }
-
-            .event-description p {
-                color: #e0ffff;
-                margin: 10px 0;
-                line-height: 1.6;
-            }
-
-            @media (max-width: 768px) {
-                .atlantis-quest-grid {
-                    grid-template-columns: 1fr;
-                }
-
-                .reward-item.featured {
-                    grid-column: span 1;
-                }
-            }
-        </style>
-                    
                 </div>
-
-        <div class="event-showcase" id="atlantis-event-skins">
-            <div class="event-header">
-                <h3>🌊 Atlantis Event Skins</h3>
-                <p class="event-description">Dive into the depths with these mythical Atlantean-themed skins!</p>
             </div>
-            <div class="atlantis-skin-grid">
+        </div>
+
+        <div class="balance-section">
+            <h2 class="section-title">Lunar Festival Event Skins</h2>
+
+            <div class="event-description">
+                <p>Celebrate the Lunar Festival with these stunning new skins! Each skin brings the spirit of the festival to life with unique effects and animations.</p>
+                </div>
+                
+            <div class="skin-grid">
                 <div class="skin-card">
-                    <div class="skin-image-container">
-                        <img src="Skins/Atlantean Christie.jpeg" alt="Atlantean Christie" class="skin-splash">
-                        <div class="skin-overlay">
-                            <h4>Atlantean Christie</h4>
-                            <p class="skin-description">Deadly grace of the deep seas</p>
+                    <div class="skin-image">
+                        <img src="Loading Screen/Lunar Festival Lili.png" alt="Lunar Festival Lili">
+                        </div>
+                    <div class="skin-details">
+                        <h3 class="skin-name">Lunar Festival Lili</h3>
+                        <div class="skin-price">
+                            <img src="res/img/fm.png" alt="FM">
+                            <span>2000</span>
+                    </div>
+                        </div>
+                    </div>
+                <div class="skin-card">
+                    <div class="skin-image">
+                        <img src="Loading Screen/Lunar Festival Scorpion.png" alt="Lunar Festival Scorpion">
+                        </div>
+                    <div class="skin-details">
+                        <h3 class="skin-name">Lunar Festival Scorpion</h3>
+                        <div class="skin-price">
+                            <img src="res/img/fm.png" alt="FM">
+                            <span>2000</span>
+                    </div>
+                                </div>
+                            </div>
+                <div class="skin-card">
+                    <div class="skin-image">
+                        <img src="Loading Screen/Lunar Festival Noel.png" alt="Lunar Festival Noel">
+                                </div>
+                    <div class="skin-details">
+                        <h3 class="skin-name">Lunar Festival Noel</h3>
+                        <div class="skin-price">
+                            <img src="res/img/fm.png" alt="FM">
+                            <span>2000</span>
+                            </div>
+                        </div>
+                    </div>
+                <div class="skin-card">
+                    <div class="skin-image">
+                        <img src="Loading Screen/Lunar Festival Reptile.png" alt="Lunar Festival Reptile">
+                        </div>
+                    <div class="skin-details">
+                        <h3 class="skin-name">Lunar Festival Reptile</h3>
+                        <div class="skin-price">
+                            <img src="res/img/fm.png" alt="FM">
+                            <span>2000</span>
                         </div>
                     </div>
                 </div>
                 <div class="skin-card">
-                    <div class="skin-image-container">
-                        <img src="Skins/Atlantean Kotal Kahn.jpeg" alt="Atlantean Kotal Kahn" class="skin-splash">
-                        <div class="skin-overlay">
-                            <h4>Atlantean Kotal Kahn</h4>
-                            <p class="skin-description">Emperor of the ocean depths</p>
+                    <div class="skin-image">
+                        <img src="Loading Screen/Lunar Festival Kokoro.png" alt="Lunar Festival Kokoro">
+                        </div>
+                    <div class="skin-details">
+                        <h3 class="skin-name">Lunar Festival Kokoro</h3>
+                        <div class="skin-price">
+                            <img src="res/img/fm.png" alt="FM">
+                            <span>2000</span>
                         </div>
                     </div>
                 </div>
                 <div class="skin-card">
-                    <div class="skin-image-container">
-                        <img src="Skins/Atlantean Zasalamel.jpg" alt="Atlantean Zasalamel" class="skin-splash">
-                        <div class="skin-overlay">
-                            <h4>Atlantean Zasalamel</h4>
-                            <p class="skin-description">Guardian of ancient secrets</p>
+                    <div class="skin-image">
+                        <img src="Loading Screen/Lunar Festival Siegfried.png" alt="Lunar Festival Siegfried">
                         </div>
-                    </div>
-                </div>
-                <div class="skin-card">
-                    <div class="skin-image-container">
-                        <img src="Skins/Atlantean Sub Zero.jpeg" alt="Atlantean Sub Zero" class="skin-splash">
-                        <div class="skin-overlay">
-                            <h4>Atlantean Sub Zero</h4>
-                            <p class="skin-description">Master of frozen depths</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="skin-card">
-                    <div class="skin-image-container">
-                        <img src="Skins/Atlantean Shinnok.jpeg" alt="Atlantean Shinnok" class="skin-splash">
-                        <div class="skin-overlay">
-                            <h4>Atlantean Shinnok</h4>
-                            <p class="skin-description">Dark lord of the abyss</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="skin-card">
-                    <div class="skin-image-container">
-                        <img src="Skins/Atlantean Kagome.jpeg" alt="Atlantean Kagome" class="skin-splash">
-                        <div class="skin-overlay">
-                            <h4>Atlantean Kagome</h4>
-                            <p class="skin-description">Priestess of the tides</p>
+                    <div class="skin-details">
+                        <h3 class="skin-name">Lunar Festival Siegfried</h3>
+                        <div class="skin-price">
+                            <img src="res/img/fm.png" alt="FM">
+                            <span>2000</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="patch-section" id="balance-changes">
-            <div class="champion-card" id="talim-changes">
-                <img src="Icons/Talim.png" alt="Talim" class="champion-image">
-                <div class="champion-info">
-                    <h2><a href="characters/Talim Page.html">Talim</a> 🌪️ (Nerf)</h2>
+        <div class="balance-section">
+            <h2 class="section-title">Balance Changes</h2>
+
+            <div class="champion-changes">
+                <div class="champion-header">
+                    <img src="Icons/Shoma.png" alt="Shoma" class="champion-icon">
+                    <h3 class="champion-name">Shoma</h3>
+                </div>
                     <ul class="change-list">
-                        <li class="change-item nerf">
-                            Base Stats:
-                            <ul>
-                                <li>Base Movement Speed: 371 -> 365</li>
+                    <li class="change-item nerf">E ability damage reduction removed</li>
+                    <li class="change-item buff">E ability now heals allies for [60/180/255/400/500] HP</li>
                             </ul>
-                            <div class="reasoning">
-                                Reducing her early game mobility to create more counterplay opportunities.
-                            </div>
-                        </li>
-                        <li class="change-item nerf">
-                            W: Windride:
-                            <ul>
-                                <li>Autoattack cooldown reduction: 1s -> 0.5s</li>
-                            </ul>
-                            <div class="reasoning">
-                                Limiting her ability to chain dashes in quick succession.
-                            </div>
-                        </li>
-                        <li class="change-item nerf">
-                            Level 20 Talent:
-                            <ul>
-                                <li>Health restore on kill reduced: 50% -> 35%</li>
-                            </ul>
-                            <div class="reasoning">
-                                Reducing her snowball potential in late-game teamfights.
-                            </div>
-                        </li>
-                    </ul>
+                <div class="change-reasoning">
+                    Shoma's E ability was providing too much defensive utility while also dealing significant damage. By removing the damage reduction and adding healing, we're shifting his role to be more supportive of his team while maintaining his identity as a versatile fighter.
                 </div>
             </div>
 
-            <div class="champion-card" id="shoma-changes">
-                <img src="Icons/Shoma.png" alt="Shoma" class="champion-image">
-                <div class="champion-info">
-                    <h2><a href="characters/Shoma Page.html">Shoma</a> ⚾ (Buff)</h2>
+            <div class="champion-changes">
+                <div class="champion-header">
+                    <img src="Icons/Erron Black.png" alt="Erron Black" class="champion-icon">
+                    <h3 class="champion-name">Erron Black</h3>
+                </div>
                     <ul class="change-list">
-                        <li class="change-item buff">
-                            Base Stats:
-                            <ul>
-                                <li>Attack Speed per Level increased: 0.029 -> 0.3</li>
+                    <li class="change-item buff">E (Shotgun Burst) now makes enemies take 15% more damage from Erron Black for 3s</li>
+                    <li class="change-item buff">Level 1 Talent A damage bonus increased from 3% to 7% when enemy HP is below 45%</li>
+                    <li class="change-item">Level 15 Talent B reworked: Now grants 15% movement speed for 3s when taking damage</li>
                             </ul>
-                            <div class="reasoning">
-                                Significantly improving his scaling attack speed to be more threatening in extended fights.
-                            </div>
-                        </li>
-                        <li class="change-item buff">
-                            Ball System:
-                            <ul>
-                                <li>Base Ball stun duration increased: 1s -> 1.5s</li>
-                                <li>Grass Ball lifesteal increased: 7% -> 10%</li>
-                            </ul>
-                            <div class="reasoning">
-                                Enhancing the utility and sustain of his ball mechanics.
-                            </div>
-                        </li>
-                        <li class="change-item mixed">
-                            Q: Dynamic Rhythm:
-                            <ul>
-                                <li class="nerf">Stun duration decreased: 1.5s -> 1s</li>
-                            </ul>
-                        </li>
-                        <li class="change-item buff">
-                            W: Samba Slam:
-                            <ul>
-                                <li>Reworked: Now has 2 charges</li>
-                                <li>Duration: 1.75s</li>
-                                <li>Cooldown: 8s per charge</li>
-                                <li>Mana cost: 70</li>
-                            </ul>
-                            <div class="reasoning">
-                                Reworking his W to provide more strategic options and playmaking potential.
-                            </div>
-                        </li>
-                    </ul>
+                <div class="change-reasoning">
+                    Erron Black was underperforming in extended fights and lacked reliable damage amplification. These changes give him more consistent damage output against low-health targets and better mobility options, while adding a new damage amplification mechanic to his Shotgun Burst to reward aggressive play.
                 </div>
             </div>
 
-            <div class="champion-card" id="christie-changes">
-                <img src="Icons/Christie.png" alt="Christie" class="champion-image">
-                <div class="champion-info">
-                    <h2><a href="characters/Christie Page.html">Christie</a> 💃 (Buff)</h2>
+            <div class="champion-changes">
+                <div class="champion-header">
+                    <img src="Icons/Kuma.png" alt="Kuma" class="champion-icon">
+                    <h3 class="champion-name">Kuma</h3>
+                </div>
                     <ul class="change-list">
-                        <li class="change-item buff">
-                            Base Stats:
-                            <ul>
-                                <li>Base HP increased: 614 -> 630</li>
-                                <li>HP per level increased: 300 -> 305</li>
+                    <li class="change-item buff">Base Movement Speed increased from 336 to 345</li>
+                    <li class="change-item buff">E (Roll) cooldown reduced from 21/19/16/15/15s to 17/15/12/11/11s</li>
+                    <li class="change-item buff">Level 5 Talent B now grants 30% damage reduction for 2s after Roll ends</li>
+                    <li class="change-item buff">Level 15 Talent C armor reduction increased from 8% to 12%</li>
                             </ul>
-                            <div class="reasoning">
-                                Improving her survivability in the current high-damage meta.
-                            </div>
-                        </li>
-                        <li class="change-item buff">
-                            W: Samba Slam:
-                            <ul>
-                                <li>Knock-up duration increased: 0.75s -> 0.85s</li>
-                            </ul>
-                        </li>
-                        <li class="change-item buff">
-                            E: Go Easy On Me!:
-                            <ul>
-                                <li>Early game damage amp scaling increased: 25%/25%/30%/30%/40%/50% -> 30%/30%/35%/35%/40%/50%</li>
-                            </ul>
-                            <div class="reasoning">
-                                Enhancing her early game impact and combo potential.
-                            </div>
-                        </li>
-                        <li class="change-item buff">
-                            Level 5 Talent:
-                            <ul>
-                                <li>Q hit cooldown reduction increased: 0.5s -> 1s</li>
-                            </ul>
-                        </li>
-                    </ul>
+                <div class="change-reasoning">
+                    Kuma was struggling to fulfill his role as an initiator due to mobility issues. These changes improve his ability to engage and disengage while adding more defensive options after initiation. The increased armor reduction helps him remain relevant in the late game.
                 </div>
             </div>
 
-            <div class="champion-card" id="blanka-changes">
-                <img src="Icons/Blanka.png" alt="Blanka" class="champion-image">
-                <div class="champion-info">
-                    <h2><a href="characters/Blanka Page.html">Blanka</a> ⚡ (Buff)</h2>
+            <div class="champion-changes">
+                <div class="champion-header">
+                    <img src="Icons/Noel.png" alt="Noel" class="champion-icon">
+                    <h3 class="champion-name">Noel</h3>
+                </div>
                     <ul class="change-list">
-                        <li class="change-item buff">
-                            Base Stats:
-                            <ul>
-                                <li>Base HP increased: 600 -> 628</li>
+                    <li class="change-item nerf">AD per level reduced from 11.3 to 10 (End-game AD: 341 -> 310)</li>
+                    <li class="change-item nerf">E (Flash Guard) cooldown increased from 11s to 12s</li>
+                    <li class="change-item nerf">Level 15 Talent B shield bonus reduced from +350 to +250</li>
                             </ul>
-                            <div class="reasoning">
-                                Improving his early game survivability against burst damage.
-                            </div>
-                        </li>
-                        <li class="change-item buff">
-                            W: Taunting Presence:
-                            <ul>
-                                <li>Cooldown reduced: 16s -> 14s</li>
-                                <li>Damage reflection increased: 5% -> 7%</li>
-                            </ul>
-                            <div class="reasoning">
-                                Enhancing his defensive capabilities and making his W more impactful.
-                            </div>
-                        </li>
-                    </ul>
+                <div class="change-reasoning">
+                    Noel was overperforming in all stages of the game, particularly against assassins. These changes reduce her scaling and defensive capabilities while maintaining her core identity, creating more windows of vulnerability for opponents to capitalize on.
                 </div>
             </div>
 
-            <div class="champion-card" id="ibuki-changes">
-                <img src="Icons/Ibuki.png" alt="Ibuki" class="champion-image">
-                <div class="champion-info">
-                    <h2><a href="characters/Ibuki Page.html">Ibuki</a> 🥷 (Buff)</h2>
+            <div class="champion-changes">
+                <div class="champion-header">
+                    <img src="Icons/Mega Man.png" alt="Mega Man" class="champion-icon">
+                    <h3 class="champion-name">Mega Man</h3>
+                </div>
                     <ul class="change-list">
-                        <li class="change-item buff">
-                            Passive: Mark of the Assassin:
-                            <ul>
-                                <li>Added: 15% movement speed bonus when moving towards marked targets</li>
-                                <li>Bonus damage on marked targets increased: 50% -> 65%</li>
+                    <li class="change-item nerf">Q (Pixel Beam) base damage reduced from [50/110/200/320/415] to [50/100/180/290/380]</li>
+                    <li class="change-item nerf">Q (Pixel Beam) MaxHP damage component removed</li>
+                    <li class="change-item nerf">E (Dimension Jump) mana cost increased from 90 to 100</li>
                             </ul>
-                            <div class="reasoning">
-                                Improving her target acquisition and assassination potential.
-                            </div>
-                        </li>
-                        <li class="change-item buff">
-                            Level 5 Talent:
-                            <ul>
-                                <li>Basic attack damage bonus increased: 10% -> 15%</li>
-                            </ul>
-                            <div class="reasoning">
-                                Enhancing her damage output in extended fights.
-                            </div>
-                        </li>
-                    </ul>
+                <div class="change-reasoning">
+                    Mega Man's poke damage was too oppressive, especially against tanks, while having strong mobility and safety. By reducing his Q damage and removing the MaxHP component, we're creating clearer weaknesses while keeping his unique playstyle intact.
                 </div>
             </div>
 
-            <div class="champion-card" id="sub-zero-changes">
-                <img src="Icons/Sub Zero.png" alt="Sub Zero" class="champion-image">
-                <div class="champion-info">
-                    <h2><a href="characters/Sub Zero Page.html">Sub Zero</a> ❄️ (Nerf)</h2>
-                    <ul class="change-list">
-                        <li class="change-item nerf">
-                            Base Stats:
-                            <ul>
-                                <li>Base Mana reduced: 605 -> 550</li>
-                            </ul>
-                            <div class="reasoning">
-                                Reducing his lane sustain and forcing more strategic mana management.
-                            </div>
-                        </li>
-                        <li class="change-item nerf">
-                            E: Freeze Bomb:
-                            <ul>
-                                <li>Base damage reduced: 130/320/435/575/820 -> 120/290/395/525/750</li>
-                                <li>Bonus damage on rooted targets reduced: 40/100/295/445/610 -> 40/90/265/405/550</li>
-                            </ul>
-                            <div class="reasoning">
-                                Toning down his burst damage potential while maintaining his CC utility.
-                            </div>
-                        </li>
-                    </ul>
+            <div class="champion-changes">
+                <div class="champion-header">
+                    <img src="Icons/Alice.png" alt="Alice" class="champion-icon">
+                    <h3 class="champion-name">Alice</h3>
                 </div>
-            </div>
-        </div>
-
-
-        <style>
-            .event-showcase {
-                padding: 40px 20px;
-                background: rgba(0, 0, 0, 0.3);
-                border-radius: 15px;
-                margin: 40px 0;
-            }
-
-            .event-header {
-                text-align: center;
-                margin-bottom: 40px;
-            }
-
-            .event-header h3 {
-                font-size: 2.5em;
-                color: #00FFFF;
-                margin-bottom: 15px;
-                text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-            }
-
-            .event-description {
-                color: #90caf9;
-                font-size: 1.2em;
-                opacity: 0.9;
-            }
-
-            .atlantis-skin-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                gap: 30px;
-                padding: 20px;
-            }
-
-            .skin-card {
-                position: relative;
-                border-radius: 15px;
-                overflow: hidden;
-                box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-            }
-
-            .skin-card:hover {
-                transform: translateY(-10px);
-                box-shadow: 0 15px 30px rgba(0, 255, 255, 0.4);
-            }
-
-            .skin-image-container {
-                position: relative;
-                width: 100%;
-                padding-top: 150%; /* 3:2 Aspect Ratio */
-                overflow: hidden;
-            }
-
-            .skin-splash {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                transition: transform 0.5s ease;
-            }
-
-            .skin-card:hover .skin-splash {
-                transform: scale(1.1);
-            }
-
-            .skin-overlay {
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                padding: 20px;
-                background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-                color: white;
-                transform: translateY(100%);
-                transition: transform 0.3s ease;
-            }
-
-            .skin-card:hover .skin-overlay {
-                transform: translateY(0);
-            }
-
-            .skin-overlay h4 {
-                font-size: 1.5em;
-                margin-bottom: 10px;
-                color: #00FFFF;
-                text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
-            }
-
-            .skin-description {
-                font-size: 1em;
-                color: #90caf9;
-                opacity: 0.9;
-            }
-
-            @media (max-width: 768px) {
-                .atlantis-skin-grid {
-                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                }
-
-                .event-header h3 {
-                    font-size: 2em;
-                }
-            }
-        </style>
+                    <ul class="change-list">
+                    <li class="change-item buff">Passive now triggers from any magic damage instead of just spells</li>
+                    <li class="change-item buff">Level 5 Talent C shield increased from 16% to 18% max HP</li>
+                    <li class="change-item buff">Level 5 Talent C now grants 20% tenacity while shield is active</li>
+                            </ul>
+                <div class="change-reasoning">
+                    Alice was particularly vulnerable to damage-over-time effects and had difficulty dealing with crowd control. These changes improve her defensive capabilities against all types of magic damage while adding tenacity to help her better fulfill her role as an anti-magic tank.
+                            </div>
+                            </div>
+                </div>
     </div>
 </body>
 </html>

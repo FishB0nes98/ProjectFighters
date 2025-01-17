@@ -58,7 +58,8 @@
                 const newFM = window.userFM - stickerPrice;
                 const updates = {};
                 updates['FM'] = newFM;
-                updates[`Stickers/${stickerName}`] = 1; // Adding the sticker to the Stickers folder with a value of 1
+                updates[`Stickers/${stickerName}`] = 1;
+
                 await update(window.userRef, updates);
                 document.getElementById('fm-amount').textContent = newFM;
                 window.userFM = newFM;
@@ -66,7 +67,7 @@
                 button.textContent = 'Owned';
                 alert(`You have successfully purchased ${stickerName}!`);
             } else {
-                alert("You don't have enough FM to purchase this sticker.");
+                alert(`You don't have enough FM to purchase this sticker.`);
             }
         };
 
@@ -247,8 +248,23 @@
     </div>
 </div>
 
-
     <div class="sticker-list">
+        <div class="sticker-item" data-sticker-name="lunar_rabbit">
+            <img src="Stickers/lunar_rabbit.png" alt="Lunar Rabbit">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>350</span>
+            </div>
+            <button onclick="purchaseSticker(this)">Buy</button>
+        </div>
+        <div class="sticker-item" data-sticker-name="lunar_lantern_smile">
+            <img src="Stickers/lunar_lantern_smile.png" alt="Lunar Lantern Smile">
+            <div class="price">
+                <img src="res/img/fm.png" alt="FM">
+                <span>350</span>
+            </div>
+            <button onclick="purchaseSticker(this)" disabled>Unavailable</button>
+        </div>
         <div class="sticker-item" data-sticker-name="Nina_Facepalm">
             <img src="Stickers/Nina_Facepalm.png" alt="Nina Facepalm">
             <div class="price">

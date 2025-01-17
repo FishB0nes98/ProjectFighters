@@ -1,0 +1,208 @@
+/* Quest Window Styles */
+:root {
+    --primary-color: #d10000;
+    --secondary-color: #ffd700;
+    --bg-dark: rgba(46, 0, 0, 0.95);
+    --text-light: #e0ffff;
+    --text-white: #ffffff;
+    --shadow-primary: rgba(209, 0, 0, 0.3);
+    --shadow-secondary: rgba(255, 215, 0, 0.3);
+}
+
+#quest-window .modal-content {
+    background: var(--bg-dark);
+    color: var(--text-light);
+    max-width: 1000px;
+    width: 95%;
+    padding: 30px;
+    border: 1px solid var(--primary-color);
+    box-shadow: 0 0 30px var(--shadow-primary);
+}
+
+/* Quest Points Display */
+.quest-points {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    background: rgba(209, 0, 0, 0.15);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(209, 0, 0, 0.3);
+}
+
+.quest-points .currency-icon {
+    width: 24px;
+    height: 24px;
+    filter: drop-shadow(0 0 5px var(--shadow-secondary));
+}
+
+/* Quest Progress Section */
+.quest-progress-section {
+    margin-bottom: 30px;
+}
+
+.quest-progress-section h3 {
+    color: var(--secondary-color);
+    margin-bottom: 15px;
+    font-size: 1.4em;
+    text-shadow: 0 0 10px var(--shadow-secondary);
+}
+
+.quest-item {
+    background: rgba(209, 0, 0, 0.15);
+    border: 1px solid rgba(209, 0, 0, 0.3);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.quest-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(209, 0, 0, 0.2);
+}
+
+.quest-info {
+    flex-grow: 1;
+}
+
+.progress-bar {
+    background: rgba(209, 0, 0, 0.1);
+    height: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.progress {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+/* Quest Rewards Section */
+.quest-rewards-section {
+    margin-top: 40px;
+}
+
+.quest-rewards-section h3 {
+    color: var(--secondary-color);
+    margin-bottom: 20px;
+    font-size: 1.4em;
+    text-shadow: 0 0 10px var(--shadow-secondary);
+}
+
+.rewards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.reward-item {
+    background: rgba(209, 0, 0, 0.15);
+    border: 1px solid rgba(209, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.reward-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(209, 0, 0, 0.3);
+}
+
+.reward-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 0 10px var(--shadow-secondary));
+}
+
+.reward-item h4 {
+    color: var(--text-white);
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.reward-cost {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.reward-cost img {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+}
+
+.reward-cost span {
+    color: var(--secondary-color);
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.claim-button {
+    background: var(--primary-color);
+    color: var(--text-white);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.claim-button:hover {
+    background: var(--secondary-color);
+    color: var(--bg-dark);
+    box-shadow: 0 0 15px var(--shadow-secondary);
+    transform: translateY(-2px);
+}
+
+.claim-button:disabled {
+    background: #571a1a;
+    cursor: not-allowed;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Animations */
+@keyframes glow {
+    0% { box-shadow: 0 0 5px var(--shadow-secondary); }
+    50% { box-shadow: 0 0 20px var(--shadow-secondary); }
+    100% { box-shadow: 0 0 5px var(--shadow-secondary); }
+}
+
+.reward-item.highlight {
+    animation: glow 2s infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .rewards-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .quest-window .modal-content {
+        padding: 20px;
+    }
+    
+    .reward-item {
+        padding: 15px;
+    }
+} 
