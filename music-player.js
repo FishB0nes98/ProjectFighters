@@ -19,6 +19,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 export function initMusicPlayer() {
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializePlayer);
+    } else {
+        initializePlayer();
+    }
+}
+
+function initializePlayer() {
     let currentSongIndex = 0;
     let isPlaying = false;
     let isShuffle = false;
@@ -36,12 +45,13 @@ export function initMusicPlayer() {
     const progressHandle = musicPlayer.querySelector('.progress-handle');
     const currentTimeDisplay = musicPlayer.querySelector('.current-time');
     const durationDisplay = musicPlayer.querySelector('.duration');
-    const coverArt = musicPlayer.querySelector('.cover-art img');
+    const coverArt = musicPlayer.querySelector('.cover-art');
     const songTitle = musicPlayer.querySelector('.song-title');
     const artistName = musicPlayer.querySelector('.artist-name');
     const playlistItems = musicPlayer.querySelector('.playlist-items');
     const musicPlayerToggle = document.querySelector('.music-player-toggle');
     const playlistToggle = musicPlayer.querySelector('.playlist-toggle');
+    const closePlaylistBtn = musicPlayer.querySelector('.close-playlist');
 
     // Initialize volume
     audio.volume = volumeSlider.value / 100;
@@ -56,12 +66,15 @@ export function initMusicPlayer() {
                 const userSongsRef = ref(database, `users/${user.uid}/Songs`);
                 const snapshot = await get(userSongsRef);
                 const ownedSongs = snapshot.val() || {};
+                console.log('Owned songs:', ownedSongs);
 
                 // Filter songs based on ownership
                 availableSongs = songs.filter(song => {
                     const songName = song.path.split('/').pop().replace('.mp3', '');
+                    console.log('Checking song:', songName);
                     return ownedSongs[songName] === 1;
                 });
+                console.log('Available songs:', availableSongs);
 
                 // Clear existing playlist
                 playlistItems.innerHTML = '';
@@ -69,7 +82,14 @@ export function initMusicPlayer() {
                 // Load songs into playlist
                 availableSongs.forEach((song, index) => {
                     const li = document.createElement('li');
-                    li.textContent = song.title;
+                    li.className = 'playlist-item';
+                    li.innerHTML = `
+                        <div class="playlist-item-info">
+                            <span class="playlist-item-title">${song.title}</span>
+                            <span class="playlist-item-artist">${song.artist}</span>
+                        </div>
+                        <i class="fas fa-play"></i>
+                    `;
                     li.addEventListener('click', () => {
                         currentSongIndex = index;
                         loadSong();
@@ -120,6 +140,11 @@ export function initMusicPlayer() {
     // Toggle playlist visibility
     playlistToggle.addEventListener('click', () => {
         musicPlayer.classList.toggle('show-playlist');
+    });
+
+    // Close playlist
+    closePlaylistBtn.addEventListener('click', () => {
+        musicPlayer.classList.remove('show-playlist');
     });
 
     function loadSong() {

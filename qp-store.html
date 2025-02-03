@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quest Points Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .qp-store-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            background: rgba(30, 30, 30, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .store-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .currency-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        .currency-display img {
+            width: 24px;
+            height: 24px;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .close-button:hover {
+            transform: scale(1.1);
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .store-item {
+            background: rgba(40, 40, 40, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .store-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .store-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .item-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .item-price {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin: 10px 0;
+        }
+
+        .item-price img {
+            width: 20px;
+            height: 20px;
+            margin: 0;
+        }
+
+        .purchase-btn {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .purchase-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 75, 43, 0.4);
+        }
+
+        .purchase-btn:disabled {
+            background: #444;
+            cursor: not-allowed;
+        }
+
+        .repeatable-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .claimed-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #444;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="qp-store-container">
+        <button class="close-button" onclick="closeStore()">×</button>
+        
+        <div class="store-header">
+            <h2>Quest Points Store</h2>
+            <div class="currency-display">
+                <img src="res/img/qp.png" alt="QP">
+                <span id="qp-amount">0</span>
+            </div>
+        </div>
+
+        <div class="items-grid">
+            <!-- Heart Sticker -->
+            <div class="store-item" data-item-name="heart" data-item-type="sticker">
+                <img src="Stickers/heart.png" alt="Heart Sticker">
+                <div class="item-name">Heart Sticker</div>
+                <div class="item-price">
+                    <img src="res/img/qp.png" alt="QP">
+                    <span>750</span>
+                </div>
+                <button class="purchase-btn" onclick="purchaseItem(this)">Purchase</button>
+            </div>
+
+            <!-- Repeatable CM -->
+            <div class="store-item" data-item-name="cm_reward" data-item-type="cm" data-repeatable="true">
+                <div class="repeatable-badge">Repeatable</div>
+                <img src="res/img/cm.png" alt="Champion Money">
+                <div class="item-name">1000 CM</div>
+                <div class="item-price">
+                    <img src="res/img/qp.png" alt="QP">
+                    <span>250</span>
+                </div>
+                <button class="purchase-btn" onclick="purchaseItem(this)">Purchase</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        window.onload = function() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const userRef = ref(database, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+                    if (userData) {
+                        document.getElementById('qp-amount').textContent = userData.questPoints || 0;
+                        updateItemButtons(userData);
+                    }
+                }
+            });
+        };
+
+        function updateItemButtons(userData) {
+            const items = document.querySelectorAll('.store-item');
+            items.forEach(item => {
+                const button = item.querySelector('.purchase-btn');
+                const itemName = item.dataset.itemName;
+                const itemType = item.dataset.itemType;
+                const isRepeatable = item.dataset.repeatable === 'true';
+
+                if (!isRepeatable && itemType === 'sticker' && userData.Stickers && userData.Stickers[itemName]) {
+                    button.disabled = true;
+                    button.textContent = 'Claimed';
+                    const badge = document.createElement('div');
+                    badge.className = 'claimed-badge';
+                    badge.textContent = 'Claimed';
+                    if (!item.querySelector('.claimed-badge')) {
+                        item.appendChild(badge);
+                    }
+                }
+            });
+        }
+
+        window.purchaseItem = async function(button) {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const item = button.closest('.store-item');
+            const itemName = item.dataset.itemName;
+            const itemType = item.dataset.itemType;
+            const isRepeatable = item.dataset.repeatable === 'true';
+            
+            const userRef = ref(database, 'users/' + user.uid);
+            const snapshot = await get(userRef);
+            const userData = snapshot.val() || {};
+            
+            let price;
+            let updates = {};
+
+            switch(itemType) {
+                case 'sticker':
+                    price = 750;
+                    if (!isRepeatable && userData.Stickers && userData.Stickers[itemName]) {
+                        alert('You already own this sticker!');
+                        return;
+                    }
+                    break;
+                case 'cm':
+                    price = 250;
+                    break;
+                default:
+                    return;
+            }
+
+            if ((userData.questPoints || 0) < price) {
+                alert('Not enough Quest Points!');
+                return;
+            }
+
+            // Update quest points
+            updates['questPoints'] = (userData.questPoints || 0) - price;
+
+            // Add rewards based on item type
+            switch(itemType) {
+                case 'sticker':
+                    updates[`Stickers/${itemName}`] = 1;
+                    break;
+                case 'cm':
+                    updates['CM'] = (userData.CM || 0) + 1000;
+                    break;
+            }
+
+            try {
+                await update(userRef, updates);
+                document.getElementById('qp-amount').textContent = updates['questPoints'];
+                
+                if (!isRepeatable) {
+                    button.disabled = true;
+                    button.textContent = 'Claimed';
+                    const badge = document.createElement('div');
+                    badge.className = 'claimed-badge';
+                    badge.textContent = 'Claimed';
+                    if (!item.querySelector('.claimed-badge')) {
+                        item.appendChild(badge);
+                    }
+                }
+                
+                alert('Purchase successful!');
+            } catch (error) {
+                console.error('Error making purchase:', error);
+                alert('Failed to make purchase. Please try again.');
+            }
+        };
+
+        window.closeStore = function() {
+            window.parent.postMessage('closeQPStore', '*');
+        };
+    </script>
+</body>
+</html> 

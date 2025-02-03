@@ -453,4 +453,9 @@ export const skinToBaseCharacterMap = {
     'Lunar Festival Reptile': 'Reptile',
     'Lunar Festival Noel': 'Noel',
     'Lunar Festival Siegfried': 'Siegfried',
+    'Heartbreaker Ibuki': 'Ibuki',
+    'Date Night Kuma': 'Kuma',
+    'Date Night Mega Man': 'Mega Man',
+    'Lovely Sophitia': 'Sophitia',
+    'Lovely Kagome': 'Kagome'
 };

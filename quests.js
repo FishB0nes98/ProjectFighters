@@ -1,64 +1,160 @@
-const quests = [
-  {
-    id: 'play15Games',
-    title: "Seasoned Farmer",
-    description: "Play 15 games",
-    progress: 0,
-    goal: 15,
-    reward: { 'lootbox/FreeLootbox': 1 },
-    requirement: (userData) => {
-      const totalGames = Object.values(userData.characterGamesPlayed || {}).reduce((sum, games) => sum + games, 0);
-      return totalGames >= 15;
+// Quest Types and their configurations
+export const questTypes = {
+    daily: {
+        title: 'Daily Quests',
+        resetInterval: 'daily',
+        maxActive: 3
     },
-    image: 'res/img/basicbox.png',
-    hoverText: 'Free Lootbox'
-  },
-  {
-    id: 'playSteampunkChampions',
-    title: "Steam-Powered Warriors",
-    description: "Play 5 games as Nina, Yugo, MegaMan, Kabal or Ibuki",
-    progress: 0,
-    goal: 5,
-    reward: { CM: 4000 },
-    requirement: (userData) => {
-      const steampunkChampions = ['Nina', 'Yugo', 'Mega Man', 'Kabal', 'Ibuki'];
-      const totalGames = steampunkChampions.reduce((sum, champion) => {
-        return sum + (userData.characterGamesPlayed?.[champion] || 0);
-      }, 0);
-      return totalGames >= 5;
-    },
-    image: 'res/img/cm.png',
-    hoverText: '4000 CM'
-  },
-  {
-    id: 'playEnchanterGames',
-    title: "Arcane Engineering",
-    description: "Play 3 games as an Enchanter champion",
-    progress: 0,
-    goal: 3,
-    reward: { 'lootbox/FreeLootbox': 1 },
-    requirement: (userData) => {
-      // Get all enchanters from roles data
-      const enchanters = Object.keys(roles).reduce((acc, role) => {
-        if (role === 'Support') {
-          return [...acc, ...roles[role].filter(champion => {
-            const championRoles = Roles[champion]?.toLowerCase() || '';
-            return championRoles.includes('enchanter');
-          })];
+    special: {
+        title: 'Special Quests',
+        resetInterval: 'never',
+        maxActive: 3
+    }
+};
+
+// Sample quest templates
+export const questTemplates = {
+    daily: [
+        {
+            id: 'daily_games',
+            icon: 'fa-gamepad',
+            title: 'Daily Games',
+            description: 'Play 2 games',
+            requirements: {
+                count: 2,
+                type: 'play'
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 50 }
+            ],
+            resetInterval: 64800000, // 18 hours in milliseconds
+            defaultData: {
+                progress: 0,
+                completed: false,
+                claimed: false,
+                lastReset: null
+            }
+        },
+        {
+            id: 'love_day_character',
+            icon: 'fa-heart',
+            title: 'Love Day Special',
+            description: 'Play a game as Christie, Morrigan or Elphelt',
+            requirements: {
+                count: 1,
+                type: 'play_character',
+                characters: ['Christie', 'Morrigan', 'Elphelt']
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 50 }
+            ],
+            resetInterval: 64800000, // 18 hours in milliseconds
+            defaultData: {
+                progress: 0,
+                completed: false,
+                claimed: false,
+                lastReset: null
+            }
         }
-        return acc;
-      }, []);
+    ],
+    special: [
+        {
+            id: 'win_streak',
+            icon: 'fa-fire',
+            title: 'Win Streak',
+            description: 'Win 2 games in a row',
+            requirements: {
+                count: 2,
+                type: 'win_streak'
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 50 }
+            ],
+            defaultData: {
+                progress: 0,
+                completed: false,
+                claimed: false,
+                streak: 0
+            }
+        },
+        {
+            id: 'love_day_win',
+            icon: 'fa-heart',
+            title: 'Love Day Victory',
+            description: 'Win a game as Morrigan, Elphelt, Christie, Kuma, Ibuki, Mega Man, Sophitia, Kagome or Alice',
+            requirements: {
+                count: 1,
+                type: 'win_character',
+                characters: ['Morrigan', 'Elphelt', 'Christie', 'Kuma', 'Ibuki', 'Mega Man', 'Sophitia', 'Kagome', 'Alice']
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 25 },
+                { type: 'championMoney', icon: 'res/img/cm.png', amount: 250 }
+            ],
+            defaultData: {
+                progress: 0,
+                completed: false,
+                claimed: false
+            }
+        },
+        {
+            id: 'bot_lane_games',
+            icon: 'fa-users',
+            title: 'Bot Lane Specialist',
+            description: 'Play 10 games as ADC or Support',
+            requirements: {
+                count: 10,
+                type: 'play_role',
+                roles: ['adc', 'support']
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 75 }
+            ],
+            defaultData: {
+                progress: 0,
+                completed: false,
+                claimed: false
+            }
+        }
+    ]
+};
 
-      // Count games played with enchanter champions
-      const totalEnchanterGames = enchanters.reduce((sum, champion) => {
-        return sum + (userData.characterGamesPlayed?.[champion] || 0);
-      }, 0);
+// Quest progress tracking functions
+export function calculateQuestProgress(quest, userStats) {
+    // This function will be implemented to calculate quest progress based on user stats
+    // For now, return sample progress
+    return {
+        current: Math.floor(Math.random() * quest.requirements.count),
+        total: quest.requirements.count
+    };
+}
 
-      return totalEnchanterGames >= 3;
-    },
-    image: 'res/img/basicbox.png',
-    hoverText: 'Free Lootbox'
-  }
-];
+// Quest reward functions
+export function getQuestRewards(quest) {
+    // This function will be implemented to get the rewards for a quest
+    // For now, return the default rewards
+    return quest.rewards;
+}
 
-export { quests };
+// Quest status check functions
+export function checkQuestStatus(quest, progress) {
+    if (progress.current >= progress.total) {
+        return 'claim-ready';
+    } else if (progress.current > 0) {
+        return 'in-progress';
+    }
+    return 'not-started';
+}
+
+// Quest generation functions
+export function generateDailyQuests(userLevel) {
+    // This function will be implemented to generate daily quests based on user level
+    // For now, return sample quests
+    return questTemplates.daily;
+}
+
+export function generateSpecialQuests(userLevel, activeEvents) {
+    // This function will be implemented to generate special quests based on active events
+    // For now, return sample quests
+    return questTemplates.special;
+} 

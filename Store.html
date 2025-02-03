@@ -836,20 +836,19 @@
             const updates = {};
             updates[currencyType] = newCurrencyAmount;
 
+            // Get user data first
+            const userRef = ref(database, 'users/' + auth.currentUser.uid);
+            const snapshot = await get(userRef);
+            const userData = snapshot.val();
+
             // Rest of your existing bundle purchase logic...
             if (bundleName === 'LunarTicket') {
-                const userRef = ref(database, 'users/' + auth.currentUser.uid);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val();
                 const currentTickets = userData.lunarTickets || 0;
                 updates['lunarTickets'] = currentTickets + 1;
             }
 
             // Add 10 Lunar Tickets to the database
             if (bundleName === 'LunarTicketBundle') {
-                const userRef = ref(database, 'users/' + auth.currentUser.uid);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val();
                 const currentTickets = userData.lunarTickets || 0;
                 updates['lunarTickets'] = currentTickets + 10;
             }
@@ -859,24 +858,31 @@
                 updates[`skins/Phoenix R Mika`] = 1;
             }
 
-            // Add Feather Dancer Mai to the Skins database
-            if (bundleName === 'FeatherDancerMai') {
-                updates[`skins/Feather Dancer Mai`] = 1;
-            }
-
-            // Add Lunar Festival Lili Bundle contents
-            if (bundleName === 'LunarFestivalLiliBundle') {
-                const userRef = ref(database, 'users/' + auth.currentUser.uid);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val();
-                const currentTickets = userData.lunarTickets || 0;
-                updates['lunarTickets'] = currentTickets + 3;
-                updates[`skins/Lunar Festival Lili`] = 1;
-                updates[`titles/Snake`] = true;
+            // Add Date Night Mega Man Bundle contents
+            if (bundleName === 'DateNightMegaManBundle') {
+                updates[`skins/Date Night Mega Man`] = 1;
+                updates[`lootboxes/basic`] = (userData.lootboxes?.basic || 0) + 3;
                 updates[`Bundles/${bundleName}`] = 1;
             }
 
-            await update(window.userRef, updates);
+            if (bundleName === 'SacredCeremonyShoma') {
+                updates[`skins/Sacred Ceremony Shoma`] = 1;
+            }
+
+            if (bundleName === 'SacredCeremonyMorrigan') {
+                updates[`skins/Sacred Ceremony Morrigan`] = 1;
+            }
+
+            // Add Lovely Kagome Bundle contents
+            if (bundleName === 'LovelyKagomeBundle') {
+                updates[`skins/Lovely Kagome`] = 1;
+                updates[`Icons/lovely_kagome`] = 1;
+                updates[`songs/lovely_wind`] = 1;
+                updates[`lootboxes/basic`] = (userData.lootboxes?.basic || 0) + 1;
+                updates[`Bundles/${bundleName}`] = 1;
+            }
+
+            await update(userRef, updates);
             userCurrencyElement.textContent = newCurrencyAmount;
             if (currencyType === 'FM') {
                 window.userFM = newCurrencyAmount;
@@ -1013,51 +1019,44 @@
             let currency = 'fm';
             
             switch(bundleName) {
-                case 'LunarFestivalBundle':
-                    title = 'Lunar Festival Bundle';
+                case 'LoveDayBundle':
+                    title = 'Love Day Bundle';
                     content = `
                         <div class="bundle-grid">
                             <div class="bundle-character">
                                 <div class="image-container">
-                                    <img src="Skins/Lunar Festival Lili.jpg" alt="Lunar Festival Lili">
+                                    <img src="Skins/Heartbreaker Ibuki.jpeg" alt="Heartbreaker Ibuki">
                                 </div>
-                                <h3>Lili</h3>
-                                <p>Lunar Festival Lili Skin</p>
+                                <h3>Ibuki</h3>
+                                <p>Heartbreaker Ibuki Skin</p>
                             </div>
                             <div class="bundle-character">
                                 <div class="image-container">
-                                    <img src="Skins/Lunar Festival Scorpion.jpeg" alt="Lunar Festival Scorpion">
+                                    <img src="Skins/Date Night Kuma.jpeg" alt="Date Night Kuma">
                                 </div>
-                                <h3>Scorpion</h3>
-                                <p>Lunar Festival Scorpion Skin</p>
+                                <h3>Kuma</h3>
+                                <p>Date Night Kuma Skin</p>
                             </div>
                             <div class="bundle-character">
                                 <div class="image-container">
-                                    <img src="Skins/Lunar Festival Noel.jpg" alt="Lunar Festival Noel">
+                                    <img src="Skins/Date Night Mega Man.jpeg" alt="Date Night Mega Man">
                                 </div>
-                                <h3>Noel</h3>
-                                <p>Lunar Festival Noel Skin</p>
+                                <h3>Mega Man</h3>
+                                <p>Date Night Mega Man Skin</p>
                             </div>
                             <div class="bundle-character">
                                 <div class="image-container">
-                                    <img src="Skins/Lunar Festival Reptile.jpeg" alt="Lunar Festival Reptile">
+                                    <img src="Skins/Lovely Sophitia.jpeg" alt="Lovely Sophitia">
                                 </div>
-                                <h3>Reptile</h3>
-                                <p>Lunar Festival Reptile Skin</p>
+                                <h3>Sophitia</h3>
+                                <p>Lovely Sophitia Skin</p>
                             </div>
                             <div class="bundle-character">
                                 <div class="image-container">
-                                    <img src="Skins/Lunar Festival Kokoro.jpg" alt="Lunar Festival Kokoro">
+                                    <img src="Skins/Lovely Kagome.jpeg" alt="Lovely Kagome">
                                 </div>
-                                <h3>Kokoro</h3>
-                                <p>Lunar Festival Kokoro Skin</p>
-                            </div>
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="Skins/Lunar Festival Siegfried.jpg" alt="Lunar Festival Siegfried">
-                                </div>
-                                <h3>Siegfried</h3>
-                                <p>Lunar Festival Siegfried Skin</p>
+                                <h3>Kagome</h3>
+                                <p>Lovely Kagome Skin</p>
                             </div>
                         </div>`;
                     break;
@@ -1108,46 +1107,85 @@
                         </div>`;
                     currency = 'cm';
                     break;
-                case 'FeatherDancerMai':
-                    title = 'Feather Dancer Mai';
+                case 'DateNightMegaManBundle':
+                    title = 'Date Night Mega Man Bundle';
                     content = `
                         <div class="bundle-grid">
                             <div class="bundle-character">
                                 <div class="image-container">
-                                    <img src="Skins/Feather Dancer Mai.jpeg" alt="Feather Dancer Mai">
+                                    <img src="Skins/Date Night Mega Man.jpeg" alt="Date Night Mega Man">
                                 </div>
-                                <h3>Mai</h3>
-                                <p>Feather Dancer Mai Skin</p>
-                            </div>
-                        </div>`;
-                    currency = 'cm';
-                    break;
-                case 'LunarFestivalLiliBundle':
-                    title = 'Lunar Festival Lili Bundle';
-                    content = `
-                        <div class="bundle-grid">
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="Skins/Lunar Festival Lili.jpg" alt="Lunar Festival Lili">
-                                </div>
-                                <h3>Lili</h3>
-                                <p>Lunar Festival Lili Skin</p>
+                                <h3>Mega Man</h3>
+                                <p>Date Night Mega Man Skin</p>
                             </div>
                             <div class="bundle-character">
                                 <div class="image-container" style="display: flex; justify-content: center; align-items: center; gap: 10px; height: auto; padding: 20px 0;">
-                                    <img src="res/img/lunar_ticket.png" alt="Lunar Ticket" style="width: 60px; height: 60px; position: static;">
-                                    <img src="res/img/lunar_ticket.png" alt="Lunar Ticket" style="width: 60px; height: 60px; position: static;">
-                                    <img src="res/img/lunar_ticket.png" alt="Lunar Ticket" style="width: 60px; height: 60px; position: static;">
+                                    <img src="res/img/basicbox.png" alt="Lootbox" style="width: 60px; height: 60px; position: static;">
+                                    <img src="res/img/basicbox.png" alt="Lootbox" style="width: 60px; height: 60px; position: static;">
+                                    <img src="res/img/basicbox.png" alt="Lootbox" style="width: 60px; height: 60px; position: static;">
                                 </div>
-                                <h3>Lunar Tickets</h3>
-                                <p>3x Lunar Tickets</p>
+                                <h3>Lootboxes</h3>
+                                <p>3x Basic Lootboxes</p>
+                            </div>
+                        </div>`;
+                    break;
+                case 'SacredCeremonyShoma':
+                    title = 'Sacred Ceremony Shoma';
+                    content = `
+                        <div class="bundle-grid">
+                            <div class="bundle-character">
+                                <div class="image-container">
+                                    <img src="Skins/Sacred Ceremony Shoma.jpeg" alt="Sacred Ceremony Shoma">
+                                </div>
+                                <h3>Shoma</h3>
+                                <p>Sacred Ceremony Shoma Skin</p>
+                            </div>
+                        </div>`;
+                    break;
+                case 'SacredCeremonyMorrigan':
+                    title = 'Sacred Ceremony Morrigan';
+                    content = `
+                        <div class="bundle-grid">
+                            <div class="bundle-character">
+                                <div class="image-container">
+                                    <img src="Skins/Sacred Ceremony Morrigan.jpeg" alt="Sacred Ceremony Morrigan">
+                                </div>
+                                <h3>Morrigan</h3>
+                                <p>Sacred Ceremony Morrigan Skin</p>
+                            </div>
+                        </div>`;
+                    break;
+                case 'LovelyKagomeBundle':
+                    title = 'Lovely Kagome Bundle';
+                    content = `
+                        <div class="bundle-grid">
+                            <div class="bundle-character">
+                                <div class="image-container">
+                                    <img src="Skins/Lovely Kagome.jpeg" alt="Lovely Kagome">
+                                </div>
+                                <h3>Kagome</h3>
+                                <p>Lovely Kagome Skin</p>
                             </div>
                             <div class="bundle-character">
                                 <div class="image-container">
-                                    <img src="titles/titleimage.jpeg" alt="Snake Title">
+                                    <img src="Icons/Profile/lovely_kagome.png" alt="Lovely Kagome Icon">
                                 </div>
-                                <h3>Title</h3>
-                                <p>Snake Title</p>
+                                <h3>Lovely Kagome Icon</h3>
+                                <p>Exclusive Profile Icon</p>
+                            </div>
+                            <div class="bundle-character">
+                                <div class="image-container">
+                                    <img src="res/img/music.png" alt="Lovely Wind Song">
+                                </div>
+                                <h3>Lovely Wind</h3>
+                                <p>Exclusive Theme Song</p>
+                            </div>
+                            <div class="bundle-character">
+                                <div class="image-container">
+                                    <img src="res/img/basicbox.png" alt="Free Lootbox">
+                                </div>
+                                <h3>Free Lootbox</h3>
+                                <p>Basic Lootbox</p>
                             </div>
                         </div>`;
                     break;
@@ -1180,14 +1218,22 @@
 
         function getBundlePrice(bundleName) {
             switch(bundleName) {
+                case 'LoveDayBundle':
+                    return '7000';
                 case 'LunarFestivalBundle':
                     return '8640';
-                case 'LunarFestivalLiliBundle':
-                    return '3250';
+                case 'DateNightMegaManBundle':
+                    return '3750';
                 case 'PhoenixRMika':
                     return '350';
                 case 'FeatherDancerMai':
-                    return '65000';
+                    break;
+                case 'SacredCeremonyShoma':
+                    return '350';
+                case 'SacredCeremonyMorrigan':
+                    return '100000';
+                case 'LovelyKagomeBundle':
+                    return '3850';
                 default:
                     return '2000';
             }
@@ -1195,14 +1241,22 @@
 
         function getOriginalPrice(bundleName) {
             switch(bundleName) {
+                case 'LoveDayBundle':
+                    return '10000';
                 case 'LunarFestivalBundle':
                     return '12000';
-                case 'LunarFestivalLiliBundle':
-                    return '4400';
+                case 'DateNightMegaManBundle':
+                    return '5000';
                 case 'PhoenixRMika':
                     return '1000';
                 case 'FeatherDancerMai':
+                    break;
+                case 'SacredCeremonyShoma':
                     return '1000';
+                case 'SacredCeremonyMorrigan':
+                    return '2000';
+                case 'LovelyKagomeBundle':
+                    return '4500';
                 default:
                     return '2500';
             }
@@ -1287,42 +1341,33 @@
         </a>
     </div>
     <div class="bundle-container">
-        <div class="bundle-item" data-bundle-name="LunarTicket">
-            <div class="bundle-name">Lunar Ticket</div>
-            <div class="image-container">
-                <img src="res/img/lunar_ticket.png" alt="Lunar Ticket">
-            </div>
-            <div class="price-container">
-                <div class="final-price">
-                    <img src="res/img/fm.png" alt="FM">
-                    <span class="price">800</span>
-                </div>
-            </div>
-            <button onclick="purchaseBundle(this)">Buy Now</button>
-        </div>
-        <div class="bundle-item" data-bundle-name="LunarTicketBundle">
-            <div class="bundle-name">10x Lunar Ticket Bundle</div>
-            <div class="image-container">
-                <img src="res/img/lunar_ticket.png" alt="Lunar Ticket Bundle">
+        <div class="bundle-item" data-bundle-name="LoveDayBundle" onclick="showBundleDetails('LoveDayBundle')">
+            <div class="bundle-name">Love Day Bundle</div>
+            <div class="discount-badge">-30%</div>
+            <div class="images-grid">
+                <img src="Skins/Heartbreaker Ibuki.jpeg" alt="Heartbreaker Ibuki">
+                <img src="Skins/Date Night Kuma.jpeg" alt="Date Night Kuma">
+                <img src="Skins/Date Night Mega Man.jpeg" alt="Date Night Mega Man">
+                <img src="Skins/Lovely Sophitia.jpeg" alt="Lovely Sophitia">
+                <img src="Skins/Lovely Kagome.jpeg" alt="Lovely Kagome">
             </div>
             <div class="price-container">
                 <div class="original-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span class="price">8000</span>
+                    <span>10000</span>
                 </div>
                 <div class="price-divider"></div>
                 <div class="final-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span class="price">6000</span>
+                    <span>7000</span>
                 </div>
             </div>
-            <div class="discount-badge">-25%</div>
             <button onclick="purchaseBundle(this)">Buy Bundle</button>
         </div>
-        <div class="bundle-item" data-bundle-name="PhoenixRMika" onclick="showBundleDetails('PhoenixRMika')">
-            <div class="bundle-name">Phoenix R Mika</div>
+        <div class="bundle-item" data-bundle-name="SacredCeremonyShoma" onclick="showBundleDetails('SacredCeremonyShoma')">
+            <div class="bundle-name">Sacred Ceremony Shoma</div>
             <div class="image-container">
-                <img src="Skins/Phoenix R Mika.png" alt="Phoenix R Mika">
+                <img src="Skins/Sacred Ceremony Shoma.jpeg" alt="Sacred Ceremony Shoma">
             </div>
             <div class="price-container">
                 <div class="original-price">
@@ -1338,68 +1383,68 @@
             <div class="discount-badge">-65%</div>
             <button onclick="purchaseBundle(this)">Buy Now</button>
         </div>
-        <div class="bundle-item" data-bundle-name="LunarFestivalBundle" onclick="showBundleDetails('LunarFestivalBundle')">
-            <div class="bundle-name">Lunar Festival Bundle</div>
-            <div class="discount-badge">-28%</div>
+        <div class="bundle-item" data-bundle-name="DateNightMegaManBundle" onclick="showBundleDetails('DateNightMegaManBundle')">
+            <div class="bundle-name">Date Night Mega Man Bundle</div>
             <div class="images-grid">
-                <img src="Skins/Lunar Festival Lili.jpg" alt="Lunar Festival Lili">
-                <img src="Skins/Lunar Festival Scorpion.jpeg" alt="Lunar Festival Scorpion">
-                <img src="Skins/Lunar Festival Noel.jpg" alt="Lunar Festival Noel">
-                <img src="Skins/Lunar Festival Reptile.jpeg" alt="Lunar Festival Reptile">
+                <img src="Skins/Date Night Mega Man.jpeg" alt="Date Night Mega Man">
+                <img src="res/img/basicbox.png" alt="Lootbox">
+                <img src="res/img/basicbox.png" alt="Lootbox">
+                <img src="res/img/basicbox.png" alt="Lootbox">
             </div>
             <div class="price-container">
                 <div class="original-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>12000</span>
+                    <span>5000</span>
                 </div>
                 <div class="price-divider"></div>
                 <div class="final-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>8640</span>
+                    <span>3750</span>
                 </div>
             </div>
+            <div class="discount-badge">-25%</div>
             <button onclick="purchaseBundle(this)">Buy Bundle</button>
         </div>
-        <div class="bundle-item" data-bundle-name="FeatherDancerMai" onclick="showBundleDetails('FeatherDancerMai')">
-            <div class="bundle-name">Feather Dancer Mai</div>
+        <div class="bundle-item" data-bundle-name="SacredCeremonyMorrigan" onclick="showBundleDetails('SacredCeremonyMorrigan')">
+            <div class="bundle-name">Sacred Ceremony Morrigan</div>
             <div class="image-container">
-                <img src="Skins/Feather Dancer Mai.jpeg" alt="Feather Dancer Mai">
+                <img src="Skins/Sacred Ceremony Morrigan.jpeg" alt="Sacred Ceremony Morrigan">
             </div>
             <div class="price-container">
                 <div class="original-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>1000</span>
+                    <span>2000</span>
                 </div>
                 <div class="price-divider"></div>
                 <div class="final-price">
                     <img src="res/img/cm.png" alt="CM">
-                    <span>65000</span>
+                    <span>100000</span>
                 </div>
             </div>
             <div class="discount-badge">CM SALE</div>
             <button onclick="purchaseBundle(this)">Buy Now</button>
         </div>
-        <div class="bundle-item" data-bundle-name="LunarFestivalLiliBundle" onclick="showBundleDetails('LunarFestivalLiliBundle')">
-            <div class="bundle-name">Lunar Festival Lili Bundle</div>
+        <div class="bundle-item" data-bundle-name="LovelyKagomeBundle" onclick="showBundleDetails('LovelyKagomeBundle')">
+            <div class="bundle-name">Lovely Kagome Bundle</div>
             <div class="images-grid">
-                <img src="Skins/Lunar Festival Lili.jpg" alt="Lunar Festival Lili">
-                <img src="res/img/lunar_ticket.png" alt="Lunar Ticket">
-                <img src="res/img/lunar_ticket.png" alt="Lunar Ticket">
-                <img src="res/img/lunar_ticket.png" alt="Lunar Ticket">
+                <img src="Skins/Lovely Kagome.jpeg" alt="Lovely Kagome">
+                <img src="Icons/Profile/lovely_kagome.png" alt="Lovely Kagome Icon">
+                <img src="res/img/music.png" alt="Lovely Wind Song">
+                <img src="res/img/basicbox.png" alt="Free Lootbox">
             </div>
             <div class="price-container">
                 <div class="original-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>4400</span>
+                    <span>4500</span>
                 </div>
                 <div class="price-divider"></div>
                 <div class="final-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>3250</span>
+                    <span>3850</span>
                 </div>
             </div>
-            <div class="discount-badge">-26%</div>
-            <button onclick="purchaseBundle(this)">Buy Now</button>
+            <div class="discount-badge">-15%</div>
+            <button onclick="purchaseBundle(this)">Buy Bundle</button>
         </div>
     </div>
 

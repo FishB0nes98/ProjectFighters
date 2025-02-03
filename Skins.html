@@ -260,12 +260,22 @@
             top: 5px;
             right: 5px;
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             gap: 3px;
             z-index: 1;
+            max-width: 100px;
         }
 
-        .new-skin-badge, .lunar-badge {
+        .badge-row {
+            display: flex;
+            flex-direction: row;
+            gap: 3px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            width: 100%;
+        }
+
+        .new-skin-badge, .love-badge {
             padding: 3px 8px;
             border-radius: 12px;
             font-size: 11px;
@@ -278,17 +288,17 @@
             animation: rainbow 2s linear infinite;
         }
 
-        .lunar-badge {
-            background: linear-gradient(45deg, #FF0000, #FFD700);
+        .love-badge {
+            background: linear-gradient(45deg, #FF69B4, #FF1493);
             text-shadow: 0 0 3px rgba(0,0,0,0.5);
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
-            animation: lunarGlow 2s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
+            animation: loveGlow 2s ease-in-out infinite;
         }
 
-        @keyframes lunarGlow {
-            0% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
-            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
-            100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
+        @keyframes loveGlow {
+            0% { box-shadow: 0 0 10px rgba(255, 105, 180, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 20, 147, 0.5); }
+            100% { box-shadow: 0 0 10px rgba(255, 105, 180, 0.3); }
         }
 
         @keyframes rainbow {
@@ -423,11 +433,10 @@
         // Initialize champions grid
         function initChampionsGrid() {
             const grid = document.getElementById('champions-grid');
-            const newSkins = ["Kokoro", "Lili", "Scorpion", "Reptile", "Noel", "Siegfried"];
-            const lunarSkins = ["Kokoro", "Lili", "Scorpion", "Reptile", "Noel", "Siegfried"];
+            const newSkins = ["Ibuki", "Kuma", "Mega Man", "Sophitia", "Kagome"];
+            const loveSkins = ["Ibuki", "Kuma", "Mega Man", "Sophitia", "Kagome"];
             const freeSkins = ["Kuma"];
             
-            // Fájlnév korrekciók
             const fileNameCorrections = {
                 "R.Mika": "R Mika",
                 "Mega Man": "Mega Man",
@@ -453,29 +462,39 @@
                 name.className = 'champion-name';
                 name.textContent = champion;
                 
-                // Badges container
                 const badgesContainer = document.createElement('div');
                 badgesContainer.className = 'badges-container';
+                
+                const badgeRow1 = document.createElement('div');
+                badgeRow1.className = 'badge-row';
+                const badgeRow2 = document.createElement('div');
+                badgeRow2.className = 'badge-row';
                 
                 if (newSkins.includes(champion)) {
                     const newBadge = document.createElement('div');
                     newBadge.className = 'new-skin-badge';
                     newBadge.textContent = 'NEW';
-                    badgesContainer.appendChild(newBadge);
+                    badgeRow1.appendChild(newBadge);
                 }
                 
-                if (lunarSkins.includes(champion)) {
-                    const lunarBadge = document.createElement('div');
-                    lunarBadge.className = 'lunar-badge';
-                    lunarBadge.textContent = 'LUNAR';
-                    badgesContainer.appendChild(lunarBadge);
+                if (loveSkins.includes(champion)) {
+                    const loveBadge = document.createElement('div');
+                    loveBadge.className = 'love-badge';
+                    loveBadge.textContent = 'LOVE';
+                    badgeRow1.appendChild(loveBadge);
                 }
 
                 if (freeSkins.includes(champion)) {
                     const freeBadge = document.createElement('div');
                     freeBadge.className = 'skin-tag tag-free';
                     freeBadge.textContent = 'FREE';
-                    badgesContainer.appendChild(freeBadge);
+                    // Add to second row if first row has 2 badges
+                    badgeRow1.children.length < 2 ? badgeRow1.appendChild(freeBadge) : badgeRow2.appendChild(freeBadge);
+                }
+                
+                badgesContainer.appendChild(badgeRow1);
+                if (badgeRow2.children.length > 0) {
+                    badgesContainer.appendChild(badgeRow2);
                 }
                 
                 if (badgesContainer.children.length > 0) {
@@ -508,7 +527,7 @@
                 tagsContainer.className = 'skin-tags';
                 
                 // Add appropriate tags based on conditions
-                if (skin.name.includes('Lunar Festival')) {
+                if (skin.name.includes('Date Night') || skin.name.includes('Lovely') || skin.name.includes('Heartbreaker')) {
                     const newTag = document.createElement('div');
                     newTag.className = 'skin-tag tag-new';
                     newTag.textContent = 'NEW';

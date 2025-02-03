@@ -6,8 +6,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #00a8ff;
-            --secondary-color: #ff9f1a;
+            --primary-color: #FF69B4;
+            --secondary-color: #FF1493;
             --background-dark: #1a1a1a;
             --text-color: #ffffff;
             --progress-bar-height: 2px;
@@ -20,10 +20,23 @@
         }
 
         body {
-            background-color: var(--background-dark);
+            background: url('Event/Love Day Event.webp') no-repeat center center fixed;
+            background-size: cover;
             color: var(--text-color);
             font-family: 'Rajdhani', sans-serif;
             overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
+            pointer-events: none;
+            z-index: -1;
         }
 
         #video-background {
@@ -419,77 +432,56 @@
         
         // Battle Pass Items (keep your existing items array)
         const battlePassItems = [
-            { id: 'Item1', exp: 0, img: 'Skins/Lunar Festival Kokoro.jpg', skinName: 'Lunar Festival Kokoro', name: 'Lunar Festival Kokoro' },
-            { id: 'Item2', exp: 30, img: 'res/img/music.png', songName: 'Moonlight (Lunar Festival Kokoro Theme)', name: 'Moonlight', type: 'Song' },
-            { id: 'Item3', exp: 85, img: 'res/img/lunar_ticket.png', name: 'Lunar Ticket', type: 'LunarTicket', amount: 1 },
-            { id: 'Item4', exp: 150, img: 'Icons/Profile/Lunar_Rabbit.jfif', rewardName: 'Lunar Rabbit', type: 'icon', name: 'Lunar Rabbit Icon' },
-            { id: 'Item5', exp: 200, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
-            { id: 'Item6', exp: 260, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
-            { id: 'Item7', exp: 320, img: 'Stickers/lunar_rabbit.png', name: 'Lunar Rabbit Sticker', type: 'Sticker', stickerName: 'Lunar Rabbit' },
-            { id: 'Item8', exp: 395, img: 'res/img/lunar_ticket.png', name: 'Lunar Ticket', type: 'LunarTicket', amount: 1 },
-            { id: 'Item9', exp: 480, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
-            { id: 'Item10', exp: 580, img: 'res/img/cm.png', name: '8000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item11', exp: 665, img: 'titles/titleimage.jpeg', name: 'Lantern Keeper', type: 'Title', titleName: 'Lantern Keeper' },
-            { id: 'Item12', exp: 750, img: 'Skins/Lunar Festival Reptile.jpeg', skinName: 'Lunar Festival Reptile', name: 'Lunar Festival Reptile' },
-            { id: 'Item13', exp: 835, img: 'res/img/fm.png', name: '500 FM', type: 'FM' },
-            { id: 'Item14', exp: 910, img: 'res/img/lunar_ticket.png', name: 'Lunar Ticket', type: 'LunarTicket', amount: 1 },
-            { id: 'Item15', exp: 1000, img: 'Skins/Lunar Festival Scorpion.jpeg', skinName: 'Lunar Festival Scorpion', name: 'Lunar Festival Scorpion' },
-            { id: 'Item16', exp: 1300, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item17', exp: 1600, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item18', exp: 1900, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item19', exp: 2200, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item20', exp: 2500, img: 'Skins/Lunar Festival Kokoro Sweet.jpg', skinName: 'Lunar Festival Kokoro Sweet', name: 'Lunar Festival Kokoro Sweet' },
-            { id: 'Item21', exp: 2800, img: 'res/img/lunar_ticket.png', name: 'Lunar Ticket', type: 'LunarTicket', amount: 1 },
-            { id: 'Item22', exp: 3100, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item23', exp: 3400, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item24', exp: 3700, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item25', exp: 4000, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item26', exp: 4300, img: 'res/img/lunar_ticket.png', name: 'Lunar Ticket', type: 'LunarTicket', amount: 1 },
-            { id: 'Item27', exp: 4600, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item28', exp: 4900, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item29', exp: 5200, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item30', exp: 5500, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item31', exp: 5800, img: 'res/img/lunar_ticket.png', name: 'Lunar Ticket', type: 'LunarTicket', amount: 1 },
-            { id: 'Item32', exp: 6100, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item33', exp: 6400, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item34', exp: 6700, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item35', exp: 7000, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item36', exp: 7300, img: 'res/img/lunar_ticket.png', name: 'Lunar Ticket', type: 'LunarTicket', amount: 1 },
-            { id: 'Item37', exp: 7600, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item38', exp: 7900, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item39', exp: 8200, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item40', exp: 8500, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item41', exp: 8800, img: 'res/img/lunar_ticket.png', name: 'Lunar Ticket', type: 'LunarTicket', amount: 1 },
-            { id: 'Item42', exp: 9100, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item43', exp: 9400, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item44', exp: 9700, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item45', exp: 10000, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item46', exp: 10300, img: 'res/img/lunar_ticket.png', name: 'Lunar Ticket', type: 'LunarTicket', amount: 1 },
-            { id: 'Item47', exp: 10600, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item48', exp: 10900, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item49', exp: 11200, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item50', exp: 11500, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item51', exp: 11800, img: 'res/img/lunar_ticket.png', name: 'Lunar Ticket', type: 'LunarTicket', amount: 1 },
-            { id: 'Item52', exp: 12100, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item53', exp: 12400, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item54', exp: 12700, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item55', exp: 13000, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item56', exp: 13300, img: 'res/img/lunar_ticket.png', name: 'Lunar Ticket', type: 'LunarTicket', amount: 1 },
-            { id: 'Item57', exp: 13600, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item58', exp: 13900, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item59', exp: 14200, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item60', exp: 14500, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item61', exp: 14800, img: 'res/img/lunar_ticket.png', name: 'Lunar Ticket', type: 'LunarTicket', amount: 1 },
-            { id: 'Item62', exp: 15100, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item63', exp: 15400, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item64', exp: 15700, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item65', exp: 16000, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item66', exp: 16300, img: 'res/img/lunar_ticket.png', name: 'Lunar Ticket', type: 'LunarTicket', amount: 1 },
-            { id: 'Item67', exp: 16600, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item68', exp: 16900, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item69', exp: 17200, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item70', exp: 17500, img: 'res/img/cm.png', name: '3500 CM', type: 'CM' },
-            { id: 'Item71', exp: 17800, img: 'res/img/lunar_ticket.png', name: '2 Lunar Tickets', type: 'LunarTicket', amount: 2 }
+            { id: 'Item1', exp: 0, img: 'Skins/Date Night Kuma.jpeg', skinName: 'Date Night Kuma', name: 'Date Night Kuma' },
+            { id: 'Item2', exp: 30, img: 'Stickers/cute_kuma_flower.png', name: 'Cute Kuma Flower', type: 'Sticker', stickerName: 'cute_kuma_flower' },
+            { id: 'Item3', exp: 85, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
+            { id: 'Item4', exp: 150, img: 'Icons/Profile/date_night_kuma.png', name: 'Date Night Kuma Icon', type: 'icon', rewardName: 'date_night_kuma' },
+            { id: 'Item5', exp: 200, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
+            { id: 'Item6', exp: 260, img: 'res/img/music.png', songName: 'Date Night Prep', name: 'Date Night Prep', type: 'Song' },
+            { id: 'Item7', exp: 320, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
+            { id: 'Item8', exp: 395, img: 'titles/titleimage.jpeg', name: 'Lover', type: 'Title', titleName: 'Lover' },
+            { id: 'Item9', exp: 480, img: 'Icons/Profile/heartbreaker_ibuki.png', name: 'Heartbreaker Ibuki Icon', type: 'icon', rewardName: 'heartbreaker_ibuki' },
+            { id: 'Item10', exp: 580, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
+            { id: 'Item11', exp: 665, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
+            { id: 'Item12', exp: 750, img: 'Skins/Heartbreaker Ibuki.jpeg', skinName: 'Heartbreaker Ibuki', name: 'Heartbreaker Ibuki' },
+            { id: 'Item13', exp: 835, img: 'res/img/cm.png', name: '10,000 CM', type: 'CM', amount: 10000 },
+            { id: 'Item14', exp: 910, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item15', exp: 1000, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item16', exp: 1300, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item17', exp: 1600, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item18', exp: 1900, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item19', exp: 2200, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item20', exp: 2500, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item21', exp: 2800, img: 'res/img/music.png', songName: 'Love Day 2024', name: 'Love Day 2024', type: 'Song' },
+            { id: 'Item22', exp: 3100, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item23', exp: 3400, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item24', exp: 3700, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item25', exp: 4000, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item26', exp: 4300, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item27', exp: 4600, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item28', exp: 4900, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item29', exp: 5200, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
+            { id: 'Item30', exp: 5500, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item31', exp: 5800, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item32', exp: 6100, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item33', exp: 6400, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item34', exp: 6700, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item35', exp: 7000, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item36', exp: 7300, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item37', exp: 7600, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
+            { id: 'Item38', exp: 7900, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item39', exp: 8200, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item40', exp: 8500, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item41', exp: 8800, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item42', exp: 9100, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item43', exp: 9400, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item44', exp: 9700, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item45', exp: 10000, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
+            { id: 'Item46', exp: 10300, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item47', exp: 10600, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item48', exp: 10900, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item49', exp: 11200, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item50', exp: 11500, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 }
         ];
 
         // Update progress bar

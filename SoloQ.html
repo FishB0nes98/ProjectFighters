@@ -731,7 +731,11 @@ document.getElementById('decide-game-button').addEventListener('click', async fu
         const winner = await calculateWinProbability(team1, team2);
         const loser = winner === 'team1' ? 'team2' : 'team1';
 
-        console.log('Game Result - Winner:', winner, 'Loser:', loser);
+        // Increment played games counter
+        const gamesPlayedRef = ref(database, `users/${userId}/gamesPlayed`);
+        const gamesPlayedSnapshot = await get(gamesPlayedRef);
+        const currentGamesPlayed = gamesPlayedSnapshot.val() || 0;
+        await set(gamesPlayedRef, currentGamesPlayed + 1);
 
         // Update player stats
         await handleMatchResult(userId, winner === 'team1');
@@ -1988,84 +1992,169 @@ async function calculateWinProbability(team1, team2) {
 // Replace the existing quest updates with:
 async function updateQuestsAfterGame(userId, selectedCharacter, isWin) {
     try {
-        // Update general game quests
-        await updateQuestProgress('play3games');
-        await updateQuestProgress('play15Games');
-
-        // Get current win streak
         const userRef = ref(database, `users/${userId}`);
-        const snapshot = await get(userRef);
-        const userData = snapshot.val();
-        let currentWinStreak = userData.winStreak || 0;
+        const userSnapshot = await get(userRef);
+        const userData = userSnapshot.val();
+        
+        // Get the selected role from the highlighted slot
+        const selectedSlot = document.querySelector('.player-slot.highlight');
+        const selectedRole = selectedSlot?.getAttribute('data-role')?.toLowerCase();
+        
+        console.log('Selected role:', selectedRole);
+        
+        // Check if user has the character in their slots
+        const hasCharacterInSlot = userData?.skins && Object.values(userData.skins).some(skin => {
+            const baseCharacter = skinToBaseCharacterMap[skin] || skin;
+            return baseCharacter === selectedCharacter;
+        });
 
-        if (isWin) {
-            // Increment win streak
-            currentWinStreak++;
-            await update(userRef, { winStreak: currentWinStreak });
+        if (!hasCharacterInSlot) {
+            console.log('Character not in user slots:', selectedCharacter);
+            return;
+        }
 
-            // Update win streak quest if we have 2 or more wins
-            if (currentWinStreak >= 2) {
-                const questRef = ref(database, `users/${userId}/quests/win-streak`);
-                const questSnapshot = await get(questRef);
-                const questData = questSnapshot.val() || { progress: 0, completed: false, claimed: false };
-                
-                if (!questData.claimed && !questData.completed) {
-                    questData.progress = 2;
-                    questData.completed = true;
-                    await set(questRef, questData);
-                }
+        // Save last played role for quest tracking
+        if (selectedRole) {
+            await set(ref(database, `users/${userId}/lastPlayedRole`), selectedRole);
+        }
+
+        // Update bot lane quest
+        if (selectedRole && (selectedRole === 'adc' || selectedRole === 'support')) {
+            const botLaneRef = ref(database, `users/${userId}/quests/bot_lane_games`);
+            const botLaneSnap = await get(botLaneRef);
+            const botLaneData = botLaneSnap.val() || {
+                progress: 0,
+                completed: false,
+                claimed: false
+            };
+
+            if (!botLaneData.claimed) {
+                console.log('Updating bot lane quest progress - Current:', botLaneData.progress);
+                botLaneData.progress = (botLaneData.progress || 0) + 1;
+                botLaneData.completed = botLaneData.progress >= 10;
+                await set(botLaneRef, botLaneData);
+                console.log('Bot lane quest updated:', botLaneData);
             }
+        }
+
+        // Update daily games quest
+        const dailyQuestRef = ref(database, `users/${userId}/quests/daily_games`);
+        const dailyQuestSnap = await get(dailyQuestRef);
+        const dailyQuestData = dailyQuestSnap.val() || { 
+            progress: 0, 
+            completed: false, 
+            claimed: false,
+            lastReset: Date.now() 
+        };
+
+        // Check if quest needs to be reset (18 hours have passed)
+        const currentTime = Date.now();
+        const timeSinceReset = currentTime - (dailyQuestData.lastReset || 0);
+        if (timeSinceReset >= 64800000) { // 18 hours in milliseconds
+            console.log('Resetting daily quest - 18 hours passed');
+            dailyQuestData.progress = 1; // Reset and count current game
+            dailyQuestData.completed = false;
+            dailyQuestData.claimed = false;
+            dailyQuestData.lastReset = currentTime;
         } else {
-            // Reset win streak on loss
-            await update(userRef, { winStreak: 0 });
-        }
-
-        // Update Steampunk event quest
-        const steampunkChampions = ['Nina', 'Yugo', 'Mega Man', 'Kabal', 'Ibuki'];
-        if (steampunkChampions.includes(selectedCharacter)) {
-            await updateQuestProgress('playSteampunkChampions');
-        }
-
-        // Update Enchanter quest
-        // Reuse the existing userData from above instead of fetching again
-        const enchanters = Object.keys(roles).reduce((acc, role) => {
-            if (role === 'Support') {
-                return [...acc, ...roles[role].filter(champion => {
-                    const championRoles = Roles[champion]?.toLowerCase() || '';
-                    return championRoles.includes('enchanter');
-                })];
+            console.log('Updating daily quest progress:', dailyQuestData.progress);
+            if (!dailyQuestData.completed) {
+                dailyQuestData.progress = (dailyQuestData.progress || 0) + 1;
+                dailyQuestData.completed = dailyQuestData.progress >= 2;
+                console.log('New progress:', dailyQuestData.progress, 'Completed:', dailyQuestData.completed);
             }
-            return acc;
-        }, []);
+        }
 
-        if (enchanters.includes(selectedCharacter)) {
-            await updateQuestProgress('playEnchanterGames');
+        // Save the updated quest data
+        await set(dailyQuestRef, dailyQuestData);
+        console.log('Daily quest data saved:', dailyQuestData);
+
+        // Update Love Day quest
+        const loveDayRef = ref(database, `users/${userId}/quests/love_day_character`);
+        const loveDaySnap = await get(loveDayRef);
+        const loveDayData = loveDaySnap.val() || {
+            progress: 0,
+            completed: false,
+            claimed: false,
+            lastReset: Date.now()
+        };
+
+        // Check if Love Day quest needs reset
+        const loveDayTimeSinceReset = currentTime - (loveDayData.lastReset || 0);
+        if (loveDayTimeSinceReset >= 64800000) { // 18 hours in milliseconds
+            console.log('Resetting Love Day quest - 18 hours passed');
+            loveDayData.progress = 0;
+            loveDayData.completed = false;
+            loveDayData.claimed = false;
+            loveDayData.lastReset = currentTime;
+        }
+
+        // Check if the selected character or their skin is a Love Day character
+        const loveDayCharacters = ['Christie', 'Morrigan', 'Elphelt'];
+        const baseCharacter = skinToBaseCharacterMap[selectedCharacter] || selectedCharacter;
+        
+        if (loveDayCharacters.includes(baseCharacter) && !loveDayData.claimed) {
+            console.log('Love Day character played:', baseCharacter);
+            loveDayData.progress = 1;
+            loveDayData.completed = true;
+            await set(loveDayRef, loveDayData);
+            console.log('Love Day quest updated:', loveDayData);
+        }
+
+        // Update win streak quest
+        const winStreakRef = ref(database, `users/${userId}/quests/win_streak`);
+        const winStreakSnap = await get(winStreakRef);
+        const winStreakData = winStreakSnap.val() || {
+            progress: 0,
+            completed: false,
+            claimed: false,
+            streak: 0
+        };
+
+        if (!winStreakData.claimed) {
+            if (isWin) {
+                // Increment streak and progress
+                winStreakData.streak = (winStreakData.streak || 0) + 1;
+                winStreakData.progress = winStreakData.streak;
+                winStreakData.completed = winStreakData.streak >= 2;
+                console.log('Win streak updated:', winStreakData.streak, 'Progress:', winStreakData.progress);
+            } else {
+                // Reset streak on loss
+                winStreakData.streak = 0;
+                winStreakData.progress = 0;
+                winStreakData.completed = false;
+                console.log('Win streak reset due to loss');
+            }
+            await set(winStreakRef, winStreakData);
+        }
+
+        // Save last played character for quest tracking
+        await set(ref(database, `users/${userId}/lastPlayedCharacter`), baseCharacter);
+
+        // Check Love Day win quest
+        const loveDayWinRef = ref(database, `users/${userId}/quests/love_day_win`);
+        const loveDayWinSnapshot = await get(loveDayWinRef);
+        let loveDayWinData = loveDayWinSnapshot.val() || {
+            progress: 0,
+            completed: false,
+            claimed: false
+        };
+
+        const loveDayWinCharacters = ['Morrigan', 'Elphelt', 'Christie', 'Kuma', 'Ibuki', 'Mega Man', 'Sophitia', 'Kagome', 'Alice'];
+
+        // Update Love Day win quest if player won with a Love Day character
+        if (isWin && loveDayWinCharacters.includes(baseCharacter) && !loveDayWinData.claimed) {
+            console.log('Love Day win quest progress - Won with:', baseCharacter);
+            loveDayWinData.progress = 1;
+            loveDayWinData.completed = true;
+            await set(loveDayWinRef, loveDayWinData);
         }
 
     } catch (error) {
         console.error('Error updating quests:', error);
     }
 }
-
-// Then modify the decide game button click handler to include this:
-        // Get the decide game button
-        const decideGameButton = document.getElementById('decide-game-button');
-        
-        // Update the decide game button handler
-        decideGameButton.addEventListener('click', async function() {
-    // ... existing code ...
-
-    // After processing the game result
-    const selectedSlot = document.querySelector('.player-slot.highlight');
-    const skinName = selectedSlot.querySelector('.skin-name').textContent;
-    const baseCharacter = skinToBaseCharacterMap[skinName] || skinName;
-    const isWin = winner === 'team1';
-
-    // Update quests
-    await updateQuestsAfterGame(userId, baseCharacter, isWin);
-
-    // ... rest of the existing code ...
-});
+// ... existing code ...
     </script>
     <style>
         body {

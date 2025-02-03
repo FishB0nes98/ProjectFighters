@@ -1,5 +1,18 @@
 // Export the sticker data for use in other files
 export const stickers = {
+    // New Stickers
+    "heart": {
+        name: "Heart",
+        image: "Stickers/heart.png",
+        price: 350,
+        category: "regular"
+    },
+    "cute_kuma_flower": {
+        name: "Cute Kuma flower",
+        image: "Stickers/cute_kuma_flower.png",
+        price: 350,
+        category: "regular"
+    },
     // Regular Stickers
     "Nina_Facepalm": {
         name: "Nina Facepalm",

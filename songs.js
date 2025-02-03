@@ -1,5 +1,23 @@
 const songs = [
     {
+        title: "Date Night Prep",
+        artist: "Date Night Mega Man",
+        path: "Songs/Date Night Prep (Date Night Mega Man Theme).mp3",
+        cover: "Loading Screen/Date Night Mega Man.png"
+    },
+    {
+        title: "Love Day 2024",
+        artist: "Event",
+        path: "Songs/Love Day 2024 (Event Theme).mp3",
+        cover: "Event/Love Day Event.webp"
+    },
+    {
+        title: "Lovely Wind",
+        artist: "Lovely Kagome",
+        path: "Songs/Lovely Wind (Lovely Kagome Theme).mp3",
+        cover: "Loading Screen/Lovely Kagome.png"
+    },
+    {
         title: "Lunar Festival 2024",
         artist: "Event",
         path: "Songs/Lunar Festival 2024 (Event Theme).mp3",
@@ -58,7 +76,7 @@ const songs = [
         artist: "Winter Festival Lili",
         path: "Songs/Snowball Princess (Winter Festival Lili Theme).mp3",
         cover: "Loading Screen/Winter Festival Lili.png"
-    },
+    }
 ];
 
 export default songs; 

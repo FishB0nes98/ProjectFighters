@@ -106,6 +106,7 @@ const skinReference = {
         { name: "Royal Guard Astaroth", price: 1000, imagePath: "Skins/Royal Guard Astaroth.png" }
     ],
     Ibuki: [
+        { name: "Heartbreaker Ibuki", price: 2000, imagePath: "Skins/Heartbreaker Ibuki.jpeg" },
         { name: "Steampunk Ibuki", price: 1000, imagePath: "Skins/Steampunk Ibuki.jpeg" },
         { name: "DJ Ibuki", price: 2000, imagePath: "Skins/DJ Ibuki.png" },
         { name: "Demon Hunter Ibuki", price: 1000, imagePath: "Skins/Demon Hunter Ibuki.png" },
@@ -214,6 +215,7 @@ const skinReference = {
         { name: "Goth Eagle", price: 2000, imagePath: "Skins/Goth Eagle.png" }
     ],
     Sophitia: [
+        { name: "Lovely Sophitia", price: 2000, imagePath: "Skins/Lovely Sophitia.jpeg" },
         { name: "Battle Bistro Sophitia", price: 2000, imagePath: "Skins/Battle Bistro Sophitia.jpeg" },
         { name: "Arcade Sophitia", price: 2000, imagePath: "Skins/Arcade Sophitia.jpeg" },
         { name: "Goth Sophitia", price: 2000, imagePath: "Skins/Goth Sophitia.png" }
@@ -227,6 +229,7 @@ const skinReference = {
         { name: "Samurai Shizumaru", price: 1000, imagePath: "Skins/Samurai Shizumaru.jpeg" }
     ],
     Kagome: [
+        { name: "Lovely Kagome", price: 3000, imagePath: "Skins/Lovely Kagome.jpeg" },
         { name: "Atlantean Kagome", price: 2000, imagePath: "Skins/Atlantean Kagome.jpeg" },
         { name: "Primal Huntress Kagome", price: 1000, imagePath: "Skins/Primal Huntress Kagome.jpeg" },
         { name: "Spectral Archer Kagome", price: 2000, imagePath: "Skins/Spectral Archer Kagome.jpeg" }
@@ -239,6 +242,7 @@ const skinReference = {
         { name: "Atlantean Kotal Kahn", price: 2000, imagePath: "Skins/Atlantean Kotal Kahn.jpeg" }
     ],
     Kuma: [
+        { name: "Date Night Kuma", price: 1000, imagePath: "Skins/Date Night Kuma.jpeg" },
         { name: "Winter Festival Kuma", price: "UNAVAILABLE", imagePath: "Skins/Winter Festival Kuma.jpeg" },
         { name: "Jade Panda", price: 2000, imagePath: "Skins/Jade Panda.jpeg" },
         { name: "Battle Bistro Kuma", price: 1000, imagePath: "Skins/Battle Bistro Kuma.jpeg" },
@@ -258,6 +262,7 @@ const skinReference = {
         { name: "Battle Bistro Lili", price: 1000, imagePath: "Skins/Battle Bistro Lili.jpeg" }
     ],
     "Mega Man": [
+        { name: "Date Night Mega Man", price: 2000, imagePath: "Skins/Date Night Mega Man.jpeg" },
         { name: "Steamcore Megaman", price: 2000, imagePath: "Skins/Steamcore Megaman.jpeg" },
         { name: "Pyromancer Mega Man", price: 2000, imagePath: "Skins/Pyromancer Mega Man.jpeg" }
     ],
