@@ -50,6 +50,13 @@
                     <span class="nav-text">Event</span>
                     <div class="nav-indicator"></div>
                 </a>
+                <a href="build-planner.html" class="nav-link">
+                    <div class="nav-icon">
+                        <i class="fas fa-hammer"></i>
+                    </div>
+                    <span class="nav-text">Build Planner</span>
+                    <div class="nav-indicator"></div>
+                </a>
                 <a href="Team Builder.html" class="nav-link">
                     <div class="nav-icon">
                         <i class="fas fa-users"></i>
@@ -87,7 +94,7 @@
         <div class="side-buttons">
             <!-- Changelog Button -->
             <div class="side-button" onclick="window.location.href='changelog.html'">
-                <img src="Default Splash/Sophitia.jpeg" alt="Changelog">
+                <img src="Default Splash/Kokoro.png" alt="Changelog">
                 <div class="button-content">
                     <h3 class="button-title">Changelog</h3>
                 </div>
@@ -108,7 +115,7 @@
             </div>
             <!-- Battlepass Button -->
             <div class="side-button" onclick="window.location.href='battlepass.html'">
-                <img src="Event/Love Day Event.webp" alt="Battlepass">
+                <img src="Event/Celestial Protectors Event.webp" alt="Battlepass">
                 <div class="button-content">
                     <h3 class="button-title">Battlepass</h3>
                 </div>
@@ -129,6 +136,7 @@
             <ul>
                 <li onclick="window.location.href='character-progression.html'">Character Progression</li>
                 <li onclick="window.location.href='Profile.html'">Profile</li>
+                <li onclick="window.location.href='match-history.html'">Match History</li>
                 <li onclick="openChangeIconModal()">Change Icon</li>
                 <li onclick="window.location.href='Collection.html'">Collection</li>
                 <li onclick="logOut()">Log Out</li>
@@ -171,74 +179,109 @@
             </div>
         </div>
 
-        <!-- Music Player Toggle Button -->
-        <button class="music-player-toggle">
-            <i class="fas fa-music"></i>
-        </button>
-
         <!-- Music Player -->
-        <div class="music-player">
-            <div class="music-player-content">
-                <div class="music-player-header">
-                    <button class="playlist-toggle">
-                        <i class="fas fa-list"></i>
-                    </button>
-                    <div class="music-controls">
-                        <button class="shuffle-btn">
-                            <i class="fas fa-random"></i>
-                        </button>
-                        <button class="prev-btn">
-                            <i class="fas fa-step-backward"></i>
-                        </button>
-                        <button class="play-btn">
-                            <i class="fas fa-play"></i>
-                        </button>
-                        <button class="next-btn">
-                            <i class="fas fa-step-forward"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="music-player-main">
-                    <div class="cover-art-container">
-                        <img src="res/img/default-cover.png" alt="Cover Art" class="cover-art">
-                        <div class="cover-art-overlay"></div>
-                    </div>
-
-                    <div class="music-info">
-                        <div class="song-title">No song selected</div>
-                        <div class="artist-name">-</div>
-                    </div>
-
-                    <div class="progress-container">
-                        <span class="current-time">0:00</span>
-                        <div class="progress-bar">
-                            <div class="progress"></div>
-                            <div class="progress-handle"></div>
+        <div class="modern-music-player show">
+            <!-- Main Player Section -->
+            <div class="player-main">
+                <div class="player-content">
+                    <!-- Album Art and Info -->
+                    <div class="player-artwork">
+                        <div class="artwork-container">
+                            <img src="res/img/default-cover.png" alt="Album Art" class="album-art">
+                            <div class="artwork-overlay"></div>
                         </div>
-                        <span class="duration">0:00</span>
+                        <div class="track-info">
+                            <h2 class="track-title">Select a Track</h2>
+                            <p class="track-artist">-</p>
+                        </div>
                     </div>
 
-                    <div class="volume-control">
-                        <i class="fas fa-volume-up"></i>
-                        <div class="volume-slider-container">
-                            <input type="range" class="volume-slider" min="0" max="100" value="50">
+                    <!-- Player Controls -->
+                    <div class="player-controls">
+                        <div class="control-buttons">
+                            <button class="control-btn shuffle-btn" title="Shuffle">
+                                <i class="fas fa-random"></i>
+                            </button>
+                            <button class="control-btn prev-btn" title="Previous">
+                                <i class="fas fa-step-backward"></i>
+                            </button>
+                            <button class="control-btn play-btn" title="Play/Pause">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="control-btn next-btn" title="Next">
+                                <i class="fas fa-step-forward"></i>
+                            </button>
+                            <button class="control-btn repeat-btn" title="Repeat">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+
+                        <div class="progress-section">
+                            <span class="time current">0:00</span>
+                            <div class="progress-bar">
+                                <div class="progress"></div>
+                                <div class="progress-handle"></div>
+                            </div>
+                            <span class="time total">0:00</span>
+                        </div>
+                    </div>
+
+                    <!-- Volume and Additional Controls -->
+                    <div class="additional-controls">
+                        <div class="volume-control">
+                            <button class="volume-btn">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                            <div class="volume-slider-container">
+                                <input type="range" class="volume-slider" min="0" max="100" value="100">
+                            </div>
+                        </div>
+                        <div class="right-controls">
+                            <button class="favorite-btn" title="Add to Favorites">
+                                <i class="far fa-heart"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Playlist -->
-            <div class="playlist">
+        <!-- Playlist Side Panel -->
+        <div class="playlist-panel">
+            <button class="playlist-toggle-btn" title="Show Playlist">
+                <i class="fas fa-list"></i>
+            </button>
+            <div class="playlist-content">
                 <div class="playlist-header">
-                    <h3>Playlist</h3>
-                    <button class="close-playlist">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <div class="playlist-title">
+                        <h3>Music Library</h3>
+                        <span class="track-count">0 tracks</span>
+                    </div>
+                    <div class="playlist-controls">
+                        <div class="playlist-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search songs...">
+                        </div>
+                        <div class="playlist-filter">
+                            <select>
+                                <option value="all">All Songs</option>
+                                <option value="character">Character Themes</option>
+                                <option value="event">Event Themes</option>
+                                <option value="favorites">Favorites</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <ul class="playlist-items">
-                    <!-- Songs will be added here dynamically -->
-                </ul>
+
+                <div class="playlist-tracks">
+                    <!-- Tracks will be dynamically added here -->
+                </div>
+
+                <div class="now-playing-indicator">
+                    <div class="indicator-line"></div>
+                    <span>Now Playing</span>
+                    <div class="indicator-line"></div>
+                </div>
             </div>
         </div>
 
@@ -329,13 +372,31 @@
                 </div>
                 
                 <div class="qp-store-grid">
-                    <!-- Heart Sticker -->
-                    <div class="qp-store-item" data-item-name="heart" data-item-type="sticker">
+                    <!-- Free Lootbox -->
+                    <div class="qp-store-item" data-item-name="freelootbox" data-item-type="lootbox">
                         <div class="item-preview">
-                            <img src="stickers/heart.png" alt="Heart Sticker">
+                            <img src="res/img/basicbox.png" alt="Free Lootbox">
                         </div>
                         <div class="item-details">
-                            <h3 class="item-name">Heart Sticker</h3>
+                            <h3 class="item-name">Free Lootbox</h3>
+                            <div class="item-price">
+                                <img src="res/img/qp.png" alt="QP">
+                                <span>2000</span>
+                            </div>
+                            <button class="purchase-btn" onclick="purchaseItem(this)">
+                                <span>Purchase</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Girl Power Title -->
+                    <div class="qp-store-item" data-item-name="girl_power" data-item-type="title">
+                        <div class="item-preview">
+                            <img src="titles/titleimage.jpeg" alt="Girl Power Title">
+                        </div>
+                        <div class="item-details">
+                            <h3 class="item-name">Girl Power Title</h3>
                             <div class="item-price">
                                 <img src="res/img/qp.png" alt="QP">
                                 <span>750</span>
@@ -347,13 +408,13 @@
                         </div>
                     </div>
 
-                    <!-- Ribbon Icon -->
-                    <div class="qp-store-item" data-item-name="ribbon" data-item-type="sticker">
+                    <!-- Celestial Protector Emblem -->
+                    <div class="qp-store-item" data-item-name="celestial_protector_emblem" data-item-type="icon">
                         <div class="item-preview">
-                            <img src="Icons/Profile/ribbon.png" alt="Ribbon Icon">
+                            <img src="Icons/Profile/Celestial_Protector_Emblem.png" alt="Celestial Protector Emblem">
                         </div>
                         <div class="item-details">
-                            <h3 class="item-name">Ribbon Icon</h3>
+                            <h3 class="item-name">Celestial Protector Emblem</h3>
                             <div class="item-price">
                                 <img src="res/img/qp.png" alt="QP">
                                 <span>500</span>
@@ -365,16 +426,16 @@
                         </div>
                     </div>
 
-                    <!-- Single Title -->
-                    <div class="qp-store-item" data-item-name="single" data-item-type="title">
+                    <!-- 500 FM -->
+                    <div class="qp-store-item" data-item-name="fm_reward" data-item-type="fm">
                         <div class="item-preview">
-                            <img src="titles/titleimage.jpeg" alt="Single Title">
+                            <img src="res/img/fm.png" alt="Fighter Money">
                         </div>
                         <div class="item-details">
-                            <h3 class="item-name">Single Title</h3>
+                            <h3 class="item-name">500 FM</h3>
                             <div class="item-price">
                                 <img src="res/img/qp.png" alt="QP">
-                                <span>500</span>
+                                <span>2000</span>
                             </div>
                             <button class="purchase-btn" onclick="purchaseItem(this)">
                                 <span>Purchase</span>
@@ -383,25 +444,7 @@
                         </div>
                     </div>
 
-                    <!-- Lovely Sophitia Skin -->
-                    <div class="qp-store-item" data-item-name="lovely_sophitia" data-item-type="skin">
-                        <div class="item-preview">
-                            <img src="Skins/Lovely Sophitia.jpeg" alt="Lovely Sophitia Skin">
-                        </div>
-                        <div class="item-details">
-                            <h3 class="item-name">Lovely Sophitia</h3>
-                            <div class="item-price">
-                                <img src="res/img/qp.png" alt="QP">
-                                <span>6000</span>
-                            </div>
-                            <button class="purchase-btn" onclick="purchaseItem(this)">
-                                <span>Purchase</span>
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- CM Reward -->
+                    <!-- Repeatable CM -->
                     <div class="qp-store-item" data-item-name="cm_reward" data-item-type="cm" data-repeatable="true">
                         <div class="item-badge repeatable">
                             <i class="fas fa-sync-alt"></i>
@@ -428,255 +471,407 @@
 
         <style>
             /* QP Store Styles */
-            .store-modal-content {
-                background: linear-gradient(135deg, rgba(28, 28, 36, 0.95) 0%, rgba(20, 20, 26, 0.98) 100%);
-                border-radius: 24px;
-                padding: 32px;
-                width: 90%;
-                max-width: 1200px;
-                max-height: 90vh;
-                position: relative;
-                overflow-y: auto;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-                backdrop-filter: blur(20px);
-                border: 1px solid rgba(255, 255, 255, 0.1);
+            .qp-store-modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.85);
+                backdrop-filter: blur(10px);
+                z-index: 2000;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
 
-            .store-header {
+            .qp-store-modal.show {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .qp-store-content {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.95);
+                width: 95%;
+                max-width: 1400px;
+                max-height: 95vh;
+                background: rgba(20, 20, 35, 0.95);
+                border-radius: 24px;
+                overflow: hidden;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+                padding: 32px;
+                overflow-y: auto;
+            }
+
+            .qp-store-content::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                border-radius: 24px;
+                padding: 2px;
+                background: linear-gradient(135deg, #9b59b6, #3498db);
+                -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                -webkit-mask-composite: xor;
+                mask-composite: exclude;
+                pointer-events: none;
+                opacity: 0.5;
+            }
+
+            .qp-store-modal.show .qp-store-content {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            .qp-store-header {
                 display: flex;
                 justify-content: space-between;
                 align-items: flex-start;
                 padding-bottom: 24px;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
                 margin-bottom: 32px;
+                border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+                position: relative;
+                padding-right: 60px;
             }
 
-            .store-title h2 {
-                font-size: 2.2em;
+            .qp-store-header::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                width: 100px;
+                height: 2px;
+                background: linear-gradient(90deg, #9b59b6, #3498db);
+            }
+
+            .qp-store-title h2 {
+                font-size: 2.5em;
                 font-weight: 700;
-                color: #fff;
+                background: linear-gradient(135deg, #fff 0%, #9b59b6 100%);
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                text-transform: uppercase;
+                letter-spacing: 1px;
                 margin-bottom: 8px;
                 display: flex;
                 align-items: center;
                 gap: 12px;
             }
 
-            .store-subtitle {
+            .qp-store-subtitle {
                 color: rgba(255, 255, 255, 0.6);
                 font-size: 1em;
             }
 
-            .store-controls {
+            .qp-store-controls {
                 display: flex;
                 align-items: center;
-                gap: 24px;
+                gap: 16px;
+                margin-left: auto;
             }
 
-            .currency-display {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                background: rgba(255, 255, 255, 0.1);
-                padding: 12px 20px;
-                border-radius: 16px;
-                border: 1px solid rgba(255, 255, 255, 0.05);
-            }
-
-            .currency-display img {
-                width: 24px;
-                height: 24px;
-            }
-
-            .currency-display span {
-                font-size: 1.2em;
-                font-weight: 600;
-                color: #fff;
-            }
-
-            .close-button {
-                background: rgba(255, 255, 255, 0.1);
+            .qp-store-close {
+                position: absolute;
+                top: 24px;
+                right: 24px;
+                background: linear-gradient(135deg, #9b59b6, #3498db);
                 border: none;
-                color: #fff;
                 width: 40px;
                 height: 40px;
-                border-radius: 12px;
+                border-radius: 50%;
                 cursor: pointer;
-                transition: all 0.3s ease;
+                transition: all 0.3s;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                color: #fff;
+                font-size: 1.2em;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+                z-index: 10;
             }
 
-            .close-button:hover {
-                background: rgba(255, 255, 255, 0.2);
-                transform: scale(1.05);
+            .qp-store-close:hover {
+                transform: rotate(90deg) scale(1.1);
+                box-shadow: 0 6px 20px rgba(155, 89, 182, 0.4);
             }
 
-            .store-items {
+            .qp-store-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
                 gap: 24px;
                 padding: 8px;
             }
 
-            .store-item {
-                background: rgba(255, 255, 255, 0.05);
-                border-radius: 20px;
+            .qp-store-item {
+                background: rgba(30, 30, 50, 0.6);
+                border-radius: 16px;
                 padding: 24px;
                 position: relative;
                 overflow: hidden;
-                transition: all 0.3s ease;
-                border: 1px solid rgba(255, 255, 255, 0.05);
+                transition: all 0.3s;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             }
 
-            .store-item:hover {
-                transform: translateY(-4px);
-                background: rgba(255, 255, 255, 0.08);
-                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            .qp-store-item::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                border-radius: 16px;
+                padding: 2px;
+                background: linear-gradient(135deg, #9b59b6, #3498db);
+                -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                -webkit-mask-composite: xor;
+                mask-composite: exclude;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+            .qp-store-item:hover {
+                transform: translateY(-5px);
+                background: rgba(40, 40, 60, 0.8);
+                box-shadow: 0 8px 25px rgba(155, 89, 182, 0.2);
+            }
+
+            .qp-store-item:hover::before {
+                opacity: 1;
             }
 
             .item-preview {
-                background: rgba(255, 255, 255, 0.03);
-                border-radius: 16px;
-                padding: 24px;
-                margin-bottom: 20px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                aspect-ratio: 16/9;
+                position: relative;
+                width: 100%;
+                height: 180px;
+                border-radius: 12px;
+                overflow: hidden;
+                margin-bottom: 16px;
             }
 
             .item-preview img {
-                max-width: 100%;
-                max-height: 100%;
+                width: 100%;
+                height: 100%;
                 object-fit: contain;
-                transition: transform 0.3s ease;
+                transition: transform 0.3s;
+                filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
             }
 
-            .store-item:hover .item-preview img {
+            .qp-store-item:hover .item-preview img {
                 transform: scale(1.05);
             }
 
             .item-details {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-end;
-            }
-
-            .item-info {
-                flex-grow: 1;
+                text-align: center;
             }
 
             .item-name {
                 font-size: 1.4em;
-                font-weight: 600;
+                font-weight: 700;
                 color: #fff;
-                margin-bottom: 8px;
+                margin-bottom: 16px;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
             }
 
             .item-price {
                 display: flex;
                 align-items: center;
-                gap: 6px;
-                color: rgba(255, 255, 255, 0.8);
+                justify-content: center;
+                gap: 8px;
+                margin: 16px 0;
+                background: rgba(255, 255, 255, 0.1);
+                padding: 8px 16px;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             }
 
             .item-price img {
-                width: 20px;
-                height: 20px;
+                width: 24px;
+                height: 24px;
             }
 
             .purchase-btn {
-                background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+                background: linear-gradient(135deg, #9b59b6, #3498db);
                 color: white;
                 border: none;
                 padding: 12px 24px;
                 border-radius: 12px;
                 cursor: pointer;
-                transition: all 0.3s ease;
+                transition: all 0.3s;
+                width: 100%;
                 font-weight: 600;
-                display: flex;
-                align-items: center;
-                gap: 8px;
+                font-size: 1.1em;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .purchase-btn::after {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient(
+                    45deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.1),
+                    transparent
+                );
+                transform: rotate(45deg);
+                transition: all 0.3s;
             }
 
             .purchase-btn:hover:not(:disabled) {
-                transform: scale(1.05);
-                box-shadow: 0 4px 15px rgba(255, 75, 43, 0.4);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(155, 89, 182, 0.4);
+            }
+
+            .purchase-btn:hover::after {
+                left: 100%;
             }
 
             .purchase-btn:disabled {
-                background: rgba(255, 255, 255, 0.1);
+                background: linear-gradient(135deg, #2c3e50, #34495e);
                 cursor: not-allowed;
+                opacity: 0.7;
             }
 
-            .purchase-btn .btn-text {
-                font-size: 0.9em;
-            }
-
-            .repeatable-badge {
+            .item-badge {
                 position: absolute;
                 top: 16px;
                 right: 16px;
-                background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
-                color: white;
                 padding: 8px 16px;
-                border-radius: 12px;
-                font-size: 0.85em;
+                border-radius: 20px;
+                font-size: 0.9em;
                 font-weight: 600;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                z-index: 1;
             }
 
-            .claimed-badge {
-                position: absolute;
-                top: 16px;
-                right: 16px;
+            .item-badge.repeatable {
+                background: linear-gradient(135deg, #9b59b6, #3498db);
+                color: white;
+                box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);
+            }
+
+            .item-badge.owned {
                 background: rgba(255, 255, 255, 0.1);
                 color: white;
-                padding: 8px 16px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            }
+
+            /* Purchase Success Animation */
+            .purchase-success {
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #9b59b6, #3498db);
+                color: white;
+                padding: 16px 32px;
                 border-radius: 12px;
-                font-size: 0.85em;
                 font-weight: 600;
                 display: flex;
                 align-items: center;
-                gap: 6px;
+                gap: 12px;
+                box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4);
+                z-index: 3000;
+                animation: slideDown 0.3s ease, slideUp 0.3s ease 1.7s;
+            }
+
+            @keyframes slideDown {
+                from {
+                    transform: translate(-50%, -100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translate(-50%, 0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes slideUp {
+                from {
+                    transform: translate(-50%, 0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translate(-50%, -100%);
+                    opacity: 0;
+                }
             }
 
             /* Scrollbar Styles */
-            .store-modal-content::-webkit-scrollbar {
+            .qp-store-content::-webkit-scrollbar {
                 width: 8px;
             }
 
-            .store-modal-content::-webkit-scrollbar-track {
+            .qp-store-content::-webkit-scrollbar-track {
                 background: rgba(255, 255, 255, 0.05);
                 border-radius: 4px;
             }
 
-            .store-modal-content::-webkit-scrollbar-thumb {
-                background: rgba(255, 255, 255, 0.2);
+            .qp-store-content::-webkit-scrollbar-thumb {
+                background: linear-gradient(135deg, #9b59b6, #3498db);
                 border-radius: 4px;
             }
 
-            .store-modal-content::-webkit-scrollbar-thumb:hover {
-                background: rgba(255, 255, 255, 0.3);
+            .qp-store-content::-webkit-scrollbar-thumb:hover {
+                background: linear-gradient(135deg, #8e44ad, #2980b9);
             }
 
             @media (max-width: 768px) {
-                .store-header {
-                    flex-direction: column;
+                .qp-store-grid {
+                    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
                     gap: 16px;
                 }
 
-                .store-controls {
-                    width: 100%;
-                    justify-content: space-between;
+                .qp-store-title h2 {
+                    font-size: 2em;
                 }
 
-                .store-items {
+                .qp-store-balance {
+                    padding: 8px 16px;
+                }
+
+                .qp-store-balance img {
+                    width: 24px;
+                    height: 24px;
+                }
+
+                .qp-store-balance span {
+                    font-size: 1.2em;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .qp-store-content {
+                    padding: 16px;
+                }
+
+                .qp-store-grid {
                     grid-template-columns: 1fr;
+                }
+
+                .qp-store-header {
+                    flex-direction: column;
+                    gap: 16px;
+                    align-items: flex-start;
+                }
+
+                .qp-store-title h2 {
+                    font-size: 1.8em;
                 }
             }
         </style>
@@ -689,192 +884,201 @@
         import { getDatabase, ref, get, update, set } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
         import { roles } from './roles.js';
 
-            // Make toggleQPStoreWindow globally available
-            window.toggleQPStoreWindow = function(event) {
-                event.stopPropagation();
-                const storeWindow = document.getElementById('qp-store-window');
-                if (!storeWindow.classList.contains('show')) {
-                    storeWindow.style.display = 'block';
-                    // Trigger reflow
-                    storeWindow.offsetHeight;
-                    storeWindow.classList.add('show');
-                    updateStoreDisplay();
-                } else {
-                    closeQPStoreWindow();
-                }
-            };
-
-            window.closeQPStoreWindow = function() {
-                const storeWindow = document.getElementById('qp-store-window');
-                storeWindow.classList.remove('show');
-                // Wait for animation to complete before hiding
-                setTimeout(() => {
-                    storeWindow.style.display = 'none';
-                }, 300);
-            };
-
-            async function updateStoreDisplay() {
-                const user = auth.currentUser;
-                if (!user) return;
-
-                try {
-                    const userRef = ref(database, `users/${user.uid}`);
-                    const snapshot = await get(userRef);
-                    const userData = snapshot.val();
-
-                    // Update QP display
-                    document.getElementById('store-qp-amount').textContent = userData.questPoints || 0;
-
-                    // Update item states
-                    const items = document.querySelectorAll('.qp-store-item');
-                    items.forEach(async item => {
-                        const button = item.querySelector('.purchase-btn');
-                        const itemName = item.dataset.itemName;
-                        const itemType = item.dataset.itemType;
-                        const isRepeatable = item.dataset.repeatable === 'true';
-
-                        if (!isRepeatable) {
-                            let isOwned = false;
-                            if (itemType === 'sticker' && userData.Stickers && userData.Stickers[itemName]) {
-                                isOwned = true;
-                            } else if (itemType === 'title' && userData.titles && userData.titles[itemName]) {
-                                isOwned = true;
-                            } else if (itemType === 'skin' && userData.skins && userData.skins[itemName]) {
-                                isOwned = true;
-                            }
-
-                            if (isOwned) {
-                                button.disabled = true;
-                                button.innerHTML = '<i class="fas fa-check"></i> Owned';
-                                if (!item.querySelector('.item-badge.owned')) {
-                                    const badge = document.createElement('div');
-                                    badge.className = 'item-badge owned';
-                                    badge.innerHTML = '<i class="fas fa-check"></i> Owned';
-                                    item.appendChild(badge);
-                                }
-                            }
-                        }
-
-                        // Check if user has enough QP
-                        const price = parseInt(item.querySelector('.item-price span').textContent);
-                        if ((userData.questPoints || 0) < price) {
-                            button.disabled = true;
-                            button.innerHTML = '<i class="fas fa-lock"></i> Insufficient QP';
-                        }
-                    });
-                } catch (error) {
-                    console.error('Error updating store display:', error);
-                }
+        // Make toggleQPStoreWindow globally available
+        window.toggleQPStoreWindow = function(event) {
+            event.stopPropagation();
+            const storeWindow = document.getElementById('qp-store-window');
+            if (!storeWindow.classList.contains('show')) {
+                storeWindow.style.display = 'block';
+                // Trigger reflow
+                storeWindow.offsetHeight;
+                storeWindow.classList.add('show');
+                updateStoreDisplay();
+            } else {
+                closeQPStoreWindow();
             }
+        };
 
-            window.purchaseItem = async function(button) {
-                const user = auth.currentUser;
-                if (!user) return;
+        window.closeQPStoreWindow = function() {
+            const storeWindow = document.getElementById('qp-store-window');
+            storeWindow.classList.remove('show');
+            // Wait for animation to complete before hiding
+            setTimeout(() => {
+                storeWindow.style.display = 'none';
+            }, 300);
+        };
 
-                const item = button.closest('.qp-store-item');
-                const itemName = item.dataset.itemName;
-                const itemType = item.dataset.itemType;
-                const isRepeatable = item.dataset.repeatable === 'true';
-                
-                try {
-                    const userRef = ref(database, `users/${user.uid}`);
-                    const snapshot = await get(userRef);
-                    const userData = snapshot.val() || {};
-                    
-                    let price;
-                    let updates = {};
+        async function updateStoreDisplay() {
+            const user = auth.currentUser;
+            if (!user) return;
 
-                    switch(itemType) {
-                        case 'sticker':
-                            price = 750;
-                            if (!isRepeatable && userData.Stickers && userData.Stickers[itemName]) {
-                                alert('You already own this sticker!');
-                                return;
-                            }
-                            break;
-                        case 'title':
-                            price = 500;
-                            if (userData.titles && userData.titles[itemName]) {
-                                alert('You already own this title!');
-                                return;
-                            }
-                            break;
-                        case 'skin':
-                            price = 6000;
-                            if (userData.skins && userData.skins[itemName]) {
-                                alert('You already own this skin!');
-                                return;
-                            }
-                            break;
-                        case 'cm':
-                            price = 250;
-                            break;
-                        default:
-                            return;
-                    }
+            try {
+                const userRef = ref(database, `users/${user.uid}`);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
 
-                    if ((userData.questPoints || 0) < price) {
-                        alert('Not enough Quest Points!');
-                        return;
-                    }
+                // Update QP display
+                document.getElementById('store-qp-amount').textContent = userData.questPoints || 0;
 
-                    // Update quest points
-                    updates['questPoints'] = (userData.questPoints || 0) - price;
+                // Update item states
+                const items = document.querySelectorAll('.qp-store-item');
+                items.forEach(async item => {
+                    const button = item.querySelector('.purchase-btn');
+                    const itemName = item.dataset.itemName;
+                    const itemType = item.dataset.itemType;
+                    const isRepeatable = item.dataset.repeatable === 'true';
 
-                    // Add rewards based on item type
-                    switch(itemType) {
-                        case 'sticker':
-                            updates[`Stickers/${itemName}`] = 1;
-                            break;
-                        case 'title':
-                            updates[`titles/${itemName}`] = true;
-                            break;
-                        case 'skin':
-                            updates[`skins/${itemName}`] = true;
-                            break;
-                        case 'cm':
-                            updates['CM'] = (userData.CM || 0) + 1000;
-                            break;
-                    }
-
-                    await update(userRef, updates);
-                    
-                    // Update displays
-                    document.getElementById('store-qp-amount').textContent = updates['questPoints'];
-                    document.getElementById('qp-amount').textContent = updates['questPoints'];
-                    if (itemType === 'cm') {
-                        document.getElementById('cm-amount').textContent = updates['CM'];
-                    }
-                    
                     if (!isRepeatable) {
-                        button.disabled = true;
-                        button.innerHTML = '<i class="fas fa-check"></i> Owned';
-                        const badge = document.createElement('div');
-                        badge.className = 'item-badge owned';
-                        badge.innerHTML = '<i class="fas fa-check"></i> Owned';
-                        if (!item.querySelector('.item-badge.owned')) {
-                            item.appendChild(badge);
+                        let isOwned = false;
+                        if (itemType === 'sticker' && userData.Stickers && userData.Stickers[itemName]) {
+                            isOwned = true;
+                        } else if (itemType === 'title' && userData.titles && userData.titles[itemName]) {
+                            isOwned = true;
+                        } else if (itemType === 'skin' && userData.skins && userData.skins[itemName]) {
+                            isOwned = true;
+                        }
+
+                        if (isOwned) {
+                            button.disabled = true;
+                            button.innerHTML = '<i class="fas fa-check"></i> Owned';
+                            if (!item.querySelector('.item-badge.owned')) {
+                                const badge = document.createElement('div');
+                                badge.className = 'item-badge owned';
+                                badge.innerHTML = '<i class="fas fa-check"></i> Owned';
+                                item.appendChild(badge);
+                            }
                         }
                     }
-                    
-                    // Show success message with animation
-                    const successMsg = document.createElement('div');
-                    successMsg.className = 'purchase-success';
-                    successMsg.innerHTML = `
-                        <i class="fas fa-check-circle"></i>
-                        Purchase successful!
-                    `;
-                    document.body.appendChild(successMsg);
-                    
-                    setTimeout(() => {
-                        successMsg.remove();
-                    }, 2000);
-                    
-                } catch (error) {
-                    console.error('Error making purchase:', error);
-                    alert('Failed to make purchase. Please try again.');
+
+                    // Check if user has enough QP
+                    const price = parseInt(item.querySelector('.item-price span').textContent);
+                    if ((userData.questPoints || 0) < price) {
+                        button.disabled = true;
+                        button.innerHTML = '<i class="fas fa-lock"></i> Insufficient QP';
+                    }
+                });
+            } catch (error) {
+                console.error('Error updating store display:', error);
+            }
+        }
+
+        window.purchaseItem = async function(button) {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const item = button.closest('.qp-store-item');
+            const itemName = item.dataset.itemName;
+            const itemType = item.dataset.itemType;
+            const isRepeatable = item.dataset.repeatable === 'true';
+            
+            try {
+                const userRef = ref(database, `users/${user.uid}`);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val() || {};
+                
+                let price;
+                let updates = {};
+
+                switch(itemType) {
+                    case 'lootbox':
+                        price = 2000;
+                        if (!isRepeatable && userData.freelootbox && userData.freelootbox[itemName]) {
+                            alert('You already own this lootbox!');
+                            return;
+                        }
+                        break;
+                    case 'title':
+                        price = 750;
+                        if (userData.titles && userData.titles[itemName]) {
+                            alert('You already own this title!');
+                            return;
+                        }
+                        break;
+                    case 'icon':
+                        price = 500;
+                        if (userData.Icons && userData.Icons[itemName]) {
+                            alert('You already own this icon!');
+                            return;
+                        }
+                        break;
+                    case 'fm':
+                        price = 2000;
+                        break;
+                    case 'cm':
+                        price = 250;
+                        break;
+                    default:
+                        return;
                 }
-            };
+
+                if ((userData.questPoints || 0) < price) {
+                    alert('Not enough Quest Points!');
+                    return;
+                }
+
+                // Update quest points
+                updates['questPoints'] = (userData.questPoints || 0) - price;
+
+                // Add rewards based on item type
+                switch(itemType) {
+                    case 'lootbox':
+                        updates[`freelootbox/${itemName}`] = 1;
+                        break;
+                    case 'title':
+                        updates[`titles/${itemName}`] = true;
+                        break;
+                    case 'icon':
+                        updates[`Icons/${itemName}`] = 1;
+                        break;
+                    case 'fm':
+                        updates['FM'] = (userData.FM || 0) + 500;
+                        break;
+                    case 'cm':
+                        updates['CM'] = (userData.CM || 0) + 1000;
+                        break;
+                }
+
+                await update(userRef, updates);
+                
+                // Update displays
+                document.getElementById('store-qp-amount').textContent = updates['questPoints'];
+                document.getElementById('qp-amount').textContent = updates['questPoints'];
+                if (itemType === 'cm') {
+                    document.getElementById('cm-amount').textContent = updates['CM'];
+                }
+                if (itemType === 'fm') {
+                    document.getElementById('currency-amount').textContent = updates['FM'];
+                }
+                
+                if (!isRepeatable) {
+                    button.disabled = true;
+                    button.innerHTML = '<i class="fas fa-check"></i> Owned';
+                    const badge = document.createElement('div');
+                    badge.className = 'item-badge owned';
+                    badge.innerHTML = '<i class="fas fa-check"></i> Owned';
+                    if (!item.querySelector('.item-badge.owned')) {
+                        item.appendChild(badge);
+                    }
+                }
+                
+                // Show success message with animation
+                const successMsg = document.createElement('div');
+                successMsg.className = 'purchase-success';
+                successMsg.innerHTML = `
+                    <i class="fas fa-check-circle"></i>
+                    Purchase successful!
+                `;
+                document.body.appendChild(successMsg);
+                
+                setTimeout(() => {
+                    successMsg.remove();
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Error making purchase:', error);
+                alert('Failed to make purchase. Please try again.');
+            }
+        };
 
         // Firebase configuration
         const firebaseConfig = {
@@ -1234,7 +1438,7 @@
                 // Function to create character card
                 function createCharacterCard(character) {
                     const card = document.createElement('a');
-                    card.href = `ch/${character.name}.html`;
+                    card.href = `character.html?character=${encodeURIComponent(character.name)}`;
                     card.className = `character-card ${character.roles.join(' ')}`;
                     card.dataset.roles = character.roles.join(',');
                     
@@ -1537,7 +1741,8 @@
             return questElement;
         }
 
-        async function claimReward(event, questId) {
+        // Make claimReward globally available
+        window.claimReward = async function(event, questId) {
             event.stopPropagation();
             const user = auth.currentUser;
             if (!user) return;
@@ -1555,11 +1760,24 @@
                 const questData = questSnap.val();
                 const userData = userSnap.val();
                 
-                if (!questData || !questData.completed || questData.claimed) return;
+                if (!questData || !questData.completed || questData.claimed) {
+                    console.log('Quest cannot be claimed:', { questData });
+                    return;
+                }
                 
-                // Find quest template
-                const questTemplate = findQuestTemplate(questId);
-                if (!questTemplate) return;
+                // Import quest templates to find the quest configuration
+                const { questTemplates } = await import('./quests.js');
+                
+                // Find quest template in both daily and special quests
+                const questTemplate = questTemplates.daily.find(q => q.id === questId) || 
+                                    questTemplates.special.find(q => q.id === questId);
+                
+                if (!questTemplate) {
+                    console.error('Quest template not found:', questId);
+                    return;
+                }
+                
+                console.log('Found quest template:', questTemplate);
                 
                 const updates = {};
                 
@@ -1568,34 +1786,50 @@
                     if (reward.type === 'questPoints') {
                         const currentQP = userData.questPoints || 0;
                         updates['questPoints'] = currentQP + reward.amount;
+                        console.log('Adding QP reward:', reward.amount);
                     } else if (reward.type === 'championMoney') {
                         const currentCM = userData.CM || 0;
                         updates['CM'] = currentCM + reward.amount;
+                        console.log('Adding CM reward:', reward.amount);
                     }
                 }
                 
                 // Mark quest as claimed
                 updates[`quests/${questId}/claimed`] = true;
                 
-                // If this is a repeatable quest, reset progress
-                if (questId === 'win_streak' || questId === 'love_day_win' || questId === 'bot_lane_games') {
+                // For daily quests, prepare for next reset
+                if (questTemplate.resetInterval) {
                     updates[`quests/${questId}/progress`] = 0;
                     updates[`quests/${questId}/completed`] = false;
-                    if (questId === 'win_streak') {
-                        updates[`quests/${questId}/streak`] = 0;
+                    updates[`quests/${questId}/lastReset`] = Date.now();
+                    if (questId === 'celestial_kills') {
+                        updates[`quests/${questId}/totalKills`] = 0;
                     }
                 }
+                
+                console.log('Applying updates:', updates);
                 
                 // Apply all updates
                 await update(userRef, updates);
                 
-                // Refresh quest display
-                await loadQuestData();
+                // Update UI
+                const questElement = event.target.closest('.quest-item');
+                if (questElement) {
+                    const statusElement = questElement.querySelector('.quest-status');
+                    if (statusElement) {
+                        statusElement.textContent = 'Completed';
+                        statusElement.className = 'quest-status completed';
+                    }
+                }
                 
+                // Refresh quest display
+                await loadQuestData(questTemplate.resetInterval ? 'daily' : 'special');
+                
+                console.log('Quest claimed successfully');
             } catch (error) {
                 console.error('Error claiming quest reward:', error);
             }
-        }
+        };
     </script>
     </div>
 </body>

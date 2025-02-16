@@ -430,53 +430,53 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
         
-        // Battle Pass Items (keep your existing items array)
+        // Battle Pass Items
         const battlePassItems = [
-            { id: 'Item1', exp: 0, img: 'Skins/Date Night Kuma.jpeg', skinName: 'Date Night Kuma', name: 'Date Night Kuma' },
-            { id: 'Item2', exp: 30, img: 'Stickers/cute_kuma_flower.png', name: 'Cute Kuma Flower', type: 'Sticker', stickerName: 'cute_kuma_flower' },
+            { id: 'Item1', exp: 0, img: 'Skins/Celestial Protector Cham Cham.jpeg', skinName: 'Celestial Protector Cham Cham', name: 'Celestial Protector Cham Cham' },
+            { id: 'Item2', exp: 30, img: 'Icons/Profile/Celestial_ChamCham.png', name: 'Celestial ChamCham Icon', type: 'icon', rewardName: 'Celestial_ChamCham' },
             { id: 'Item3', exp: 85, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
-            { id: 'Item4', exp: 150, img: 'Icons/Profile/date_night_kuma.png', name: 'Date Night Kuma Icon', type: 'icon', rewardName: 'date_night_kuma' },
-            { id: 'Item5', exp: 200, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
-            { id: 'Item6', exp: 260, img: 'res/img/music.png', songName: 'Date Night Prep', name: 'Date Night Prep', type: 'Song' },
-            { id: 'Item7', exp: 320, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
-            { id: 'Item8', exp: 395, img: 'titles/titleimage.jpeg', name: 'Lover', type: 'Title', titleName: 'Lover' },
-            { id: 'Item9', exp: 480, img: 'Icons/Profile/heartbreaker_ibuki.png', name: 'Heartbreaker Ibuki Icon', type: 'icon', rewardName: 'heartbreaker_ibuki' },
-            { id: 'Item10', exp: 580, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
-            { id: 'Item11', exp: 665, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
-            { id: 'Item12', exp: 750, img: 'Skins/Heartbreaker Ibuki.jpeg', skinName: 'Heartbreaker Ibuki', name: 'Heartbreaker Ibuki' },
-            { id: 'Item13', exp: 835, img: 'res/img/cm.png', name: '10,000 CM', type: 'CM', amount: 10000 },
+            { id: 'Item4', exp: 150, img: 'res/img/music.png', name: 'Random Celestial Song', type: 'Song', songName: ['Twilight Shadows', 'Starlit Sky', 'Born of Light'] },
+            { id: 'Item5', exp: 200, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
+            { id: 'Item6', exp: 260, img: 'Stickers/ChamCham_Crazy.png', name: 'ChamCham Crazy', type: 'Sticker', stickerName: 'ChamCham_Crazy' },
+            { id: 'Item7', exp: 320, img: 'titles/titleimage.jpeg', name: 'Celestial Protector', type: 'Title', titleName: 'Celestial Protector' },
+            { id: 'Item8', exp: 395, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
+            { id: 'Item9', exp: 480, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
+            { id: 'Item10', exp: 580, img: 'Icons/Profile/Celestial_Elphelt.png', name: 'Celestial Elphelt Icon', type: 'icon', rewardName: 'Celestial_Elphelt' },
+            { id: 'Item11', exp: 665, img: 'titles/titleimage.jpeg', name: 'Shining Star', type: 'Title', titleName: 'Shining Star' },
+            { id: 'Item12', exp: 750, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
+            { id: 'Item13', exp: 835, img: 'Skins/Celestial Protector Elphelt.jpeg', skinName: 'Celestial Protector Elphelt', name: 'Celestial Protector Elphelt' },
             { id: 'Item14', exp: 910, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item15', exp: 1000, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item16', exp: 1300, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item17', exp: 1600, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item18', exp: 1900, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item19', exp: 2200, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item20', exp: 2500, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item21', exp: 2800, img: 'res/img/music.png', songName: 'Love Day 2024', name: 'Love Day 2024', type: 'Song' },
+            { id: 'Item20', exp: 2500, img: 'res/img/recolor.png', name: 'Random Recolor', type: 'RandomRecolor', rewardName: 'random_recolor' },
+            { id: 'Item21', exp: 2800, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item22', exp: 3100, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item23', exp: 3400, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item24', exp: 3700, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item25', exp: 4000, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item26', exp: 4300, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item27', exp: 4600, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item28', exp: 4900, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item29', exp: 5200, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
+            { id: 'Item28', exp: 4900, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
+            { id: 'Item29', exp: 5200, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item30', exp: 5500, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item31', exp: 5800, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item32', exp: 6100, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item33', exp: 6400, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item34', exp: 6700, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item35', exp: 7000, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item36', exp: 7300, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item37', exp: 7600, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
+            { id: 'Item36', exp: 7300, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
+            { id: 'Item37', exp: 7600, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item38', exp: 7900, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item39', exp: 8200, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item40', exp: 8500, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item41', exp: 8800, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item42', exp: 9100, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item43', exp: 9400, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item44', exp: 9700, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item45', exp: 10000, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
+            { id: 'Item44', exp: 9700, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
+            { id: 'Item45', exp: 10000, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item46', exp: 10300, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item47', exp: 10600, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
             { id: 'Item48', exp: 10900, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
@@ -562,7 +562,7 @@
             }
         }
 
-        // Claim item function (keep your existing function)
+        // Claim item function
         function claimItem(itemId, img, exp, folder, skinName, itemType) {
             const user = auth.currentUser;
             if (user) {
@@ -588,7 +588,8 @@
                                 updates[`users/${userId}/CM`] = (userData.CM || 0) + 3500;
                             }
                             if (itemType === 'FM') {
-                                updates[`users/${userId}/FM`] = (userData.FM || 0) + 500;
+                                const amount = battlePassItems.find(item => item.id === itemId)?.amount || 0;
+                                updates[`users/${userId}/FM`] = (userData.FM || 0) + amount;
                             }
                             if (itemType === 'Title') {
                                 const titleName = battlePassItems.find(item => item.id === itemId)?.titleName;
@@ -596,34 +597,53 @@
                                     updates[`users/${userId}/titles/${titleName}`] = true;
                                 }
                             }
-                            if (itemType === 'LunarTicket') {
+                            if (itemType === 'Song') {
                                 const item = battlePassItems.find(item => item.id === itemId);
-                                if (item && item.amount) {
-                                    updates[`users/${userId}/lunarTickets`] = (userData.lunarTickets || 0) + item.amount;
+                                if (item && Array.isArray(item.songName)) {
+                                    // Randomly select one song from the array
+                                    const randomSong = item.songName[Math.floor(Math.random() * item.songName.length)];
+                                    updates[`users/${userId}/Songs/${randomSong}`] = 1;
+                                } else if (item && item.songName) {
+                                    updates[`users/${userId}/Songs/${item.songName}`] = 1;
                                 }
                             }
-                            if (itemType === 'Song') {
-                                const songName = battlePassItems.find(item => item.id === itemId)?.songName;
-                                if (songName) {
-                                    updates[`users/${userId}/Songs/${songName}`] = 1;
+                            if (itemType === 'RandomRecolor') {
+                                // Get all available recolors from recolorData
+                                const allRecolors = [];
+                                Object.entries(recolorData).forEach(([baseSkin, data]) => {
+                                    data.recolors.forEach(recolor => {
+                                        // Skip unavailable recolors
+                                        if (!data.availability || data.availability[recolor] !== false) {
+                                            const fullName = `${data.base} ${recolor}`;
+                                            if (!userData.skins || !userData.skins[fullName]) {
+                                                allRecolors.push(fullName);
+                                            }
+                                        }
+                                    });
+                                });
+                                
+                                if (allRecolors.length > 0) {
+                                    const randomRecolor = allRecolors[Math.floor(Math.random() * allRecolors.length)];
+                                    updates[`users/${userId}/skins/${randomRecolor}`] = 1;
                                 }
                             }
 
                             update(ref(database), updates).then(() => {
-                                alert(`Claimed item: ${itemId}`);
-                                location.reload();
+                                displayBattlePass(userData.BattlePassExp, userData.BPprogress || {});
+                                alert('Item claimed successfully!');
                             }).catch((error) => {
-                                console.error(error);
+                                console.error('Error claiming item:', error);
+                                alert('Failed to claim item. Please try again.');
                             });
+                        } else {
+                            alert('Not enough Battle Pass EXP to claim this item!');
                         }
                     }
-                }).catch((error) => {
-                    console.error(error);
                 });
             }
         }
 
-        // Buy Battle Pass function (keep your existing function)
+        // Buy Battle Pass function
         window.buyBattlepass = function() {
             const user = auth.currentUser;
             if (user) {

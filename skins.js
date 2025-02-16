@@ -39,13 +39,14 @@ const skinReference = {
         { name: "Blossom Jun", price: 1000, imagePath: "Skins/Blossom Jun.png" }
     ],
     "Cham Cham": [
+        { name: "Celestial Protector Cham Cham", price: 2000, imagePath: "Skins/Celestial Protector Cham Cham.jpeg" },
         { name: "Farmer Cham Cham", price: 2000, imagePath: "Skins/Farmer Cham Cham.jpeg" },
         { name: "Pajama Party Cham Cham", price: 2000, imagePath: "Skins/Pajama Party Cham Cham.jpg" },
         { name: "Neon Core Cham Cham", price: 2000, imagePath: "Skins/Neon Core Cham Cham.png" },
         { name: "Blossom Cham Cham", price: 2000, imagePath: "Skins/Blossom Cham Cham.png" }
     ],
     Reptile: [
-        { name: "Lunar Festival Reptile", price: 2000, imagePath: "Skins/Lunar Festival Reptile.jpeg" },
+        { name: "Lunar Festival Reptile", price: "UNAVAILABLE", imagePath: "Skins/Lunar Festival Reptile.jpeg" },
         { name: "Rainy Day Reptile", price: 1000, imagePath: "Skins/Rainy Day Reptile.jfif" },
         { name: "Goth Reptile", price: 1000, imagePath: "Skins/Goth Reptile.png" },
         { name: "Summertime Reptile", price: 2000, imagePath: "Skins/Summertime Reptile.png" },
@@ -61,6 +62,7 @@ const skinReference = {
         { name: "Rockstar Akuma", price: 1000, imagePath: "Skins/Rockstar Akuma.jpg" }
     ],
     Elphelt: [
+        { name: "Celestial Protector Elphelt", price: 2000, imagePath: "Skins/Celestial Protector Elphelt.jpeg" },
         { name: "Maid Elphelt", price: 1000, imagePath: "Skins/Maid Elphelt.png" },
         { name: "Cyber Hunter Elphelt", price: 1000, imagePath: "Skins/Cyber Hunter Elphelt.png" },
         { name: "Summertime Elphelt", price: 2000, imagePath: "Skins/Summertime Elphelt.png" },
@@ -76,7 +78,7 @@ const skinReference = {
         { name: "Demon Lord Kotal Kahn", price: 3000, imagePath: "Skins/Demon Lord Kotal Kahn.png" }
     ],
     Scorpion: [
-        { name: "Lunar Festival Scorpion", price: 2000, imagePath: "Skins/Lunar Festival Scorpion.jpeg" },
+        { name: "Lunar Festival Scorpion", price: "UNAVAILABLE", imagePath: "Skins/Lunar Festival Scorpion.jpeg" },
         { name: "Jade Scorpion", price: 2000, imagePath: "Skins/Jade Scorpion.jpeg" },
         { name: "Voidborn Scorpion", price: 2000, imagePath: "Skins/Voidborn Scorpion.jfif" },
         { name: "Primal Warrior Scorpion", price: 1000, imagePath: "Skins/Primal Warrior Scorpion.jpeg" },
@@ -106,7 +108,7 @@ const skinReference = {
         { name: "Royal Guard Astaroth", price: 1000, imagePath: "Skins/Royal Guard Astaroth.png" }
     ],
     Ibuki: [
-        { name: "Heartbreaker Ibuki", price: 2000, imagePath: "Skins/Heartbreaker Ibuki.jpeg" },
+        { name: "Heartbreaker Ibuki", price: "UNAVAILABLE", imagePath: "Skins/Heartbreaker Ibuki.jpeg" },
         { name: "Steampunk Ibuki", price: 1000, imagePath: "Skins/Steampunk Ibuki.jpeg" },
         { name: "DJ Ibuki", price: 2000, imagePath: "Skins/DJ Ibuki.png" },
         { name: "Demon Hunter Ibuki", price: 1000, imagePath: "Skins/Demon Hunter Ibuki.png" },
@@ -115,6 +117,7 @@ const skinReference = {
         { name: "Lady Deadpool Ibuki", price: "UNAVAILABLE", imagePath: "Skins/Lady Deadpool Ibuki.jpeg" }
     ],
     "R.Mika": [
+        { name: "Celestial Protector R Mika", price: 2000, imagePath: "Skins/Celestial Protector R Mika.jpeg" },
         { name: "Rainy Day R Mika", price: 2000, imagePath: "Skins/Rainy Day R Mika.jpeg" },
         { name: "Goth R Mika", price: 1000, imagePath: "Skins/Goth R Mika.png" },
         { name: "Professional Tennis Player R Mika", price: 1000, imagePath: "Skins/Professional Tennis Player R Mika.png" },
@@ -143,7 +146,7 @@ const skinReference = {
         { name: "Windwood Talim", price: 2000, imagePath: "Skins/Windwood Talim.jpeg" }
     ],
     Noel: [
-        { name: "Lunar Festival Noel", price: 2000, imagePath: "Skins/Lunar Festival Noel.jpg" },
+        { name: "Lunar Festival Noel", price: "UNAVAILABLE", imagePath: "Skins/Lunar Festival Noel.jpg" },
         { name: "Underworld Demon Noel", price: 3000, imagePath: "Skins/Underworld Demon Noel.jpeg" },
         { name: "Rainy Day Noel", price: 1000, imagePath: "Skins/Rainy Day Noel.jpeg" },
         { name: "Arcade Noel", price: 2000, imagePath: "Skins/Arcade Noel.jpeg" },
@@ -174,7 +177,7 @@ const skinReference = {
         { name: "Obsidian Wraith Ayane", price: 1000, imagePath: "Skins/Obsidian Wraith Ayane.png" }
     ],
     Siegfried: [
-        { name: "Lunar Festival Siegfried", price: 2000, imagePath: "Skins/Lunar Festival Siegfried.jpg" },
+        { name: "Lunar Festival Siegfried", price: "UNAVAILABLE", imagePath: "Skins/Lunar Festival Siegfried.jpg" },
         { name: "Jade Siegfried", price: 2000, imagePath: "Skins/Jade Siegfried.jfif" },
         { name: "High Elf Siegfried", price: 1000, imagePath: "Skins/High Elf Siegfried.png" },
         { name: "Schoolboy Siegfried", price: 1000, imagePath: "Skins/Schoolboy Siegfried.png" },
@@ -190,6 +193,7 @@ const skinReference = {
         { name: "Summertime Shoma", price: 2000, imagePath: "Skins/Summertime Shoma.png" }
     ],
     Juri: [
+        { name: "Celestial Protector Juri", price: 2000, imagePath: "Skins/Celestial Protector Juri.jpeg" },
         { name: "Winter Festival Juri", price: "UNAVAILABLE", imagePath: "Skins/Winter Festival Juri.jpeg" },
         { name: "Primal Warrior Juri", price: 1000, imagePath: "Skins/Primal Warrior Juri.png" },
         { name: "Casual Wear Juri", price: 1000, imagePath: "Skins/Casual Wear Juri.png" }
@@ -205,7 +209,7 @@ const skinReference = {
         { name: "Chris T", price: 1000, imagePath: "Skins/Chris T.png" }
     ],
     Kokoro: [
-        { name: "Lunar Festival Kokoro", price: 2000, imagePath: "Skins/Lunar Festival Kokoro.jpg" },
+        { name: "Lunar Festival Kokoro", price: "UNAVAILABLE", imagePath: "Skins/Lunar Festival Kokoro.jpg" },
         { name: "Pajama Party Kokoro", price: 1000, imagePath: "Skins/Pajama Party Kokoro.jpeg" },
         { name: "Schoolgirl Kokoro", price: 1000, imagePath: "Skins/Schoolgirl Kokoro.png" },
            
@@ -215,7 +219,7 @@ const skinReference = {
         { name: "Goth Eagle", price: 2000, imagePath: "Skins/Goth Eagle.png" }
     ],
     Sophitia: [
-        { name: "Lovely Sophitia", price: 2000, imagePath: "Skins/Lovely Sophitia.jpeg" },
+        { name: "Celestial Protector Sophitia", price: 2000, imagePath: "Skins/Celestial Protector Sophitia.jpeg" },
         { name: "Battle Bistro Sophitia", price: 2000, imagePath: "Skins/Battle Bistro Sophitia.jpeg" },
         { name: "Arcade Sophitia", price: 2000, imagePath: "Skins/Arcade Sophitia.jpeg" },
         { name: "Goth Sophitia", price: 2000, imagePath: "Skins/Goth Sophitia.png" }
@@ -229,7 +233,7 @@ const skinReference = {
         { name: "Samurai Shizumaru", price: 1000, imagePath: "Skins/Samurai Shizumaru.jpeg" }
     ],
     Kagome: [
-        { name: "Lovely Kagome", price: 3000, imagePath: "Skins/Lovely Kagome.jpeg" },
+        { name: "Lovely Kagome", price: "UNAVAILABLE", imagePath: "Skins/Lovely Kagome.jpeg" },
         { name: "Atlantean Kagome", price: 2000, imagePath: "Skins/Atlantean Kagome.jpeg" },
         { name: "Primal Huntress Kagome", price: 1000, imagePath: "Skins/Primal Huntress Kagome.jpeg" },
         { name: "Spectral Archer Kagome", price: 2000, imagePath: "Skins/Spectral Archer Kagome.jpeg" }
@@ -242,7 +246,7 @@ const skinReference = {
         { name: "Atlantean Kotal Kahn", price: 2000, imagePath: "Skins/Atlantean Kotal Kahn.jpeg" }
     ],
     Kuma: [
-        { name: "Date Night Kuma", price: 1000, imagePath: "Skins/Date Night Kuma.jpeg" },
+        { name: "Date Night Kuma", price: "UNAVAILABLE", imagePath: "Skins/Date Night Kuma.jpeg" },
         { name: "Winter Festival Kuma", price: "UNAVAILABLE", imagePath: "Skins/Winter Festival Kuma.jpeg" },
         { name: "Jade Panda", price: 2000, imagePath: "Skins/Jade Panda.jpeg" },
         { name: "Battle Bistro Kuma", price: 1000, imagePath: "Skins/Battle Bistro Kuma.jpeg" },
@@ -257,12 +261,13 @@ const skinReference = {
         { name: "Voidborn FANG", price: 2000, imagePath: "Skins/Voidborn FANG.jpeg" }
     ],
     Lili: [
-        { name: "Lunar Festival Lili", price: 2000, imagePath: "Skins/Lunar Festival Lili.jpg" },
+        { name: "Celestial Protector Lili", price: 2000, imagePath: "Skins/Celestial Protector Lili.jpeg" },
+        { name: "Lunar Festival Lili", price: "UNAVAILABLE", imagePath: "Skins/Lunar Festival Lili.jpg" },
         { name: "Winter Festival Lili", price: "UNAVAILABLE", imagePath: "Skins/Winter Festival Lili.jpg" },
         { name: "Battle Bistro Lili", price: 1000, imagePath: "Skins/Battle Bistro Lili.jpeg" }
     ],
     "Mega Man": [
-        { name: "Date Night Mega Man", price: 2000, imagePath: "Skins/Date Night Mega Man.jpeg" },
+        { name: "Date Night Mega Man", price: "UNAVAILABLE", imagePath: "Skins/Date Night Mega Man.jpeg" },
         { name: "Steamcore Megaman", price: 2000, imagePath: "Skins/Steamcore Megaman.jpeg" },
         { name: "Pyromancer Mega Man", price: 2000, imagePath: "Skins/Pyromancer Mega Man.jpeg" }
     ],

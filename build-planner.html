@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Fighters - Build Planner</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js" type="module"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="styles_new.css">
+    <style>
+        :root {
+            --bg-primary: #0A0E13;
+            --bg-secondary: #1A1F26;
+            --accent-primary: #C89B3C;
+            --accent-secondary: #785A28;
+            --text-primary: #F0E6D2;
+            --text-secondary: #A09B8C;
+            --border-color: #463714;
+            --gold: #F0E6D2;
+            --tooltip-bg: linear-gradient(135deg, rgba(10, 14, 19, 0.98), rgba(26, 31, 38, 0.98));
+            --item-hover: #1E282D;
+        }
+
+        .planner-container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            margin-top: 80px;
+            height: calc(100vh - 100px);
+        }
+
+        .character-selector {
+            width: 250px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .character-search {
+            position: relative;
+        }
+
+        .character-search input {
+            width: 100%;
+            padding: 10px 15px;
+            padding-left: 35px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 0.9em;
+        }
+
+        .character-search i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .character-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .character-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .character-option:hover {
+            background: var(--item-hover);
+        }
+
+        .character-option.selected {
+            background: var(--accent-secondary);
+            color: var(--gold);
+        }
+
+        .character-option img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .build-section {
+            flex: 1;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .build-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .selected-character {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .selected-character img {
+            width: 64px;
+            height: 64px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .character-info h2 {
+            color: var(--accent-primary);
+            margin: 0;
+        }
+
+        .character-info .patch {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .build-content {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .build-items {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            background: var(--bg-primary);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            height: 300px;
+            overflow-y: auto;
+        }
+
+        .item-slot {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed var(--border-color);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            transition: all 0.2s ease;
+        }
+
+        .item-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+        }
+
+        .item-slot:hover {
+            background: var(--item-hover);
+        }
+
+        .build-slots {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .build-slot {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .build-slot.dragover {
+            background: rgba(200, 155, 60, 0.1);
+            border-color: var(--accent-primary);
+        }
+
+        .build-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+        }
+
+        .build-stats {
+            width: 300px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .stats-header {
+            color: var(--accent-primary);
+            font-size: 1.2em;
+            font-weight: 600;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stats-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .stat-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .build-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .share-build {
+            flex: 1;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: var(--gold);
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .share-build:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .share-build:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Share Modal Styles */
+        .share-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .share-modal.show {
+            display: flex;
+        }
+
+        .share-modal-content {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .share-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .share-modal-title {
+            color: var(--accent-primary);
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+
+        .build-name-input {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+            color: var(--text-primary);
+            width: 100%;
+        }
+
+        .share-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .share-modal-actions button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .cancel-share {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .confirm-share {
+            background: var(--accent-primary);
+            border: none;
+            color: var(--gold);
+        }
+
+        /* Scrollbar Styles */
+        .items-grid::-webkit-scrollbar,
+        .character-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .items-grid::-webkit-scrollbar-track,
+        .character-list::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        .items-grid::-webkit-scrollbar-thumb,
+        .character-list::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .items-grid::-webkit-scrollbar-thumb:hover,
+        .character-list::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-secondary);
+        }
+
+        /* Item Tooltip Styles */
+        .item-tooltip {
+            position: fixed;
+            display: none;
+            background: var(--tooltip-bg);
+            color: var(--text-primary);
+            padding: 15px;
+            border-radius: 4px;
+            width: 300px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .tooltip-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tooltip-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .tooltip-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .tooltip-cost {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--gold);
+            margin-left: auto;
+        }
+
+        .tooltip-stats {
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .tooltip-stats div {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tooltip-passive {
+            color: var(--accent-primary);
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .tooltip-active {
+            color: #4CAF50;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .tooltip-description {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .item-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+
+        .item-tag {
+            background: rgba(200, 155, 60, 0.15);
+            border: 1px solid var(--accent-secondary);
+            color: var(--accent-primary);
+            font-size: 0.8em;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .cooldown {
+            margin-top: 4px;
+            color: #90A4AE;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .cooldown i {
+            font-size: 0.9em;
+        }
+
+        .items-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .items-title {
+            color: var(--accent-primary);
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .items-search {
+            position: relative;
+            width: 250px;
+        }
+
+        .items-search input {
+            width: 100%;
+            padding: 8px 15px;
+            padding-left: 35px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 0.9em;
+        }
+
+        .items-search i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .item-filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .item-filter {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .item-filter:hover {
+            background: var(--item-hover);
+            color: var(--text-primary);
+        }
+
+        .item-filter.active {
+            background: var(--accent-secondary);
+            border-color: var(--accent-primary);
+            color: var(--gold);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Menu -->
+    <nav class="main-nav">
+        <div class="nav-content">
+            <a href="Game Modes.html" class="play-button">
+                <i class="fas fa-play play-icon"></i>
+                <span class="play-text">Play</span>
+            </a>
+            <a href="home.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <span class="nav-text">Home</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="Store.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <span class="nav-text">Store</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="event.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-calendar"></i>
+                </div>
+                <span class="nav-text">Event</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="Team Builder.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <span class="nav-text">Team Builder</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="statistics.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <span class="nav-text">Statistics</span>
+                <div class="nav-indicator"></div>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Build Planner Container -->
+    <div class="planner-container">
+        <!-- Character Selector -->
+        <div class="character-selector">
+            <div class="character-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search champions..." id="character-search">
+            </div>
+            <div class="character-list" id="character-list">
+                <!-- Characters will be loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Build Section -->
+        <div class="build-section">
+            <div class="build-header">
+                <div class="selected-character">
+                    <img src="Icons/default-champion.png" alt="Select a champion" id="selected-champion-img">
+                    <div class="character-info">
+                        <h2 id="selected-champion-name">Select a Champion</h2>
+                        <div class="patch">Patch 2.1.1</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="build-content">
+                <div class="build-items">
+                    <div class="items-header">
+                        <div class="items-title">Available Items</div>
+                        <div class="items-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="item-search" placeholder="Search items...">
+                        </div>
+                    </div>
+                    <div class="item-filters" id="item-filters">
+                        <button class="item-filter active" data-category="all">
+                            <i class="fas fa-th"></i>
+                            All Items
+                        </button>
+                        <button class="item-filter" data-category="Attack">
+                            <i class="fas fa-gavel"></i>
+                            Attack
+                        </button>
+                        <button class="item-filter" data-category="Attack Speed">
+                            <i class="fas fa-forward"></i>
+                            Attack Speed
+                        </button>
+                        <button class="item-filter" data-category="Magic">
+                            <i class="fas fa-hat-wizard"></i>
+                            Magic
+                        </button>
+                        <button class="item-filter" data-category="Support">
+                            <i class="fas fa-hand-holding-heart"></i>
+                            Support
+                        </button>
+                        <button class="item-filter" data-category="Defense">
+                            <i class="fas fa-shield-alt"></i>
+                            Defense
+                        </button>
+                        <button class="item-filter" data-category="Movement">
+                            <i class="fas fa-running"></i>
+                            Movement
+                        </button>
+                        <button class="item-filter" data-category="Cooldown Reduction">
+                            <i class="fas fa-clock"></i>
+                            Cooldown Reduction
+                        </button>
+                        <button class="item-filter" data-category="Healing Reduction">
+                            <i class="fas fa-heart-broken"></i>
+                            Healing Reduction
+                        </button>
+                        <button class="item-filter" data-category="Anti-Tank">
+                            <i class="fas fa-fist-raised"></i>
+                            Anti-Tank
+                        </button>
+                    </div>
+                    <div class="items-grid" id="items-grid">
+                        <!-- Items will be loaded dynamically -->
+                    </div>
+                </div>
+
+                <div class="build-slots" id="build-slots">
+                    <div class="build-slot" data-slot="0"></div>
+                    <div class="build-slot" data-slot="1"></div>
+                    <div class="build-slot" data-slot="2"></div>
+                    <div class="build-slot" data-slot="3"></div>
+                    <div class="build-slot" data-slot="4"></div>
+                </div>
+
+                <div class="build-stats">
+                    <div class="stats-header">Build Statistics</div>
+                    <div class="stats-list" id="stats-list">
+                        <!-- Stats will be updated dynamically -->
+                    </div>
+                    <div class="build-actions">
+                        <button class="share-build" id="share-build" disabled>
+                            <i class="fas fa-share-alt"></i>
+                            Share Build
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="share-modal" id="share-modal">
+        <div class="share-modal-content">
+            <div class="share-modal-header">
+                <div class="share-modal-title">Share Your Build</div>
+                <button class="close-modal" onclick="closeShareModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <input type="text" class="build-name-input" id="build-name" placeholder="Enter your build name...">
+            <div class="share-modal-actions">
+                <button class="cancel-share" onclick="closeShareModal()">Cancel</button>
+                <button class="confirm-share" onclick="confirmShare()">Share Build</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="item-tooltip" class="item-tooltip"></div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, set, push } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { items } from './items.js';
+        import { roles } from './roles.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // Global variables
+        let selectedCharacter = null;
+        let currentBuild = new Array(5).fill(null);
+        const PATCH_VERSION = '2.1.1';
+        let currentCategory = 'all';
+        let searchQuery = '';
+
+        // Initialize auth state
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Load characters
+        function loadCharacters() {
+            const characterList = document.getElementById('character-list');
+            const characters = new Set();
+            
+            // Get unique characters from roles
+            Object.values(roles).forEach(roleChars => {
+                roleChars.forEach(char => characters.add(char));
+            });
+
+            // Sort characters alphabetically
+            const sortedCharacters = Array.from(characters).sort();
+
+            // Create character options
+            sortedCharacters.forEach(character => {
+                const option = document.createElement('div');
+                option.className = 'character-option';
+                option.dataset.character = character;
+                option.innerHTML = `
+                    <img src="Icons/${character}.png" alt="${character}">
+                    <span>${character}</span>
+                `;
+                option.onclick = () => selectCharacter(character);
+                characterList.appendChild(option);
+            });
+        }
+
+        // Character search functionality
+        document.getElementById('character-search').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('.character-option').forEach(option => {
+                const character = option.dataset.character.toLowerCase();
+                option.style.display = character.includes(searchTerm) ? 'flex' : 'none';
+            });
+        });
+
+        // Select character
+        function selectCharacter(character) {
+            selectedCharacter = character;
+            
+            // Update UI
+            document.querySelectorAll('.character-option').forEach(option => {
+                option.classList.toggle('selected', option.dataset.character === character);
+            });
+            
+            document.getElementById('selected-champion-img').src = `Icons/${character}.png`;
+            document.getElementById('selected-champion-name').textContent = character;
+            document.getElementById('share-build').disabled = false;
+
+            // Reset build
+            currentBuild = new Array(5).fill(null);
+            document.querySelectorAll('.build-slot').forEach(slot => {
+                slot.innerHTML = '';
+            });
+            updateStats();
+        }
+
+        // Load items
+        function loadItems() {
+            const itemsGrid = document.getElementById('items-grid');
+            const tooltip = document.getElementById('item-tooltip');
+            
+            // Clear existing items
+            itemsGrid.innerHTML = '';
+            
+            // Filter items based on category and search query
+            Object.values(items).forEach(item => {
+                if (
+                    (currentCategory === 'all' || item.tags.includes(currentCategory)) &&
+                    (searchQuery === '' || item.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                ) {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'item-slot';
+                    itemElement.draggable = true;
+                    itemElement.dataset.itemId = item.id;
+                    
+                    itemElement.innerHTML = `<img src="${item.image}" alt="${item.name}">`;
+                    
+                    // Add drag events
+                    itemElement.addEventListener('dragstart', handleDragStart);
+                    itemElement.addEventListener('dragend', handleDragEnd);
+                    
+                    // Add tooltip events
+                    itemElement.addEventListener('mouseover', (e) => showTooltip(e, item));
+                    itemElement.addEventListener('mousemove', moveTooltip);
+                    itemElement.addEventListener('mouseout', hideTooltip);
+                    
+                    itemsGrid.appendChild(itemElement);
+                }
+            });
+
+            // Add tooltip events to build slots
+            document.querySelectorAll('.build-slot').forEach(slot => {
+                slot.addEventListener('mouseover', (e) => {
+                    const itemId = slot.querySelector('img')?.dataset.itemId;
+                    if (itemId) {
+                        showTooltip(e, items[itemId]);
+                    }
+                });
+                slot.addEventListener('mousemove', moveTooltip);
+                slot.addEventListener('mouseout', hideTooltip);
+            });
+        }
+
+        // Drag and drop functionality
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.dataset.itemId);
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        // Initialize build slots
+        function initializeBuildSlots() {
+            document.querySelectorAll('.build-slot').forEach(slot => {
+                slot.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    slot.classList.add('dragover');
+                });
+
+                slot.addEventListener('dragleave', () => {
+                    slot.classList.remove('dragover');
+                });
+
+                slot.addEventListener('drop', e => {
+                    e.preventDefault();
+                    slot.classList.remove('dragover');
+                    
+                    const itemId = e.dataTransfer.getData('text/plain');
+                    const slotIndex = parseInt(slot.dataset.slot);
+                    
+                    // Check if item is being moved from another slot
+                    const sourceSlot = document.querySelector(`.build-slot img[data-item-id="${itemId}"]`)?.closest('.build-slot');
+                    if (sourceSlot) {
+                        const sourceIndex = parseInt(sourceSlot.dataset.slot);
+                        currentBuild[sourceIndex] = null;
+                        sourceSlot.innerHTML = '';
+                    }
+                    
+                    // Add item to new slot
+                    const item = items[itemId];
+                    slot.innerHTML = `<img src="${item.image}" alt="${item.name}" data-item-id="${itemId}">`;
+                    currentBuild[slotIndex] = item;
+                    
+                    updateStats();
+                });
+
+                // Allow removing items by clicking
+                slot.addEventListener('click', () => {
+                    const slotIndex = parseInt(slot.dataset.slot);
+                    if (currentBuild[slotIndex]) {
+                        currentBuild[slotIndex] = null;
+                        slot.innerHTML = '';
+                        updateStats();
+                    }
+                });
+            });
+        }
+
+        // Update stats
+        function updateStats() {
+            const statsList = document.getElementById('stats-list');
+            const stats = calculateBuildStats();
+            
+            statsList.innerHTML = '';
+            
+            Object.entries(stats).forEach(([stat, value]) => {
+                if (value !== 0) {
+                    const statElement = document.createElement('div');
+                    statElement.className = 'stat-item';
+                    
+                    const formattedStat = stat
+                        .replace(/([A-Z])/g, ' $1')
+                        .toLowerCase()
+                        .replace(/^\w/, c => c.toUpperCase());
+                    
+                    statElement.innerHTML = `
+                        <span>${formattedStat}</span>
+                        <span class="stat-value">+${value}${stat === 'attackSpeed' ? '%' : ''}</span>
+                    `;
+                    
+                    statsList.appendChild(statElement);
+                }
+            });
+        }
+
+        // Calculate build stats
+        function calculateBuildStats() {
+            const stats = {
+                attackDamage: 0,
+                abilityPower: 0,
+                armor: 0,
+                magicResistance: 0,
+                health: 0,
+                mana: 0,
+                attackSpeed: 0,
+                cooldownReduction: 0,
+                movementSpeed: 0,
+                lifeSteal: 0,
+                armorPenetration: 0,
+                magicPenetration: 0,
+                healingAndShieldingPower: 0,
+                tenacity: 0,
+                damageReduction: 0
+            };
+            
+            currentBuild.forEach(item => {
+                if (item && item.stats) {
+                    Object.entries(item.stats).forEach(([stat, value]) => {
+                        if (stats.hasOwnProperty(stat)) {
+                            stats[stat] += value;
+                        }
+                    });
+                }
+            });
+            
+            return stats;
+        }
+
+        // Share build functionality
+        window.openShareModal = function() {
+            if (!selectedCharacter || currentBuild.every(item => item === null)) return;
+            document.getElementById('share-modal').classList.add('show');
+        };
+
+        window.closeShareModal = function() {
+            document.getElementById('share-modal').classList.remove('show');
+            document.getElementById('build-name').value = '';
+        };
+
+        window.confirmShare = async function() {
+            const buildName = document.getElementById('build-name').value.trim();
+            if (!buildName) {
+                alert('Please enter a build name');
+                return;
+            }
+
+            try {
+                const user = auth.currentUser;
+                const buildData = {
+                    name: buildName,
+                    character: selectedCharacter,
+                    items: currentBuild.map(item => item ? item.id : null),
+                    creator: user.uid,
+                    creatorName: user.displayName || user.email.split('@')[0],
+                    timestamp: Date.now(),
+                    patch: PATCH_VERSION
+                };
+
+                // Replace dots with underscores in patch version for the database path
+                const safePatchVersion = PATCH_VERSION.replace(/\./g, '_');
+                const buildsRef = ref(database, `builds/${safePatchVersion}`);
+                await push(buildsRef, buildData);
+
+                closeShareModal();
+                alert('Build shared successfully!');
+            } catch (error) {
+                console.error('Error sharing build:', error);
+                alert('Failed to share build. Please try again.');
+            }
+        };
+
+        // Add these new tooltip functions after loadItems:
+        function showTooltip(e, item) {
+            const tooltip = document.getElementById('item-tooltip');
+            
+            tooltip.innerHTML = `
+                <div class="tooltip-header">
+                    <img src="${item.image}" alt="${item.name}" class="tooltip-icon">
+                    <div class="tooltip-name">${item.name}</div>
+                    <div class="tooltip-cost">
+                        <i class="fas fa-coins"></i>
+                        ${item.cost}
+                    </div>
+                </div>
+                <div class="item-tags">
+                    ${item.tags.map(tag => `<span class="item-tag">${tag}</span>`).join('')}
+                </div>
+                ${Object.keys(item.stats).length > 0 ? `
+                    <div class="tooltip-stats">
+                        ${Object.entries(item.stats).map(([stat, value]) => {
+                            const formattedStat = stat
+                                .replace(/([A-Z])/g, ' $1')
+                                .toLowerCase()
+                                .replace(/^\w/, c => c.toUpperCase());
+                            return `<div>+${value}${stat === 'attackSpeed' ? '%' : ''} ${formattedStat}</div>`;
+                        }).join('')}
+                    </div>
+                ` : ''}
+                ${item.passive ? `
+                    <div class="tooltip-passive">
+                        <strong>Passive - ${item.passive.name}</strong>
+                    </div>
+                    <div class="tooltip-description">
+                        ${item.passive.description}
+                    </div>
+                ` : ''}
+                ${item.active ? `
+                    <div class="tooltip-active">
+                        <strong>Active - ${item.active.name}</strong>
+                    </div>
+                    <div class="tooltip-description">
+                        ${item.active.description}
+                        <div class="cooldown">
+                            <i class="fas fa-clock"></i> ${item.active.cooldown}s cooldown
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+            
+            tooltip.style.display = 'block';
+            moveTooltip(e);
+        }
+
+        function moveTooltip(e) {
+            const tooltip = document.getElementById('item-tooltip');
+            const padding = 20;
+            
+            // Get viewport dimensions
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Get tooltip dimensions
+            const tooltipWidth = tooltip.offsetWidth;
+            const tooltipHeight = tooltip.offsetHeight;
+            
+            // Calculate position
+            let left = e.pageX + padding;
+            let top = e.pageY + padding;
+            
+            // Check right edge
+            if (left + tooltipWidth > viewportWidth) {
+                left = e.pageX - tooltipWidth - padding;
+            }
+            
+            // Check bottom edge
+            if (top + tooltipHeight > viewportHeight) {
+                top = e.pageY - tooltipHeight - padding;
+            }
+            
+            tooltip.style.left = `${left}px`;
+            tooltip.style.top = `${top}px`;
+        }
+
+        function hideTooltip() {
+            const tooltip = document.getElementById('item-tooltip');
+            tooltip.style.display = 'none';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCharacters();
+            loadItems();
+            initializeBuildSlots();
+            
+            // Add share button listener
+            document.getElementById('share-build').addEventListener('click', openShareModal);
+
+            // Add item filter listeners
+            document.querySelectorAll('.item-filter').forEach(filter => {
+                filter.addEventListener('click', () => {
+                    document.querySelectorAll('.item-filter').forEach(f => f.classList.remove('active'));
+                    filter.classList.add('active');
+                    currentCategory = filter.dataset.category;
+                    loadItems();
+                });
+            });
+
+            // Add item search listener
+            document.getElementById('item-search').addEventListener('input', (e) => {
+                searchQuery = e.target.value;
+                loadItems();
+            });
+        });
+    </script>
+</body>
+</html> 

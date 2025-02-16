@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Bio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary: #ff416c;
+            --secondary: #ff4b2b;
+            --text: #ffffff;
+            --bg: #0a0a0a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --hover-bg: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 80px 5%;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to right,
+                rgba(0, 0, 0, 0.9) 0%,
+                rgba(0, 0, 0, 0.7) 50%,
+                rgba(0, 0, 0, 0.4) 100%
+            );
+            z-index: 1;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 600px;
+        }
+
+        .character-title {
+            font-size: 5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+            text-transform: uppercase;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .character-subtitle {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .character-lore {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+        }
+
+        .character-role {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--card-bg);
+            border-radius: 20px;
+            font-weight: 500;
+            margin-right: 1rem;
+        }
+
+        .main-content {
+            position: relative;
+            padding: 4rem 5%;
+            background: var(--bg);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            border-radius: 10px;
+            font-size: 1.2rem;
+        }
+
+        .stat-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 1rem 0;
+            color: var(--primary);
+        }
+
+        .stat-details {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .abilities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .ability-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .ability-card:hover {
+            transform: translateY(-5px);
+            background: var(--hover-bg);
+        }
+
+        .ability-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .ability-key {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .ability-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .ability-description {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .ability-stats {
+            display: flex;
+            gap: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        .talents-section {
+            margin-bottom: 4rem;
+        }
+
+        .talents-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .talent-tier {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .talent-header {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .talents-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .talent-card {
+            background: var(--hover-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .talent-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary);
+        }
+
+        .talent-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: var(--text);
+        }
+
+        .talent-description {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .playstyle-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .playstyle-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .playstyle-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .playstyle-list {
+            list-style: none;
+        }
+
+        .playstyle-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .playstyle-item i {
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .character-title {
+                font-size: 3rem;
+            }
+
+            .character-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .main-content {
+                padding: 2rem;
+            }
+
+            .stats-grid, .abilities-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .talents-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .main-nav {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .play-button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 2rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .play-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 65, 108, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <nav class="main-nav">
+        <div class="nav-content">
+            <a href="Game Modes.html" class="play-button">
+                <i class="fas fa-play"></i>
+                <span>Play</span>
+            </a>
+            <a href="home.html" class="nav-link">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="Store.html" class="nav-link">
+                <i class="fas fa-store"></i>
+                <span>Store</span>
+            </a>
+            <a href="event.html" class="nav-link">
+                <i class="fas fa-calendar"></i>
+                <span>Event</span>
+            </a>
+            <a href="build-planner.html" class="nav-link">
+                <i class="fas fa-hammer"></i>
+                <span>Build Planner</span>
+            </a>
+            <a href="Team Builder.html" class="nav-link">
+                <i class="fas fa-users"></i>
+                <span>Team Builder</span>
+            </a>
+            <a href="statistics.html" class="nav-link">
+                <i class="fas fa-chart-bar"></i>
+                <span>Statistics</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <img id="hero-bg" class="hero-bg" src="" alt="Character Splash Art">
+        <div class="hero-content">
+            <h1 id="character-title" class="character-title"></h1>
+            <h2 id="character-subtitle" class="character-subtitle"></h2>
+            <p id="character-lore" class="character-lore"></p>
+            <div id="character-roles"></div>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <section id="stats">
+            <h2 class="section-title">Combat Statistics</h2>
+            <div class="stats-grid">
+                <!-- Stats will be dynamically added here -->
+            </div>
+        </section>
+
+        <section id="abilities">
+            <h2 class="section-title">Abilities</h2>
+            <div class="abilities-grid">
+                <!-- Abilities will be dynamically added here -->
+            </div>
+        </section>
+
+        <section id="talents" class="talents-section">
+            <h2 class="section-title">Talent Tree</h2>
+            <div class="talents-grid">
+                <!-- Talents will be dynamically added here -->
+            </div>
+        </section>
+
+        <section id="playstyle">
+            <h2 class="section-title">Combat Style</h2>
+            <div class="playstyle-section">
+                <!-- Playstyle info will be dynamically added here -->
+            </div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Function to format numbers with commas
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Function to update stats based on level
+        function updateStats(stats, level) {
+            const container = document.querySelector('.stats-grid');
+            container.innerHTML = '';
+
+            const statIcons = {
+                AD: 'fa-sword',
+                AP: 'fa-magic',
+                HP: 'fa-heart',
+                Mana: 'fa-droplet',
+                'Movement Speed': 'fa-running',
+                'Attack Speed': 'fa-bolt'
+            };
+
+            Object.entries(stats).forEach(([stat, values]) => {
+                if (values.base !== undefined) {  // Only show stats that have values
+                    const base = values.base;
+                    const growth = values.growth;
+                    const current = base + (growth * (level - 1));
+                    const type = values.type ? ` (${values.type})` : '';
+
+                    const card = document.createElement('div');
+                    card.className = 'stat-card';
+                    card.innerHTML = `
+                        <div class="stat-header">
+                            <i class="fas ${statIcons[stat]} stat-icon"></i>
+                            <span class="stat-name">${stat}${type}</span>
+                        </div>
+                        <div class="stat-value">${formatNumber(Math.round(current * 100) / 100)}</div>
+                        <div class="stat-details">
+                            Base: ${base} | Growth: +${growth}/level | Max: ${formatNumber(values.max)}
+                        </div>
+                        <input type="range" class="stat-slider" min="1" max="25" value="${level}"
+                            oninput="window.updateStatsLevel(this.value)">
+                    `;
+                    container.appendChild(card);
+                }
+            });
+        }
+
+        // Function to display abilities
+        function displayAbilities(abilities) {
+            const container = document.querySelector('.abilities-grid');
+            container.innerHTML = '';
+
+            Object.entries(abilities).forEach(([key, ability]) => {
+                const card = document.createElement('div');
+                card.className = 'ability-card';
+                card.innerHTML = `
+                    <div class="ability-header">
+                        <span class="ability-hotkey">${key.toUpperCase()}</span>
+                        <h3 class="ability-title">${ability.name}</h3>
+                    </div>
+                    <div class="ability-content">
+                        <p>${ability.description}</p>
+                        ${ability.cost ? `<div class="ability-cost">Cost: ${ability.cost}</div>` : ''}
+                        ${ability.cooldown ? `<div class="ability-cooldown">Cooldown: ${ability.cooldown}</div>` : ''}
+                        ${ability.charges ? `<div class="ability-charges">Charges: ${ability.charges}</div>` : ''}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Function to display talents
+        function displayTalents(talents) {
+            const container = document.querySelector('.talents-grid');
+            container.innerHTML = '';
+
+            Object.entries(talents).forEach(([level, tierTalents]) => {
+                const tier = document.createElement('div');
+                tier.className = 'talent-tier';
+                tier.innerHTML = `
+                    <h3 class="talent-header">Level ${level}</h3>
+                    <div class="talents-row">
+                        ${tierTalents.map(talent => `
+                            <div class="talent-card">
+                                <h4 class="talent-name">${talent.name}</h4>
+                                <p class="talent-description">${talent.description}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(tier);
+            });
+        }
+
+        // Function to display roles
+        function displayRoles(playstyle) {
+            const container = document.getElementById('character-roles');
+            container.innerHTML = `
+                <div class="character-role">
+                    <i class="fas fa-user-circle"></i>
+                    ${playstyle.role}
+                </div>
+                <div class="character-role">
+                    <i class="fas fa-star"></i>
+                    ${playstyle.difficulty}
+                </div>
+                <div class="character-role">
+                    <i class="fas fa-fist-raised"></i>
+                    ${playstyle.damage_type}
+                </div>
+            `;
+        }
+
+        // Function to display playstyle
+        function displayPlaystyle(playstyle) {
+            const container = document.querySelector('.playstyle-section');
+            container.innerHTML = `
+                <div class="playstyle-card">
+                    <h3 class="playstyle-title">Strengths</h3>
+                    <ul class="playstyle-list">
+                        ${playstyle.strengths.map(strength => `
+                            <li class="playstyle-item">
+                                <i class="fas fa-check-circle"></i>
+                                ${strength}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                <div class="playstyle-card">
+                    <h3 class="playstyle-title">Weaknesses</h3>
+                    <ul class="playstyle-list">
+                        ${playstyle.weaknesses.map(weakness => `
+                            <li class="playstyle-item">
+                                <i class="fas fa-exclamation-circle"></i>
+                                ${weakness}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        // Initialize the page
+        async function initializeBioPage() {
+            const characterName = getUrlParameter('character');
+            if (!characterName) {
+                window.location.href = 'home.html';
+                return;
+            }
+
+            try {
+                // Try loading with original name first (with spaces)
+                let response = await fetch(`bios/${characterName}.json`);
+                
+                // If that fails, try without spaces
+                if (!response.ok) {
+                    const bioFileName = characterName.replace(/\s+/g, '');
+                    response = await fetch(`bios/${bioFileName}.json`);
+                }
+                
+                if (!response.ok) throw new Error('Character bio not found');
+                const characterData = await response.json();
+
+                // Update hero section
+                document.getElementById('character-title').textContent = characterData.name;
+                document.getElementById('character-subtitle').textContent = characterData.title;
+                document.getElementById('character-lore').textContent = characterData.lore;
+                
+                // Try different image extensions
+                const tryLoadImage = async (basePath) => {
+                    const extensions = ['png', 'jpg', 'jpeg', 'jfif'];
+                    for (const ext of extensions) {
+                        const img = new Image();
+                        img.src = `${basePath}.${ext}`;
+                        try {
+                            await new Promise((resolve, reject) => {
+                                img.onload = resolve;
+                                img.onerror = reject;
+                            });
+                            return img.src;
+                        } catch (e) {
+                            continue;
+                        }
+                    }
+                    return null;
+                };
+
+                const splashPath = await tryLoadImage(`Default Splash/${characterName}`);
+                if (splashPath) {
+                    document.getElementById('hero-bg').src = splashPath;
+                }
+                
+                document.title = `${characterData.name} - ${characterData.title}`;
+
+                // Display roles
+                displayRoles(characterData.playstyle);
+
+                // Initialize sections
+                updateStats(characterData.stats, 1);
+                displayAbilities(characterData.abilities);
+                displayTalents(characterData.talents);
+                displayPlaystyle(characterData.playstyle);
+
+                // Make updateStats available globally
+                window.updateStatsLevel = (level) => updateStats(characterData.stats, parseInt(level));
+
+            } catch (error) {
+                console.error('Error loading character data:', error);
+                document.body.innerHTML = `
+                    <div class="error-message">
+                        <h2>Error Loading Character</h2>
+                        <p>Could not load information for ${characterName}.</p>
+                        <a href="home.html">Return to Home</a>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeBioPage);
+    </script>
+</body>
+</html> 

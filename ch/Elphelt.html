@@ -240,6 +240,206 @@
         .hidden {
             display: none;
         }
+
+        /* Builds Window Styles */
+        .builds-button {
+            position: fixed;
+            top: 75px;
+            right: 160px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #c89b3c, #785a28);
+            color: #f0e6d2;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1001;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .builds-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .builds-window {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 1200px;
+            height: 80vh;
+            background: linear-gradient(135deg, rgba(10, 14, 19, 0.97), rgba(26, 31, 38, 0.97));
+            border-radius: 12px;
+            border: 1px solid #463714;
+            z-index: 1002;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .builds-window.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -48%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        .builds-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            border-bottom: 1px solid #463714;
+        }
+
+        .builds-title {
+            color: #c89b3c;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .builds-title img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #463714;
+        }
+
+        .close-builds {
+            background: none;
+            border: none;
+            color: #a09b8c;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-builds:hover {
+            color: #f0e6d2;
+        }
+
+        .builds-content {
+            padding: 30px;
+            height: calc(100% - 100px);
+            overflow-y: auto;
+        }
+
+        .builds-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .build-card {
+            background: rgba(10, 14, 19, 0.8);
+            border: 1px solid #463714;
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .build-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .build-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .build-name {
+            color: #f0e6d2;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .build-creator {
+            color: #a09b8c;
+            font-size: 14px;
+        }
+
+        .build-items {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .build-item {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #463714;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .build-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .build-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            font-size: 14px;
+            color: #a09b8c;
+        }
+
+        .build-stat {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .stat-value {
+            color: #f0e6d2;
+            font-weight: 500;
+        }
+
+        .builds-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .builds-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .builds-content::-webkit-scrollbar-thumb {
+            background: #463714;
+            border-radius: 4px;
+        }
+
+        .builds-content::-webkit-scrollbar-thumb:hover {
+            background: #785a28;
+        }
+
+        .no-builds {
+            text-align: center;
+            color: #a09b8c;
+            padding: 40px;
+            font-size: 18px;
+        }
+
+        .build-patch {
+            color: #785a28;
+            font-size: 12px;
+            margin-top: 10px;
+            text-align: right;
+        }
   </style>
   <!-- Include Firebase SDK and configuration as module scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module">
@@ -259,6 +459,7 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
         import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { items } from '../items.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
@@ -308,6 +509,139 @@
                 bestPlayersList.appendChild(listItem);
             });
         }
+
+        // Builds functionality
+        async function loadBuilds() {
+            const buildsGrid = document.getElementById('builds-grid');
+            buildsGrid.innerHTML = ''; // Clear existing builds
+
+            try {
+                // Get builds from all patch versions
+                const patches = ['2_1_1']; // Add more patch versions as needed
+                let allBuilds = [];
+
+                for (const patch of patches) {
+                    const buildsRef = ref(database, `builds/${patch}`);
+                    const snapshot = await get(buildsRef);
+                    
+                    if (snapshot.exists()) {
+                        const builds = snapshot.val();
+                        Object.entries(builds).forEach(([key, build]) => {
+                            if (build.character === 'Elphelt') {
+                                allBuilds.push({ ...build, id: key });
+                            }
+                        });
+                    }
+                }
+
+                if (allBuilds.length === 0) {
+                    buildsGrid.innerHTML = `
+                        <div class="no-builds">
+                            <i class="fas fa-hammer"></i>
+                            <p>No builds found for Elphelt yet.</p>
+                            <p>Be the first to create and share a build!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Sort builds by timestamp (newest first)
+                allBuilds.sort((a, b) => b.timestamp - a.timestamp);
+
+                // Create build cards
+                allBuilds.forEach(build => {
+                    const buildCard = document.createElement('div');
+                    buildCard.className = 'build-card';
+                    
+                    const stats = calculateBuildStats(build.items);
+                    
+                    buildCard.innerHTML = `
+                        <div class="build-header">
+                            <div class="build-name">${build.name}</div>
+                            <div class="build-creator">by ${build.creatorName}</div>
+                        </div>
+                        <div class="build-items">
+                            ${build.items.map(itemId => itemId ? 
+                                `<div class="build-item">
+                                    <img src="../${items[itemId].image}" alt="${items[itemId].name}">
+                                </div>` : 
+                                `<div class="build-item"></div>`
+                            ).join('')}
+                        </div>
+                        <div class="build-stats">
+                            ${Object.entries(stats)
+                                .filter(([_, value]) => value !== 0)
+                                .map(([stat, value]) => `
+                                    <div class="build-stat">
+                                        <span>${formatStatName(stat)}</span>
+                                        <span class="stat-value">+${value}${stat === 'attackSpeed' ? '%' : ''}</span>
+                                    </div>
+                                `).join('')}
+                        </div>
+                        <div class="build-patch">Patch ${build.patch}</div>
+                    `;
+                    
+                    buildsGrid.appendChild(buildCard);
+                });
+            } catch (error) {
+                console.error('Error loading builds:', error);
+                buildsGrid.innerHTML = `
+                    <div class="no-builds">
+                        <p>Error loading builds. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function calculateBuildStats(buildItems) {
+            const stats = {
+                attackDamage: 0,
+                abilityPower: 0,
+                armor: 0,
+                magicResistance: 0,
+                health: 0,
+                mana: 0,
+                attackSpeed: 0,
+                cooldownReduction: 0,
+                movementSpeed: 0,
+                lifeSteal: 0,
+                armorPenetration: 0,
+                magicPenetration: 0,
+                healingAndShieldingPower: 0,
+                tenacity: 0,
+                damageReduction: 0
+            };
+            
+            buildItems.forEach(itemId => {
+                if (itemId && items[itemId] && items[itemId].stats) {
+                    Object.entries(items[itemId].stats).forEach(([stat, value]) => {
+                        if (stats.hasOwnProperty(stat)) {
+                            stats[stat] += value;
+                        }
+                    });
+                }
+            });
+            
+            return stats;
+        }
+
+        function formatStatName(stat) {
+            return stat
+                .replace(/([A-Z])/g, ' $1')
+                .toLowerCase()
+                .replace(/^\w/, c => c.toUpperCase());
+        }
+
+        // Make functions globally available
+        window.loadBuilds = loadBuilds;
+        window.toggleBuildsWindow = function() {
+            const buildsWindow = document.getElementById('builds-window');
+            buildsWindow.classList.toggle('show');
+            
+            if (buildsWindow.classList.contains('show')) {
+                loadBuilds();
+            }
+        };
 
         window.onload = function() {
             onAuthStateChanged(auth, (user) => {
@@ -401,6 +735,32 @@
     ❯
    </span>
   </div>
+  <!-- Add the builds button -->
+  <button class="builds-button" onclick="toggleBuildsWindow()">
+    <i class="fas fa-hammer"></i> View Builds
+  </button>
+
+  <!-- Builds Window -->
+  <div class="builds-window" id="builds-window">
+    <div class="builds-header">
+        <div class="builds-title">
+            <img src="../Icons/Elphelt.png" alt="Elphelt">
+            <span>Elphelt Builds</span>
+        </div>
+        <button class="close-builds" onclick="toggleBuildsWindow()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="builds-content">
+        <div class="builds-grid" id="builds-grid">
+            <!-- Builds will be loaded dynamically -->
+        </div>
+    </div>
+  </div>
+
+  <!-- Add Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
   <script>
    const skins = [
                             '../Skins/Elphelt Shiny.jpeg',

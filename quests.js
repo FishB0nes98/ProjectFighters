@@ -7,7 +7,7 @@ export const questTypes = {
     },
     special: {
         title: 'Special Quests',
-        resetInterval: 'never',
+        resetInterval: 'daily',
         maxActive: 3
     }
 };
@@ -36,84 +36,131 @@ export const questTemplates = {
             }
         },
         {
-            id: 'love_day_character',
-            icon: 'fa-heart',
-            title: 'Love Day Special',
-            description: 'Play a game as Christie, Morrigan or Elphelt',
+            id: 'celestial_kills',
+            icon: 'fa-skull',
+            title: 'Celestial Slayer',
+            description: 'Get 50 kills in total',
             requirements: {
-                count: 1,
-                type: 'play_character',
-                characters: ['Christie', 'Morrigan', 'Elphelt']
+                count: 50,
+                type: 'kills'
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 50 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 60 }
             ],
-            resetInterval: 64800000, // 18 hours in milliseconds
+            resetInterval: 68400000, // 19 hours in milliseconds
+            defaultData: {
+                progress: 0,
+                completed: false,
+                claimed: false,
+                lastReset: null,
+                totalKills: 0
+            }
+        }
+    ],
+    special: [
+        {
+            id: 'top_lane_games',
+            icon: 'fa-chevron-up',
+            title: 'Top Lane Mastery',
+            description: 'Play 10 games as Top',
+            requirements: {
+                count: 10,
+                type: 'play_role',
+                roles: ['top']
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 35 }
+            ],
+            resetInterval: 72000000, // 20 hours in milliseconds
             defaultData: {
                 progress: 0,
                 completed: false,
                 claimed: false,
                 lastReset: null
             }
-        }
-    ],
-    special: [
+        },
         {
-            id: 'win_streak',
-            icon: 'fa-fire',
-            title: 'Win Streak',
-            description: 'Win 2 games in a row',
+            id: 'jungle_games',
+            icon: 'fa-tree',
+            title: 'Jungle Mastery',
+            description: 'Play 10 games as Jungle',
             requirements: {
-                count: 2,
-                type: 'win_streak'
+                count: 10,
+                type: 'play_role',
+                roles: ['jungle']
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 50 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 35 }
             ],
+            resetInterval: 72000000, // 20 hours in milliseconds
             defaultData: {
                 progress: 0,
                 completed: false,
                 claimed: false,
-                streak: 0
+                lastReset: null
             }
         },
         {
-            id: 'love_day_win',
-            icon: 'fa-heart',
-            title: 'Love Day Victory',
-            description: 'Win a game as Morrigan, Elphelt, Christie, Kuma, Ibuki, Mega Man, Sophitia, Kagome or Alice',
-            requirements: {
-                count: 1,
-                type: 'win_character',
-                characters: ['Morrigan', 'Elphelt', 'Christie', 'Kuma', 'Ibuki', 'Mega Man', 'Sophitia', 'Kagome', 'Alice']
-            },
-            rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 25 },
-                { type: 'championMoney', icon: 'res/img/cm.png', amount: 250 }
-            ],
-            defaultData: {
-                progress: 0,
-                completed: false,
-                claimed: false
-            }
-        },
-        {
-            id: 'bot_lane_games',
-            icon: 'fa-users',
-            title: 'Bot Lane Specialist',
-            description: 'Play 10 games as ADC or Support',
+            id: 'mid_lane_games',
+            icon: 'fa-star',
+            title: 'Mid Lane Mastery',
+            description: 'Play 10 games as Mid',
             requirements: {
                 count: 10,
                 type: 'play_role',
-                roles: ['adc', 'support']
+                roles: ['mid']
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 75 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 35 }
             ],
+            resetInterval: 72000000, // 20 hours in milliseconds
             defaultData: {
                 progress: 0,
                 completed: false,
-                claimed: false
+                claimed: false,
+                lastReset: null
+            }
+        },
+        {
+            id: 'adc_games',
+            icon: 'fa-crosshairs',
+            title: 'ADC Mastery',
+            description: 'Play 10 games as ADC',
+            requirements: {
+                count: 10,
+                type: 'play_role',
+                roles: ['adc']
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 35 }
+            ],
+            resetInterval: 72000000, // 20 hours in milliseconds
+            defaultData: {
+                progress: 0,
+                completed: false,
+                claimed: false,
+                lastReset: null
+            }
+        },
+        {
+            id: 'support_games',
+            icon: 'fa-heart',
+            title: 'Support Mastery',
+            description: 'Play 10 games as Support',
+            requirements: {
+                count: 10,
+                type: 'play_role',
+                roles: ['support']
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 35 }
+            ],
+            resetInterval: 72000000, // 20 hours in milliseconds
+            defaultData: {
+                progress: 0,
+                completed: false,
+                claimed: false,
+                lastReset: null
             }
         }
     ]

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARAM Stats</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            padding: 0;
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        thead {
+            background-color: #333333;
+        }
+
+        th, td {
+            border: 1px solid #444444;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #ff9800;
+            color: white;
+            cursor: pointer;
+        }
+
+        img {
+            margin-right: 10px;
+            vertical-align: middle;
+            width: 50px;
+            height: 50px;
+        }
+
+        .menu {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 0;
+        }
+
+        .menu-items {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 16px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+
+        .play-button {
+            background-color: #ffbb00;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 22px;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 15px 40px;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            top: 0px;
+            position: absolute;
+            left: 0px;
+        }
+
+        .play-button:hover {
+            background-color: #ff8800;
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .stats-header {
+            text-align: center;
+            color: #ff9800;
+            margin: 20px 0;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body>
+    <!-- Menu -->
+    <div class="menu">
+        <div class="menu-items">
+            <a href="home.html">Home</a>
+            <a href="Store.html">Store</a>
+            <a href="event.html">Event</a>
+            <a href="Team Builder.html">Team Builder</a>
+            <a href="statistics.html">Statistics</a>
+        </div>
+    </div>
+    <div class="play-button-container">
+        <a href="Game Modes.html" class="play-button">Play</a>
+    </div>
+
+    <h1 class="stats-header">ARAM Mode Statistics</h1>
+
+    <table id="characterTable">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)">Character</th>
+                <th onclick="sortTable(1)">Win Rate</th>
+                <th onclick="sortTable(2)">Wins</th>
+                <th onclick="sortTable(3)">Losses</th>
+                <th onclick="sortTable(4)">Ban Rate</th>
+                <th onclick="sortTable(5)">Total Games</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be added here by JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        // Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        var database = firebase.database();
+
+        function fetchCharacterData() {
+            database.ref('characters/ARAM').once('value', function(snapshot) {
+                var totalGamesPlayed = 0;
+                var characterData = [];
+
+                // First pass: calculate total games for ban rate
+                snapshot.forEach(function(childSnapshot) {
+                    var data = childSnapshot.val();
+                    var wins = data.win || 0;
+                    var losses = data.lose || 0;
+                    totalGamesPlayed += wins + losses;
+                });
+
+                // Second pass: process and display data
+                snapshot.forEach(function(childSnapshot) {
+                    var character = childSnapshot.key;
+                    var data = childSnapshot.val();
+                    var wins = data.win || 0;
+                    var losses = data.lose || 0;
+                    var bans = data.bans || 0;
+                    var totalGames = wins + losses;
+                    
+                    var winRate = totalGames > 0 ? ((wins / totalGames) * 100).toFixed(2) + '%' : '0%';
+                    var banRate = totalGamesPlayed > 0 ? ((bans / totalGamesPlayed) * 100).toFixed(2) + '%' : '0%';
+
+                    characterData.push({
+                        character: character,
+                        wins: wins,
+                        losses: losses,
+                        winRate: winRate,
+                        banRate: banRate,
+                        totalGames: totalGames
+                    });
+                });
+
+                // Sort by win rate initially
+                characterData.sort((a, b) => {
+                    return parseFloat(b.winRate) - parseFloat(a.winRate);
+                });
+
+                // Clear and populate table
+                var tableBody = document.querySelector('#characterTable tbody');
+                tableBody.innerHTML = '';
+                characterData.forEach(function(data) {
+                    addTableRow(data.character, data.winRate, data.wins, data.losses, data.banRate, data.totalGames);
+                });
+            });
+        }
+
+        function addTableRow(character, winRate, wins, losses, banRate, totalGames) {
+            var tableBody = document.querySelector('#characterTable tbody');
+            var row = document.createElement('tr');
+            
+            var cellCharacter = document.createElement('td');
+            var img = document.createElement('img');
+            img.src = `Icons/${character}.png`;
+            img.alt = character;
+            var anchor = document.createElement('a');
+            anchor.href = `ch/${character}.html`;
+            anchor.textContent = character;
+            anchor.style.color = 'white';
+
+            cellCharacter.appendChild(img);
+            cellCharacter.appendChild(anchor);
+
+            var cellWinRate = document.createElement('td');
+            cellWinRate.textContent = winRate;
+
+            var cellWins = document.createElement('td');
+            cellWins.textContent = wins;
+
+            var cellLosses = document.createElement('td');
+            cellLosses.textContent = losses;
+
+            var cellBanRate = document.createElement('td');
+            cellBanRate.textContent = banRate;
+
+            var cellTotalGames = document.createElement('td');
+            cellTotalGames.textContent = totalGames;
+
+            row.appendChild(cellCharacter);
+            row.appendChild(cellWinRate);
+            row.appendChild(cellWins);
+            row.appendChild(cellLosses);
+            row.appendChild(cellBanRate);
+            row.appendChild(cellTotalGames);
+            tableBody.appendChild(row);
+        }
+
+        window.onload = function() {
+            fetchCharacterData();
+        };
+
+        function sortTable(columnIndex) {
+            var table = document.getElementById("characterTable");
+            var rows = Array.from(table.rows).slice(1);
+            var isNumericColumn = columnIndex > 0;
+
+            rows.sort(function(a, b) {
+                var cellA = a.cells[columnIndex].innerText;
+                var cellB = b.cells[columnIndex].innerText;
+
+                if (isNumericColumn) {
+                    var numA = parseFloat(cellA.replace('%', ''));
+                    var numB = parseFloat(cellB.replace('%', ''));
+                    return numB - numA;
+                } else {
+                    return cellA.localeCompare(cellB);
+                }
+            });
+
+            rows.forEach(function(row) {
+                table.tBodies[0].appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html> 

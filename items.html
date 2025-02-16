@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Fighters - Items</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js" type="module"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="styles_new.css">
+    <style>
+        :root {
+            --bg-primary: #0A0E13;
+            --bg-secondary: #1A1F26;
+            --accent-primary: #C89B3C;
+            --accent-secondary: #785A28;
+            --text-primary: #F0E6D2;
+            --text-secondary: #A09B8C;
+            --border-color: #463714;
+            --gold: #F0E6D2;
+            --tooltip-bg: linear-gradient(135deg, rgba(10, 14, 19, 0.98), rgba(26, 31, 38, 0.98));
+            --item-hover: #1E282D;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .shop-container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            margin-top: 80px;
+            height: calc(100vh - 100px);
+        }
+
+        .categories {
+            width: 200px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+        }
+
+        .category-title {
+            color: var(--accent-primary);
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .category-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .category-item {
+            padding: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-item:hover {
+            background: var(--item-hover);
+            color: var(--text-primary);
+        }
+
+        .category-item.active {
+            background: var(--item-hover);
+            color: var(--accent-primary);
+        }
+
+        .items-section {
+            flex: 1;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .items-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .items-title {
+            color: var(--accent-primary);
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 8px 15px;
+            padding-left: 35px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 0.9em;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            gap: 10px;
+        }
+
+        .item-card {
+            position: relative;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            overflow: visible;
+        }
+
+        .item-card:hover {
+            background: var(--item-hover);
+            border-color: var(--accent-primary);
+        }
+
+        .item-image {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: contain;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .item-cost {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: var(--gold);
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .tooltip {
+            position: absolute;
+            visibility: hidden;
+            opacity: 0;
+            background: var(--tooltip-bg);
+            color: var(--text-primary);
+            padding: 15px;
+            border-radius: 4px;
+            width: 300px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            z-index: 1000;
+            pointer-events: none;
+            transition: all 0.2s ease;
+            left: calc(100% + 10px);
+            top: 0;
+        }
+
+        .item-card:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .tooltip::before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: 15px;
+            width: 10px;
+            height: 10px;
+            background: inherit;
+            transform: rotate(45deg);
+            border-left: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tooltip-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tooltip-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .tooltip-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .tooltip-stats {
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .tooltip-stats div {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tooltip-passive {
+            color: var(--accent-primary);
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .tooltip-active {
+            color: #4CAF50;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .cooldown {
+            margin-top: 4px;
+            color: #90A4AE;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .cooldown i {
+            font-size: 0.9em;
+        }
+
+        .tooltip-description {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .item-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+
+        .item-tag {
+            background: rgba(200, 155, 60, 0.15);
+            border: 1px solid var(--accent-secondary);
+            color: var(--accent-primary);
+            font-size: 0.8em;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .tooltip-cost {
+            color: var(--gold);
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Scrollbar Styles */
+        .items-section::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .items-section::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        .items-section::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .items-section::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .shop-container {
+                flex-direction: column;
+            }
+
+            .categories {
+                width: 100%;
+            }
+
+            .tooltip {
+                position: fixed;
+                left: 50% !important;
+                top: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                width: 90%;
+                max-width: 300px;
+            }
+
+            .tooltip::before {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Menu -->
+    <nav class="main-nav">
+        <div class="nav-content">
+            <a href="Game Modes.html" class="play-button">
+                <i class="fas fa-play play-icon"></i>
+                <span class="play-text">Play</span>
+            </a>
+            <a href="home.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <span class="nav-text">Home</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="Store.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <span class="nav-text">Store</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="event.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-calendar"></i>
+                </div>
+                <span class="nav-text">Event</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="Team Builder.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <span class="nav-text">Team Builder</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="statistics.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <span class="nav-text">Statistics</span>
+                <div class="nav-indicator"></div>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Shop Container -->
+    <div class="shop-container">
+        <!-- Categories -->
+        <div class="categories">
+            <div class="category-title">Categories</div>
+            <ul class="category-list">
+                <li class="category-item active" data-category="all">
+                    <i class="fas fa-th"></i>
+                    All Items
+                </li>
+                <li class="category-item" data-category="Attack">
+                    <i class="fas fa-gavel"></i>
+                    Attack
+                </li>
+                <li class="category-item" data-category="Attack Speed">
+                    <i class="fas fa-forward"></i>
+                    Attack Speed
+                </li>
+                <li class="category-item" data-category="Magic">
+                    <i class="fas fa-hat-wizard"></i>
+                    Magic
+                </li>
+                <li class="category-item" data-category="Support">
+                    <i class="fas fa-hand-holding-heart"></i>
+                    Support
+                </li>
+                <li class="category-item" data-category="Defense">
+                    <i class="fas fa-shield-alt"></i>
+                    Defense
+                </li>
+                <li class="category-item" data-category="Movement">
+                    <i class="fas fa-running"></i>
+                    Movement
+                </li>
+                <li class="category-item" data-category="Cooldown Reduction">
+                    <i class="fas fa-clock"></i>
+                    Cooldown Reduction
+                </li>
+                <li class="category-item" data-category="Healing Reduction">
+                    <i class="fas fa-heart-broken"></i>
+                    Healing Reduction
+                </li>
+                <li class="category-item" data-category="Anti-Tank">
+                    <i class="fas fa-fist-raised"></i>
+                    Anti-Tank
+                </li>
+            </ul>
+        </div>
+
+        <!-- Items Section -->
+        <div class="items-section">
+            <div class="items-header">
+                <div class="items-title">All Items</div>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="item-search" placeholder="Search items...">
+                </div>
+            </div>
+            
+            <div class="items-grid" id="items-grid">
+                <!-- Items will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase imports
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { items } from './items.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // Initialize auth state
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Shop functionality
+        let currentCategory = 'all';
+        let searchQuery = '';
+
+        function createItemCard(item) {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            
+            // Handle missing image
+            const imgSrc = item.image;
+            const imgOnError = `this.onerror=null;this.src='items/default_item.webp'`;
+            
+            card.innerHTML = `
+                <img src="${imgSrc}" alt="${item.name}" class="item-image" onerror="${imgOnError}">
+                <div class="item-cost">
+                    <i class="fas fa-coins"></i>
+                    ${item.cost}
+                </div>
+                <div class="tooltip">
+                    <div class="tooltip-header">
+                        <img src="${imgSrc}" alt="${item.name}" class="tooltip-icon" onerror="${imgOnError}">
+                        <div class="tooltip-name">${item.name}</div>
+                    </div>
+                    <div class="item-tags">
+                        ${item.tags.map(tag => `<span class="item-tag">${tag}</span>`).join('')}
+                    </div>
+                    ${Object.keys(item.stats).length > 0 ? `
+                        <div class="tooltip-stats">
+                            ${Object.entries(item.stats).map(([stat, value]) => {
+                                const formattedStat = stat
+                                    .replace(/([A-Z])/g, ' $1')
+                                    .toLowerCase()
+                                    .replace(/^\w/, c => c.toUpperCase());
+                                return `<div>+${value}${stat === 'armorPenetration' || stat === 'armor' ? '%' : ''} ${formattedStat}</div>`;
+                            }).join('')}
+                        </div>
+                    ` : ''}
+                    ${item.passive ? `
+                        <div class="tooltip-passive">
+                            <strong>Passive - ${item.passive.name}:</strong>
+                        </div>
+                        <div class="tooltip-description">
+                            ${item.passive.description}
+                        </div>
+                    ` : ''}
+                    ${item.active ? `
+                        <div class="tooltip-active">
+                            <strong>Active - ${item.active.name}:</strong>
+                        </div>
+                        <div class="tooltip-description">
+                            ${item.active.description}
+                            <div class="cooldown">
+                                <i class="fas fa-clock"></i> ${item.active.cooldown}s cooldown
+                            </div>
+                        </div>
+                    ` : ''}
+                    <div class="tooltip-cost">
+                        <i class="fas fa-coins"></i> ${item.cost} Gold
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function filterItems() {
+            const itemsGrid = document.getElementById('items-grid');
+            itemsGrid.innerHTML = '';
+
+            // Check if items is loaded
+            if (!items) {
+                console.error('Items not loaded');
+                return;
+            }
+
+            Object.values(items).forEach(item => {
+                if (
+                    (currentCategory === 'all' || item.tags.includes(currentCategory)) &&
+                    (searchQuery === '' || item.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                ) {
+                    itemsGrid.appendChild(createItemCard(item));
+                }
+            });
+
+            // Update count in title
+            const filteredCount = itemsGrid.children.length;
+            const titleText = currentCategory === 'all' 
+                ? `All Items (${filteredCount})` 
+                : `${currentCategory} Items (${filteredCount})`;
+            document.querySelector('.items-title').textContent = titleText;
+        }
+
+        // Event Listeners
+        document.querySelectorAll('.category-item').forEach(category => {
+            category.addEventListener('click', () => {
+                // Update active state
+                document.querySelectorAll('.category-item').forEach(c => c.classList.remove('active'));
+                category.classList.add('active');
+
+                // Update category
+                currentCategory = category.dataset.category;
+                filterItems();
+            });
+        });
+
+        document.getElementById('item-search').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            filterItems();
+        });
+
+        // Initial render
+        window.addEventListener('load', () => {
+            console.log('Items loaded:', items);
+            filterItems();
+        });
+    </script>
+</body>
+</html> 

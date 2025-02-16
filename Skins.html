@@ -362,6 +362,24 @@
             50% { box-shadow: 0 0 20px rgba(255, 165, 0, 0.5); }
             100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
 		}
+
+        /* Add celestial badge style */
+        .celestial-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+            box-shadow: 0 0 10px rgba(155, 89, 182, 0.3);
+            animation: celestialGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes celestialGlow {
+            0% { box-shadow: 0 0 10px rgba(155, 89, 182, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(241, 196, 15, 0.5); }
+            100% { box-shadow: 0 0 10px rgba(155, 89, 182, 0.3); }
+        }
     </style>
 </head>
 <body>
@@ -433,8 +451,10 @@
         // Initialize champions grid
         function initChampionsGrid() {
             const grid = document.getElementById('champions-grid');
-            const newSkins = ["Ibuki", "Kuma", "Mega Man", "Sophitia", "Kagome"];
-            const loveSkins = ["Ibuki", "Kuma", "Mega Man", "Sophitia", "Kagome"];
+            // Update new skins list for Celestial Protectors
+            const newSkins = ["Lili", "Juri", "Elphelt", "Sophitia", "Cham Cham", "R.Mika"];
+            // Remove love skins list as it's no longer relevant
+            const celestialSkins = ["Lili", "Juri", "Elphelt", "Sophitia", "Cham Cham", "R.Mika"];
             const freeSkins = ["Kuma"];
             
             const fileNameCorrections = {
@@ -477,11 +497,11 @@
                     badgeRow1.appendChild(newBadge);
                 }
                 
-                if (loveSkins.includes(champion)) {
-                    const loveBadge = document.createElement('div');
-                    loveBadge.className = 'love-badge';
-                    loveBadge.textContent = 'LOVE';
-                    badgeRow1.appendChild(loveBadge);
+                if (celestialSkins.includes(champion)) {
+                    const celestialBadge = document.createElement('div');
+                    celestialBadge.className = 'celestial-badge';
+                    celestialBadge.textContent = 'CELESTIAL';
+                    badgeRow1.appendChild(celestialBadge);
                 }
 
                 if (freeSkins.includes(champion)) {
@@ -527,7 +547,7 @@
                 tagsContainer.className = 'skin-tags';
                 
                 // Add appropriate tags based on conditions
-                if (skin.name.includes('Date Night') || skin.name.includes('Lovely') || skin.name.includes('Heartbreaker')) {
+                if (skin.name.includes('Celestial Protector')) {
                     const newTag = document.createElement('div');
                     newTag.className = 'skin-tag tag-new';
                     newTag.textContent = 'NEW';

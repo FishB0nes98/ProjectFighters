@@ -457,5 +457,11 @@ export const skinToBaseCharacterMap = {
     'Date Night Kuma': 'Kuma',
     'Date Night Mega Man': 'Mega Man',
     'Lovely Sophitia': 'Sophitia',
-    'Lovely Kagome': 'Kagome'
+    'Lovely Kagome': 'Kagome',
+    'Celestial Protector Cham Cham': 'Cham Cham',
+    'Celestial Protector Elphelt': 'Elphelt',
+    'Celestial Protector Juri': 'Juri',
+    'Celestial Protector Lili': 'Lili',
+    'Celestial Protector R Mika': 'R Mika',
+    'Celestial Protector Sophitia': 'Sophitia'
 };

@@ -3,23 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>Quest Points Store</title>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Open Sans', sans-serif;
+            font-family: 'Rajdhani', sans-serif;
         }
 
         body {
-            background-color: #121212;
-            color: #e0e0e0;
+            background-color: #0A0A0F;
+            color: #E5E5E5;
             min-height: 100vh;
             overflow-x: hidden;
+            background: linear-gradient(135deg, #0A0A0F 0%, #1A1A2F 100%);
         }
 
         .qp-store-container {
@@ -27,150 +29,388 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 1200px;
-            max-height: 90vh;
-            background: rgba(30, 30, 30, 0.95);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+            width: 95%;
+            max-width: 1400px;
+            max-height: 95vh;
+            background: rgba(20, 20, 35, 0.95);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
             overflow-y: auto;
             z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .qp-store-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            padding: 2px;
+            background: linear-gradient(135deg, #9b59b6, #3498db);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0.5;
         }
 
         .store-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
+            padding: 0 0 24px;
+            margin-bottom: 32px;
             border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
+            position: relative;
+            padding-right: 60px;
+        }
+
+        .store-header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, #9b59b6, #3498db);
+        }
+
+        .store-header h2 {
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #9b59b6 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .currency-display {
             display: flex;
             align-items: center;
-            gap: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px 20px;
-            border-radius: 10px;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-right: 24px;
         }
 
         .currency-display img {
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
+            filter: drop-shadow(0 2px 4px rgba(155, 89, 182, 0.5));
+        }
+
+        .currency-display span {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .close-button {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
+            top: 24px;
+            right: 24px;
+            background: linear-gradient(135deg, #9b59b6, #3498db);
             border: none;
             color: #fff;
-            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: all 0.3s;
+            font-size: 1.2em;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
         }
 
         .close-button:hover {
-            transform: scale(1.1);
+            transform: rotate(90deg) scale(1.1);
+            box-shadow: 0 6px 20px rgba(155, 89, 182, 0.4);
         }
 
         .items-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            padding: 8px;
         }
 
         .store-item {
-            background: rgba(40, 40, 40, 0.9);
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            transition: transform 0.3s;
+            background: rgba(30, 30, 50, 0.6);
+            border-radius: 16px;
+            padding: 24px;
             position: relative;
             overflow: hidden;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .store-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            padding: 2px;
+            background: linear-gradient(135deg, #9b59b6, #3498db);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .store-item:hover {
             transform: translateY(-5px);
+            background: rgba(40, 40, 60, 0.8);
+            box-shadow: 0 8px 25px rgba(155, 89, 182, 0.2);
+        }
+
+        .store-item:hover::before {
+            opacity: 1;
         }
 
         .store-item img {
             width: 100%;
-            height: 150px;
+            height: 180px;
             object-fit: contain;
-            border-radius: 8px;
-            margin-bottom: 10px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            transition: transform 0.3s;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .store-item:hover img {
+            transform: scale(1.05);
         }
 
         .item-name {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin: 10px 0;
+            font-size: 1.4em;
+            font-weight: 700;
+            margin: 16px 0;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .item-price {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
-            margin: 10px 0;
+            gap: 8px;
+            margin: 16px 0;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .item-price img {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             margin: 0;
         }
 
         .purchase-btn {
-            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            background: linear-gradient(135deg, #9b59b6, #3498db);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 24px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s;
             width: 100%;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .purchase-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent,
+                rgba(255, 255, 255, 0.1),
+                transparent
+            );
+            transform: rotate(45deg);
+            transition: all 0.3s;
         }
 
         .purchase-btn:hover:not(:disabled) {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(255, 75, 43, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(155, 89, 182, 0.4);
+        }
+
+        .purchase-btn:hover::after {
+            left: 100%;
         }
 
         .purchase-btn:disabled {
-            background: #444;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
             cursor: not-allowed;
+            opacity: 0.7;
         }
 
         .repeatable-badge {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: linear-gradient(45deg, #00b894, #00cec9);
+            top: 16px;
+            right: 16px;
+            background: linear-gradient(135deg, #9b59b6, #3498db);
             color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.8em;
-            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 1;
         }
 
         .claimed-badge {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #444;
+            top: 16px;
+            right: 16px;
+            background: rgba(255, 255, 255, 0.1);
             color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.8em;
-            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        /* Scrollbar Styles */
+        .qp-store-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .qp-store-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .qp-store-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #9b59b6, #3498db);
+            border-radius: 4px;
+        }
+
+        .qp-store-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #8e44ad, #2980b9);
+        }
+
+        /* Purchase Success Animation */
+        .purchase-success {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #9b59b6, #3498db);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4);
+            z-index: 1100;
+            animation: slideDown 0.3s ease, slideUp 0.3s ease 1.7s;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translate(-50%, -100%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+            to {
+                transform: translate(-50%, -100%);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .items-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 16px;
+            }
+
+            .store-header h2 {
+                font-size: 2em;
+            }
+
+            .currency-display {
+                padding: 8px 16px;
+            }
+
+            .currency-display img {
+                width: 24px;
+                height: 24px;
+            }
+
+            .currency-display span {
+                font-size: 1.2em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .qp-store-container {
+                padding: 16px;
+            }
+
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .store-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .store-header h2 {
+                font-size: 1.8em;
+            }
         }
     </style>
 </head>
@@ -187,13 +427,46 @@
         </div>
 
         <div class="items-grid">
-            <!-- Heart Sticker -->
-            <div class="store-item" data-item-name="heart" data-item-type="sticker">
-                <img src="Stickers/heart.png" alt="Heart Sticker">
-                <div class="item-name">Heart Sticker</div>
+            <!-- Free Lootbox -->
+            <div class="store-item" data-item-name="freelootbox" data-item-type="lootbox">
+                <img src="res/img/basicbox.png" alt="Free Lootbox">
+                <div class="item-name">Free Lootbox</div>
+                <div class="item-price">
+                    <img src="res/img/qp.png" alt="QP">
+                    <span>2000</span>
+                </div>
+                <button class="purchase-btn" onclick="purchaseItem(this)">Purchase</button>
+            </div>
+
+            <!-- Girl Power Title -->
+            <div class="store-item" data-item-name="girl_power" data-item-type="title">
+                <img src="titles/titleimage.jpeg" alt="Girl Power Title">
+                <div class="item-name">Girl Power Title</div>
                 <div class="item-price">
                     <img src="res/img/qp.png" alt="QP">
                     <span>750</span>
+                </div>
+                <button class="purchase-btn" onclick="purchaseItem(this)">Purchase</button>
+            </div>
+
+            <!-- Celestial Protector Emblem -->
+            <div class="store-item" data-item-name="celestial_protector_emblem" data-item-type="icon">
+                <img src="Icons/Profile/Celestial_Protector_Emblem.png" alt="Celestial Protector Emblem">
+                <div class="item-name">Celestial Protector Emblem</div>
+                <div class="item-price">
+                    <img src="res/img/qp.png" alt="QP">
+                    <span>500</span>
+                </div>
+                <button class="purchase-btn" onclick="purchaseItem(this)">Purchase</button>
+            </div>
+
+            <!-- 500 FM -->
+            <div class="store-item" data-item-name="fm_reward" data-item-type="fm">
+                <img src="res/img/fm.png" alt="Fighter Money">
+                <div class="item-name">500 FM</div>
+                <div class="item-price">
+                    <img src="res/img/qp.png" alt="QP">
+                    <span>2000</span>
                 </div>
                 <button class="purchase-btn" onclick="purchaseItem(this)">Purchase</button>
             </div>
@@ -276,62 +549,109 @@
             const itemType = item.dataset.itemType;
             const isRepeatable = item.dataset.repeatable === 'true';
             
-            const userRef = ref(database, 'users/' + user.uid);
-            const snapshot = await get(userRef);
-            const userData = snapshot.val() || {};
-            
-            let price;
-            let updates = {};
-
-            switch(itemType) {
-                case 'sticker':
-                    price = 750;
-                    if (!isRepeatable && userData.Stickers && userData.Stickers[itemName]) {
-                        alert('You already own this sticker!');
-                        return;
-                    }
-                    break;
-                case 'cm':
-                    price = 250;
-                    break;
-                default:
-                    return;
-            }
-
-            if ((userData.questPoints || 0) < price) {
-                alert('Not enough Quest Points!');
-                return;
-            }
-
-            // Update quest points
-            updates['questPoints'] = (userData.questPoints || 0) - price;
-
-            // Add rewards based on item type
-            switch(itemType) {
-                case 'sticker':
-                    updates[`Stickers/${itemName}`] = 1;
-                    break;
-                case 'cm':
-                    updates['CM'] = (userData.CM || 0) + 1000;
-                    break;
-            }
-
             try {
+                const userRef = ref(database, `users/${user.uid}`);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val() || {};
+                
+                let price;
+                let updates = {};
+
+                switch(itemType) {
+                    case 'lootbox':
+                        price = 2000;
+                        if (!isRepeatable && userData.freelootbox && userData.freelootbox[itemName]) {
+                            alert('You already own this lootbox!');
+                            return;
+                        }
+                        break;
+                    case 'title':
+                        price = 750;
+                        if (userData.titles && userData.titles[itemName]) {
+                            alert('You already own this title!');
+                            return;
+                        }
+                        break;
+                    case 'icon':
+                        price = 500;
+                        if (userData.Icons && userData.Icons[itemName]) {
+                            alert('You already own this icon!');
+                            return;
+                        }
+                        break;
+                    case 'fm':
+                        price = 2000;
+                        break;
+                    case 'cm':
+                        price = 250;
+                        break;
+                    default:
+                        return;
+                }
+
+                if ((userData.questPoints || 0) < price) {
+                    alert('Not enough Quest Points!');
+                    return;
+                }
+
+                // Update quest points
+                updates['questPoints'] = (userData.questPoints || 0) - price;
+
+                // Add rewards based on item type
+                switch(itemType) {
+                    case 'lootbox':
+                        updates[`freelootbox/${itemName}`] = 1;
+                        break;
+                    case 'title':
+                        updates[`titles/${itemName}`] = true;
+                        break;
+                    case 'icon':
+                        updates[`Icons/${itemName}`] = 1;
+                        break;
+                    case 'fm':
+                        updates['FM'] = (userData.FM || 0) + 500;
+                        break;
+                    case 'cm':
+                        updates['CM'] = (userData.CM || 0) + 1000;
+                        break;
+                }
+
                 await update(userRef, updates);
+                
+                // Update displays
+                document.getElementById('store-qp-amount').textContent = updates['questPoints'];
                 document.getElementById('qp-amount').textContent = updates['questPoints'];
+                if (itemType === 'cm') {
+                    document.getElementById('cm-amount').textContent = updates['CM'];
+                }
+                if (itemType === 'fm') {
+                    document.getElementById('currency-amount').textContent = updates['FM'];
+                }
                 
                 if (!isRepeatable) {
                     button.disabled = true;
-                    button.textContent = 'Claimed';
+                    button.innerHTML = '<i class="fas fa-check"></i> Owned';
                     const badge = document.createElement('div');
-                    badge.className = 'claimed-badge';
-                    badge.textContent = 'Claimed';
-                    if (!item.querySelector('.claimed-badge')) {
+                    badge.className = 'item-badge owned';
+                    badge.innerHTML = '<i class="fas fa-check"></i> Owned';
+                    if (!item.querySelector('.item-badge.owned')) {
                         item.appendChild(badge);
                     }
                 }
                 
-                alert('Purchase successful!');
+                // Show success message with animation
+                const successMsg = document.createElement('div');
+                successMsg.className = 'purchase-success';
+                successMsg.innerHTML = `
+                    <i class="fas fa-check-circle"></i>
+                    Purchase successful!
+                `;
+                document.body.appendChild(successMsg);
+                
+                setTimeout(() => {
+                    successMsg.remove();
+                }, 2000);
+                
             } catch (error) {
                 console.error('Error making purchase:', error);
                 alert('Failed to make purchase. Please try again.');

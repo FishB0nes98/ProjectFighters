@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Fighters - Loading</title>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <style>
+        :root {
+            --primary-color: #0A1428;
+            --secondary-color: #1E2328;
+            --accent-color: #C89B3C;
+            --text-color: #F0E6D2;
+            --border-color: #463714;
+            --hover-color: #785A28;
+            --team1-color: #1E90FF;
+            --team2-color: #FF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('res/img/ls.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            overflow: hidden;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .team-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .team1 {
+            margin-top: 30px;
+            margin-bottom: -5px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .team2 {
+            margin-bottom: 30px;
+            margin-top: -5px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .player-slot {
+            width: 309px;  /* 325 * 0.95 */
+            height: 475px;  /* 500 * 0.95 */
+            margin: 0 10px;
+            background-color: black;
+            border: 2px solid transparent;
+            border-radius: 19px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* Blue team styling */
+        .team1 .player-slot {
+            border-color: var(--team1-color);
+            background: linear-gradient(to bottom,
+                       rgba(30, 144, 255, 0.1),
+                       rgba(0, 0, 0, 0.95));
+        }
+
+        /* Red team styling */
+        .team2 .player-slot {
+            border-color: var(--team2-color);
+            background: linear-gradient(to bottom,
+                       rgba(255, 68, 68, 0.1),
+                       rgba(0, 0, 0, 0.95));
+        }
+
+        /* Adjust player info for team colors */
+        .team1 .player-info {
+            background: linear-gradient(90deg, 
+                       rgba(30, 144, 255, 0.15) 0%,
+                       rgba(0, 0, 0, 0.8) 100%);
+            border-bottom: 2px solid var(--team1-color);
+        }
+
+        .team2 .player-info {
+            background: linear-gradient(90deg, 
+                       rgba(255, 68, 68, 0.15) 0%,
+                       rgba(0, 0, 0, 0.8) 100%);
+            border-bottom: 2px solid var(--team2-color);
+        }
+
+        /* Adjust profile icon borders for teams */
+        .team1 .profile-icon {
+            border-color: var(--team1-color);
+        }
+
+        .team2 .profile-icon {
+            border-color: var(--team2-color);
+        }
+
+        .skin-image-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .skin-image {
+            width: 98%;
+            height: 104%;
+            object-fit: cover;
+        }
+
+        .player-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px 14px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-bottom-left-radius: 19px;
+            border-bottom-right-radius: 19px;
+            z-index: 2;
+        }
+
+        .profile-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-color);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .profile-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }
+
+        .player-text {
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .player-name {
+            font-size: 23px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .skin-name {
+            font-size: 13px;
+            background: linear-gradient(135deg, rgba(0,0,0,0.85), rgba(0,0,0,0.65));
+            border: 2px solid var(--accent-color);
+            padding: 4px 10px;
+            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-style: normal;
+            color: var(--accent-color);
+            text-shadow: 0 0 5px var(--accent-color);
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            display: inline-block;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .skin-name::before,
+        .skin-name::after {
+            display: none;
+        }
+
+        .loading-bar-container,
+        .loading-bar,
+        .loading-progress,
+        .loading-text,
+        .loading-dots {
+            display: none;
+        }
+
+        .versus-text {
+            font-size: 46px;
+            font-weight: bold;
+            color: var(--accent-color);
+            text-align: center;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .role-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        .build-info {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .build-item {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            background-color: var(--secondary-color);
+        }
+
+        .player-stats {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .loading-dots {
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Add decide game button styles */
+        .decide-game-container {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+        }
+
+        .decide-game-button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px 0 0 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+        }
+
+        .decide-game-button:hover {
+            background: linear-gradient(45deg, #45a049, #4CAF50);
+            transform: scale(0.93);
+        }
+
+        /* Add highlight for player slot */
+        .player-slot.highlight {
+            border-width: 3px;  /* Just make the border slightly thicker instead of yellow highlight */
+        }
+
+        /* Add rank update modal styles */
+        .rank-update-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            background-color: rgba(0, 0, 0, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .rank-update-modal .modal-content {
+            position: relative;
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .rank-update-modal .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .rank-update-modal .close-modal:hover {
+            color: #fff;
+        }
+
+        /* Add game result styles */
+        .game-result {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 1500;
+        }
+
+        .home-button {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 12px 24px;
+            background: linear-gradient(to bottom right, var(--accent-color), #785A28);
+            color: var(--text-color);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            z-index: 2000;
+            text-decoration: none;
+        }
+
+        .home-button:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(45deg, #D4AF37, var(--accent-color));
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <a href="home.html" class="home-button" id="homeButton">HOME</a>
+    <!-- Team 1 (Blue Team) -->
+    <div class="team-container team1">
+        <div class="player-slot" id="blue-1">
+            <div class="skin-image-container">
+                <img class="skin-image" src="" alt="Champion Skin">
+            </div>
+            <div class="player-info">
+                <div class="profile-icon">
+                    <img src="" alt="Profile">
+                </div>
+                <div class="player-text">
+                    <div class="player-name"></div>
+                    <div class="skin-name"></div>
+                </div>
+            </div>
+        </div>
+        <div class="player-slot" id="blue-2">
+            <div class="skin-image-container">
+                <img class="skin-image" src="" alt="Champion Skin">
+            </div>
+            <div class="player-info">
+                <div class="profile-icon">
+                    <img src="" alt="Profile">
+                </div>
+                <div class="player-text">
+                    <div class="player-name"></div>
+                    <div class="skin-name"></div>
+                </div>
+            </div>
+        </div>
+        <div class="player-slot" id="blue-3">
+            <div class="skin-image-container">
+                <img class="skin-image" src="" alt="Champion Skin">
+            </div>
+            <div class="player-info">
+                <div class="profile-icon">
+                    <img src="" alt="Profile">
+                </div>
+                <div class="player-text">
+                    <div class="player-name"></div>
+                    <div class="skin-name"></div>
+                </div>
+            </div>
+        </div>
+        <div class="player-slot" id="blue-4">
+            <div class="skin-image-container">
+                <img class="skin-image" src="" alt="Champion Skin">
+            </div>
+            <div class="player-info">
+                <div class="profile-icon">
+                    <img src="" alt="Profile">
+                </div>
+                <div class="player-text">
+                    <div class="player-name"></div>
+                    <div class="skin-name"></div>
+                </div>
+            </div>
+        </div>
+        <div class="player-slot" id="blue-5">
+            <div class="skin-image-container">
+                <img class="skin-image" src="" alt="Champion Skin">
+            </div>
+            <div class="player-info">
+                <div class="profile-icon">
+                    <img src="" alt="Profile">
+                </div>
+                <div class="player-text">
+                    <div class="player-name"></div>
+                    <div class="skin-name"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="versus-text">VS</div>
+
+    <!-- Team 2 (Red Team) -->
+    <div class="team-container team2">
+        <div class="player-slot" id="red-1">
+            <div class="skin-image-container">
+                <img class="skin-image" src="" alt="Champion Skin">
+            </div>
+            <div class="player-info">
+                <div class="profile-icon">
+                    <img src="" alt="Profile">
+                </div>
+                <div class="player-text">
+                    <div class="player-name"></div>
+                    <div class="skin-name"></div>
+                </div>
+            </div>
+        </div>
+        <div class="player-slot" id="red-2">
+            <div class="skin-image-container">
+                <img class="skin-image" src="" alt="Champion Skin">
+            </div>
+            <div class="player-info">
+                <div class="profile-icon">
+                    <img src="" alt="Profile">
+                </div>
+                <div class="player-text">
+                    <div class="player-name"></div>
+                    <div class="skin-name"></div>
+                </div>
+            </div>
+        </div>
+        <div class="player-slot" id="red-3">
+            <div class="skin-image-container">
+                <img class="skin-image" src="" alt="Champion Skin">
+            </div>
+            <div class="player-info">
+                <div class="profile-icon">
+                    <img src="" alt="Profile">
+                </div>
+                <div class="player-text">
+                    <div class="player-name"></div>
+                    <div class="skin-name"></div>
+                </div>
+            </div>
+        </div>
+        <div class="player-slot" id="red-4">
+            <div class="skin-image-container">
+                <img class="skin-image" src="" alt="Champion Skin">
+            </div>
+            <div class="player-info">
+                <div class="profile-icon">
+                    <img src="" alt="Profile">
+                </div>
+                <div class="player-text">
+                    <div class="player-name"></div>
+                    <div class="skin-name"></div>
+                </div>
+            </div>
+        </div>
+        <div class="player-slot" id="red-5">
+            <div class="skin-image-container">
+                <img class="skin-image" src="" alt="Champion Skin">
+            </div>
+            <div class="player-info">
+                <div class="profile-icon">
+                    <img src="" alt="Profile">
+                </div>
+                <div class="player-text">
+                    <div class="player-name"></div>
+                    <div class="skin-name"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add decide game button -->
+    <div class="decide-game-container">
+        <button class="decide-game-button">Decide Game</button>
+    </div>
+
+    <!-- Add rank update modal -->
+    <div class="rank-update-modal" id="rankUpdateModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <p id="rankUpdateMessage"></p>
+        </div>
+    </div>
+
+    <!-- Add game result container -->
+    <div class="game-result" id="gameResult"></div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, update, increment, set } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { profileIcons } from './icons.js';
+        import { skinToBaseCharacterMap } from './skinmapping.js';
+        import { characters } from './characterskinref.js';
+        import { roles } from './roles.js';
+        import { Roles } from './roles-data.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // Get queue ID from session storage
+        const queueId = sessionStorage.getItem('currentQueueId');
+        if (!queueId) {
+            console.error('No queue ID found');
+            window.location.href = 'home.html';
+        }
+
+        // Add role slot mapping
+        const roleSlotMap = {
+            'Top': 1,
+            'Jungle': 2,
+            'Mid': 3,
+            'Adc': 4,
+            'Support': 5
+        };
+
+        // Add function to get role by slot
+        function getRoleBySlot(slot) {
+            for (const [role, slotNum] of Object.entries(roleSlotMap)) {
+                if (slotNum === slot) return role;
+            }
+            return null;
+        }
+
+        // Add AI profile icons list at the top of the script
+        const aiProfileIcons = [
+            'lovely_kagome', 'date_night_kuma', 'heartbreaker_ibuki', 'lunar_rabbit', 'golden_snake',
+            'atlantean_hourglass', 'coral_armor', 'rapid_golden_arrows', 'Steampunk_City', 'Steampunk_Hat',
+            'Angry_Carrot_Icon', 'Nina_A2', 'Julia_Sacred', 'Birdie_Sacred', 'Black_Red_Rose',
+            'Jade_Panda', 'Jade_Yugo', 'Jade_Claws', 'Arcade_Raiden', 'Arcade_Sub_Zero',
+            'Ayane_Blade', 'Bistro_Kuma', 'Bistro_Shizumaru', 'Captain_Akuma', 'Elphelt_Heart',
+            'Forest_Goddess_Angel', 'Goth_Shield', 'Infernal_Birdie', 'Infernal_Ibuki', 'Infernal_Raiden',
+            'Kokoro_Butterfly', 'Morrigan_Darkness', 'Neoncore_ErronBlack', 'Neoncore_SubZero',
+            'Pajama_ChamCham', 'Pajama_Shoma', 'Pirate_Shoma', 'Primal_kid_Shoma', 'Primal_Scorpion',
+            'Rainy_Day_Shinnok', 'Regal_Ayane_Emerald', 'Regal_Julia', 'Root', 'Schoolgirl_Julia',
+            'Summertime_Nina', 'Summertime_Shoma', 'Void_Akuma', 'Void_Blanka', 'Panda'
+        ];
+
+        // Function to try different extensions for image loading
+        function tryLoadImage(profileIcon, baseUrl, icon, extensions = ['png', 'jpg', 'jpeg', 'jfif']) {
+            let currentIndex = 0;
+            
+            function tryNextExtension() {
+                if (currentIndex < extensions.length) {
+                    profileIcon.src = `${baseUrl}${icon}.${extensions[currentIndex]}`;
+                    currentIndex++;
+                } else {
+                    // If all extensions fail, try the other folder
+                    if (baseUrl === 'Icons/') {
+                        tryLoadImage(profileIcon, 'Icons/Profile/', icon);
+                    } else {
+                        // If both folders fail, use default
+                        profileIcon.src = 'Icons/Birdie.png';
+                    }
+                }
+            }
+
+            profileIcon.onerror = tryNextExtension;
+            tryNextExtension(); // Start trying extensions
+        }
+
+        // Load game data
+        async function loadGameData() {
+            try {
+                const queueRef = ref(database, `Queue/${queueId}`);
+                const snapshot = await get(queueRef);
+                const gameData = snapshot.val();
+
+                if (!gameData || !gameData.players) {
+                    console.error('No game data found');
+                    return;
+                }
+
+                // Get current user's data
+                const currentUser = auth.currentUser;
+                const userRef = ref(database, `users/${currentUser.uid}`);
+                const userSnapshot = await get(userRef);
+                const userData = userSnapshot.val();
+
+                // Organize players by role for each team
+                const teamPlayers = {
+                    blue: {},
+                    red: {}
+                };
+
+                // First, organize players by their roles
+                for (const [key, player] of Object.entries(gameData.players)) {
+                    if (!player || !player.role) {
+                        console.error('Invalid player data for key:', key, 'player:', player);
+                        continue;
+                    }
+
+                    const [team, _] = key.split('_');
+                    const roleSlot = roleSlotMap[player.role] || 1;
+                    
+                    // Store player in the correct team and role-based slot
+                    if (team) {
+                        if (!teamPlayers[team]) {
+                            teamPlayers[team] = {};
+                        }
+                        teamPlayers[team][roleSlot] = player;
+                        console.log(`Assigned ${player.name} to ${team} slot ${roleSlot} (${player.role})`);
+                    }
+                }
+
+                // Then, populate player slots based on roles
+                for (const team of ['blue', 'red']) {
+                    for (let slot = 1; slot <= 5; slot++) {
+                        const player = teamPlayers[team][slot];
+                        if (!player) {
+                            console.error(`No player found for ${team} slot ${slot} (${getRoleBySlot(slot)})`);
+                            continue;
+                        }
+
+                        const slotElement = document.getElementById(`${team}-${slot}`);
+                        if (slotElement) {
+                            try {
+                                // Add highlight for player's slot
+                                if (player.uid === currentUser.uid && !player.isAI) {
+                                    console.log('Highlighting player slot:', `${team}-${slot} (${player.role})`);
+                                    slotElement.classList.add('highlight');
+                                    // Store role data for quest tracking
+                                    slotElement.setAttribute('data-role', player.role);
+                                }
+
+                                // Set background image with skin
+                                if (player.skin) {
+                                    const decodedSkin = decodeURIComponent(player.skin);
+                                    console.log(`Setting skin for ${team}-${slot}:`, decodedSkin);
+                                    const skinImage = slotElement.querySelector('.skin-image');
+                                    if (skinImage) {
+                                        skinImage.src = `Loading Screen/${decodedSkin}.png`;
+                                        skinImage.onerror = function() {
+                                            console.log(`Fallback to champion icon for ${team}-${slot}`);
+                                            skinImage.src = `Icons/${player.champion}.png`;
+                                        };
+                                    }
+                                }
+
+                                // Set player info
+                                const nameElement = slotElement.querySelector('.player-name');
+                                const skinElement = slotElement.querySelector('.skin-name');
+                                const profileIcon = slotElement.querySelector('.profile-icon img');
+
+                                if (nameElement) nameElement.textContent = player.name || 'Unknown';
+                                if (skinElement && player.skin) {
+                                    const decodedSkin = decodeURIComponent(player.skin);
+                                    skinElement.textContent = decodedSkin;
+                                }
+
+                                // Set profile icon
+                                if (profileIcon) {
+                                    if (player.isAI) {
+                                        // For AI players, randomly choose from aiProfileIcons
+                                        const randomAiIcon = aiProfileIcons[Math.floor(Math.random() * aiProfileIcons.length)];
+                                        tryLoadImage(profileIcon, 'Icons/', randomAiIcon);
+                                    } else {
+                                        // For human player, use their saved profile icon
+                                        const savedIcon = player.profileIcon;
+                                        if (savedIcon) {
+                                            // Try loading from both Icons and Icons/Profile folders
+                                            const tryLoadWithFallback = () => {
+                                                const img = new Image();
+                                                img.onload = () => {
+                                                    profileIcon.src = img.src;
+                                                };
+                                                img.onerror = () => {
+                                                    // If Icons/ fails, try Icons/Profile/
+                                                    const profileImg = new Image();
+                                                    profileImg.onload = () => {
+                                                        profileIcon.src = profileImg.src;
+                                                    };
+                                                    profileImg.onerror = () => {
+                                                        // If both fail, use default
+                                                        profileIcon.src = 'Icons/Birdie.png';
+                                                    };
+                                                    profileImg.src = `Icons/Profile/${savedIcon}`;
+                                                };
+                                                img.src = `Icons/${savedIcon}`;
+                                            };
+                                            tryLoadWithFallback();
+                                        } else {
+                                            // Use default icon if no saved icon
+                                            profileIcon.src = 'Icons/Birdie.png';
+                                        }
+                                    }
+                                }
+                            } catch (error) {
+                                console.error(`Error setting player data for ${team}-${slot}:`, error);
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading game data:', error);
+            }
+        }
+
+        // Load game data when page loads
+        window.addEventListener('load', loadGameData);
+
+        // Add decide game functionality
+        document.querySelector('.decide-game-button').addEventListener('click', async function() {
+            try {
+                // Hide the button immediately
+                this.style.display = 'none';
+                
+                const team1 = [];
+                const team2 = [];
+                const user = auth.currentUser;
+
+                if (!user) {
+                    console.error('No user logged in');
+                    return;
+                }
+                const userId = user.uid;
+
+                // Collect team data
+                for (let i = 1; i <= 5; i++) {
+                    const team1Player = document.getElementById(`blue-${i}`);
+                    const team2Player = document.getElementById(`red-${i}`);
+
+                    if (team1Player) {
+                        const team1Skin = team1Player.querySelector('.skin-name').textContent;
+                        if (team1Skin) team1.push(team1Skin);
+                    }
+
+                    if (team2Player) {
+                        const team2Skin = team2Player.querySelector('.skin-name').textContent;
+                        if (team2Skin) team2.push(team2Skin);
+                    }
+                }
+
+                // Map skins to base characters
+                const team1BaseCharacters = team1.map(skin => skinToBaseCharacterMap[skin] || skin);
+                const team2BaseCharacters = team2.map(skin => skinToBaseCharacterMap[skin] || skin);
+
+                // Calculate winner
+                const winner = await calculateWinProbability(team1, team2);
+                const loser = winner === 'team1' ? 'team2' : 'team1';
+
+                // Get the player's character and determine their team
+                const playerSlot = document.querySelector('.player-slot.highlight');
+                const playerTeam = playerSlot?.id.startsWith('blue-') ? 'team1' : 'team2';
+                const isPlayerWinner = winner === playerTeam;
+                console.log('Found player slot:', playerSlot);
+                const playerSkin = playerSlot?.querySelector('.skin-name')?.textContent;
+                console.log('Found player skin:', playerSkin);
+                const playerCharacter = playerSkin ? (skinToBaseCharacterMap[playerSkin] || playerSkin) : null;
+                console.log('Determined player character:', playerCharacter);
+
+                // Generate KDA stats
+                const kdaStats = generateRandomKDA(isPlayerWinner);
+
+                // Get player's build if it exists
+                const queueRef = ref(database, `Queue/${queueId}`);
+                const queueSnapshot = await get(queueRef);
+                const queueData = queueSnapshot.val();
+                const playerBuild = queueData?.players?.[`${playerTeam === 'team1' ? 'blue' : 'red'}_${playerSlot?.id.split('-')[1]}`]?.build;
+
+                // Create match history data
+                const matchData = {
+                    date: new Date().toISOString(),
+                    character: playerCharacter,
+                    skin: playerSkin,
+                    result: isPlayerWinner ? 'Victory' : 'Defeat',
+                    kda: kdaStats,
+                    team1: team1BaseCharacters.map((char, index) => ({
+                        character: char,
+                        name: document.querySelector(`#blue-${index + 1} .player-name`)?.textContent || 'Unknown'
+                    })),
+                    team2: team2BaseCharacters.map((char, index) => ({
+                        character: char,
+                        name: document.querySelector(`#red-${index + 1} .player-name`)?.textContent || 'Unknown'
+                    })),
+                    build: playerBuild || null
+                };
+
+                // Save match history
+                await saveMatchHistory(userId, matchData);
+
+                // Update player character stats
+                if (playerCharacter) {
+                    await saveSoloModeData(userId, playerCharacter, team1BaseCharacters, team2BaseCharacters, winner);
+                }
+
+                // Update player stats
+                await handleMatchResult(userId, isPlayerWinner);
+
+                // Save game data
+                await saveGlobalCharacterStats(team1BaseCharacters, team2BaseCharacters, winner);
+
+                // Update quests
+                await updateQuestsAfterGame(userId, isPlayerWinner, playerCharacter);
+
+                // Handle rewards and display
+                await rewardPlayer(winner);
+                await rewardCharacterMoney();
+                displayResult(winner, loser);
+                await updateAramGames(user, isPlayerWinner);
+
+                // Show the home button after all updates are complete
+                document.getElementById('homeButton').style.display = 'block';
+
+                // Clean up the queue data
+                try {
+                    await set(queueRef, null);
+                    console.log('Queue data cleaned up successfully');
+                } catch (error) {
+                    console.error('Error cleaning up queue data:', error);
+                }
+
+            } catch (error) {
+                console.error('Error in decide game button handler:', error);
+                // Don't show the button again on error
+            }
+        });
+
+        // Update handleMatchResult to remove duplicate win/lose counting
+        async function handleMatchResult(userId, isWin) {
+            try {
+                // Only calculate and log win rate, don't update counters
+                const winRef = ref(database, `users/${userId}/ARAM win`);
+                const loseRef = ref(database, `users/${userId}/ARAM lose`);
+                
+                // Get current win/lose counts for win rate calculation only
+                const [winSnap, loseSnap] = await Promise.all([
+                    get(winRef),
+                    get(loseRef)
+                ]);
+
+                const wins = winSnap.val() || 0;
+                const losses = loseSnap.val() || 0;
+                const winRate = ((wins / (wins + losses)) * 100).toFixed(2);
+                console.log(`Player ARAM Win Rate: ${winRate}%`);
+
+            } catch (error) {
+                console.error('Error handling ARAM match result:', error);
+            }
+        }
+
+        // Update saveSoloModeData to handle both character and player stats
+        async function saveSoloModeData(userId, baseCharacter, team1BaseCharacters, team2BaseCharacters, winner) {
+            const updates = {};
+
+            // Determine if player won
+            const playerTeam = winner === 'team1' ? team1BaseCharacters : team2BaseCharacters;
+            const isWin = playerTeam.includes(baseCharacter);
+
+            // Update user character stats for the highlighted character in ARAM folder
+            const userCharRef = ref(database, `users/${userId}/characters/ARAM/${baseCharacter}`);
+            const userSnapshot = await get(userCharRef);
+            const userCharData = userSnapshot.val() || { win: 0, lose: 0 };
+
+            if (isWin) {
+                userCharData.win = (userCharData.win || 0) + 1;
+                // Update global ARAM win counter (only here, not in handleMatchResult)
+                updates[`users/${userId}/ARAM win`] = increment(1);
+            } else {
+                userCharData.lose = (userCharData.lose || 0) + 1;
+                // Update global ARAM lose counter (only here, not in handleMatchResult)
+                updates[`users/${userId}/ARAM lose`] = increment(1);
+            }
+
+            updates[`users/${userId}/characters/ARAM/${baseCharacter}`] = userCharData;
+
+            // Update global character stats in ARAM folder
+            for (const character of [...team1BaseCharacters, ...team2BaseCharacters]) {
+                const charRef = ref(database, `characters/ARAM/${character}`);
+                const snapshot = await get(charRef);
+                const charData = snapshot.val() || { win: 0, lose: 0 };
+
+                const isWinner = winner === 'team1' ? team1BaseCharacters.includes(character) : team2BaseCharacters.includes(character);
+                if (isWinner) {
+                    charData.win = (charData.win || 0) + 1;
+                } else {
+                    charData.lose = (charData.lose || 0) + 1;
+                }
+
+                updates[`characters/ARAM/${character}`] = charData;
+            }
+
+            await update(ref(database), updates);
+        }
+
+        // Replace updateRankPoints with updateAramGames
+        async function updateAramGames(user, isWin) {
+            try {
+                const userId = user.uid;
+                const userRef = ref(database, `users/${userId}`);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+
+                // Update ARAM games count
+                const currentGames = userData.aramGames || 0;
+                await update(userRef, {
+                    "aramGames": currentGames + 1
+                });
+
+                // Show games update modal
+                const modal = document.querySelector('.rank-update-modal');
+                const message = document.getElementById('rankUpdateMessage');
+                message.innerHTML = `
+                    <strong>ARAM Games Updated!</strong><br>
+                    Previous Games: ${currentGames}<br>
+                    New Total: ${currentGames + 1}<br>
+                    Result: ${isWin ? 'Victory' : 'Defeat'}
+                `;
+
+                modal.style.display = 'block';
+
+                const closeBtn = modal.querySelector('.close-modal');
+                closeBtn.onclick = () => modal.style.display = 'none';
+
+                window.onclick = (event) => {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                };
+            } catch (error) {
+                console.error('Error updating ARAM games:', error);
+            }
+        }
+
+        // Update calculateWinProbability to handle player team
+        async function calculateWinProbability(team1, team2) {
+            try {
+                const meta = await loadMeta(); // Load meta.json
+                let team1Score = 0;
+                let team2Score = 0;
+
+                // Calculate pure power scores for each team
+                team1.forEach(character => {
+                    const baseCharacter = skinToBaseCharacterMap[character] || character;
+                    team1Score += meta[baseCharacter] || 0;
+                });
+
+                team2.forEach(character => {
+                    const baseCharacter = skinToBaseCharacterMap[character] || character;
+                    team2Score += meta[baseCharacter] || 0;
+                });
+
+                // Add only 15% randomness to both scores
+                team1Score *= (1 + (Math.random() * 0.15)); // Random boost up to 15%
+                team2Score *= (1 + (Math.random() * 0.15));
+
+                console.log('Team 1 Final Score:', team1Score);
+                console.log('Team 2 Final Score:', team2Score);
+
+                return team1Score >= team2Score ? 'team1' : 'team2';
+            } catch (error) {
+                console.error('Error calculating win probability:', error);
+                return Math.random() < 0.5 ? 'team1' : 'team2';
+            }
+        }
+
+        // Update displayResult to handle player team
+        function displayResult(winner, loser) {
+            const playerSlot = document.querySelector('.player-slot.highlight');
+            const playerTeam = playerSlot?.id.startsWith('blue-') ? 'team1' : 'team2';
+            const isPlayerWinner = winner === playerTeam;
+
+            const resultContainer = document.getElementById('gameResult');
+            resultContainer.innerHTML = `
+                <div style="text-align: center; padding: 20px; background-color: rgba(0, 0, 0, 0.9); border-radius: 10px;">
+                    <h3 style="color: ${isPlayerWinner ? '#4CAF50' : '#f44336'}">
+                        ${isPlayerWinner ? 'Victory!' : 'Defeat!'}
+                    </h3>
+                </div>
+            `;
+            resultContainer.style.display = 'block';
+        }
+
+        // Add helper functions for decide game functionality
+        async function loadMeta() {
+            try {
+                const response = await fetch('meta.json');
+                const meta = await response.json();
+                return meta;
+            } catch (error) {
+                console.error('Error loading meta.json:', error);
+                return {};
+            }
+        }
+
+        // Update saveGlobalCharacterStats function to use ARAM folder
+        async function saveGlobalCharacterStats(team1BaseCharacters, team2BaseCharacters, winner) {
+            const updates = {};
+
+            // Get banned characters from queue data
+            const queueRef = ref(database, `Queue/${queueId}`);
+            const queueSnapshot = await get(queueRef);
+            const queueData = queueSnapshot.val();
+            const bannedCharacters = [queueData.bans?.blue, queueData.bans?.red].filter(Boolean);
+
+            console.log('Updating global character stats for all characters in ARAM mode');
+            
+            // Update win/lose stats for played characters in ARAM folder
+            for (const character of [...team1BaseCharacters, ...team2BaseCharacters]) {
+                const charRef = ref(database, `characters/ARAM/${character}`);
+                const snapshot = await get(charRef);
+                const charData = snapshot.val() || { win: 0, lose: 0 };
+
+                if (winner === 'team1' && team1BaseCharacters.includes(character)) {
+                    charData.win += 1;
+                } else if (winner === 'team2' && team2BaseCharacters.includes(character)) {
+                    charData.win += 1;
+                } else {
+                    charData.lose += 1;
+                }
+
+                updates[`characters/ARAM/${character}`] = charData;
+            }
+
+            // Update ban stats for banned characters in ARAM folder
+            for (const bannedChar of bannedCharacters) {
+                if (!bannedChar) continue; // Skip if undefined/null
+                
+                const charRef = ref(database, `characters/ARAM/${bannedChar}`);
+                const snapshot = await get(charRef);
+                const charData = snapshot.val() || { win: 0, lose: 0, bans: 0 };
+                
+                charData.bans = (charData.bans || 0) + 1;
+                updates[`characters/ARAM/${bannedChar}`] = charData;
+                
+                console.log(`Updated ban count for ${bannedChar} in ARAM: ${charData.bans}`);
+            }
+
+            console.log('Saving ARAM updates to database:', updates);
+            await update(ref(database), updates);
+        }
+
+        // Add Character XP System
+        async function addCharacterXP(userId, character, isWin) {
+            try {
+                const xpGain = isWin ? 
+                    Math.floor(Math.random() * 126) + 200 : // 200-325 for win
+                    Math.floor(Math.random() * 111) + 100;  // 100-210 for loss
+
+                const charRef = ref(database, `users/${userId}/characters/${character}`);
+                const snapshot = await get(charRef);
+                
+                if (!snapshot.exists()) {
+                    await set(charRef, {
+                        xp: xpGain,
+                        win: isWin ? 1 : 0,
+                        lose: isWin ? 0 : 1
+                    });
+                } else {
+                    await update(charRef, {
+                        xp: increment(xpGain),
+                        win: isWin ? increment(1) : increment(0),
+                        lose: isWin ? increment(0) : increment(1)
+                    });
+                }
+                
+                console.log(`Added ${xpGain} XP to ${character}`);
+            } catch (error) {
+                console.error('Error adding character XP:', error);
+            }
+        }
+
+        // Update rewardPlayer function to handle player team
+        async function rewardPlayer(winner) {
+            const userId = auth.currentUser.uid;
+            const userRef = ref(database, `users/${userId}`);
+            const snapshot = await get(userRef);
+            const userData = snapshot.val();
+
+            // Get the player's character and team
+            const playerSlot = document.querySelector('.player-slot.highlight');
+            if (playerSlot) {
+                const skinName = playerSlot.querySelector('.skin-name').textContent;
+                const characterName = skinToBaseCharacterMap[skinName] || skinName;
+                const playerTeam = playerSlot.id.startsWith('blue-') ? 'team1' : 'team2';
+                const isWin = winner === playerTeam;
+                
+                // Add character XP based on win/loss
+                await addCharacterXP(userId, characterName, isWin);
+
+                // Add battle pass XP
+                if (userData) {
+                    const exp = userData.BattlePassExp || 0;
+                    const reward = Math.floor(Math.random() * 16) + 30; // 30-45 XP
+                    const newExp = exp + reward;
+                    await update(userRef, { BattlePassExp: newExp });
+                }
+            }
+        }
+
+        // Update rewardCharacterMoney function
+        async function rewardCharacterMoney() {
+            try {
+                const userId = auth.currentUser.uid;
+                const userRef = ref(database, `users/${userId}`);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+
+                if (userData) {
+                    const currentCM = userData.CM || 0;
+                    const reward = Math.floor(Math.random() * 181) + 300; // Random number between 300 and 480
+                    const newCM = currentCM + reward;
+
+                    console.log('Current CM:', currentCM);
+                    console.log('Reward:', reward);
+                    console.log('New CM:', newCM);
+
+                    await update(userRef, { CM: newCM });
+                    console.log('CM updated successfully.');
+                }
+            } catch (error) {
+                console.error('Error updating CM:', error);
+            }
+        }
+
+        // Update updateQuestsAfterGame to handle player team
+        async function updateQuestsAfterGame(userId, isWin, selectedCharacter) {
+            try {
+                console.log('Starting updateQuestsAfterGame with character:', selectedCharacter);
+                const userRef = ref(database, `users/${userId}`);
+                const userSnapshot = await get(userRef);
+                const userData = userSnapshot.val();
+                
+                // Time variables used throughout the function
+                const currentTime = Date.now();
+                
+                // Get the selected role and team from the highlighted slot
+                const selectedSlot = document.querySelector('.player-slot.highlight');
+                console.log('Found selected slot in quests:', selectedSlot);
+                const selectedRole = selectedSlot?.getAttribute('data-role')?.toLowerCase();
+                const playerTeam = selectedSlot?.id.startsWith('blue-') ? 'team1' : 'team2';
+                console.log('Found selected role:', selectedRole, 'Player team:', playerTeam);
+
+                if (!selectedCharacter) {
+                    console.error('Could not determine selected character');
+                    return;
+                }
+                
+                // Check if user has the character in their slots
+                const hasCharacterInSlot = userData?.skins && Object.values(userData.skins).some(skin => {
+                    // Get base character name from the skin
+                    const baseCharacter = skinToBaseCharacterMap[skin] || skin;
+                    // Get base character name from selected character's skin
+                    const selectedBaseCharacter = skinToBaseCharacterMap[selectedCharacter] || selectedCharacter;
+                    
+                    console.log('Debug: Checking ownership -', {
+                        skin,
+                        baseCharacter,
+                        selectedCharacter,
+                        selectedBaseCharacter,
+                        matches: baseCharacter === selectedBaseCharacter || skin === selectedCharacter
+                    });
+                    
+                    return baseCharacter === selectedBaseCharacter || skin === selectedCharacter;
+                });
+
+                if (!hasCharacterInSlot) {
+                    console.log('Debug: Character ownership check failed. User skins:', userData.skins);
+                    console.log('Debug: Selected character:', selectedCharacter);
+                    // Instead of returning, we'll proceed with the quest update
+                    // return;
+                }
+
+                // Save last played role for quest tracking
+                if (selectedRole) {
+                    await set(ref(database, `users/${userId}/lastPlayedRole`), selectedRole);
+                    
+                    // Update role-specific quest progress
+                    const roleQuestMap = {
+                        'top': 'top_lane_games',
+                        'jungle': 'jungle_games',
+                        'mid': 'mid_lane_games',
+                        'adc': 'adc_games',
+                        'support': 'support_games'
+                    };
+
+                    const questId = roleQuestMap[selectedRole];
+                    if (questId) {
+                        console.log('Debug: Updating role quest progress for', selectedRole);
+                        const roleQuestRef = ref(database, `users/${userId}/quests/${questId}`);
+                        const roleQuestSnap = await get(roleQuestRef);
+                        let roleQuestData = roleQuestSnap.val() || {
+                            progress: 0,
+                            completed: false,
+                            claimed: false
+                        };
+
+                        if (!roleQuestData.completed && !roleQuestData.claimed) {
+                            roleQuestData.progress = (roleQuestData.progress || 0) + 1;
+                            roleQuestData.completed = roleQuestData.progress >= 10;
+                            console.log('Debug: Role quest updated -', {
+                                role: selectedRole,
+                                questId,
+                                newProgress: roleQuestData.progress,
+                                completed: roleQuestData.completed
+                            });
+                            await set(roleQuestRef, roleQuestData);
+                        } else {
+                            console.log('Debug: Role quest not updated - Already completed or claimed');
+                        }
+                    }
+                }
+
+                // Update celestial kills quest with actual KDA stats from the match
+                const matchHistoryRef = ref(database, `users/${userId}/matchHistory`);
+                const matchHistorySnap = await get(matchHistoryRef);
+                const matchHistory = matchHistorySnap.val();
+                
+                console.log('Debug: Full match history:', matchHistory);
+                
+                // Get the most recent match's KDA
+                const matchIds = Object.keys(matchHistory || {}).sort();
+                const latestMatchId = matchIds.pop();
+                console.log('Debug: Latest match ID:', latestMatchId);
+                
+                const latestMatch = matchHistory?.[latestMatchId];
+                console.log('Debug: Latest match data:', latestMatch);
+                
+                const kdaStats = latestMatch?.kda || { kills: 0, deaths: 0, assists: 0 };
+                console.log('Debug: KDA stats to be used:', kdaStats);
+
+                // Get existing quest data
+                const celestialKillsRef = ref(database, `users/${userId}/quests/celestial_kills`);
+                const celestialKillsSnap = await get(celestialKillsRef);
+                let celestialKillsData = celestialKillsSnap.val();
+                
+                // Initialize quest data if it doesn't exist
+                if (!celestialKillsData) {
+                    celestialKillsData = {
+                        progress: 0,
+                        completed: false,
+                        claimed: false,
+                        lastReset: currentTime,
+                        totalKills: 0
+                    };
+                }
+                
+                console.log('Debug: Current quest data before update:', celestialKillsData);
+
+                // Check if quest needs to be reset (19 hours have passed)
+                const celestialTimeSinceReset = currentTime - (celestialKillsData.lastReset || 0);
+                console.log('Debug: Time since last reset (ms):', celestialTimeSinceReset);
+                console.log('Debug: Reset threshold (ms):', 68400000);
+                console.log('Debug: Should reset?', celestialTimeSinceReset >= 68400000 || celestialKillsData.claimed);
+
+                if (celestialTimeSinceReset >= 68400000 || celestialKillsData.claimed) { // 19 hours in milliseconds
+                    // If quest needs reset, start fresh with current game's kills
+                    celestialKillsData = {
+                        progress: kdaStats.kills,
+                        completed: kdaStats.kills >= 50,
+                        claimed: false,
+                        lastReset: currentTime,
+                        totalKills: kdaStats.kills
+                    };
+                    console.log('Debug: Quest reset - New state:', celestialKillsData);
+                } else if (!celestialKillsData.completed && !celestialKillsData.claimed) {
+                    // Add new kills to existing progress
+                    const previousTotal = celestialKillsData.totalKills || 0;
+                    celestialKillsData.totalKills = previousTotal + kdaStats.kills;
+                    celestialKillsData.progress = celestialKillsData.totalKills;
+                    celestialKillsData.completed = celestialKillsData.progress >= 50;
+                    console.log('Debug: Quest updated - Previous total:', previousTotal);
+                    console.log('Debug: Quest updated - Added kills:', kdaStats.kills);
+                    console.log('Debug: Quest updated - New total:', celestialKillsData.totalKills);
+                } else {
+                    console.log('Debug: Quest not updated - Already completed or claimed');
+                }
+
+                // Save the updated quest data
+                try {
+                    await set(celestialKillsRef, celestialKillsData);
+                    console.log('Debug: Final quest data saved:', celestialKillsData);
+                } catch (error) {
+                    console.error('Debug: Error saving quest data:', error);
+                }
+
+                // Update daily games quest
+                const dailyQuestRef = ref(database, `users/${userId}/quests/daily_games`);
+                const dailyQuestSnap = await get(dailyQuestRef);
+                const dailyQuestData = dailyQuestSnap.val() || { 
+                    progress: 0, 
+                    completed: false, 
+                    claimed: false,
+                    lastReset: currentTime 
+                };
+
+                // Check if quest needs to be reset (18 hours have passed)
+                const dailyTimeSinceReset = currentTime - (dailyQuestData.lastReset || 0);
+                if (dailyTimeSinceReset >= 64800000) { // 18 hours in milliseconds
+                    dailyQuestData.progress = 1;
+                    dailyQuestData.completed = false;
+                    dailyQuestData.claimed = false;
+                    dailyQuestData.lastReset = currentTime;
+                } else if (!dailyQuestData.completed) {
+                    dailyQuestData.progress = (dailyQuestData.progress || 0) + 1;
+                    dailyQuestData.completed = dailyQuestData.progress >= 2;
+                }
+
+                await set(dailyQuestRef, dailyQuestData);
+
+                // Update win streak quest
+                const winStreakRef = ref(database, `users/${userId}/quests/win_streak`);
+                const winStreakSnap = await get(winStreakRef);
+                const winStreakData = winStreakSnap.val() || {
+                    progress: 0,
+                    completed: false,
+                    claimed: false,
+                    streak: 0
+                };
+
+                if (!winStreakData.claimed) {
+                    if (isWin) {
+                        winStreakData.streak = (winStreakData.streak || 0) + 1;
+                        winStreakData.progress = winStreakData.streak;
+                        winStreakData.completed = winStreakData.streak >= 2;
+                    } else {
+                        winStreakData.streak = 0;
+                        winStreakData.progress = 0;
+                        winStreakData.completed = false;
+                    }
+                    await set(winStreakRef, winStreakData);
+                }
+
+            } catch (error) {
+                console.error('Error updating quests:', error);
+            }
+        }
+
+        // Add function to generate random KDA stats
+        function generateRandomKDA(isWin) {
+            const generateNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+            
+            let kills, deaths, assists;
+            if (isWin) {
+                // 80% chance of positive KDA for wins
+                if (Math.random() < 0.8) {
+                    kills = generateNumber(5, 15);
+                    deaths = generateNumber(0, Math.max(1, kills - 5));
+                    assists = generateNumber(3, 12);
+                } else {
+                    kills = generateNumber(2, 6);
+                    deaths = generateNumber(4, 8);
+                    assists = generateNumber(3, 10);
+                }
+            } else {
+                // 50% chance of bad KDA for losses
+                if (Math.random() < 0.5) {
+                    kills = generateNumber(1, 5);
+                    deaths = generateNumber(6, 12);
+                    assists = generateNumber(2, 8);
+                } else {
+                    kills = generateNumber(3, 8);
+                    deaths = generateNumber(3, 7);
+                    assists = generateNumber(4, 10);
+                }
+            }
+            
+            return { kills, deaths, assists };
+        }
+
+        // Update saveMatchHistory to include gameMode
+        async function saveMatchHistory(userId, matchData) {
+            try {
+                const matchHistoryRef = ref(database, `users/${userId}/matchHistory`);
+                const snapshot = await get(matchHistoryRef);
+                const existingMatches = snapshot.val() || {};
+                
+                // Convert matches to array and sort by timestamp
+                const matchesArray = Object.entries(existingMatches).map(([id, match]) => ({
+                    id,
+                    ...match
+                }));
+                matchesArray.sort((a, b) => b.timestamp - a.timestamp);
+
+                // If there are more than 19 matches (we're adding one new one)
+                if (matchesArray.length >= 19) {
+                    // Get the matches to remove (all matches after the 19th most recent)
+                    const matchesToRemove = matchesArray.slice(19);
+                    
+                    // Create deletion operations
+                    const deletions = {};
+                    matchesToRemove.forEach(match => {
+                        deletions[`users/${userId}/matchHistory/${match.id}`] = null;
+                    });
+
+                    // Add new match with gameMode
+                    const matchId = Date.now().toString();
+                    const updates = {
+                        ...deletions,
+                        [`users/${userId}/matchHistory/${matchId}`]: {
+                            ...matchData,
+                            gameMode: 'ARAM',
+                            timestamp: matchId
+                        }
+                    };
+
+                    // Perform all updates in one operation
+                    await update(ref(database), updates);
+                } else {
+                    // Just add the new match if we're under the limit
+                    const matchId = Date.now().toString();
+                    await set(ref(database, `users/${userId}/matchHistory/${matchId}`), {
+                        ...matchData,
+                        gameMode: 'ARAM',
+                        timestamp: matchId
+                    });
+                }
+                
+                console.log('ARAM match history saved successfully');
+            } catch (error) {
+                console.error('Error saving ARAM match history:', error);
+            }
+        }
+    </script>
+</body>
+</html> 

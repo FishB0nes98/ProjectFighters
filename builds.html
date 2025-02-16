@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Fighters - Character Builds</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js" type="module"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="styles_new.css">
+    <style>
+        :root {
+            --bg-primary: #0A0E13;
+            --bg-secondary: #1A1F26;
+            --accent-primary: #C89B3C;
+            --accent-secondary: #785A28;
+            --text-primary: #F0E6D2;
+            --text-secondary: #A09B8C;
+            --border-color: #463714;
+            --gold: #F0E6D2;
+            --tooltip-bg: linear-gradient(135deg, rgba(10, 14, 19, 0.98), rgba(26, 31, 38, 0.98));
+            --item-hover: #1E282D;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .builds-container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            margin-top: 80px;
+            height: calc(100vh - 100px);
+            max-width: 1600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .character-selector {
+            width: 350px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px 12px 20px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent-primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(200, 155, 60, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .character-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .character-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-primary);
+            background: var(--item-hover);
+        }
+
+        .character-card.selected {
+            background: linear-gradient(135deg, var(--accent-secondary), var(--bg-secondary));
+            border-color: var(--accent-primary);
+        }
+
+        .character-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+        }
+
+        .character-info {
+            flex: 1;
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .character-role {
+            font-size: 0.8em;
+            color: var(--text-secondary);
+        }
+
+        .builds-section {
+            flex: 1;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow: hidden;
+        }
+
+        .builds-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .builds-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-button {
+            padding: 8px 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-button:hover {
+            background: var(--item-hover);
+            color: var(--text-primary);
+        }
+
+        .filter-button.active {
+            background: var(--accent-secondary);
+            border-color: var(--accent-primary);
+            color: var(--gold);
+        }
+
+        .builds-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .build-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .build-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .build-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .build-name {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .build-meta {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+
+        .build-creator {
+            margin-bottom: 4px;
+        }
+
+        .build-patch {
+            font-size: 0.8em;
+        }
+
+        .build-items {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+            max-width: 350px;
+        }
+
+        .build-item {
+            width: 55px;
+            height: 55px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 5px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .build-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .build-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .build-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .build-rating {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .rating-button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .rating-button:hover {
+            color: var(--accent-primary);
+        }
+
+        .rating-button.liked {
+            color: var(--accent-primary);
+        }
+
+        .copy-build {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: var(--gold);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .copy-build:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Tooltip styles */
+        .tooltip {
+            position: fixed;
+            display: none;
+            background: var(--tooltip-bg);
+            color: var(--text-primary);
+            padding: 15px;
+            border-radius: 8px;
+            width: 300px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .tooltip-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tooltip-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .tooltip-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .tooltip-cost {
+            margin-left: auto;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .item-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+
+        .item-tag {
+            background: rgba(200, 155, 60, 0.15);
+            border: 1px solid var(--accent-secondary);
+            color: var(--accent-primary);
+            font-size: 0.8em;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .tooltip-stats {
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .tooltip-stats div {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tooltip-passive,
+        .tooltip-active {
+            color: var(--accent-primary);
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .tooltip-active {
+            color: #4CAF50;
+        }
+
+        .tooltip-description {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .cooldown {
+            margin-top: 4px;
+            color: #90A4AE;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Scrollbar Styles */
+        .character-grid::-webkit-scrollbar,
+        .builds-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .character-grid::-webkit-scrollbar-track,
+        .builds-grid::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+            border-radius: 4px;
+        }
+
+        .character-grid::-webkit-scrollbar-thumb,
+        .builds-grid::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .character-grid::-webkit-scrollbar-thumb:hover,
+        .builds-grid::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-secondary);
+        }
+
+        @media (max-width: 1200px) {
+            .builds-container {
+                flex-direction: column;
+                max-width: 100%;
+            }
+
+            .character-selector {
+                width: auto;
+            }
+
+            .character-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .builds-grid {
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .character-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .builds-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Menu -->
+    <nav class="main-nav">
+        <div class="nav-content">
+            <a href="Game Modes.html" class="play-button">
+                <i class="fas fa-play play-icon"></i>
+                <span class="play-text">Play</span>
+            </a>
+            <a href="home.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <span class="nav-text">Home</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="Store.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <span class="nav-text">Store</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="event.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-calendar"></i>
+                </div>
+                <span class="nav-text">Event</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="Team Builder.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <span class="nav-text">Team Builder</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="statistics.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <span class="nav-text">Statistics</span>
+                <div class="nav-indicator"></div>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Builds Container -->
+    <div class="builds-container">
+        <!-- Character Selector -->
+        <div class="character-selector">
+            <div class="search-box">
+                <input type="text" id="character-search" placeholder="Search champions...">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="character-grid" id="character-grid">
+                <!-- Characters will be loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Builds Section -->
+        <div class="builds-section">
+            <div class="builds-header">
+                <div class="builds-title">Popular Builds</div>
+                <div class="filter-buttons">
+                    <button class="filter-button active" data-filter="popular">
+                        <i class="fas fa-fire"></i>
+                        Popular
+                    </button>
+                    <button class="filter-button" data-filter="recent">
+                        <i class="fas fa-clock"></i>
+                        Recent
+                    </button>
+                    <button class="filter-button" data-filter="winrate">
+                        <i class="fas fa-trophy"></i>
+                        Highest Winrate
+                    </button>
+                </div>
+            </div>
+
+            <div class="builds-grid" id="builds-grid">
+                <!-- Builds will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, set, push } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { items } from './items.js';
+        import { roles } from './roles.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // Global variables
+        let selectedCharacter = null;
+        let currentFilter = 'popular';
+        const PATCH_VERSION = '2.1.1';
+
+        // Initialize auth state
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Load characters
+        function loadCharacters() {
+            const characterGrid = document.getElementById('character-grid');
+            const characters = new Set();
+            
+            // Get unique characters from roles
+            Object.values(roles).forEach(roleChars => {
+                roleChars.forEach(char => characters.add(char));
+            });
+
+            // Sort characters alphabetically
+            const sortedCharacters = Array.from(characters).sort();
+
+            // Create character cards
+            sortedCharacters.forEach(character => {
+                const card = document.createElement('div');
+                card.className = 'character-card';
+                card.dataset.character = character;
+                
+                // Get character's role
+                let characterRole = '';
+                Object.entries(roles).forEach(([role, chars]) => {
+                    if (chars.includes(character)) {
+                        characterRole = role;
+                    }
+                });
+
+                card.innerHTML = `
+                    <img src="Icons/${character}.png" alt="${character}" class="character-icon">
+                    <div class="character-info">
+                        <div class="character-name">${character}</div>
+                        <div class="character-role">${characterRole}</div>
+                    </div>
+                `;
+                
+                card.onclick = () => selectCharacter(character);
+                characterGrid.appendChild(card);
+            });
+        }
+
+        // Character search functionality
+        document.getElementById('character-search').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('.character-card').forEach(card => {
+                const character = card.dataset.character.toLowerCase();
+                card.style.display = character.includes(searchTerm) ? 'flex' : 'none';
+            });
+        });
+
+        // Select character
+        function selectCharacter(character) {
+            selectedCharacter = character;
+            
+            // Update UI
+            document.querySelectorAll('.character-card').forEach(card => {
+                card.classList.toggle('selected', card.dataset.character === character);
+            });
+            
+            // Load builds for selected character
+            loadBuilds(character);
+        }
+
+        // Load builds
+        async function loadBuilds(character) {
+            const buildsGrid = document.getElementById('builds-grid');
+            buildsGrid.innerHTML = '';
+
+            try {
+                const safePatchVersion = PATCH_VERSION.replace(/\./g, '_');
+                const buildsRef = ref(database, `builds/${safePatchVersion}`);
+                const snapshot = await get(buildsRef);
+                
+                if (snapshot.exists()) {
+                    const builds = [];
+                    snapshot.forEach(childSnapshot => {
+                        const build = childSnapshot.val();
+                        if (build.character === character) {
+                            builds.push({
+                                id: childSnapshot.key,
+                                ...build
+                            });
+                        }
+                    });
+
+                    // Sort builds based on current filter
+                    sortBuilds(builds);
+
+                    // Create build cards
+                    builds.forEach(build => {
+                        const card = createBuildCard(build);
+                        buildsGrid.appendChild(card);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading builds:', error);
+            }
+        }
+
+        // Sort builds based on filter
+        function sortBuilds(builds) {
+            switch (currentFilter) {
+                case 'popular':
+                    builds.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+                    break;
+                case 'recent':
+                    builds.sort((a, b) => b.timestamp - a.timestamp);
+                    break;
+                case 'winrate':
+                    builds.sort((a, b) => (b.winrate || 0) - (a.winrate || 0));
+                    break;
+            }
+        }
+
+        // Create build card
+        function createBuildCard(build) {
+            const card = document.createElement('div');
+            card.className = 'build-card';
+            
+            // Calculate total stats
+            const totalStats = calculateBuildStats(build.items);
+
+            card.innerHTML = `
+                <div class="build-header">
+                    <div class="build-name">${build.name}</div>
+                    <div class="build-meta">
+                        <div class="build-creator">by ${build.creatorName}</div>
+                        <div class="build-patch">Patch ${PATCH_VERSION}</div>
+                    </div>
+                </div>
+                <div class="build-items">
+                    ${build.items.map(itemId => {
+                        const item = items[itemId];
+                        if (!item) return `<div class="build-item"></div>`;
+                        return `
+                            <div class="build-item" 
+                                 onmouseover="showTooltip(event, '${itemId}')"
+                                 onmousemove="moveTooltip(event)"
+                                 onmouseout="hideTooltip()">
+                                <img src="${item.image}" alt="${item.name}">
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                <div class="build-stats">
+                    ${Object.entries(totalStats).filter(([_, value]) => value !== 0).slice(0, 6).map(([stat, value]) => `
+                        <div class="stat-item">
+                            <span>${formatStatName(stat)}</span>
+                            <span class="stat-value">+${value}${stat === 'attackSpeed' ? '%' : ''}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="build-actions">
+                    <div class="build-rating">
+                        <button class="rating-button ${build.liked ? 'liked' : ''}" onclick="likeBuild('${build.id}')">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span>${build.likes || 0}</span>
+                        </button>
+                    </div>
+                    <button class="copy-build" onclick="copyBuild('${build.id}')">
+                        <i class="fas fa-copy"></i>
+                        Copy Build
+                    </button>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Calculate build stats
+        function calculateBuildStats(buildItems) {
+            const stats = {
+                attackDamage: 0,
+                abilityPower: 0,
+                armor: 0,
+                magicResistance: 0,
+                health: 0,
+                mana: 0,
+                attackSpeed: 0,
+                cooldownReduction: 0,
+                movementSpeed: 0,
+                lifeSteal: 0
+            };
+            
+            buildItems.forEach(itemId => {
+                const item = items[itemId];
+                if (item && item.stats) {
+                    Object.entries(item.stats).forEach(([stat, value]) => {
+                        if (stats.hasOwnProperty(stat)) {
+                            stats[stat] += value;
+                        }
+                    });
+                }
+            });
+            
+            return stats;
+        }
+
+        // Format stat name
+        function formatStatName(stat) {
+            return stat
+                .replace(/([A-Z])/g, ' $1')
+                .toLowerCase()
+                .replace(/^\w/, c => c.toUpperCase());
+        }
+
+        // Create item tooltip
+        function createItemTooltip(item) {
+            return `
+                <div class="tooltip-header">
+                    <img src="${item.image}" alt="${item.name}" class="tooltip-icon">
+                    <div class="tooltip-name">${item.name}</div>
+                    <div class="tooltip-cost">
+                        <i class="fas fa-coins"></i>
+                        ${item.cost}
+                    </div>
+                </div>
+                <div class="item-tags">
+                    ${item.tags.map(tag => `<span class="item-tag">${tag}</span>`).join('')}
+                </div>
+                ${Object.keys(item.stats).length > 0 ? `
+                    <div class="tooltip-stats">
+                        ${Object.entries(item.stats).map(([stat, value]) => {
+                            const formattedStat = formatStatName(stat);
+                            return `<div>+${value}${stat === 'attackSpeed' ? '%' : ''} ${formattedStat}</div>`;
+                        }).join('')}
+                    </div>
+                ` : ''}
+                ${item.passive ? `
+                    <div class="tooltip-passive">
+                        <strong>Passive - ${item.passive.name}</strong>
+                    </div>
+                    <div class="tooltip-description">
+                        ${item.passive.description}
+                    </div>
+                ` : ''}
+                ${item.active ? `
+                    <div class="tooltip-active">
+                        <strong>Active - ${item.active.name}</strong>
+                    </div>
+                    <div class="tooltip-description">
+                        ${item.active.description}
+                        <div class="cooldown">
+                            <i class="fas fa-clock"></i> ${item.active.cooldown}s cooldown
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        // Filter button functionality
+        document.querySelectorAll('.filter-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentFilter = button.dataset.filter;
+                if (selectedCharacter) {
+                    loadBuilds(selectedCharacter);
+                }
+            });
+        });
+
+        // Like build functionality
+        window.likeBuild = async function(buildId) {
+            try {
+                const user = auth.currentUser;
+                if (!user) return;
+
+                const safePatchVersion = PATCH_VERSION.replace(/\./g, '_');
+                const buildRef = ref(database, `builds/${safePatchVersion}/${buildId}`);
+                const snapshot = await get(buildRef);
+                
+                if (snapshot.exists()) {
+                    const build = snapshot.val();
+                    const likes = (build.likes || 0) + 1;
+                    await set(buildRef, { ...build, likes });
+                    
+                    // Refresh builds
+                    if (selectedCharacter) {
+                        loadBuilds(selectedCharacter);
+                    }
+                }
+            } catch (error) {
+                console.error('Error liking build:', error);
+            }
+        };
+
+        // Copy build functionality
+        window.copyBuild = async function(buildId) {
+            try {
+                const safePatchVersion = PATCH_VERSION.replace(/\./g, '_');
+                const buildRef = ref(database, `builds/${safePatchVersion}/${buildId}`);
+                const snapshot = await get(buildRef);
+                
+                if (snapshot.exists()) {
+                    const build = snapshot.val();
+                    // Redirect to build planner with build data
+                    window.location.href = `build-planner.html?character=${build.character}&items=${build.items.join(',')}`;
+                }
+            } catch (error) {
+                console.error('Error copying build:', error);
+            }
+        };
+
+        // Update the tooltip functions
+        window.showTooltip = function(event, itemId) {
+            hideTooltip(); // Remove any existing tooltip first
+            const item = items[itemId];
+            if (!item) return;
+
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip';
+            tooltip.style.display = 'block'; // Make sure it's visible
+            tooltip.innerHTML = createItemTooltip(item);
+            document.body.appendChild(tooltip);
+
+            moveTooltip(event);
+        };
+
+        window.moveTooltip = function(event) {
+            const tooltip = document.querySelector('.tooltip');
+            if (!tooltip) return;
+
+            const padding = 15;
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const tooltipWidth = tooltip.offsetWidth;
+            const tooltipHeight = tooltip.offsetHeight;
+
+            let left = event.clientX + padding;
+            let top = event.clientY + padding;
+
+            // Check right edge
+            if (left + tooltipWidth > viewportWidth) {
+                left = event.clientX - tooltipWidth - padding;
+            }
+
+            // Check bottom edge
+            if (top + tooltipHeight > viewportHeight) {
+                top = event.clientY - tooltipHeight - padding;
+            }
+
+            tooltip.style.left = `${left}px`;
+            tooltip.style.top = `${top}px`;
+        };
+
+        window.hideTooltip = function() {
+            const tooltip = document.querySelector('.tooltip');
+            if (tooltip) {
+                tooltip.remove();
+            }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCharacters();
+        });
+    </script>
+</body>
+</html> 

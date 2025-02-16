@@ -1,0 +1,2631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Fighters - Champion Select</title>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <style>
+        :root {
+            --primary-color: #0A1428;
+            --secondary-color: #1E2328;
+            --accent-color: #C89B3C;
+            --text-color: #F0E6D2;
+            --border-color: #463714;
+            --hover-color: #785A28;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            grid-template-rows: 60px 1fr 180px; /* Increased the footer row height */
+            gap: 10px;
+            padding: 10px;
+        }
+
+        /* Header Section */
+        .header {
+            grid-column: 1 / -1;
+            background-color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .timer {
+            font-size: 24px;
+            color: var(--accent-color);
+        }
+
+        .phase-info {
+            text-align: center;
+        }
+
+        /* Add banned champions display styles */
+        .banned-champions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .banned-champion-portrait {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banned-champion-portrait img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .banned-champion-portrait.empty {
+            background-color: var(--primary-color);
+        }
+
+        .banned-champion-portrait::after {
+            content: '×';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            color: #ff0000;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Remove role selector styles */
+        .role-selector {
+            display: none;
+        }
+
+        /* Left Sidebar */
+        .left-sidebar {
+            background-color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px;
+            overflow-y: auto;
+            border-radius: 8px;
+        }
+
+        .team-member {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background-color: var(--primary-color);
+            border-radius: 8px;
+            position: relative;
+            min-height: 120px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .team-member.picking {
+            border: 2px solid var(--accent-color);
+            animation: glowPulse 2s infinite;
+            transform: scale(1.02);
+            background-color: rgba(200, 155, 60, 0.1);
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(200, 155, 60, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(200, 155, 60, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(200, 155, 60, 0);
+            }
+        }
+
+        @keyframes glowPulse {
+            0% {
+                box-shadow: 0 0 5px var(--accent-color);
+            }
+            50% {
+                box-shadow: 0 0 20px var(--accent-color), 0 0 30px var(--accent-color);
+            }
+            100% {
+                box-shadow: 0 0 5px var(--accent-color);
+            }
+        }
+
+        .champion-portrait {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            background-color: var(--border-color);
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .team-member.picking .champion-portrait {
+            border-color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        .champion-portrait img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .player-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding-right: 10px;
+        }
+
+        .player-name {
+            font-weight: bold;
+            color: var(--text-color);
+            font-size: 1.1em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .player-rank {
+            font-size: 0.9em;
+            color: var(--accent-color);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .player-role {
+            font-size: 0.9em;
+            color: var(--text-color);
+            opacity: 0.8;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .pick-order-indicator {
+            display: none;
+        }
+
+        .team-member::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6));
+            border-radius: 8px;
+            z-index: 0;
+        }
+
+        .team-member > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .player-slot {
+            border: 2px solid var(--accent-color) !important;
+            box-shadow: 0 0 20px var(--accent-color);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 10px;
+            max-height: calc(100vh - 180px); /* Adjust for header and footer */
+            overflow: hidden;
+        }
+
+        .champion-search {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            background-color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 8px;
+            background-color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 4px;
+        }
+
+        .champion-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            padding: 15px;
+            background-color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            overflow-y: auto;
+            max-height: 100%;
+            align-content: start;
+        }
+
+        .champion-card {
+            position: relative;
+            aspect-ratio: 1;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100px;
+            height: 100px;
+            opacity: 0.5;
+        }
+
+        .champion-card.available {
+            opacity: 1;
+        }
+
+        .champion-card.picked {
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .champion-card:hover {
+            transform: scale(1.1);
+            z-index: 1;
+        }
+
+        .champion-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        /* Add custom scrollbar */
+        .champion-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .champion-grid::-webkit-scrollbar-track {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        .champion-grid::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 4px;
+        }
+
+        .champion-grid::-webkit-scrollbar-thumb:hover {
+            background: var(--hover-color);
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            background-color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px;
+            overflow-y: auto;
+            border-radius: 8px;
+        }
+
+        .champion-splash {
+            width: 100%;
+            height: 200px;
+            background-color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            margin-bottom: 10px;
+        }
+
+        .summoner-spells {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .spell-slot {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        /* Footer */
+        .footer {
+            grid-column: 1 / -1;
+            background-color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            gap: 15px;
+            height: 100%; /* Take full height of grid row */
+        }
+
+        .chat-section {
+            flex: 0 1 500px;
+            height: 150px; /* Increased height */
+            background-color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Volume Control Styles */
+        .volume-control-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--secondary-color);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1001;
+        }
+
+        .play-music-button {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 5px;
+            display: none;
+            transition: color 0.3s ease;
+        }
+
+        .play-music-button:hover {
+            color: var(--accent-color);
+        }
+
+        .play-music-button.show {
+            display: block;
+        }
+
+        .volume-slider {
+            -webkit-appearance: none;
+            width: 100px;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--primary-color);
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: var(--hover-color);
+        }
+
+        .volume-icon {
+            color: var(--text-color);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .volume-icon:hover {
+            color: var(--accent-color);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .chat-message {
+            padding: 4px 8px;
+            border-radius: 4px;
+            background-color: var(--secondary-color);
+            word-break: break-word;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .chat-message .sender {
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-right: 6px;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .chat-message .message-text {
+            flex: 1;
+            min-width: 0;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .chat-input {
+            padding: 8px;
+            background-color: var(--secondary-color);
+            border: none;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-size: 14px;
+            width: 100%;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-top: 1px solid var(--accent-color);
+        }
+
+        .footer-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .load-build-button {
+            padding: 12px 24px;
+            background: linear-gradient(to bottom right, var(--accent-color), #785A28);
+            color: var(--text-color);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+            display: none;
+        }
+
+        .load-build-button.available {
+            display: block;
+            animation: pulse 2s infinite;
+            background: linear-gradient(45deg, var(--accent-color), #D4AF37);
+        }
+
+        .load-build-button.available:hover {
+            transform: translateY(-2px);
+            animation: none;
+            background: linear-gradient(45deg, #D4AF37, var(--accent-color));
+        }
+
+        .load-build-button.selected {
+            animation: none;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        .copy-build {
+            padding: 12px 24px;
+            background: linear-gradient(to bottom right, var(--accent-color), #785A28);
+            color: var(--text-color);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-build:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(to bottom right, #D4AF37, var(--accent-color));
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .rating-button {
+            padding: 8px 16px;
+            background: var(--primary-color);
+            color: var(--text-color);
+            border: 2px solid var(--accent-color);
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .rating-button:hover {
+            background: var(--accent-color);
+        }
+
+        .rating-button.liked {
+            background: var(--accent-color);
+            color: var(--text-color);
+        }
+
+        .build-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            gap: 10px;
+        }
+
+        /* Build selection modal */
+        .build-selection-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .build-selection-content {
+            background: var(--secondary-color);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .build-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .build-card {
+            background: var(--primary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .build-card:hover {
+            transform: scale(1.02);
+            border-color: var(--accent-color);
+        }
+
+        .build-title {
+            font-size: 18px;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .build-info {
+            font-size: 14px;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .build-items {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .build-item {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .build-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Role Selection */
+        .role-selector {
+            display: flex;
+            gap: 5px;
+            padding: 5px;
+        }
+
+        .role-icon {
+            width: 30px;
+            height: 30px;
+            background-color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .role-icon.selected {
+            border-color: var(--accent-color);
+        }
+
+        /* Filters */
+        .filter-section {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-button {
+            padding: 5px 10px;
+            background-color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .filter-button.active {
+            background-color: var(--accent-color);
+        }
+
+        /* Add this to your existing styles */
+        .role-select-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .role-select-content {
+            background: var(--secondary-color);
+            padding: 40px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            width: 600px;
+        }
+
+        .role-select-title {
+            font-size: 28px;
+            color: var(--accent-color);
+            margin-bottom: 30px;
+        }
+
+        .role-buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+        }
+
+        .role-select-btn {
+            padding: 20px;
+            background: var(--primary-color);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-color);
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .role-select-btn:hover {
+            background: var(--hover-color);
+            transform: translateY(-2px);
+            border-color: var(--accent-color);
+        }
+
+        .champion-card.unavailable {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .champion-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--text-color);
+            font-size: 12px;
+            padding: 4px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Add these styles to your existing CSS */
+        .skin-selection-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .skin-selection-content {
+            background: var(--secondary-color);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .skin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .skin-card {
+            background: var(--primary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .skin-card:hover {
+            transform: scale(1.05);
+            border-color: var(--accent-color);
+        }
+
+        .skin-card img {
+            width: 100%;
+            /* Set height to maintain 16:9 aspect ratio */
+            aspect-ratio: 16/9;
+            object-fit: cover;
+        }
+
+        .skin-name {
+            padding: 10px;
+            text-align: center;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .team-member {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+            z-index: 1;
+        }
+
+        .team-member::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 5px;
+            z-index: 0;
+        }
+
+        .team-member > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Adjust team member size to better show background */
+        .team-member {
+            min-height: 100px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .skin-image {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
+        }
+
+        /* Add these styles for the start match button */
+        .start-match-button {
+            padding: 12px 24px;
+            background: linear-gradient(to bottom right, var(--accent-color), #785A28);
+            color: var(--text-color);
+            border: none;
+            border-radius: 4px;
+            cursor: not-allowed;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+        }
+
+        .start-match-button.ready {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            cursor: pointer;
+            opacity: 1;
+            animation: pulse 2s infinite;
+        }
+
+        .start-match-button.ready:hover {
+            transform: translateY(-2px);
+            animation: none;
+            background: linear-gradient(45deg, #45a049, #4CAF50);
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+        }
+
+        /* Add ban modal styles */
+        .ban-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .ban-modal-content {
+            background: var(--secondary-color);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .ban-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            padding: 15px;
+        }
+
+        .ban-card {
+            position: relative;
+            aspect-ratio: 1;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100px;
+            height: 100px;
+        }
+
+        .ban-card:hover {
+            transform: scale(1.1);
+        }
+
+        .ban-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .banned-champion {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .banned-champion::after {
+            content: '×';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+            color: #ff0000;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .ban-phase-info {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+            font-size: 24px;
+        }
+
+        .ban-portraits {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            justify-content: center;
+        }
+
+        .ban-portrait {
+            width: 50px;
+            height: 50px;
+            position: relative;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .ban-portrait img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .ban-portrait.empty {
+            background-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <audio id="background-music" loop>
+        <source src="res/music/ranked.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Add Volume Control -->
+    <div class="volume-control-container">
+        <button class="play-music-button" id="playMusicButton">
+            <i class="fas fa-play"></i>
+        </button>
+        <i class="fas fa-volume-up volume-icon" id="volumeIcon"></i>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="20">
+    </div>
+
+    <!-- Add this at the start of the body -->
+    <div class="role-select-modal" id="roleSelectModal">
+        <div class="role-select-content">
+            <h2 class="role-select-title">Select Your Role</h2>
+            <div class="role-buttons">
+                <button class="role-select-btn" data-role="Top">Top</button>
+                <button class="role-select-btn" data-role="Jungle">Jungle</button>
+                <button class="role-select-btn" data-role="Mid">Mid</button>
+                <button class="role-select-btn" data-role="Adc">ADC</button>
+                <button class="role-select-btn" data-role="Support">Support</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this HTML after your role selection modal -->
+    <div class="skin-selection-modal" id="skinSelectionModal">
+        <div class="skin-selection-content">
+            <h2 class="role-select-title">Select Your Skin</h2>
+            <div class="skin-grid" id="skinGrid">
+                <!-- Skins will be added here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this new modal -->
+    <div class="build-selection-modal" id="buildSelectionModal">
+        <div class="build-selection-content">
+            <h2 class="role-select-title">Select Build</h2>
+            <div class="build-grid" id="buildGrid">
+                <!-- Builds will be added here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add ban modal -->
+    <div class="ban-modal" id="banModal">
+        <div class="ban-modal-content">
+            <div class="ban-phase-info">
+                <h2>Ban Phase</h2>
+                <p>Select a champion to ban</p>
+            </div>
+            <div class="ban-portraits">
+                <div class="ban-portrait empty" id="blueBan"></div>
+                <div class="ban-portrait empty" id="redBan"></div>
+            </div>
+            <div class="ban-grid" id="banGrid">
+                <!-- Champions will be added here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="timer">30</div>
+        <div class="phase-info">
+            <h2>CHAMPION SELECT</h2>
+            <p>Pick Your Champion</p>
+        </div>
+        <div class="banned-champions">
+            <div class="banned-champion-portrait empty" id="blueBanPortrait"></div>
+            <div class="banned-champion-portrait empty" id="redBanPortrait"></div>
+        </div>
+    </header>
+
+    <!-- Left Sidebar (Blue Team) -->
+    <aside class="left-sidebar">
+        <div class="team-member" id="blue-1">
+            <div class="champion-portrait"></div>
+            <div class="player-info">
+                <div class="player-name">You</div>
+                <div class="player-rank">0 RP</div>
+            </div>
+            <div class="pick-order-indicator"></div>
+        </div>
+        <div class="team-member" id="blue-2">
+            <div class="champion-portrait"></div>
+            <div class="player-info">
+                <div class="player-name">AI Player 1</div>
+                <div class="player-rank">0 RP</div>
+            </div>
+            <div class="pick-order-indicator"></div>
+        </div>
+        <div class="team-member" id="blue-3">
+            <div class="champion-portrait"></div>
+            <div class="player-info">
+                <div class="player-name">AI Player 2</div>
+                <div class="player-rank">0 RP</div>
+            </div>
+            <div class="pick-order-indicator"></div>
+        </div>
+        <div class="team-member" id="blue-4">
+            <div class="champion-portrait"></div>
+            <div class="player-info">
+                <div class="player-name">AI Player 3</div>
+                <div class="player-rank">0 RP</div>
+            </div>
+            <div class="pick-order-indicator"></div>
+        </div>
+        <div class="team-member" id="blue-5">
+            <div class="champion-portrait"></div>
+            <div class="player-info">
+                <div class="player-name">AI Player 4</div>
+                <div class="player-rank">0 RP</div>
+            </div>
+            <div class="pick-order-indicator"></div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="champion-search">
+            <input type="text" class="search-input" placeholder="Search champions...">
+            <div class="filter-section">
+                <button class="filter-button active" data-role="all">All</button>
+                <button class="filter-button" data-role="Top">Top</button>
+                <button class="filter-button" data-role="Jungle">Jungle</button>
+                <button class="filter-button" data-role="Mid">Mid</button>
+                <button class="filter-button" data-role="Adc">ADC</button>
+                <button class="filter-button" data-role="Support">Support</button>
+            </div>
+        </div>
+        <div class="champion-grid">
+            <!-- Champion cards will be dynamically added here -->
+        </div>
+    </main>
+
+    <!-- Right Sidebar (Red Team) -->
+    <aside class="right-sidebar">
+        <div class="team-member" id="red-1">
+            <div class="champion-portrait"></div>
+            <div class="player-info">
+                <div class="player-name">AI Player 5</div>
+                <div class="player-rank">0 RP</div>
+            </div>
+            <div class="pick-order-indicator"></div>
+        </div>
+        <div class="team-member" id="red-2">
+            <div class="champion-portrait"></div>
+            <div class="player-info">
+                <div class="player-name">AI Player 6</div>
+                <div class="player-rank">0 RP</div>
+            </div>
+            <div class="pick-order-indicator"></div>
+        </div>
+        <div class="team-member" id="red-3">
+            <div class="champion-portrait"></div>
+            <div class="player-info">
+                <div class="player-name">AI Player 7</div>
+                <div class="player-rank">0 RP</div>
+            </div>
+            <div class="pick-order-indicator"></div>
+        </div>
+        <div class="team-member" id="red-4">
+            <div class="champion-portrait"></div>
+            <div class="player-info">
+                <div class="player-name">AI Player 8</div>
+                <div class="player-rank">0 RP</div>
+            </div>
+            <div class="pick-order-indicator"></div>
+        </div>
+        <div class="team-member" id="red-5">
+            <div class="champion-portrait"></div>
+            <div class="player-info">
+                <div class="player-name">AI Player 9</div>
+                <div class="player-rank">0 RP</div>
+            </div>
+            <div class="pick-order-indicator"></div>
+        </div>
+    </aside>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-buttons">
+            <button class="start-match-button" disabled>START MATCH</button>
+            <button class="load-build-button" id="loadBuildButton" style="display: none;">LOAD BUILD</button>
+        </div>
+        <div class="chat-section">
+            <div class="chat-messages"></div>
+            <input type="text" class="chat-input" placeholder="Type a message...">
+        </div>
+        <div class="settings">
+            <!-- Settings buttons will go here -->
+        </div>
+    </footer>
+
+    <script type="module">
+        // Audio Control
+        const audio = document.getElementById('background-music');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeIcon = document.getElementById('volumeIcon');
+        const playMusicButton = document.getElementById('playMusicButton');
+        let lastVolume = 0.2;
+
+        // Set initial volume
+        audio.volume = 0.2;
+
+        // Try to play audio and handle autoplay restrictions
+        async function initializeAudio() {
+            try {
+                await audio.play();
+                playMusicButton.style.display = 'none';
+            } catch (err) {
+                console.log('Autoplay prevented:', err);
+                playMusicButton.classList.add('show');
+            }
+        }
+
+        // Initialize audio when the page loads
+        initializeAudio();
+
+        // Add click event for play button
+        playMusicButton.addEventListener('click', async () => {
+            try {
+                await audio.play();
+                playMusicButton.style.display = 'none';
+            } catch (err) {
+                console.error('Failed to play audio:', err);
+            }
+        });
+
+        // Try to play audio when user interacts with the page
+        document.addEventListener('click', async () => {
+            if (audio.paused) {
+                try {
+                    await audio.play();
+                    playMusicButton.style.display = 'none';
+                } catch (err) {
+                    console.log('Still cannot play audio:', err);
+                }
+            }
+        }, { once: true });
+
+        // Update volume when slider changes
+        volumeSlider.addEventListener('input', (e) => {
+            const volume = e.target.value / 100;
+            audio.volume = volume;
+            lastVolume = volume;
+            updateVolumeIcon(volume);
+        });
+
+        // Toggle mute/unmute when clicking the icon
+        volumeIcon.addEventListener('click', () => {
+            if (audio.volume > 0) {
+                audio.volume = 0;
+                volumeSlider.value = 0;
+            } else {
+                audio.volume = lastVolume;
+                volumeSlider.value = lastVolume * 100;
+            }
+            updateVolumeIcon(audio.volume);
+        });
+
+        // Update volume icon based on volume level
+        function updateVolumeIcon(volume) {
+            volumeIcon.className = 'fas volume-icon';
+            if (volume === 0) {
+                volumeIcon.className += ' fa-volume-mute';
+            } else if (volume < 0.5) {
+                volumeIcon.className += ' fa-volume-down';
+            } else {
+                volumeIcon.className += ' fa-volume-up';
+            }
+        }
+
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, set, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { roles } from './roles.js';
+        import { usernames } from './usernames.js';
+        import { chatMessages, contextualResponses, timeBasedMessages, roleMessages } from './chat_messages.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // Champion Select Timer
+        let timeLeft = 30;
+        const timerElement = document.querySelector('.timer');
+        
+        const timer = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = timeLeft;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                // Handle time out
+            }
+        }, 1000);
+
+        // Role Selection
+        const roleIcons = document.querySelectorAll('.role-icon');
+        roleIcons.forEach(icon => {
+            icon.addEventListener('click', () => {
+                roleIcons.forEach(i => i.classList.remove('selected'));
+                icon.classList.add('selected');
+            });
+        });
+
+        // Add currentFilter variable to game state
+        let currentFilter = 'all';
+        let currentUser = null;
+
+        // Update the champion search
+        const searchInput = document.querySelector('.search-input');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            filterChampions(searchTerm, currentFilter);
+        });
+
+        // Update filter buttons
+        const filterButtons = document.querySelectorAll('.filter-button');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+                currentFilter = button.dataset.role;
+                filterChampions(searchInput.value.toLowerCase(), currentFilter);
+            });
+        });
+
+        // Add filter champions function
+        function filterChampions(searchTerm, roleFilter) {
+            const cards = document.querySelectorAll('.champion-card');
+            cards.forEach(card => {
+                const champion = card.title;
+                const matchesSearch = champion.toLowerCase().includes(searchTerm);
+                const matchesRole = roleFilter === 'all' || roles[roleFilter]?.includes(champion);
+                
+                if (matchesSearch && matchesRole) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Chat Functionality
+        const chatInput = document.querySelector('.chat-input');
+
+        // Remove the old aiNames array and replace it with this line
+        const shuffledUsernames = [...usernames].sort(() => Math.random() - 0.5);
+
+        // Add this object to store AI player RP values
+        let aiPlayerRankPoints = {};
+
+        // Modify the onAuthStateChanged function to store AI RP values
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                // Get user data
+                const userRef = ref(database, `users/${user.uid}`);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+
+                let aiNameIndex = 0;
+
+                // Get player's rank points for reference
+                const playerRankPoints = userData['Rank points'] || 0;
+
+                // Update all player names and ranks
+                for (let team of ['blue', 'red']) {
+                    for (let slot = 1; slot <= 5; slot++) {
+                        const memberElement = document.getElementById(`${team}-${slot}`);
+                        const nameElement = memberElement.querySelector('.player-name');
+                        const rankElement = memberElement.querySelector('.player-rank');
+
+                        if (team === playerTeam && slot === playerSlot) {
+                            // This is the player's slot
+                            nameElement.textContent = userData.username || user.email.split('@')[0];
+                            rankElement.textContent = `${playerRankPoints} RP`;
+                            memberElement.classList.add('player-slot');
+                            console.log(`Player assigned to ${team} team, slot ${slot}`);
+                        } else {
+                            // AI players
+                            nameElement.textContent = shuffledUsernames[aiNameIndex++];
+                            
+                            // Generate and store AI rank points only once
+                            const aiKey = `${team}_${slot}`;
+                            if (!aiPlayerRankPoints[aiKey]) {
+                                let aiRankPoints;
+                                if (Math.random() < 0.85) {
+                                    // 85% chance to be close to player's rank (±200 RP)
+                                    const variation = Math.floor(Math.random() * 401) - 200;
+                                    aiRankPoints = Math.max(0, playerRankPoints + variation);
+                                } else {
+                                    // 15% chance to be significantly different (±500 to ±1000 RP)
+                                    const isHigher = Math.random() < 0.5;
+                                    const variation = Math.floor(Math.random() * 501) + 500;
+                                    aiRankPoints = Math.max(0, playerRankPoints + (isHigher ? variation : -variation));
+                                }
+                                aiPlayerRankPoints[aiKey] = aiRankPoints;
+                            }
+                            
+                            rankElement.textContent = `${aiPlayerRankPoints[aiKey]} RP`;
+                        }
+                    }
+                }
+
+                // Show role selection modal
+                document.getElementById('roleSelectModal').style.display = 'flex';
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Game state
+        let currentPickIndex = 0;
+        let selectedRole = null;
+        let pickOrder = [];
+        let playerTeam = Math.random() < 0.5 ? 'blue' : 'red'; // Randomly assign player team
+        let playerSlot = Math.floor(Math.random() * 5) + 1;
+        let pickedChampions = new Set();
+        let roleAssignments = {
+            blue: { 1: '', 2: '', 3: '', 4: '', 5: '' },
+            red: { 1: '', 2: '', 3: '', 4: '', 5: '' }
+        };
+
+        // Add skin selection state
+        let selectedChampion = null;
+        let availableSkins = [];
+        let selectedBuild = null;
+
+        // Add selectChampion function
+        async function selectChampion(champion) {
+            if (isPlayerTurn()) {
+                selectedChampion = champion;
+                await showSkinSelection(champion);
+            } else {
+                const currentPick = pickOrder[currentPickIndex];
+                const memberElement = document.getElementById(`${currentPick.team}-${currentPick.slot}`);
+                
+                const portrait = memberElement.querySelector('.champion-portrait');
+                portrait.innerHTML = `<img src="Icons/${champion}.png" alt="${champion}">`;
+                
+                pickedChampions.add(champion);
+                checkAllChampionsSelected(); // Check after each pick
+                
+                currentPickIndex++;
+                if (currentPickIndex < pickOrder.length) {
+                    updateCurrentPick();
+                    updateAvailableChampions();
+                    
+                    if (!isPlayerTurn()) {
+                        setTimeout(makeAIPick, 1000);
+                    }
+                }
+            }
+        }
+
+        // Add showSkinSelection function
+        async function showSkinSelection(champion) {
+            const modal = document.getElementById('skinSelectionModal');
+            const skinGrid = document.getElementById('skinGrid');
+            skinGrid.innerHTML = '';
+
+            try {
+                // Get user's owned skins from Firebase
+                const userRef = ref(database, `users/${currentUser.uid}/skins`);
+                const snapshot = await get(userRef);
+                const ownedSkins = snapshot.val() || {};
+
+                // Import skin data
+                const { characters } = await import('./characterskinref.js');
+                const { skinToBaseCharacterMap } = await import('./skinmapping.js');
+
+                // Get available skins for the champion
+                const availableSkins = characters[champion] || [];
+                
+                // Create skin cards for owned skins
+                availableSkins.forEach(skin => {
+                    if (ownedSkins[skin]) { // Only show owned skins
+                        const card = document.createElement('div');
+                        card.className = 'skin-card';
+                        
+                        const img = document.createElement('img');
+                        img.src = `Skins/${skin}.jpeg`; // Try jpeg first
+                        img.onerror = function() {
+                            // If jpeg fails, try png
+                            this.src = `Skins/${skin}.png`;
+                            this.onerror = function() {
+                                // If png fails, try jpg
+                                this.src = `Skins/${skin}.jpg`;
+                                this.onerror = function() {
+                                    // If all fail, use champion icon
+                                    this.src = `Icons/${champion}.png`;
+                                }
+                            }
+                        };
+                        img.alt = skin;
+                        img.className = 'skin-image';
+                        
+                        const name = document.createElement('div');
+                        name.className = 'skin-name';
+                        name.textContent = skin.replace(champion + " ", "");
+                        
+                        card.appendChild(img);
+                        card.appendChild(name);
+                        
+                        card.addEventListener('click', () => {
+                            selectSkin(skin);
+                            modal.style.display = 'none';
+                        });
+                        
+                        skinGrid.appendChild(card);
+                    }
+                });
+
+                // Only show modal if there are owned skins
+                const hasOwnedSkins = Array.from(skinGrid.children).length > 0;
+                if (hasOwnedSkins) {
+                    modal.style.display = 'flex';
+                } else {
+                    // If no owned skins, just use the champion as is
+                    selectSkin(champion);
+                }
+            } catch (error) {
+                console.error('Error loading skins:', error);
+                // Fallback to default selection if skin loading fails
+                selectSkin(champion);
+            }
+        }
+
+        // Update selectSkin function to show Load Build button with animation
+        function selectSkin(skin) {
+            const currentPick = pickOrder[currentPickIndex];
+            const memberElement = document.getElementById(`${currentPick.team}-${currentPick.slot}`);
+            
+            // Update portrait
+            const portrait = memberElement.querySelector('.champion-portrait');
+            portrait.innerHTML = `<img src="Icons/${selectedChampion}.png" alt="${selectedChampion}">`;
+            
+            // Try different image extensions for the skin
+            const img = new Image();
+            img.onload = function() {
+                // Update background with successfully loaded skin image
+                memberElement.style.backgroundImage = `url('${this.src}')`;
+                memberElement.style.backgroundSize = 'cover';
+                memberElement.style.backgroundPosition = 'center';
+                
+                // Force a repaint to ensure the background updates
+                memberElement.style.display = 'none';
+                memberElement.offsetHeight; // Trigger reflow
+                memberElement.style.display = 'flex';
+
+                // Show Load Build button after skin is selected with animation
+                const loadBuildButton = document.getElementById('loadBuildButton');
+                loadBuildButton.style.display = 'block';
+                loadBuildButton.classList.add('available');
+            };
+            
+            // Try loading different image formats
+            img.src = `Skins/${skin}.jpeg`;
+            img.onerror = function() {
+                this.src = `Skins/${skin}.png`;
+                this.onerror = function() {
+                    this.src = `Skins/${skin}.jpg`;
+                    this.onerror = function() {
+                        // If all fail, use default champion icon
+                        this.src = `Icons/${selectedChampion}.png`;
+                    }
+                }
+            };
+            
+            // Add to picked champions
+            pickedChampions.add(selectedChampion);
+            
+            // Move to next pick
+            currentPickIndex++;
+            if (currentPickIndex < pickOrder.length) {
+                updateCurrentPick();
+                updateAvailableChampions();
+                
+                if (!isPlayerTurn()) {
+                    setTimeout(makeAIPick, 1000);
+                }
+            }
+        }
+
+        // Update makeAIPick to handle skins properly
+        async function makeAIPick() {
+            const currentPick = pickOrder[currentPickIndex];
+            const currentRole = roleAssignments[currentPick.team][currentPick.slot];
+            const availableChampions = roles[currentRole].filter(champ => !pickedChampions.has(champ) && !bannedChampions.has(champ));
+            
+            if (availableChampions.length > 0) {
+                const randomChampion = availableChampions[Math.floor(Math.random() * availableChampions.length)];
+                
+                // Get available skins for the AI champion
+                const { characters } = await import('./characterskinref.js');
+                const championSkins = characters[randomChampion] || [randomChampion];
+                
+                // Try up to 5 times to find a different skin
+                let selectedSkin = null;
+                let attempts = 0;
+                const maxAttempts = 5;
+                const usedSkins = new Set();
+
+                while (attempts < maxAttempts) {
+                    const potentialSkin = championSkins[Math.floor(Math.random() * championSkins.length)];
+                    if (!usedSkins.has(potentialSkin)) {
+                        selectedSkin = potentialSkin;
+                        usedSkins.add(potentialSkin);
+                        // 30% chance to try another skin, unless it's the last attempt
+                        if (attempts < maxAttempts - 1 && Math.random() < 0.3) {
+                            attempts++;
+                            await new Promise(resolve => setTimeout(resolve, 100)); // Small delay between attempts
+                            continue;
+                        }
+                        break;
+                    }
+                    attempts++;
+                }
+
+                // If no skin was selected after all attempts, use the default
+                const randomSkin = selectedSkin || randomChampion;
+                
+                const memberElement = document.getElementById(`${currentPick.team}-${currentPick.slot}`);
+                
+                // Update portrait
+                const portrait = memberElement.querySelector('.champion-portrait');
+                portrait.innerHTML = `<img src="Icons/${randomChampion}.png" alt="${randomChampion}">`;
+                
+                // Try different image extensions for the skin with improved error handling
+                const img = new Image();
+                img.onload = function() {
+                    memberElement.style.backgroundImage = `url('${this.src}')`;
+                    memberElement.style.backgroundSize = 'cover';
+                    memberElement.style.backgroundPosition = 'center';
+                    
+                    // Force a repaint
+                    memberElement.style.display = 'none';
+                    memberElement.offsetHeight; // Trigger reflow
+                    memberElement.style.display = 'flex';
+                };
+                
+                // Enhanced image loading with multiple retries
+                const tryLoadImage = (skin, extensions = ['jpeg', 'png', 'jpg']) => {
+                    if (extensions.length === 0) {
+                        img.src = `Icons/${randomChampion}.png`;
+                        return;
+                    }
+                    
+                    img.src = `Skins/${skin}.${extensions[0]}`;
+                    img.onerror = () => tryLoadImage(skin, extensions.slice(1));
+                };
+                
+                tryLoadImage(randomSkin);
+                
+                pickedChampions.add(randomChampion);
+                checkAllChampionsSelected(); // Check after each pick
+                
+                currentPickIndex++;
+                if (currentPickIndex < pickOrder.length) {
+                    updateCurrentPick();
+                    updateAvailableChampions();
+                    
+                    if (!isPlayerTurn()) {
+                        setTimeout(makeAIPick, 1000);
+                    }
+                } else {
+                    // This is the last pick, make sure to check one final time
+                    checkAllChampionsSelected();
+                    // Remove the picking highlight from all members since picks are done
+                    document.querySelectorAll('.team-member').forEach(member => {
+                        member.classList.remove('picking');
+                    });
+                }
+            }
+        }
+
+        // Check if it's player's turn
+        function isPlayerTurn() {
+            const currentPick = pickOrder[currentPickIndex];
+            return currentPick && currentPick.team === playerTeam && currentPick.slot === playerSlot;
+        }
+
+        // Initialize the game
+        function initializeGame() {
+            // Assign the selected role to the player's slot
+            roleAssignments[playerTeam][playerSlot] = selectedRole;
+            
+            // Generate other role assignments
+            const allRoles = ['Top', 'Jungle', 'Mid', 'Adc', 'Support'];
+            
+            // Assign remaining roles for blue team
+            const blueAvailableRoles = allRoles.filter(r => r !== (playerTeam === 'blue' ? selectedRole : null));
+            for (let slot = 1; slot <= 5; slot++) {
+                if (playerTeam !== 'blue' || slot !== playerSlot) {
+                    const randomIndex = Math.floor(Math.random() * blueAvailableRoles.length);
+                    roleAssignments.blue[slot] = blueAvailableRoles.splice(randomIndex, 1)[0];
+                }
+            }
+            
+            // Assign roles for red team
+            const redAvailableRoles = allRoles.filter(r => r !== (playerTeam === 'red' ? selectedRole : null));
+            for (let slot = 1; slot <= 5; slot++) {
+                if (playerTeam !== 'red' || slot !== playerSlot) {
+                    const randomIndex = Math.floor(Math.random() * redAvailableRoles.length);
+                    roleAssignments.red[slot] = redAvailableRoles.splice(randomIndex, 1)[0];
+                }
+            }
+
+            // Generate pick order
+            const blueTeam = [1, 2, 3, 4, 5].map(num => ({ team: 'blue', slot: num }));
+            const redTeam = [1, 2, 3, 4, 5].map(num => ({ team: 'red', slot: num }));
+            
+            pickOrder = [
+                blueTeam[0],                    // Blue 1st pick
+                redTeam[0], redTeam[1],         // Red 1st & 2nd pick
+                blueTeam[1], blueTeam[2],       // Blue 2nd & 3rd pick
+                redTeam[2], redTeam[3],         // Red 3rd & 4th pick
+                blueTeam[3], blueTeam[4],       // Blue 4th & 5th pick
+                redTeam[4]                      // Red 5th pick
+            ];
+
+            updatePickOrderDisplay();
+            updateAvailableChampions();
+
+            // Start AI picks if player isn't first
+            if (!isPlayerTurn()) {
+                makeAIPick();
+            }
+
+            // Start AI chat system
+            startAIChat();
+        }
+
+        // Update pick order display
+        function updatePickOrderDisplay() {
+            pickOrder.forEach((pick, index) => {
+                const memberElement = document.getElementById(`${pick.team}-${pick.slot}`);
+                const indicator = memberElement.querySelector('.pick-order-indicator');
+                indicator.textContent = `Pick ${index + 1}`;
+                
+                // Show assigned role
+                const playerInfo = memberElement.querySelector('.player-info');
+                const roleText = document.createElement('div');
+                roleText.className = 'player-role';
+                roleText.textContent = roleAssignments[pick.team][pick.slot];
+                playerInfo.appendChild(roleText);
+
+                // Only update rank points if it's not already set
+                if (!(pick.team === playerTeam && pick.slot === playerSlot)) {
+                    const rankElement = memberElement.querySelector('.player-rank');
+                    const aiKey = `${pick.team}_${pick.slot}`;
+                    rankElement.textContent = `${aiPlayerRankPoints[aiKey]} RP`;
+                }
+            });
+
+            // Highlight current pick
+            updateCurrentPick();
+        }
+
+        // Update available champions based on current role
+        function updateAvailableChampions() {
+            const currentPick = pickOrder[currentPickIndex];
+            const currentRole = roleAssignments[currentPick.team][currentPick.slot];
+            const availableChampions = roles[currentRole];
+
+            document.querySelectorAll('.champion-card').forEach(card => {
+                const champion = card.title;
+                card.classList.remove('available');
+                
+                if (availableChampions.includes(champion) && !pickedChampions.has(champion) && !bannedChampions.has(champion)) {
+                    card.classList.add('available');
+                }
+            });
+        }
+
+        // Update current pick highlight
+        function updateCurrentPick() {
+            document.querySelectorAll('.team-member').forEach(member => {
+                member.classList.remove('picking');
+            });
+
+            if (currentPickIndex < pickOrder.length) {
+                const currentPick = pickOrder[currentPickIndex];
+                const memberElement = document.getElementById(`${currentPick.team}-${currentPick.slot}`);
+                memberElement.classList.add('picking');
+            }
+        }
+
+        // Update initializeChampionGrid to handle role-based availability
+        function initializeChampionGrid() {
+            const championGrid = document.querySelector('.champion-grid');
+            championGrid.innerHTML = '';
+            
+            const allChampions = new Set();
+            Object.values(roles).forEach(roleChamps => {
+                roleChamps.forEach(champ => allChampions.add(champ));
+            });
+
+            // Convert Set to Array and sort alphabetically
+            const sortedChampions = Array.from(allChampions).sort((a, b) => a.localeCompare(b));
+
+            sortedChampions.forEach(champion => {
+                const card = document.createElement('div');
+                card.className = 'champion-card';
+                card.title = champion;
+                
+                const img = document.createElement('img');
+                img.src = `Icons/${champion}.png`;
+                img.alt = champion;
+                
+                // Add champion name display
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'champion-name';
+                nameDiv.textContent = champion;
+                
+                card.appendChild(img);
+                card.appendChild(nameDiv);
+                championGrid.appendChild(card);
+
+                // Check if champion is banned
+                if (bannedChampions.has(champion)) {
+                    card.classList.add('banned-champion');
+                    return;
+                }
+
+                // Check if champion is available for current role
+                const isAvailableForRole = roles[selectedRole]?.includes(champion);
+                if (!isAvailableForRole) {
+                    card.classList.add('unavailable');
+                }
+
+                card.addEventListener('click', () => {
+                    if (isPlayerTurn() && card.classList.contains('available') && isAvailableForRole && !bannedChampions.has(champion)) {
+                        selectChampion(champion);
+                    }
+                });
+            });
+        }
+
+        // Role selection handling
+        function handleRoleSelection(role) {
+            const modal = document.getElementById('roleSelectModal');
+            selectedRole = role;
+            modal.style.display = 'none';
+            
+            // Generate pick order first
+            const blueTeam = [1, 2, 3, 4, 5].map(num => ({ team: 'blue', slot: num }));
+            const redTeam = [1, 2, 3, 4, 5].map(num => ({ team: 'red', slot: num }));
+            
+            pickOrder = [
+                blueTeam[0],                    // Blue 1st pick
+                redTeam[0], redTeam[1],         // Red 1st & 2nd pick
+                blueTeam[1], blueTeam[2],       // Blue 2nd & 3rd pick
+                redTeam[2], redTeam[3],         // Red 3rd & 4th pick
+                blueTeam[3], blueTeam[4],       // Blue 4th & 5th pick
+                redTeam[4]                      // Red 5th pick
+            ];
+            
+            // Start ban phase
+            startBanPhase();
+        }
+
+        // Add event listeners for role selection
+        document.querySelectorAll('.role-select-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                handleRoleSelection(btn.dataset.role);
+            });
+        });
+
+        // Add chat system functions
+        function getRandomMessage(messageArray) {
+            return messageArray[Math.floor(Math.random() * messageArray.length)];
+        }
+
+        // Initialize chat messages container
+        const chatMessagesContainer = document.querySelector('.chat-messages');
+
+        function addChatMessage(name, message, team) {
+            // Only show messages from the player's team
+            if (team === playerTeam) {
+                const chatDiv = document.createElement('div');
+                chatDiv.className = 'chat-message';
+                
+                const sender = document.createElement('span');
+                sender.className = 'sender';
+                sender.textContent = name;
+                
+                const messageText = document.createElement('span');
+                messageText.className = 'message-text';
+                messageText.textContent = message;
+                
+                chatDiv.appendChild(sender);
+                chatDiv.appendChild(messageText);
+                
+                const chatMessagesContainer = document.querySelector('.chat-messages');
+                chatMessagesContainer.appendChild(chatDiv);
+                chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+            }
+        }
+
+        // AI Chat System
+        function startAIChat() {
+            // Initial greetings from 1-2 team AI players
+            setTimeout(() => {
+                const numGreetings = 1 + Math.floor(Math.random() * 2);
+                for (let i = 0; i < numGreetings; i++) {
+                    // Only pick from player's team slots (excluding player's slot)
+                    let slot;
+                    do {
+                        slot = 1 + Math.floor(Math.random() * 5);
+                    } while (slot === playerSlot);
+                    
+                    const aiName = document.querySelector(`#${playerTeam}-${slot} .player-name`).textContent;
+                    addChatMessage(aiName, getRandomMessage(chatMessages.greetings), playerTeam);
+                }
+            }, 1000);
+
+            // Role preferences discussion
+            setTimeout(() => {
+                // Only pick from player's team slots (excluding player's slot)
+                let slot;
+                do {
+                    slot = 1 + Math.floor(Math.random() * 5);
+                } while (slot === playerSlot);
+
+                const aiName = document.querySelector(`#${playerTeam}-${slot} .player-name`).textContent;
+                addChatMessage(aiName, getRandomMessage(chatMessages.rolePreferences), playerTeam);
+            }, 3000);
+
+            // Regular AI chat during champion select
+            let chatInterval = setInterval(() => {
+                // 30% chance to send a message
+                if (Math.random() < 0.3) {
+                    // Only pick from player's team slots (excluding player's slot)
+                    let slot;
+                    do {
+                        slot = 1 + Math.floor(Math.random() * 5);
+                    } while (slot === playerSlot);
+
+                    const aiName = document.querySelector(`#${playerTeam}-${slot} .player-name`).textContent;
+                    
+                    // Select message category based on game state
+                    let messageCategory;
+                    if (currentPickIndex < 3) {
+                        messageCategory = timeBasedMessages.early;
+                    } else if (currentPickIndex < 7) {
+                        messageCategory = timeBasedMessages.middle;
+                    } else {
+                        messageCategory = timeBasedMessages.late;
+                    }
+
+                    // Mix in some composition-based messages
+                    if (Math.random() < 0.3) {
+                        messageCategory = chatMessages.teamComp;
+                    }
+
+                    // Add role-specific comments
+                    const currentRole = roleAssignments[playerTeam][slot];
+                    if (currentRole && Math.random() < 0.2) {
+                        messageCategory = roleMessages[currentRole.toLowerCase()];
+                    }
+
+                    addChatMessage(aiName, getRandomMessage(messageCategory), playerTeam);
+                }
+            }, 5000);
+
+            // Reaction to picks
+            document.addEventListener('championPicked', (event) => {
+                if (Math.random() < 0.4) { // 40% chance to comment on picks
+                    // Only pick from player's team slots (excluding player's slot)
+                    let slot;
+                    do {
+                        slot = 1 + Math.floor(Math.random() * 5);
+                    } while (slot === playerSlot);
+
+                    const aiName = document.querySelector(`#${playerTeam}-${slot} .player-name`).textContent;
+                    
+                    const isPositive = Math.random() < 0.7; // 70% chance for positive reaction
+                    const message = getRandomMessage(isPositive ? chatMessages.championReactions.positive : chatMessages.championReactions.negative);
+                    
+                    setTimeout(() => {
+                        addChatMessage(aiName, message, playerTeam);
+                    }, 1000);
+                }
+            });
+        }
+
+        // Update the chat input event listener
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && chatInput.value.trim()) {
+                const playerName = document.getElementById(`${playerTeam}-${playerSlot}`).querySelector('.player-name').textContent;
+                addChatMessage(playerName, chatInput.value.trim(), playerTeam);
+                chatInput.value = '';
+
+                // Trigger AI response with 50% chance
+                if (Math.random() < 0.5) {
+                    setTimeout(() => {
+                        // Only pick from player's team slots (excluding player's slot)
+                        let slot;
+                        do {
+                            slot = 1 + Math.floor(Math.random() * 5);
+                        } while (slot === playerSlot);
+
+                        const aiName = document.querySelector(`#${playerTeam}-${slot} .player-name`).textContent;
+                        
+                        // Mix of general responses and contextual ones
+                        const messageCategories = [
+                            chatMessages.teamComp,
+                            chatMessages.strategy,
+                            chatMessages.encouragement,
+                            contextualResponses.goodComp,
+                            timeBasedMessages.middle
+                        ];
+                        
+                        addChatMessage(aiName, getRandomMessage(messageCategories[Math.floor(Math.random() * messageCategories.length)]), playerTeam);
+                    }, 1000 + Math.random() * 2000);
+                }
+            }
+        });
+
+        // Add function to check if all champions are selected
+        function checkAllChampionsSelected() {
+            const startMatchButton = document.querySelector('.start-match-button');
+            if (pickedChampions.size === 10) {
+                startMatchButton.disabled = false;
+                startMatchButton.classList.add('ready');
+                // Make sure the cursor is a pointer when ready
+                startMatchButton.style.cursor = 'pointer';
+            } else {
+                startMatchButton.disabled = true;
+                startMatchButton.classList.remove('ready');
+                startMatchButton.style.cursor = 'not-allowed';
+            }
+        }
+
+        // Add start match button functionality
+        document.querySelector('.start-match-button').addEventListener('click', async function() {
+            if (this.classList.contains('ready')) {
+                try {
+                    // Generate a unique queue ID
+                    const queueId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+                    
+                    // Get current user's data for profile icon
+                    const userRef = ref(database, `users/${auth.currentUser.uid}`);
+                    const userSnapshot = await get(userRef);
+                    const userData = userSnapshot.val();
+                    
+                    // Collect game information
+                    const gameInfo = {
+                        queueId,
+                        timestamp: Date.now(),
+                        players: {},
+                        bans: {
+                            blue: document.getElementById('blueBanPortrait').querySelector('img')?.alt || null,
+                            red: document.getElementById('redBanPortrait').querySelector('img')?.alt || null
+                        }
+                    };
+
+                    // Define role to slot mapping
+                    const roleToSlot = {
+                        'Top': 1,
+                        'Jungle': 2,
+                        'Mid': 3,
+                        'Adc': 4,
+                        'Support': 5
+                    };
+
+                    // Collect information for all players
+                    for (let team of ['blue', 'red']) {
+                        // Create a temporary map to store players by role
+                        const roleMap = new Map();
+                        
+                        // First, collect all players and their roles
+                        for (let slot = 1; slot <= 5; slot++) {
+                            const memberElement = document.getElementById(`${team}-${slot}`);
+                            if (!memberElement) {
+                                console.error(`Could not find element for ${team}-${slot}`);
+                                continue;
+                            }
+
+                            const role = roleAssignments[team][slot];
+                            if (!role) {
+                                console.error(`No role assignment found for ${team}-${slot}`);
+                                continue;
+                            }
+
+                            const playerName = memberElement.querySelector('.player-name')?.textContent;
+                            const championPortrait = memberElement.querySelector('.champion-portrait img');
+                            const champion = championPortrait ? championPortrait.alt : null;
+                            const skin = memberElement.style.backgroundImage.match(/Skins\/(.*?)\.(jpeg|jpg|png)/)?.[1] || champion;
+                            
+                            if (!champion) {
+                                console.error(`No champion found for ${team}-${slot}`);
+                                continue;
+                            }
+
+                            // Store player data by their role
+                            roleMap.set(role, {
+                                name: playerName,
+                                champion,
+                                skin,
+                                role,
+                                originalSlot: slot
+                            });
+                        }
+
+                        // Then, assign players to the correct slots based on their roles
+                        for (const [role, playerData] of roleMap) {
+                            const correctSlot = roleToSlot[role];
+                            if (!correctSlot) {
+                                console.error(`Invalid role mapping for ${role}`);
+                                continue;
+                            }
+
+                            const isPlayerSlot = team === playerTeam && playerData.originalSlot === playerSlot;
+                            
+                            if (isPlayerSlot) {
+                                // Player slot
+                                gameInfo.players[`${team}_${correctSlot}`] = {
+                                    name: playerData.name,
+                                    champion: playerData.champion,
+                                    skin: playerData.skin,
+                                    build: selectedBuild,
+                                    role: role,
+                                    team,
+                                    isAI: false,
+                                    uid: auth.currentUser.uid,
+                                    profileIcon: userData.icon || 'Birdie.png',
+                                    playerSlot: correctSlot,
+                                    playerTeam: team
+                                };
+                                console.log(`Saved player data for ${team}_${correctSlot} (${role}):`, gameInfo.players[`${team}_${correctSlot}`]);
+                            } else {
+                                // AI players
+                                gameInfo.players[`${team}_${correctSlot}`] = {
+                                    name: playerData.name,
+                                    champion: playerData.champion,
+                                    skin: playerData.skin,
+                                    build: null,
+                                    role: role,
+                                    team,
+                                    isAI: true
+                                };
+                                console.log(`Saved AI data for ${team}_${correctSlot} (${role}):`, gameInfo.players[`${team}_${correctSlot}`]);
+                            }
+                        }
+                    }
+
+                    // Verify all slots are populated
+                    for (let team of ['blue', 'red']) {
+                        for (let slot = 1; slot <= 5; slot++) {
+                            const key = `${team}_${slot}`;
+                            if (!gameInfo.players[key]) {
+                                console.error(`Missing player data for ${key} (${Object.keys(roleToSlot).find(role => roleToSlot[role] === slot)})`);
+                            }
+                        }
+                    }
+
+                    // Save to Firebase
+                    console.log('Saving queue data:', gameInfo);
+                    const queueRef = ref(database, `Queue/${queueId}`);
+                    await set(queueRef, gameInfo);
+
+                    // Start countdown
+                    const timerElement = document.querySelector('.timer');
+                    let countdown = 10;
+                    
+                    // Disable the start match button during countdown
+                    this.disabled = true;
+                    this.textContent = 'STARTING...';
+                    
+                    const countdownInterval = setInterval(() => {
+                        countdown--;
+                        timerElement.textContent = countdown;
+                        
+                        if (countdown <= 0) {
+                            clearInterval(countdownInterval);
+                            // Store queue ID in sessionStorage for Game.html to access
+                            sessionStorage.setItem('currentQueueId', queueId);
+                            window.location.href = 'Game.html';
+                        }
+                    }, 1000);
+
+                } catch (error) {
+                    console.error('Error starting game:', error);
+                    // Re-enable the button if there's an error
+                    this.disabled = false;
+                    this.textContent = 'START MATCH';
+                    alert('Error starting the game. Please try again.');
+                }
+            }
+        });
+
+        // Add like build functionality
+        async function likeBuild(buildId) {
+            try {
+                const user = auth.currentUser;
+                if (!user) return;
+
+                const safePatchVersion = '2_1_1';
+                const buildRef = ref(database, `builds/${safePatchVersion}/${buildId}`);
+                const snapshot = await get(buildRef);
+                
+                if (snapshot.exists()) {
+                    const build = snapshot.val();
+                    const likes = (build.likes || 0) + 1;
+                    const liked = true;
+                    await set(buildRef, { ...build, likes, liked });
+                    
+                    // Update UI
+                    const modal = document.getElementById('buildSelectionModal');
+                    const likeButton = modal.querySelector(`button[onclick="likeBuild('${buildId}')"]`);
+                    if (likeButton) {
+                        likeButton.classList.add('liked');
+                        const likesSpan = likeButton.querySelector('span');
+                        if (likesSpan) {
+                            likesSpan.textContent = likes;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error liking build:', error);
+            }
+        }
+
+        // Add build selection functionality
+        document.getElementById('loadBuildButton').addEventListener('click', async () => {
+            const modal = document.getElementById('buildSelectionModal');
+            const buildGrid = document.getElementById('buildGrid');
+            buildGrid.innerHTML = '';
+
+            try {
+                const safePatchVersion = '2_1_1';
+                const buildsRef = ref(database, `builds/${safePatchVersion}`);
+                const snapshot = await get(buildsRef);
+                
+                if (snapshot.exists()) {
+                    const builds = [];
+                    snapshot.forEach(childSnapshot => {
+                        const build = childSnapshot.val();
+                        if (build.character === selectedChampion) {
+                            builds.push({
+                                id: childSnapshot.key,
+                                ...build
+                            });
+                        }
+                    });
+
+                    builds.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+
+                    builds.forEach(build => {
+                        const card = document.createElement('div');
+                        card.className = 'build-card';
+
+                        const header = document.createElement('div');
+                        header.className = 'build-header';
+                        header.innerHTML = `
+                            <div class="build-title">${build.name || 'Unnamed Build'}</div>
+                            <div class="build-info">
+                                <span>by ${build.creatorName || 'Anonymous'}</span>
+                                <span>• Patch ${safePatchVersion.replace(/_/g, '.')}</span>
+                            </div>
+                        `;
+
+                        const items = document.createElement('div');
+                        items.className = 'build-items';
+                        
+                        build.items.forEach(itemId => {
+                            if (itemId) {
+                                const itemDiv = document.createElement('div');
+                                itemDiv.className = 'build-item';
+                                const img = document.createElement('img');
+                                
+                                img.onerror = function() {
+                                    if (this.src.endsWith('.webp')) {
+                                        this.src = `Items/${itemId}.jpeg`;
+                                    } else if (this.src.endsWith('.jpeg')) {
+                                        this.src = `Items/${itemId}.png`;
+                                    } else if (this.src.endsWith('.png')) {
+                                        this.src = `Items/${itemId}.jpg`;
+                                    }
+                                };
+                                
+                                img.src = `Items/${itemId}.webp`;
+                                img.alt = itemId;
+                                itemDiv.appendChild(img);
+                                items.appendChild(itemDiv);
+                            }
+                        });
+
+                        const actions = document.createElement('div');
+                        actions.className = 'build-actions';
+                        
+                        const likeButton = document.createElement('button');
+                        likeButton.className = `rating-button ${build.liked ? 'liked' : ''}`;
+                        likeButton.innerHTML = `
+                            <i class="fas fa-thumbs-up"></i>
+                            <span>${build.likes || 0}</span>
+                        `;
+                        likeButton.onclick = () => likeBuild(build.id);
+
+                        const loadButton = document.createElement('button');
+                        loadButton.className = 'copy-build';
+                        loadButton.innerHTML = '<i class="fas fa-check"></i> Select Build';
+                        loadButton.onclick = () => {
+                            selectBuild(build);
+                            modal.style.display = 'none';
+                        };
+
+                        actions.appendChild(likeButton);
+                        actions.appendChild(loadButton);
+
+                        card.appendChild(header);
+                        card.appendChild(items);
+                        card.appendChild(actions);
+                        buildGrid.appendChild(card);
+                    });
+
+                    modal.style.display = 'flex';
+                } else {
+                    buildGrid.innerHTML = `
+                        <div style="text-align: center; padding: 20px; color: var(--text-color);">
+                            No builds found for ${selectedChampion}. 
+                            <br><br>
+                            <button class="copy-build" onclick="location.href='build-planner.html?character=${encodeURIComponent(selectedChampion)}'">
+                                <i class="fas fa-plus"></i> Create New Build
+                            </button>
+                        </div>
+                    `;
+                    modal.style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Error loading builds:', error);
+                buildGrid.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: var(--text-color);">
+                        Error loading builds. Please try again later.
+                    </div>
+                `;
+                modal.style.display = 'flex';
+            }
+        });
+
+        // Update selectBuild function to store player team info
+        async function selectBuild(build) {
+            const currentPick = pickOrder[currentPickIndex - 1];
+            const memberElement = document.getElementById(`${currentPick.team}-${currentPick.slot}`);
+            
+            // Store the selected build and player team info
+            selectedBuild = build;
+            
+            // Update the UI to show the build has been selected
+            const loadBuildButton = document.getElementById('loadBuildButton');
+            loadBuildButton.innerHTML = '<i class="fas fa-check"></i> Build Selected';
+            loadBuildButton.classList.remove('available');
+            loadBuildButton.classList.add('selected');
+            
+            // Dispatch a custom event that a build was selected
+            const event = new CustomEvent('buildSelected', { 
+                detail: { 
+                    build, 
+                    team: currentPick.team,
+                    playerTeam: playerTeam,
+                    playerSlot: playerSlot
+                } 
+            });
+            document.dispatchEvent(event);
+        }
+
+        // Add Font Awesome for icons
+        const fontAwesome = document.createElement('link');
+        fontAwesome.rel = 'stylesheet';
+        fontAwesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+        document.head.appendChild(fontAwesome);
+
+        // Add game state variables for bans
+        let bannedChampions = new Set();
+        let currentBanTeam = 'blue';
+        let banPhaseComplete = false;
+
+        // Add ban system functions
+        async function startBanPhase() {
+            console.log('Starting ban phase');
+            const modal = document.getElementById('banModal');
+            const banGrid = document.getElementById('banGrid');
+            const phaseInfo = document.querySelector('.ban-phase-info p');
+            banGrid.innerHTML = '';
+            
+            // Create champion cards for banning
+            const allChampions = new Set();
+            Object.values(roles).forEach(roleChamps => {
+                roleChamps.forEach(champ => allChampions.add(champ));
+            });
+
+            // Convert Set to Array and sort alphabetically
+            const sortedChampions = Array.from(allChampions).sort((a, b) => a.localeCompare(b));
+
+            sortedChampions.forEach(champion => {
+                const card = document.createElement('div');
+                card.className = 'ban-card';
+                card.title = champion;
+                
+                const img = document.createElement('img');
+                img.src = `Icons/${champion}.png`;
+                img.alt = champion;
+                
+                card.appendChild(img);
+                banGrid.appendChild(card);
+
+                card.addEventListener('click', () => handleBanSelection(champion));
+            });
+
+            // Update phase info text
+            phaseInfo.textContent = `${currentBanTeam.toUpperCase()} Team Ban Phase`;
+
+            // Show modal if it's player's turn to ban
+            if (isPlayerFirstPick()) {
+                modal.style.display = 'flex';
+                phaseInfo.textContent = `Your turn to ban`;
+            } else {
+                await makeAIBan();
+            }
+        }
+
+        // Update isPlayerFirstPick to handle first pick of each team
+        function isPlayerFirstPick() {
+            if (currentBanTeam === 'blue') {
+                return playerTeam === 'blue' && playerSlot === pickOrder[0].slot;
+            } else {
+                return playerTeam === 'red' && playerSlot === pickOrder[1].slot;
+            }
+        }
+
+        // Update handleBanSelection to handle team-based banning
+        async function handleBanSelection(champion) {
+            if (currentBanTeam === playerTeam && isPlayerFirstPick()) {
+                console.log(`Player banning ${champion} for ${currentBanTeam} team`);
+                await banChampion(champion);
+                currentBanTeam = currentBanTeam === 'blue' ? 'red' : 'blue';
+                
+                // Update phase info text after ban
+                const phaseInfo = document.querySelector('.ban-phase-info p');
+                phaseInfo.textContent = `${currentBanTeam.toUpperCase()} Team Ban Phase`;
+                
+                if (currentBanTeam !== playerTeam || !isPlayerFirstPick()) {
+                    await makeAIBan();
+                }
+            }
+        }
+
+        async function makeAIBan() {
+            console.log('AI making ban decision...');
+            try {
+                // Load meta data
+                const response = await fetch('meta.json');
+                const meta = await response.json();
+
+                // Get available champions that haven't been banned
+                const availableChampions = Array.from(new Set(
+                    Object.values(roles).flat()
+                )).filter(champ => !bannedChampions.has(champ));
+
+                if (availableChampions.length > 0) {
+                    let championToBan;
+
+                    // 80% chance to ban a high winrate character
+                    if (Math.random() < 0.8) {
+                        // Sort champions by their meta score
+                        const sortedChampions = availableChampions
+                            .map(champ => ({
+                                name: champ,
+                                score: meta[champ] || 0
+                            }))
+                            .sort((a, b) => b.score - a.score);
+
+                        // Select one of the top 3 highest winrate champions
+                        const topIndex = Math.floor(Math.random() * Math.min(3, sortedChampions.length));
+                        championToBan = sortedChampions[topIndex].name;
+                        console.log('AI banning high winrate champion:', championToBan, 'with score:', sortedChampions[topIndex].score);
+                    } else {
+                        // 20% chance to ban a random champion
+                        championToBan = availableChampions[Math.floor(Math.random() * availableChampions.length)];
+                        console.log('AI banning random champion:', championToBan);
+                    }
+
+                    // Ban the selected champion
+                    await banChampion(championToBan);
+                    
+                    // Update current ban team
+                    currentBanTeam = currentBanTeam === 'blue' ? 'red' : 'blue';
+                    
+                    // Update phase info text
+                    const phaseInfo = document.querySelector('.ban-phase-info p');
+                    if (phaseInfo) {
+                        phaseInfo.textContent = `${currentBanTeam.toUpperCase()} Team Ban Phase`;
+                    }
+
+                    // Show modal if it's player's turn to ban
+                    if (currentBanTeam === playerTeam && isPlayerFirstPick()) {
+                        document.getElementById('banModal').style.display = 'flex';
+                    } else if (!banPhaseComplete) {
+                        // If not player's turn and ban phase isn't complete, make another AI ban after a delay
+                        setTimeout(makeAIBan, 1000);
+                    }
+                }
+            } catch (error) {
+                console.error('Error in makeAIBan:', error);
+                // Fallback to random ban if there's an error
+                const randomChampion = availableChampions[Math.floor(Math.random() * availableChampions.length)];
+                await banChampion(randomChampion);
+            }
+        }
+
+        async function banChampion(champion) {
+            console.log('Banning champion:', champion);
+            
+            // Check if champion is already banned
+            if (bannedChampions.has(champion)) {
+                console.log('Champion already banned:', champion);
+                return;
+            }
+
+            // Check if team already has a ban
+            const blueBanExists = document.getElementById('blueBanPortrait').querySelector('img');
+            const redBanExists = document.getElementById('redBanPortrait').querySelector('img');
+            
+            if ((currentBanTeam === 'blue' && blueBanExists) || (currentBanTeam === 'red' && redBanExists)) {
+                console.log(`${currentBanTeam} team already has a ban`);
+                return;
+            }
+            
+            // Add to banned set
+            bannedChampions.add(champion);
+            
+            // Update ban portrait in the modal
+            const banPortrait = document.getElementById(`${currentBanTeam}Ban`);
+            if (banPortrait) {
+                banPortrait.innerHTML = `<img src="Icons/${champion}.png" alt="${champion}">`;
+                banPortrait.classList.remove('empty');
+                banPortrait.classList.add('banned-champion');
+            }
+
+            // Update ban portrait in the header
+            const headerPortrait = document.getElementById(`${currentBanTeam}BanPortrait`);
+            if (headerPortrait) {
+                headerPortrait.innerHTML = `<img src="Icons/${champion}.png" alt="${champion}">`;
+                headerPortrait.classList.remove('empty');
+            }
+
+            // Update champion grid
+            const championCards = document.querySelectorAll('.ban-card, .champion-card');
+            championCards.forEach(card => {
+                if (card.title === champion) {
+                    card.classList.add('banned-champion');
+                }
+            });
+
+            // Hide the ban modal
+            document.getElementById('banModal').style.display = 'none';
+
+            // Switch teams for banning
+            currentBanTeam = currentBanTeam === 'blue' ? 'red' : 'blue';
+
+            // Check if ban phase is complete (both teams have banned)
+            if (document.getElementById('blueBanPortrait').querySelector('img') && 
+                document.getElementById('redBanPortrait').querySelector('img')) {
+                console.log('Ban phase complete');
+                banPhaseComplete = true;
+                document.getElementById('banModal').style.display = 'none';
+                
+                // Initialize champion grid and game only once
+                initializeChampionGrid();
+                initializeGame();
+            } else {
+                // If not complete and it's not player's turn, let AI make its ban
+                if (currentBanTeam !== playerTeam || !isPlayerFirstPick()) {
+                    setTimeout(makeAIBan, 500);
+                } else {
+                    // Show modal for player's ban
+                    const modal = document.getElementById('banModal');
+                    const phaseInfo = modal.querySelector('.ban-phase-info p');
+                    phaseInfo.textContent = `Your turn to ban`;
+                    modal.style.display = 'flex';
+                }
+            }
+        }
+    </script>
+</body>
+</html> 

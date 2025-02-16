@@ -841,44 +841,27 @@
             const snapshot = await get(userRef);
             const userData = snapshot.val();
 
-            // Rest of your existing bundle purchase logic...
-            if (bundleName === 'LunarTicket') {
-                const currentTickets = userData.lunarTickets || 0;
-                updates['lunarTickets'] = currentTickets + 1;
-            }
-
-            // Add 10 Lunar Tickets to the database
-            if (bundleName === 'LunarTicketBundle') {
-                const currentTickets = userData.lunarTickets || 0;
-                updates['lunarTickets'] = currentTickets + 10;
-            }
-
-            // Add Phoenix R Mika to the Skins database
-            if (bundleName === 'PhoenixRMika') {
-                updates[`skins/Phoenix R Mika`] = 1;
-            }
-
-            // Add Date Night Mega Man Bundle contents
-            if (bundleName === 'DateNightMegaManBundle') {
-                updates[`skins/Date Night Mega Man`] = 1;
+            // Handle different bundles
+            if (bundleName === 'CelestialProtectorsBundle') {
+                updates[`skins/Celestial Protector Lili`] = 1;
+                updates[`skins/Celestial Protector Juri`] = 1;
+                updates[`skins/Celestial Protector Elphelt`] = 1;
+                updates[`skins/Celestial Protector Sophitia`] = 1;
+                updates[`skins/Celestial Protector Cham Cham`] = 1;
+                updates[`skins/Celestial Protector R Mika`] = 1;
+                updates[`Bundles/${bundleName}`] = 1;
+            } else if (bundleName === 'CelestialChamChamBundle') {
+                updates[`skins/Celestial Protector Cham Cham`] = 1;
                 updates[`lootboxes/basic`] = (userData.lootboxes?.basic || 0) + 3;
                 updates[`Bundles/${bundleName}`] = 1;
-            }
-
-            if (bundleName === 'SacredCeremonyShoma') {
-                updates[`skins/Sacred Ceremony Shoma`] = 1;
-            }
-
-            if (bundleName === 'SacredCeremonyMorrigan') {
+            } else if (bundleName === 'VoidbornScorpion') {
+                updates[`skins/Voidborn Scorpion`] = 1;
+                updates[`Bundles/${bundleName}`] = 1;
+            } else if (bundleName === 'SacredCeremonyMorrigan') {
                 updates[`skins/Sacred Ceremony Morrigan`] = 1;
-            }
-
-            // Add Lovely Kagome Bundle contents
-            if (bundleName === 'LovelyKagomeBundle') {
-                updates[`skins/Lovely Kagome`] = 1;
-                updates[`Icons/lovely_kagome`] = 1;
-                updates[`songs/lovely_wind`] = 1;
-                updates[`lootboxes/basic`] = (userData.lootboxes?.basic || 0) + 1;
+                updates[`Bundles/${bundleName}`] = 1;
+            } else if (bundleName === 'SteamcoreMegaman') {
+                updates[`skins/Steamcore MegaMan`] = 1;
                 updates[`Bundles/${bundleName}`] = 1;
             }
 
@@ -966,7 +949,7 @@
                 bundleName = 'MidStarterBundle';
             } else if (bundleType === 'adc') {
                 champions = ['Eagle', 'Kagome', 'Mega Man'];
-                skins = ['Goth Eagle', 'Primal Huntress Kagome', 'Steamcore Mega Man'];
+                skins = ['Goth Eagle', 'Primal Huntress Kagome', 'Steamcore MegaMan'];
                 bundleName = 'ADCStarterBundle';
             } else if (bundleType === 'support') {
                 champions = ['Kokoro', 'Kuma', 'FANG'];
@@ -1014,226 +997,191 @@
         }
 
         function showBundleDetails(bundleName) {
-            let content = '';
-            let title = '';
-            let currency = 'fm';
-            
-            switch(bundleName) {
-                case 'LoveDayBundle':
-                    title = 'Love Day Bundle';
-                    content = `
-                        <div class="bundle-grid">
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="Skins/Heartbreaker Ibuki.jpeg" alt="Heartbreaker Ibuki">
+            let modalContent = '';
+            switch (bundleName) {
+                case 'CelestialProtectorsBundle':
+                    modalContent = `
+                        <div class="bundle-details">
+                            <h2>Celestial Protectors Bundle</h2>
+                            <div class="bundle-grid">
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Celestial Protector Lili.jpeg" alt="Celestial Protector Lili">
+                                    </div>
+                                    <h3>Lili</h3>
+                                    <p>Celestial Protector Lili Skin</p>
                                 </div>
-                                <h3>Ibuki</h3>
-                                <p>Heartbreaker Ibuki Skin</p>
-                            </div>
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="Skins/Date Night Kuma.jpeg" alt="Date Night Kuma">
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Celestial Protector Juri.jpeg" alt="Celestial Protector Juri">
+                                    </div>
+                                    <h3>Juri</h3>
+                                    <p>Celestial Protector Juri Skin</p>
                                 </div>
-                                <h3>Kuma</h3>
-                                <p>Date Night Kuma Skin</p>
-                            </div>
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="Skins/Date Night Mega Man.jpeg" alt="Date Night Mega Man">
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Celestial Protector Elphelt.jpeg" alt="Celestial Protector Elphelt">
+                                    </div>
+                                    <h3>Elphelt</h3>
+                                    <p>Celestial Protector Elphelt Skin</p>
                                 </div>
-                                <h3>Mega Man</h3>
-                                <p>Date Night Mega Man Skin</p>
-                            </div>
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="Skins/Lovely Sophitia.jpeg" alt="Lovely Sophitia">
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Celestial Protector Sophitia.jpeg" alt="Celestial Protector Sophitia">
+                                    </div>
+                                    <h3>Sophitia</h3>
+                                    <p>Celestial Protector Sophitia Skin</p>
                                 </div>
-                                <h3>Sophitia</h3>
-                                <p>Lovely Sophitia Skin</p>
-                            </div>
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="Skins/Lovely Kagome.jpeg" alt="Lovely Kagome">
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Celestial Protector Cham Cham.jpeg" alt="Celestial Protector Cham Cham">
+                                    </div>
+                                    <h3>Cham Cham</h3>
+                                    <p>Celestial Protector Cham Cham Skin</p>
                                 </div>
-                                <h3>Kagome</h3>
-                                <p>Lovely Kagome Skin</p>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Celestial Protector R Mika.jpeg" alt="Celestial Protector R Mika">
+                                    </div>
+                                    <h3>R Mika</h3>
+                                    <p>Celestial Protector R Mika Skin</p>
+                                </div>
                             </div>
-                        </div>`;
+                            <div class="bundle-purchase">
+                                <div class="price-container">
+                                    <div class="original-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>12000</span>
+                                    </div>
+                                    <div class="price-divider"></div>
+                                    <div class="final-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>9000</span>
+                                    </div>
+                                </div>
+                                <button class="purchase-bundle-btn" data-bundle-name="CelestialProtectorsBundle" onclick="purchaseBundle(this)">Purchase Bundle</button>
+                            </div>
+                        </div>
+                    `;
                     break;
-                case 'RecolorDuoPack':
-                    title = 'Random Recolor Duo Pack';
-                    content = `
-                        <div class="bundle-grid">
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="Skins/Blanka Red.png" alt="Blanka Red">
+                case 'VoidbornScorpion':
+                    modalContent = `
+                        <div class="bundle-details">
+                            <h2>Voidborn Scorpion</h2>
+                            <div class="bundle-grid">
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Voidborn Scorpion.jfif" alt="Voidborn Scorpion">
+                                    </div>
+                                    <h3>Scorpion</h3>
+                                    <p>Voidborn Scorpion Skin</p>
                                 </div>
-                                <h3>Blanka Red</h3>
-                                <p>Blanka Red Recolor</p>
                             </div>
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="Skins/Sacred Ceremony Julia Champagne.jpeg" alt="Sacred Ceremony Julia Champagne">
+                            <div class="bundle-purchase">
+                                <div class="price-container">
+                                    <div class="original-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>2000</span>
+                                    </div>
+                                    <div class="price-divider"></div>
+                                    <div class="final-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>800</span>
+                                    </div>
                                 </div>
-                                <h3>Sacred Ceremony Julia Champagne</h3>
-                                <p>Sacred Ceremony Julia Champagne Recolor</p>
+                                <button class="purchase-bundle-btn" data-bundle-name="VoidbornScorpion" onclick="purchaseBundle(this)">Purchase Bundle</button>
                             </div>
-                        </div>`;
+                        </div>
+                    `;
                     break;
-                case 'PhoenixRMika':
-                    title = 'Phoenix R Mika';
-                    content = `
-                        <div class="bundle-grid">
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="Skins/Phoenix R Mika.png" alt="Phoenix R Mika">
+                case 'CelestialChamChamBundle':
+                    modalContent = `
+                        <div class="bundle-details">
+                            <h2>Celestial Protector Cham Cham Bundle</h2>
+                            <div class="bundle-grid">
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Celestial Protector Cham Cham.jpeg" alt="Celestial Protector Cham Cham">
+                                    </div>
+                                    <h3>Cham Cham</h3>
+                                    <p>Celestial Protector Cham Cham Skin</p>
                                 </div>
-                                <h3>R Mika</h3>
-                                <p>Phoenix R Mika Skin</p>
+                                <div class="bundle-character">
+                                    <div class="image-container" style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                                        <img src="res/img/basicbox.png" alt="Basic Lootbox" style="width: 60px; height: 60px;">
+                                        <img src="res/img/basicbox.png" alt="Basic Lootbox" style="width: 60px; height: 60px;">
+                                        <img src="res/img/basicbox.png" alt="Basic Lootbox" style="width: 60px; height: 60px;">
+                                    </div>
+                                    <h3>Lootboxes</h3>
+                                    <p>3x Basic Lootboxes</p>
+                                </div>
                             </div>
-                        </div>`;
+                            <div class="bundle-purchase">
+                                <div class="price-container">
+                                    <div class="original-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>5000</span>
+                                    </div>
+                                    <div class="price-divider"></div>
+                                    <div class="final-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>3750</span>
+                                    </div>
+                                </div>
+                                <button class="purchase-bundle-btn" data-bundle-name="CelestialChamChamBundle" onclick="purchaseBundle(this)">Purchase Bundle</button>
+                            </div>
+                        </div>
+                    `;
                     break;
-                case 'CaptainTalim':
-                    title = 'Captain Talim';
-                    content = `
-                        <div class="bundle-grid">
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="Skins/Captain Talim.png" alt="Captain Talim">
+                case 'SteamcoreMegaman':
+                    modalContent = `
+                        <div class="bundle-details">
+                            <h2>Steamcore Megaman</h2>
+                            <div class="bundle-grid">
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Steamcore MegaMan.jpeg" alt="Steamcore MegaMan">
+                                    </div>
+                                    <h3>Mega Man</h3>
+                                    <p>Steamcore MegaMan Skin</p>
                                 </div>
-                                <h3>Talim</h3>
-                                <p>Captain Talim Skin</p>
                             </div>
-                        </div>`;
-                    currency = 'cm';
-                    break;
-                case 'DateNightMegaManBundle':
-                    title = 'Date Night Mega Man Bundle';
-                    content = `
-                        <div class="bundle-grid">
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="Skins/Date Night Mega Man.jpeg" alt="Date Night Mega Man">
+                            <div class="bundle-purchase">
+                                <div class="price-container">
+                                    <div class="original-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>2000</span>
+                                    </div>
+                                    <div class="price-divider"></div>
+                                    <div class="final-price">
+                                        <img src="res/img/cm.png" alt="CM">
+                                        <span>10000</span>
+                                    </div>
                                 </div>
-                                <h3>Mega Man</h3>
-                                <p>Date Night Mega Man Skin</p>
+                                <button class="purchase-bundle-btn" data-bundle-name="SteamcoreMegaman" onclick="purchaseBundle(this)">Purchase Bundle</button>
                             </div>
-                            <div class="bundle-character">
-                                <div class="image-container" style="display: flex; justify-content: center; align-items: center; gap: 10px; height: auto; padding: 20px 0;">
-                                    <img src="res/img/basicbox.png" alt="Lootbox" style="width: 60px; height: 60px; position: static;">
-                                    <img src="res/img/basicbox.png" alt="Lootbox" style="width: 60px; height: 60px; position: static;">
-                                    <img src="res/img/basicbox.png" alt="Lootbox" style="width: 60px; height: 60px; position: static;">
-                                </div>
-                                <h3>Lootboxes</h3>
-                                <p>3x Basic Lootboxes</p>
-                            </div>
-                        </div>`;
-                    break;
-                case 'SacredCeremonyShoma':
-                    title = 'Sacred Ceremony Shoma';
-                    content = `
-                        <div class="bundle-grid">
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="Skins/Sacred Ceremony Shoma.jpeg" alt="Sacred Ceremony Shoma">
-                                </div>
-                                <h3>Shoma</h3>
-                                <p>Sacred Ceremony Shoma Skin</p>
-                            </div>
-                        </div>`;
-                    break;
-                case 'SacredCeremonyMorrigan':
-                    title = 'Sacred Ceremony Morrigan';
-                    content = `
-                        <div class="bundle-grid">
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="Skins/Sacred Ceremony Morrigan.jpeg" alt="Sacred Ceremony Morrigan">
-                                </div>
-                                <h3>Morrigan</h3>
-                                <p>Sacred Ceremony Morrigan Skin</p>
-                            </div>
-                        </div>`;
-                    break;
-                case 'LovelyKagomeBundle':
-                    title = 'Lovely Kagome Bundle';
-                    content = `
-                        <div class="bundle-grid">
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="Skins/Lovely Kagome.jpeg" alt="Lovely Kagome">
-                                </div>
-                                <h3>Kagome</h3>
-                                <p>Lovely Kagome Skin</p>
-                            </div>
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="Icons/Profile/lovely_kagome.png" alt="Lovely Kagome Icon">
-                                </div>
-                                <h3>Lovely Kagome Icon</h3>
-                                <p>Exclusive Profile Icon</p>
-                            </div>
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="res/img/music.png" alt="Lovely Wind Song">
-                                </div>
-                                <h3>Lovely Wind</h3>
-                                <p>Exclusive Theme Song</p>
-                            </div>
-                            <div class="bundle-character">
-                                <div class="image-container">
-                                    <img src="res/img/basicbox.png" alt="Free Lootbox">
-                                </div>
-                                <h3>Free Lootbox</h3>
-                                <p>Basic Lootbox</p>
-                            </div>
-                        </div>`;
+                        </div>
+                    `;
                     break;
             }
 
-            if (content) {
+            if (modalContent) {
                 document.getElementById('starter-bundles-modal').style.display = 'block';
-                const modalContent = document.querySelector('.starter-bundles-content');
-                modalContent.innerHTML = `
-                    <span class="close" onclick="closeStarterBundlesModal()">&times;</span>
-                    <h2 style="color: white; text-align: center; margin-bottom: 30px;">${title}</h2>
-                    ${content}
-                    <div class="bundle-purchase">
-                        <div class="price-container">
-                            <div class="original-price">
-                                <img src="res/img/fm.png" alt="FM">
-                                <span>${getOriginalPrice(bundleName)}</span>
-                            </div>
-                            <div class="price-divider"></div>
-                            <div class="final-price">
-                                <img src="res/img/fm.png" alt="FM">
-                                <span>${getBundlePrice(bundleName)}</span>
-                            </div>
-                        </div>
-                        <button class="purchase-bundle-btn" onclick="purchaseBundle(this)" data-bundle-name="${bundleName}">Purchase Bundle</button>
-                    </div>
-                `;
+                const modalContentElement = document.querySelector('.starter-bundles-content');
+                modalContentElement.innerHTML = modalContent;
             }
         }
 
         function getBundlePrice(bundleName) {
             switch(bundleName) {
-                case 'LoveDayBundle':
-                    return '7000';
-                case 'LunarFestivalBundle':
-                    return '8640';
-                case 'DateNightMegaManBundle':
+                case 'CelestialProtectorsBundle':
+                    return '9000';
+                case 'CelestialChamChamBundle':
                     return '3750';
-                case 'PhoenixRMika':
-                    return '350';
-                case 'FeatherDancerMai':
-                    break;
-                case 'SacredCeremonyShoma':
-                    return '350';
-                case 'SacredCeremonyMorrigan':
-                    return '100000';
-                case 'LovelyKagomeBundle':
-                    return '3850';
+                case 'VoidbornScorpion':
+                    return '800';
+                case 'SteamcoreMegaman':
+                    return '10000';
                 default:
                     return '2000';
             }
@@ -1241,22 +1189,14 @@
 
         function getOriginalPrice(bundleName) {
             switch(bundleName) {
-                case 'LoveDayBundle':
-                    return '10000';
-                case 'LunarFestivalBundle':
+                case 'CelestialProtectorsBundle':
                     return '12000';
-                case 'DateNightMegaManBundle':
+                case 'CelestialChamChamBundle':
                     return '5000';
-                case 'PhoenixRMika':
-                    return '1000';
-                case 'FeatherDancerMai':
-                    break;
-                case 'SacredCeremonyShoma':
-                    return '1000';
-                case 'SacredCeremonyMorrigan':
+                case 'VoidbornScorpion':
                     return '2000';
-                case 'LovelyKagomeBundle':
-                    return '4500';
+                case 'SteamcoreMegaman':
+                    return '2000';
                 default:
                     return '2500';
             }
@@ -1341,52 +1281,53 @@
         </a>
     </div>
     <div class="bundle-container">
-        <div class="bundle-item" data-bundle-name="LoveDayBundle" onclick="showBundleDetails('LoveDayBundle')">
-            <div class="bundle-name">Love Day Bundle</div>
-            <div class="discount-badge">-30%</div>
+        <div class="bundle-item" data-bundle-name="CelestialProtectorsBundle" onclick="showBundleDetails('CelestialProtectorsBundle')">
+            <div class="bundle-name">Celestial Protectors Bundle</div>
+            <div class="discount-badge">-25%</div>
             <div class="images-grid">
-                <img src="Skins/Heartbreaker Ibuki.jpeg" alt="Heartbreaker Ibuki">
-                <img src="Skins/Date Night Kuma.jpeg" alt="Date Night Kuma">
-                <img src="Skins/Date Night Mega Man.jpeg" alt="Date Night Mega Man">
-                <img src="Skins/Lovely Sophitia.jpeg" alt="Lovely Sophitia">
-                <img src="Skins/Lovely Kagome.jpeg" alt="Lovely Kagome">
+                <img src="Skins/Celestial Protector Lili.jpeg" alt="Celestial Protector Lili">
+                <img src="Skins/Celestial Protector Juri.jpeg" alt="Celestial Protector Juri">
+                <img src="Skins/Celestial Protector Elphelt.jpeg" alt="Celestial Protector Elphelt">
+                <img src="Skins/Celestial Protector Sophitia.jpeg" alt="Celestial Protector Sophitia">
+                <img src="Skins/Celestial Protector Cham Cham.jpeg" alt="Celestial Protector Cham Cham">
+                <img src="Skins/Celestial Protector R Mika.jpeg" alt="Celestial Protector R Mika">
             </div>
             <div class="price-container">
                 <div class="original-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>10000</span>
+                    <span>12000</span>
                 </div>
                 <div class="price-divider"></div>
                 <div class="final-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>7000</span>
+                    <span>9000</span>
                 </div>
             </div>
             <button onclick="purchaseBundle(this)">Buy Bundle</button>
         </div>
-        <div class="bundle-item" data-bundle-name="SacredCeremonyShoma" onclick="showBundleDetails('SacredCeremonyShoma')">
-            <div class="bundle-name">Sacred Ceremony Shoma</div>
+        <div class="bundle-item" data-bundle-name="VoidbornScorpion" onclick="showBundleDetails('VoidbornScorpion')">
+            <div class="bundle-name">Voidborn Scorpion</div>
             <div class="image-container">
-                <img src="Skins/Sacred Ceremony Shoma.jpeg" alt="Sacred Ceremony Shoma">
+                <img src="Skins/Voidborn Scorpion.jfif" alt="Voidborn Scorpion">
             </div>
             <div class="price-container">
                 <div class="original-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>1000</span>
+                    <span>2000</span>
                 </div>
                 <div class="price-divider"></div>
                 <div class="final-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>350</span>
+                    <span>800</span>
                 </div>
             </div>
-            <div class="discount-badge">-65%</div>
+            <div class="discount-badge">-60%</div>
             <button onclick="purchaseBundle(this)">Buy Now</button>
         </div>
-        <div class="bundle-item" data-bundle-name="DateNightMegaManBundle" onclick="showBundleDetails('DateNightMegaManBundle')">
-            <div class="bundle-name">Date Night Mega Man Bundle</div>
+        <div class="bundle-item" data-bundle-name="CelestialChamChamBundle" onclick="showBundleDetails('CelestialChamChamBundle')">
+            <div class="bundle-name">Celestial Protector Cham Cham Bundle</div>
             <div class="images-grid">
-                <img src="Skins/Date Night Mega Man.jpeg" alt="Date Night Mega Man">
+                <img src="Skins/Celestial Protector Cham Cham.jpeg" alt="Celestial Protector Cham Cham">
                 <img src="res/img/basicbox.png" alt="Lootbox">
                 <img src="res/img/basicbox.png" alt="Lootbox">
                 <img src="res/img/basicbox.png" alt="Lootbox">
@@ -1405,10 +1346,10 @@
             <div class="discount-badge">-25%</div>
             <button onclick="purchaseBundle(this)">Buy Bundle</button>
         </div>
-        <div class="bundle-item" data-bundle-name="SacredCeremonyMorrigan" onclick="showBundleDetails('SacredCeremonyMorrigan')">
-            <div class="bundle-name">Sacred Ceremony Morrigan</div>
+        <div class="bundle-item" data-bundle-name="SteamcoreMegaman" onclick="showBundleDetails('SteamcoreMegaman')">
+            <div class="bundle-name">Steamcore Megaman</div>
             <div class="image-container">
-                <img src="Skins/Sacred Ceremony Morrigan.jpeg" alt="Sacred Ceremony Morrigan">
+                <img src="Skins/Steamcore MegaMan.jpeg" alt="Steamcore Megaman">
             </div>
             <div class="price-container">
                 <div class="original-price">
@@ -1418,33 +1359,11 @@
                 <div class="price-divider"></div>
                 <div class="final-price">
                     <img src="res/img/cm.png" alt="CM">
-                    <span>100000</span>
+                    <span>10000</span>
                 </div>
             </div>
             <div class="discount-badge">CM SALE</div>
             <button onclick="purchaseBundle(this)">Buy Now</button>
-        </div>
-        <div class="bundle-item" data-bundle-name="LovelyKagomeBundle" onclick="showBundleDetails('LovelyKagomeBundle')">
-            <div class="bundle-name">Lovely Kagome Bundle</div>
-            <div class="images-grid">
-                <img src="Skins/Lovely Kagome.jpeg" alt="Lovely Kagome">
-                <img src="Icons/Profile/lovely_kagome.png" alt="Lovely Kagome Icon">
-                <img src="res/img/music.png" alt="Lovely Wind Song">
-                <img src="res/img/basicbox.png" alt="Free Lootbox">
-            </div>
-            <div class="price-container">
-                <div class="original-price">
-                    <img src="res/img/fm.png" alt="FM">
-                    <span>4500</span>
-                </div>
-                <div class="price-divider"></div>
-                <div class="final-price">
-                    <img src="res/img/fm.png" alt="FM">
-                    <span>3850</span>
-                </div>
-            </div>
-            <div class="discount-badge">-15%</div>
-            <button onclick="purchaseBundle(this)">Buy Bundle</button>
         </div>
     </div>
 
@@ -1506,7 +1425,7 @@
                 <div class="bundle-grid">
                     <div class="bundle-character">
                         <div class="image-container">
-                            <img src="Skins/Frosted Kabal.jpeg" alt="Frozen Kabal">
+                            <img src="Skins/Frosted Kabal.jpeg" alt="Frosted Kabal">
                         </div>
                         <h3>Kabal</h3>
                         <p>Frosted Kabal Skin</p>
@@ -1600,10 +1519,10 @@
                     </div>
                     <div class="bundle-character">
                         <div class="image-container">
-                            <img src="Skins/Steamcore Megaman.jpeg" alt="Steamcore Mega Man">
+                            <img src="Skins/Steamcore Megaman.jpeg" alt="Steamcore MegaMan">
                         </div>
                         <h3>Mega Man</h3>
-                        <p>Steamcore Mega Man Skin</p>
+                        <p>Steamcore MegaMan Skin</p>
                     </div>
                 </div>
                 <div class="bundle-purchase">
@@ -1722,7 +1641,7 @@
                 bundleName = 'MidStarterBundle';
             } else if (bundleType === 'adc') {
                 champions = ['Eagle', 'Kagome', 'Mega Man'];
-                skins = ['Goth Eagle', 'Primal Huntress Kagome', 'Steamcore Mega Man'];
+                skins = ['Goth Eagle', 'Primal Huntress Kagome', 'Steamcore MegaMan'];
                 bundleName = 'ADCStarterBundle';
             } else if (bundleType === 'support') {
                 champions = ['Kokoro', 'Kuma', 'FANG'];

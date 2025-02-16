@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Details</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background styles */
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .background-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7);
+        }
+
+        /* Navigation menu styles */
+        .main-nav {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .play-button {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 2rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.3s;
+        }
+
+        .play-button:hover {
+            transform: scale(1.05);
+        }
+
+        /* Character name styles */
+        .character-name {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            font-size: 3rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Skin gallery styles */
+        .skin-gallery-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            transform: translateY(100%);
+            transition: transform 0.5s ease;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .skin-gallery-container.show {
+            transform: translateY(0);
+        }
+
+        .skin-gallery-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 99;
+        }
+
+        .skin-gallery-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .skin-gallery-toggle i {
+            transition: transform 0.3s ease;
+        }
+
+        .skin-gallery-toggle.active i {
+            transform: rotate(180deg);
+        }
+
+        .skin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+
+        .skin-card {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .skin-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .skin-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .skin-card:hover .skin-image {
+            transform: scale(1.05);
+        }
+
+        .skin-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Lightbox styles */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.show {
+            opacity: 1;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90vh;
+        }
+
+        .lightbox-image {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: white;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .lightbox-title {
+            position: absolute;
+            bottom: 1rem;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            font-size: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Scrollbar styles */
+        .skin-gallery-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .skin-gallery-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .skin-gallery-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .skin-gallery-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Top Players styles */
+        .top-players-container {
+            position: fixed;
+            top: 80px;
+            right: 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            width: 300px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .top-players-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .top-players-header i {
+            color: #ffd700;
+        }
+
+        .top-players-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .player-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .player-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            transition: transform 0.2s ease;
+        }
+
+        .player-card:hover {
+            transform: translateX(-5px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .player-rank {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .rank-1 {
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            color: #000;
+        }
+
+        .rank-2 {
+            background: linear-gradient(135deg, #c0c0c0, #a0a0a0);
+            color: #000;
+        }
+
+        .rank-3 {
+            background: linear-gradient(135deg, #cd7f32, #a0522d);
+            color: #fff;
+        }
+
+        .rank-other {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-weight: bold;
+            margin-bottom: 0.2rem;
+        }
+
+        .player-stats {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .winrate-high {
+            color: #4caf50;
+        }
+
+        .winrate-medium {
+            color: #ff9800;
+        }
+
+        /* Patch Stats styles */
+        .patch-stats-container {
+            position: fixed;
+            top: 80px;
+            left: 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            width: 300px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .patch-stats-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .patch-stats-header i {
+            color: #4caf50;
+        }
+
+        .patch-stats-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .patch-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .patch-stat {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .patch-stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .patch-stat-value {
+            font-weight: bold;
+            color: white;
+        }
+
+        .patch-stat-value.high {
+            color: #4caf50;
+        }
+
+        .patch-stat-value.medium {
+            color: #ff9800;
+        }
+
+        .patch-stat-value.low {
+            color: #f44336;
+        }
+
+        /* Update bio button styles */
+        #bio-button {
+            position: fixed;
+            bottom: 2rem;
+            left: 16rem;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 98;
+        }
+
+        #bio-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        #bio-button i {
+            font-size: 1.2rem;
+        }
+
+        #bio-button span {
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background container -->
+    <div class="background-container">
+        <img id="character-splash" class="background-image" src="" alt="Character Splash Art">
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="main-nav">
+        <div class="nav-content">
+            <a href="Game Modes.html" class="play-button">
+                <i class="fas fa-play play-icon"></i>
+                <span class="play-text">Play</span>
+            </a>
+            <a href="home.html" class="nav-link">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="Store.html" class="nav-link">
+                <i class="fas fa-store"></i>
+                <span>Store</span>
+            </a>
+            <a href="event.html" class="nav-link">
+                <i class="fas fa-calendar"></i>
+                <span>Event</span>
+            </a>
+            <a href="build-planner.html" class="nav-link">
+                <i class="fas fa-hammer"></i>
+                <span>Build Planner</span>
+            </a>
+            <a href="Team Builder.html" class="nav-link">
+                <i class="fas fa-users"></i>
+                <span>Team Builder</span>
+            </a>
+            <a href="statistics.html" class="nav-link">
+                <i class="fas fa-chart-bar"></i>
+                <span>Statistics</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Character name -->
+    <h1 id="character-name" class="character-name"></h1>
+    <a id="bio-button" href="" class="floating-button">
+        <i class="fas fa-book"></i>
+        <span>Bio</span>
+    </a>
+
+    <!-- Top Players Section -->
+    <div class="top-players-container">
+        <div class="top-players-header">
+            <i class="fas fa-trophy"></i>
+            <h2 class="top-players-title">Top Players</h2>
+        </div>
+        <div class="player-list" id="player-list">
+            <!-- Players will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Add this after the navigation menu -->
+    <div class="patch-stats-container">
+        <div class="patch-stats-header">
+            <i class="fas fa-chart-line"></i>
+            <h2 class="patch-stats-title">Patch <span id="patch-version"></span> Stats</h2>
+        </div>
+        <div class="patch-stats">
+            <div class="patch-stat">
+                <span class="patch-stat-label">Winrate</span>
+                <span id="patch-winrate" class="patch-stat-value">0%</span>
+            </div>
+            <div class="patch-stat">
+                <span class="patch-stat-label">Total Wins</span>
+                <span id="patch-wins" class="patch-stat-value">0</span>
+            </div>
+            <div class="patch-stat">
+                <span class="patch-stat-label">Total Losses</span>
+                <span id="patch-losses" class="patch-stat-value">0</span>
+            </div>
+            <div class="patch-stat">
+                <span class="patch-stat-label">Total Bans</span>
+                <span id="patch-bans" class="patch-stat-value">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skin gallery toggle button -->
+    <button class="skin-gallery-toggle" onclick="toggleSkinGallery()">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Skin gallery -->
+    <div class="skin-gallery-container">
+        <div class="skin-grid" id="skin-grid">
+            <!-- Skins will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close" onclick="closeLightbox()">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="lightbox-content">
+            <img class="lightbox-image" src="" alt="Skin Full View">
+            <h2 class="lightbox-title"></h2>
+        </div>
+    </div>
+
+    <script type="module">
+        import { characters } from './characterskinref.js';
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getDatabase, ref, query, get, orderByChild } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { CURRENT_PATCH, calculatePatchWinrate } from './patch.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Function to calculate winrate
+        function calculateWinrate(wins, total) {
+            return ((wins / total) * 100).toFixed(1);
+        }
+
+        // Function to get winrate class
+        function getWinrateClass(winrate) {
+            return winrate >= 60 ? 'winrate-high' : 'winrate-medium';
+        }
+
+        // Function to create player card
+        function createPlayerCard(player, rank) {
+            const winrate = calculateWinrate(player.wins, player.gamesPlayed);
+            const rankClass = rank <= 3 ? `rank-${rank}` : 'rank-other';
+            
+            return `
+                <div class="player-card">
+                    <div class="player-rank ${rankClass}">${rank}</div>
+                    <div class="player-info">
+                        <div class="player-name">${player.username}</div>
+                        <div class="player-stats">
+                            <div class="stat">
+                                <i class="fas fa-gamepad"></i>
+                                ${player.gamesPlayed}
+                            </div>
+                            <div class="stat ${getWinrateClass(winrate)}">
+                                <i class="fas fa-percentage"></i>
+                                ${winrate}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Function to fetch and display top players
+        async function loadTopPlayers(characterName) {
+            try {
+                const usersRef = ref(database, 'users');
+                const usersSnapshot = await get(usersRef);
+                
+                if (!usersSnapshot.exists()) return;
+
+                const players = [];
+                usersSnapshot.forEach(userSnapshot => {
+                    const userData = userSnapshot.val();
+                    // Check if user has stats for this character
+                    if (userData.characters && userData.characters[characterName]) {
+                        const characterStats = userData.characters[characterName];
+                        const gamesPlayed = (characterStats.win || 0) + (characterStats.lose || 0);
+                        const wins = characterStats.win || 0;
+                        
+                        // Only include players with at least 10 games and >50% winrate
+                        if (gamesPlayed >= 10) {
+                            const winrate = (wins / gamesPlayed) * 100;
+                            if (winrate > 50) {
+                                players.push({
+                                    username: userData.username || 'Unknown Player',
+                                    gamesPlayed: gamesPlayed,
+                                    wins: wins,
+                                    winrate: winrate
+                                });
+                            }
+                        }
+                    }
+                });
+
+                // Sort players by winrate
+                players.sort((a, b) => b.winrate - a.winrate);
+
+                // Take top 5
+                const topPlayers = players.slice(0, 5);
+
+                // Display players
+                const playerList = document.getElementById('player-list');
+                if (topPlayers.length === 0) {
+                    playerList.innerHTML = `
+                        <div style="text-align: center; color: rgba(255,255,255,0.6);">
+                            No qualified players yet
+                        </div>
+                    `;
+                    return;
+                }
+
+                playerList.innerHTML = topPlayers
+                    .map((player, index) => {
+                        const winrate = (player.winrate).toFixed(1);
+                        return `
+                            <div class="player-card">
+                                <div class="player-rank ${index <= 2 ? `rank-${index + 1}` : 'rank-other'}">${index + 1}</div>
+                                <div class="player-info">
+                                    <div class="player-name">${player.username}</div>
+                                    <div class="player-stats">
+                                        <div class="stat">
+                                            <i class="fas fa-gamepad"></i>
+                                            ${player.gamesPlayed}
+                                        </div>
+                                        <div class="stat ${winrate >= 60 ? 'winrate-high' : 'winrate-medium'}">
+                                            <i class="fas fa-percentage"></i>
+                                            ${winrate}%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    })
+                    .join('');
+
+            } catch (error) {
+                console.error('Error loading top players:', error);
+            }
+        }
+
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Function to try loading image with different extensions
+        async function tryLoadImage(basePath, extensions) {
+            for (const ext of extensions) {
+                try {
+                    const response = await fetch(basePath + '.' + ext);
+                    if (response.ok) {
+                        return basePath + '.' + ext;
+                    }
+                } catch (error) {
+                    continue;
+                }
+            }
+            return null;
+        }
+
+        // Function to create skin card
+        async function createSkinCard(skinName) {
+            const card = document.createElement('div');
+            card.className = 'skin-card';
+            
+            const extensions = ['png', 'jpg', 'jpeg', 'jfif'];
+            const imagePath = await tryLoadImage(`Skins/${skinName}`, extensions);
+            
+            if (imagePath) {
+                card.innerHTML = `
+                    <img class="skin-image" src="${imagePath}" alt="${skinName}">
+                    <div class="skin-name">${skinName}</div>
+                `;
+                
+                card.onclick = () => openLightbox(imagePath, skinName);
+                return card;
+            }
+            return null;
+        }
+
+        // Function to toggle skin gallery
+        window.toggleSkinGallery = function() {
+            const gallery = document.querySelector('.skin-gallery-container');
+            const toggle = document.querySelector('.skin-gallery-toggle');
+            gallery.classList.toggle('show');
+            toggle.classList.toggle('active');
+        }
+
+        // Lightbox functions
+        window.openLightbox = function(imageSrc, skinName) {
+            const lightbox = document.querySelector('.lightbox');
+            const lightboxImage = lightbox.querySelector('.lightbox-image');
+            const lightboxTitle = lightbox.querySelector('.lightbox-title');
+            
+            lightboxImage.src = imageSrc;
+            lightboxTitle.textContent = skinName;
+            
+            lightbox.style.display = 'flex';
+            setTimeout(() => lightbox.classList.add('show'), 10);
+        }
+
+        window.closeLightbox = function(event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            const lightbox = document.querySelector('.lightbox');
+            lightbox.classList.remove('show');
+            setTimeout(() => lightbox.style.display = 'none', 300);
+        }
+
+        // Function to get winrate class based on value
+        function getStatClass(value) {
+            value = parseFloat(value);
+            if (value >= 55) return 'high';
+            if (value >= 45) return 'medium';
+            return 'low';
+        }
+
+        // Function to update patch stats
+        async function updatePatchStats(characterName) {
+            try {
+                // Get character stats directly from characters path
+                const statsRef = ref(database, `characters/${characterName}`);
+                const statsSnapshot = await get(statsRef);
+                const characterStats = statsSnapshot.val() || {};
+                
+                const wins = characterStats.win || 0;
+                const losses = characterStats.lose || 0;
+                const bans = characterStats.bans || 0;
+                const totalGames = wins + losses;
+                const winrate = totalGames > 0 ? ((wins / totalGames) * 100).toFixed(1) : "0.0";
+
+                // Update DOM
+                document.getElementById('patch-version').textContent = 'Season 1';
+                
+                const winrateElement = document.getElementById('patch-winrate');
+                winrateElement.textContent = winrate + '%';
+                winrateElement.className = `patch-stat-value ${getStatClass(winrate)}`;
+
+                document.getElementById('patch-wins').textContent = wins;
+                document.getElementById('patch-losses').textContent = losses;
+                document.getElementById('patch-bans').textContent = bans;
+
+            } catch (error) {
+                console.error('Error loading patch stats:', error);
+            }
+        }
+
+        // Function to initialize the character page
+        async function initializeCharacterPage() {
+            const characterName = getUrlParameter('character');
+            if (!characterName) {
+                window.location.href = 'home.html';
+                return;
+            }
+
+            // Update bio button href
+            const bioButton = document.getElementById('bio-button');
+            bioButton.href = `bio.html?character=${encodeURIComponent(characterName)}`;
+
+            // Set character name
+            document.getElementById('character-name').textContent = characterName;
+            document.title = `${characterName} - Character Details`;
+
+            // Set background image
+            const splashImage = document.getElementById('character-splash');
+            const extensions = ['png', 'jpg', 'jpeg'];
+            const splashPath = await tryLoadImage(`Default Splash/${characterName}`, extensions);
+            if (splashPath) {
+                splashImage.src = splashPath;
+            }
+
+            // Load skins
+            const skinGrid = document.getElementById('skin-grid');
+            const characterSkins = characters[characterName] || [];
+            
+            for (const skinName of characterSkins) {
+                const skinCard = await createSkinCard(skinName);
+                if (skinCard) {
+                    skinGrid.appendChild(skinCard);
+                }
+            }
+
+            // Load top players
+            await loadTopPlayers(characterName);
+
+            // Update patch stats
+            await updatePatchStats(characterName);
+        }
+
+        // Initialize the page when loaded
+        document.addEventListener('DOMContentLoaded', initializeCharacterPage);
+    </script>
+</body>
+</html> 

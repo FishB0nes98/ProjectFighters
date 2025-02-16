@@ -13,6 +13,30 @@ export const stickers = {
         price: 350,
         category: "regular"
     },
+    "ChamCham_Crazy": {
+        name: "ChamCham Crazy",
+        image: "Stickers/ChamCham_Crazy.png",
+        price: 350,
+        category: "regular"
+    },
+    "RMika_Fan": {
+        name: "R.Mika Fan",
+        image: "Stickers/RMika_Fan.png",
+        price: 350,
+        category: "regular"
+    },
+    "Lili_Cute": {
+        name: "Lili Cute",
+        image: "Stickers/Lili_Cute.png",
+        price: 350,
+        category: "regular"
+    },
+    "Juri_Wicked": {
+        name: "Juri Wicked",
+        image: "Stickers/Juri_Wicked.png",
+        price: 350,
+        category: "regular"
+    },
     // Regular Stickers
     "Nina_Facepalm": {
         name: "Nina Facepalm",
