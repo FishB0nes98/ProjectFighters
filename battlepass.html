@@ -291,6 +291,28 @@
             box-shadow: 0 0 20px rgba(255, 107, 107, 0.4);
         }
 
+        .header-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .claim-all-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .claim-all-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.4);
+        }
+
         /* Modal Styles */
         .modal {
             display: none;
@@ -387,7 +409,10 @@
                     <span id="battlepass-exp">0 / 11500 BP Exp</span>
                 </div>
             </div>
-            <button class="buy-pass-btn" onclick="buyBattlepass()">Buy Battle Pass</button>
+            <div class="header-buttons">
+                <button class="buy-pass-btn" onclick="buyBattlepass()">Buy Battle Pass</button>
+                <button class="claim-all-btn" onclick="claimAllItems()" id="claim-all-button" style="display: none;">Claim All</button>
+            </div>
         </div>
 
         <div class="battlepass-grid" id="battle-pass-container">
@@ -403,6 +428,15 @@
             <button id="buy-with-fm" class="modal-btn primary">3,000 FM</button>
             <button id="buy-with-cm" class="modal-btn secondary">100,000 CM</button>
             <button id="cancel-purchase" class="modal-btn cancel">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Claim All Results Modal -->
+    <div id="claim-all-modal" class="modal">
+        <div class="modal-content">
+            <h2>Items Claimed</h2>
+            <div id="claimed-items-list" style="max-height: 300px; overflow-y: auto; margin: 15px 0;"></div>
+            <button id="close-claim-all" class="modal-btn primary">Close</button>
         </div>
     </div>
 
@@ -430,58 +464,107 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
         
+        // Recolor data for random recolor rewards
+        const recolorData = {
+            "Cham Cham": {
+                base: "Cham Cham",
+                recolors: ["Red", "Blue", "Green", "Purple", "Gold"],
+                availability: {}
+            },
+            "Elphelt": {
+                base: "Elphelt",
+                recolors: ["Red", "Blue", "Green", "Purple", "Gold"],
+                availability: {}
+            },
+            "Shao Kahn": {
+                base: "Shao Kahn",
+                recolors: ["Red", "Blue", "Green", "Purple", "Gold"],
+                availability: {}
+            },
+            "Thunderstrike Shao Kahn": {
+                base: "Thunderstrike Shao Kahn",
+                recolors: ["Red", "Blue", "Green", "Purple", "Gold"],
+                availability: {}
+            },
+            "Ayane": {
+                base: "Ayane",
+                recolors: ["Red", "Blue", "Green", "Purple", "Gold"],
+                availability: {}
+            },
+            "Battleborn Ayane": {
+                base: "Battleborn Ayane",
+                recolors: ["Red", "Blue", "Green", "Purple", "Gold"],
+                availability: {}
+            },
+            "Eagle": {
+                base: "Eagle",
+                recolors: ["Red", "Blue", "Green", "Purple", "Gold"],
+                availability: {}
+            },
+            "Battleborn Eagle": {
+                base: "Battleborn Eagle",
+                recolors: ["Red", "Blue", "Green", "Purple", "Gold"],
+                availability: {}
+            },
+            "Talim": {
+                base: "Talim",
+                recolors: ["Red", "Blue", "Green", "Purple", "Gold"],
+                availability: {}
+            }
+        };
+        
         // Battle Pass Items
         const battlePassItems = [
-            { id: 'Item1', exp: 0, img: 'Skins/Celestial Protector Cham Cham.jpeg', skinName: 'Celestial Protector Cham Cham', name: 'Celestial Protector Cham Cham' },
-            { id: 'Item2', exp: 30, img: 'Icons/Profile/Celestial_ChamCham.png', name: 'Celestial ChamCham Icon', type: 'icon', rewardName: 'Celestial_ChamCham' },
-            { id: 'Item3', exp: 85, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
-            { id: 'Item4', exp: 150, img: 'res/img/music.png', name: 'Random Celestial Song', type: 'Song', songName: ['Twilight Shadows', 'Starlit Sky', 'Born of Light'] },
-            { id: 'Item5', exp: 200, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
-            { id: 'Item6', exp: 260, img: 'Stickers/ChamCham_Crazy.png', name: 'ChamCham Crazy', type: 'Sticker', stickerName: 'ChamCham_Crazy' },
-            { id: 'Item7', exp: 320, img: 'titles/titleimage.jpeg', name: 'Celestial Protector', type: 'Title', titleName: 'Celestial Protector' },
-            { id: 'Item8', exp: 395, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
-            { id: 'Item9', exp: 480, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
-            { id: 'Item10', exp: 580, img: 'Icons/Profile/Celestial_Elphelt.png', name: 'Celestial Elphelt Icon', type: 'icon', rewardName: 'Celestial_Elphelt' },
-            { id: 'Item11', exp: 665, img: 'titles/titleimage.jpeg', name: 'Shining Star', type: 'Title', titleName: 'Shining Star' },
-            { id: 'Item12', exp: 750, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
-            { id: 'Item13', exp: 835, img: 'Skins/Celestial Protector Elphelt.jpeg', skinName: 'Celestial Protector Elphelt', name: 'Celestial Protector Elphelt' },
-            { id: 'Item14', exp: 910, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item15', exp: 1000, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item16', exp: 1300, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item17', exp: 1600, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item18', exp: 1900, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item19', exp: 2200, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item20', exp: 2500, img: 'res/img/recolor.png', name: 'Random Recolor', type: 'RandomRecolor', rewardName: 'random_recolor' },
-            { id: 'Item21', exp: 2800, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item22', exp: 3100, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item23', exp: 3400, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item24', exp: 3700, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item25', exp: 4000, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item26', exp: 4300, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item27', exp: 4600, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item28', exp: 4900, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
-            { id: 'Item29', exp: 5200, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item30', exp: 5500, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item31', exp: 5800, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item32', exp: 6100, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item33', exp: 6400, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item34', exp: 6700, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item35', exp: 7000, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
+            { id: 'Item1', exp: 0, img: 'Skins/Shao Kahn.jpg', skinName: 'Shao Kahn', name: 'Shao Kahn Character Unlock' },
+            { id: 'Item2', exp: 30, img: 'Skins/Thunderstrike Shao Kahn.jfif', skinName: 'Thunderstrike Shao Kahn', name: 'Thunderstrike Shao Kahn' },
+            { id: 'Item3', exp: 85, img: 'Stickers/Ayane_Try_Me.png', name: 'Ayane Try Me', type: 'Sticker', stickerName: 'Ayane_Try_Me' },
+            { id: 'Item4', exp: 150, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
+            { id: 'Item5', exp: 200, img: 'Icons/Profile/Battleborn_Ayane.png', name: 'Battleborn Ayane Icon', type: 'icon', rewardName: 'Battleborn_Ayane' },
+            { id: 'Item6', exp: 260, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item7', exp: 320, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
+            { id: 'Item8', exp: 395, img: 'Skins/Battleborn Ayane.jpeg', skinName: 'Battleborn Ayane', name: 'Battleborn Ayane' },
+            { id: 'Item9', exp: 480, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
+            { id: 'Item10', exp: 580, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
+            { id: 'Item11', exp: 665, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item12', exp: 750, img: 'Stickers/Talim_Too_Slow.png', name: 'Talim Too Slow', type: 'Sticker', stickerName: 'Talim_Too_Slow' },
+            { id: 'Item13', exp: 835, img: 'res/img/recolor.png', name: 'Random Recolor', type: 'RandomRecolor', rewardName: 'random_recolor' },
+            { id: 'Item14', exp: 910, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
+            { id: 'Item15', exp: 1000, img: 'Skins/Battleborn Eagle.jpeg', skinName: 'Battleborn Eagle', name: 'Battleborn Eagle' },
+            { id: 'Item16', exp: 1300, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item17', exp: 1600, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item18', exp: 1900, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item19', exp: 2200, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item20', exp: 2500, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item21', exp: 2800, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item22', exp: 3100, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
+            { id: 'Item23', exp: 3400, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item24', exp: 3700, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item25', exp: 4000, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item26', exp: 4300, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item27', exp: 4600, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item28', exp: 4900, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item29', exp: 5200, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
+            { id: 'Item30', exp: 5500, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item31', exp: 5800, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item32', exp: 6100, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item33', exp: 6400, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item34', exp: 6700, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item35', exp: 7000, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
             { id: 'Item36', exp: 7300, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
-            { id: 'Item37', exp: 7600, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item38', exp: 7900, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item39', exp: 8200, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item40', exp: 8500, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item41', exp: 8800, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item42', exp: 9100, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item43', exp: 9400, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item44', exp: 9700, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
-            { id: 'Item45', exp: 10000, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item46', exp: 10300, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item47', exp: 10600, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item48', exp: 10900, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item49', exp: 11200, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 },
-            { id: 'Item50', exp: 11500, img: 'res/img/cm.png', name: '3,500 CM', type: 'CM', amount: 3500 }
+            { id: 'Item37', exp: 7600, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item38', exp: 7900, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item39', exp: 8200, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item40', exp: 8500, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item41', exp: 8800, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item42', exp: 9100, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item43', exp: 9400, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
+            { id: 'Item44', exp: 9700, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item45', exp: 10000, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item46', exp: 10300, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item47', exp: 10600, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item48', exp: 10900, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item49', exp: 11200, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item50', exp: 11500, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 }
         ];
 
         // Update progress bar
@@ -722,6 +805,7 @@
                         
                         if (userData.hasBattlepass) {
                             document.querySelector('.buy-pass-btn').style.display = 'none';
+                            document.getElementById('claim-all-button').style.display = 'block';
                         }
                     }
                 });
@@ -729,6 +813,166 @@
                 displayBattlePass(0, {});
             }
         });
+
+        // Claim All Items function
+        window.claimAllItems = function() {
+            const user = auth.currentUser;
+            if (user) {
+                const userId = user.uid;
+                const userRef = ref(database, 'users/' + userId);
+
+                get(userRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        const userExp = userData.BattlePassExp || 0;
+                        const claimedItems = userData.BPprogress || {};
+                        
+                        if (!userData.hasBattlepass) {
+                            alert('You need to purchase the Battle Pass to claim all items.');
+                            return;
+                        }
+                        
+                        // Find all claimable items
+                        const claimableItems = battlePassItems.filter(item => 
+                            userExp >= item.exp && !claimedItems[item.id]
+                        );
+                        
+                        if (claimableItems.length === 0) {
+                            alert('No items available to claim.');
+                            return;
+                        }
+                        
+                        // Prepare updates for all items
+                        const updates = {};
+                        const claimedItemsList = [];
+                        let totalFM = 0;
+                        let totalCM = 0;
+                        
+                        claimableItems.forEach(item => {
+                            // Mark item as claimed in BP progress
+                            updates[`users/${userId}/BPprogress/${item.id}`] = 1;
+                            
+                            // Handle different reward types
+                            if (item.folder) {
+                                const fileName = item.img.split('/').pop().split('.')[0];
+                                updates[`users/${userId}/${item.folder}/${fileName}`] = 1;
+                                claimedItemsList.push(`${item.name} (Lootbox)`);
+                            }
+                            if (item.skinName) {
+                                updates[`users/${userId}/skins/${item.skinName}`] = 1;
+                                claimedItemsList.push(`${item.name} (Skin)`);
+                            }
+                            if (item.type === 'CM') {
+                                totalCM += item.amount || 3500;
+                                claimedItemsList.push(`${item.name} (Currency)`);
+                            }
+                            if (item.type === 'FM') {
+                                totalFM += item.amount || 0;
+                                claimedItemsList.push(`${item.name} (Currency)`);
+                            }
+                            if (item.type === 'Title') {
+                                if (item.titleName) {
+                                    updates[`users/${userId}/titles/${item.titleName}`] = true;
+                                    claimedItemsList.push(`${item.name} (Title)`);
+                                }
+                            }
+                            if (item.type === 'Song') {
+                                if (item && Array.isArray(item.songName)) {
+                                    // Randomly select one song from the array
+                                    const randomSong = item.songName[Math.floor(Math.random() * item.songName.length)];
+                                    updates[`users/${userId}/Songs/${randomSong}`] = 1;
+                                    claimedItemsList.push(`${randomSong} (Song)`);
+                                } else if (item && item.songName) {
+                                    updates[`users/${userId}/Songs/${item.songName}`] = 1;
+                                    claimedItemsList.push(`${item.songName} (Song)`);
+                                }
+                            }
+                            if (item.type === 'icon') {
+                                if (item.rewardName) {
+                                    updates[`users/${userId}/icons/${item.rewardName}`] = 1;
+                                    claimedItemsList.push(`${item.name} (Icon)`);
+                                }
+                            }
+                            if (item.type === 'Sticker') {
+                                if (item.stickerName) {
+                                    updates[`users/${userId}/stickers/${item.stickerName}`] = 1;
+                                    claimedItemsList.push(`${item.name} (Sticker)`);
+                                }
+                            }
+                            if (item.type === 'RandomRecolor') {
+                                // Get all available recolors from recolorData
+                                const allRecolors = [];
+                                Object.entries(recolorData).forEach(([baseSkin, data]) => {
+                                    data.recolors.forEach(recolor => {
+                                        // Skip unavailable recolors
+                                        if (!data.availability || data.availability[recolor] !== false) {
+                                            const fullName = `${data.base} ${recolor}`;
+                                            if (!userData.skins || !userData.skins[fullName]) {
+                                                allRecolors.push(fullName);
+                                            }
+                                        }
+                                    });
+                                });
+                                
+                                if (allRecolors.length > 0) {
+                                    const randomRecolor = allRecolors[Math.floor(Math.random() * allRecolors.length)];
+                                    updates[`users/${userId}/skins/${randomRecolor}`] = 1;
+                                    claimedItemsList.push(`${randomRecolor} (Recolor)`);
+                                }
+                            }
+                        });
+                        
+                        // Update currency totals if needed
+                        if (totalFM > 0) {
+                            updates[`users/${userId}/FM`] = (userData.FM || 0) + totalFM;
+                        }
+                        if (totalCM > 0) {
+                            updates[`users/${userId}/CM`] = (userData.CM || 0) + totalCM;
+                        }
+                        
+                        // Apply all updates
+                        update(ref(database), updates).then(() => {
+                            // Show claimed items in modal
+                            const claimedItemsListElement = document.getElementById('claimed-items-list');
+                            claimedItemsListElement.innerHTML = '';
+                            
+                            if (claimedItemsList.length > 0) {
+                                const itemsHTML = claimedItemsList.map(item => 
+                                    `<div style="padding: 8px; background: rgba(30, 30, 30, 0.7); margin-bottom: 5px; border-radius: 5px;">${item}</div>`
+                                ).join('');
+                                claimedItemsListElement.innerHTML = itemsHTML;
+                                
+                                // Show summary of currency if applicable
+                                if (totalFM > 0 || totalCM > 0) {
+                                    let summaryHTML = '<div style="margin-top: 15px; padding: 10px; background: rgba(50, 50, 50, 0.7); border-radius: 5px;"><strong>Total Currency Gained:</strong><br>';
+                                    if (totalFM > 0) summaryHTML += `<div>FM: +${totalFM}</div>`;
+                                    if (totalCM > 0) summaryHTML += `<div>CM: +${totalCM}</div>`;
+                                    summaryHTML += '</div>';
+                                    claimedItemsListElement.innerHTML += summaryHTML;
+                                }
+                            } else {
+                                claimedItemsListElement.innerHTML = '<div>No items were claimed.</div>';
+                            }
+                            
+                            // Show the modal
+                            const modal = document.getElementById('claim-all-modal');
+                            modal.style.display = 'block';
+                            
+                            // Set up close button
+                            document.getElementById('close-claim-all').onclick = () => {
+                                modal.style.display = 'none';
+                                // Refresh the display
+                                displayBattlePass(userExp, {...claimedItems, ...Object.fromEntries(claimableItems.map(item => [item.id, 1]))});
+                            };
+                            
+                        }).catch((error) => {
+                            console.error('Error claiming items:', error);
+                            alert('Failed to claim items. Please try again.');
+                        });
+                    }
+                });
+            }
+        };
     </script>
 </body>
 </html>

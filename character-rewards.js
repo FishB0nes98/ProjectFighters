@@ -3502,3 +3502,83 @@ export function getZasalamelRewards(userId) {
         databasePath: `users/${userId}/${reward.databasePath}`
     }));
 }
+
+export const shaokahnRewards = [
+    {
+        xpRequired: "1000",
+        rewardName: "Emperor",
+        rewardType: "title",
+        rewardImage: "titles/titleimage.jpeg",
+        databasePath: "titles/emperor"
+    },
+    {
+        xpRequired: "2500",
+        rewardName: "Shao Kahn Icon",
+        rewardType: "icon",
+        rewardImage: "Icons/Profile/Shao_Kahn_Icon.jpg",
+        databasePath: "Icons/Shao Kahn_Icon"
+    },
+    {
+        xpRequired: "5000",
+        rewardName: "Free Lootbox",
+        rewardType: "lootbox",
+        rewardImage: "res/img/basicbox.png",
+        databasePath: "freelootbox"
+    },
+    {
+        xpRequired: "8500",
+        rewardName: "Shao Kahn Demon",
+        rewardType: "skin",
+        rewardImage: "Skins/Shao Kahn Demon.jpg",
+        databasePath: "skins/Shao Kahn Demon"
+    },
+    {
+        xpRequired: "11500",
+        rewardName: "Shao Kahn Loading Screen Border",
+        rewardType: "border",
+        rewardImage: "borders/shao kahn_border.png",
+        databasePath: "borders/shao kahn"
+    },
+    {
+        xpRequired: "15000",
+        rewardName: "Outworld Ruler",
+        rewardType: "title",
+        rewardImage: "titles/titleimage.jpeg",
+        databasePath: "titles/outworld_ruler"
+    },
+    {
+        xpRequired: "30000",
+        rewardName: "Shao Kahn Molten",
+        rewardType: "skin",
+        rewardImage: "Skins/Shao Kahn Molten.jpg",
+        databasePath: "skins/Shao Kahn Molten"
+    },
+    {
+        xpRequired: "45000",
+        rewardName: "Free Lootbox",
+        rewardType: "lootbox",
+        rewardImage: "res/img/basicbox.png",
+        databasePath: "freelootbox"
+    },
+    {
+        xpRequired: "50000",
+        rewardName: "Shao Kahn Metal",
+        rewardType: "skin",
+        rewardImage: "Skins/Shao Kahn Metal.jpg",
+        databasePath: "skins/Shao Kahn Metal"
+    },
+    {
+        xpRequired: "60000",
+        rewardName: "Shao Kahn Master",
+        rewardType: "title",
+        rewardImage: "titles/titleimage.jpeg",
+        databasePath: "titles/shao kahn_master"
+    }
+];
+
+export async function getShaoKahnRewards(userId, database) {
+    return shaokahnRewards.map(reward => ({
+        ...reward,
+        databasePath: `users/${userId}/${reward.databasePath}`
+    }));
+}

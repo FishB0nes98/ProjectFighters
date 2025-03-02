@@ -380,6 +380,38 @@
             50% { box-shadow: 0 0 20px rgba(241, 196, 15, 0.5); }
             100% { box-shadow: 0 0 10px rgba(155, 89, 182, 0.3); }
         }
+
+        /* Add Battleborn badge style */
+        .battleborn-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #000000;
+            background: linear-gradient(45deg, #FFD700, #DAA520);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            animation: battlebornGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes battlebornGlow {
+            0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(218, 165, 32, 0.5); }
+            100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+        }
+
+        /* Add tag styles */
+        .tag-reward {
+            background: linear-gradient(45deg, #C0C0C0, #E5E4E2);
+            box-shadow: 0 0 10px rgba(192, 192, 192, 0.3);
+            animation: rewardGlow 2s ease-in-out infinite;
+            color: #000000;
+        }
+
+        @keyframes rewardGlow {
+            0% { box-shadow: 0 0 10px rgba(192, 192, 192, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(229, 228, 226, 0.5); }
+            100% { box-shadow: 0 0 10px rgba(192, 192, 192, 0.3); }
+        }
     </style>
 </head>
 <body>
@@ -451,10 +483,10 @@
         // Initialize champions grid
         function initChampionsGrid() {
             const grid = document.getElementById('champions-grid');
-            // Update new skins list for Celestial Protectors
-            const newSkins = ["Lili", "Juri", "Elphelt", "Sophitia", "Cham Cham", "R.Mika"];
-            // Remove love skins list as it's no longer relevant
-            const celestialSkins = ["Lili", "Juri", "Elphelt", "Sophitia", "Cham Cham", "R.Mika"];
+            // Update new skins list for Battleborn
+            const newSkins = ["Shao Kahn", "Julia", "Zasalamel", "Talim", "Yugo", "Eagle", "Ayane"];
+            // Add Battleborn characters list
+            const battlebornSkins = ["Zasalamel", "Talim", "Yugo", "Eagle", "Ayane"];
             const freeSkins = ["Kuma"];
             
             const fileNameCorrections = {
@@ -497,11 +529,11 @@
                     badgeRow1.appendChild(newBadge);
                 }
                 
-                if (celestialSkins.includes(champion)) {
-                    const celestialBadge = document.createElement('div');
-                    celestialBadge.className = 'celestial-badge';
-                    celestialBadge.textContent = 'CELESTIAL';
-                    badgeRow1.appendChild(celestialBadge);
+                if (battlebornSkins.includes(champion)) {
+                    const battlebornBadge = document.createElement('div');
+                    battlebornBadge.className = 'battleborn-badge';
+                    battlebornBadge.textContent = 'BATTLEBORN';
+                    badgeRow1.appendChild(battlebornBadge);
                 }
 
                 if (freeSkins.includes(champion)) {
@@ -547,11 +579,19 @@
                 tagsContainer.className = 'skin-tags';
                 
                 // Add appropriate tags based on conditions
-                if (skin.name.includes('Celestial Protector')) {
+                if (skin.name.includes('Battleborn')) {
                     const newTag = document.createElement('div');
                     newTag.className = 'skin-tag tag-new';
                     newTag.textContent = 'NEW';
                     tagsContainer.appendChild(newTag);
+                }
+
+                // Add reward tag for specific skins
+                if (skin.name === "Infernal Julia" || skin.name === "Glorious Julia") {
+                    const rewardTag = document.createElement('div');
+                    rewardTag.className = 'skin-tag tag-reward';
+                    rewardTag.textContent = 'REWARD';
+                    tagsContainer.appendChild(rewardTag);
                 }
                 
                 if (skin.price === 2000) {
@@ -568,7 +608,8 @@
                     tagsContainer.appendChild(legendaryTag);
                 }
                 
-                if (skin.price === 'UNAVAILABLE') {
+                // Only show legacy tag if it's unavailable and not a reward skin
+                if (skin.price === 'UNAVAILABLE' && skin.name !== "Infernal Julia" && skin.name !== "Glorious Julia") {
                     const legacyTag = document.createElement('div');
                     legacyTag.className = 'skin-tag tag-legacy';
                     legacyTag.textContent = 'LEGACY';

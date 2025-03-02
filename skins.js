@@ -1,5 +1,6 @@
 const skinReference = {
     Julia: [
+        { name: "Glorious Julia", price: "UNAVAILABLE", imagePath: "Skins/Glorious Julia.jpg" },
         { name: "Sacred Ceremony Julia", price: 1000, imagePath: "Skins/Sacred Ceremony Julia.jpeg" },
         { name: "Witch Julia", price: "UNAVAILABLE", imagePath: "Skins/Witch Julia.jpeg" },
         { name: "Rainy Day Julia", price: 1000, imagePath: "Skins/Rainy Day Julia.jfif" },
@@ -133,6 +134,7 @@ const skinReference = {
         { name: "Master of Monks Raiden", price: 1000, imagePath: "Skins/Master of Monks Raiden.jpeg" }
     ],
     Yugo: [
+        { name: "Battleborn Yugo", price: 2000, imagePath: "Skins/Battleborn Yugo.jpeg" },
         { name: "Steamforged Yugo", price: 1000, imagePath: "Skins/Steamforged Yugo.jpeg" },
         { name: "Jade Yugo", price: 2000, imagePath: "Skins/Jade Yugo.jpeg" },
         { name: "Wolverine Yugo", price: "UNAVAILABLE", imagePath: "Skins/Wolverine Yugo.jpeg" },
@@ -141,6 +143,7 @@ const skinReference = {
         { name: "Street Fighter Yugo", price: 1000, imagePath: "Skins/Street Fighter Yugo.png" }
     ],
     Talim: [
+        { name: "Battleborn Talim", price: 2000, imagePath: "Skins/Battleborn Talim.jpeg" },
         { name: "Sand Soldier Talim", price: 2000, imagePath: "Skins/Sand Soldier Talim.jpg" },
         { name: "Captain Talim", price: 2000, imagePath: "Skins/Captain Talim.png" },
         { name: "Windwood Talim", price: 2000, imagePath: "Skins/Windwood Talim.jpeg" }
@@ -170,6 +173,7 @@ const skinReference = {
         { name: "Farmer Nina", price: 1000, imagePath: "Skins/Farmer Nina.png" }
     ],
     Ayane: [
+        { name: "Battleborn Ayane", price: 2000, imagePath: "Skins/Battleborn Ayane.jpeg" },
         { name: "Jade Ayane", price: 2000, imagePath: "Skins/Jade Ayane.png" },
         { name: "Spectral Reaper Ayane", price: "UNAVAILABLE", imagePath: "Skins/Spectral Reaper Ayane.jpeg" },
         { name: "Shadowbane Ayane", price: 2000, imagePath: "Skins/Shadowbane Ayane.jpeg" },
@@ -215,6 +219,7 @@ const skinReference = {
            
     ],
     Eagle: [
+        { name: "Battleborn Eagle", price: 2000, imagePath: "Skins/Battleborn Eagle.jpeg" },
         { name: "High Elf Eagle", price: 2000, imagePath: "Skins/High Elf Eagle.png" },
         { name: "Goth Eagle", price: 2000, imagePath: "Skins/Goth Eagle.png" }
     ],
@@ -280,7 +285,11 @@ const skinReference = {
         { name: "Rainy Day Shinnok", price: 2000, imagePath: "Skins/Rainy Day Shinnok.jpeg" }
     ],
     Zasalamel: [
+        { name: "Battleborn Zasalamel", price: 3000, imagePath: "Skins/Battleborn Zasalamel.jpeg" },
         { name: "Atlantean Zasalamel", price: 2000, imagePath: "Skins/Atlantean Zasalamel.jpg" }
+    ],
+    "Shao Kahn": [
+        { name: "Thunderstrike Shao Kahn", price: 2000, imagePath: "Skins/Thunderstrike Shao Kahn.jfif" }
     ]
 };
 

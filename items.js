@@ -11,7 +11,7 @@ export const items = {
         },
         passive: {
             name: "Desertwalk",
-            description: "When dealing at least 1500 damage within 1.5s, gain 15% Movement Speed for 5s (8s cooldown)"
+            description: "When dealing at least 1500 damage within 1.5s, gain 30% Movement Speed for 5s (8s cooldown)"
         }
     },
     desert_crafted_hammer: {
@@ -77,7 +77,7 @@ export const items = {
         id: "scorpion_sword",
         name: "Scorpion Sword",
         image: "items/scorpion_sword.webp",
-        cost: 2600,
+        cost: 1900,
         tags: ["Attack Speed", "Attack", "Movement", "Healing Reduction"],
         stats: {
             attackSpeed: 0.3,
@@ -200,7 +200,7 @@ export const items = {
         id: "sand_brick_armor",
         name: "Sand Brick Armor",
         image: "items/sand_brick_armor.webp",
-        cost: 2800,
+        cost: 2550,
         tags: ["Defense"],
         stats: {
             health: 400,
@@ -292,11 +292,11 @@ export const items = {
         id: "sunforged_gauntlets",
         name: "Sunforged Gauntlets",
         image: "items/sunforged_gauntlets.webp",
-        cost: 2000,
+        cost: 2350,
         tags: ["Attack Speed", "Defense"],
         stats: {
-            attackSpeed: 0.4,
-            magicResistance: 5
+            attackSpeed: 0.65,
+            magicResistance: 8
         },
         active: {
             name: "Rapid Strike",
@@ -323,7 +323,7 @@ export const items = {
         id: "scarab_amulet",
         name: "Scarab Amulet",
         image: "items/scarab_amulet.webp",
-        cost: 2800,
+        cost: 2600,
         tags: ["Support", "Movement", "Cooldown Reduction"],
         stats: {
             healingAndShieldingPower: 5,
@@ -403,7 +403,7 @@ export const items = {
         id: "kotal_kahns_atlantean_dagger",
         name: "Kotal Kahn's Atlantean Dagger",
         image: "items/kotal_kahns_atlantean_dagger.webp",
-        cost: 2700,
+        cost: 2400,
         tags: ["Support", "Defense", "Movement"],
         stats: {
             movementSpeed: 10,
@@ -443,14 +443,14 @@ export const items = {
         },
         passive: {
             name: "First Strike",
-            description: "Your first autoattack against each target deals bonus [50% AD] as magic damage"
+            description: "Your first autoattack against each target deals bonus [110% AD] as magic damage"
         }
     },
     leviathans_fang: {
         id: "leviathans_fang",
         name: "Leviathan's Fang",
         image: "items/leviathans_fang.webp",
-        cost: 2750,
+        cost: 2850,
         tags: ["Attack", "Attack Speed"],
         stats: {
             attackDamage: 20,
@@ -530,7 +530,7 @@ export const items = {
         id: "atlantean_crown",
         name: "Atlantean Crown",
         image: "items/atlantean_crown.webp",
-        cost: 2850,
+        cost: 2500,
         tags: ["Defense"],
         stats: {
             health: 350,
@@ -563,7 +563,7 @@ export const items = {
         id: "mermaid_essence",
         name: "Mermaid Essence",
         image: "items/mermaid_essence.webp",
-        cost: 3500,
+        cost: 3050,
         tags: ["Magic", "Support"],
         stats: {
             abilityPower: 50,
@@ -587,14 +587,14 @@ export const items = {
         },
         passive: {
             name: "Coral Restoration",
-            description: "Every third attack restores [445] Health"
+            description: "Every third attack restores [110] Health"
         }
     },
     wavebreaker: {
         id: "wavebreaker",
         name: "Wavebreaker",
         image: "items/wavebreaker.webp",
-        cost: 3100,
+        cost: 2700,
         tags: ["Anti-Tank", "Attack", "Movement"],
         stats: {
             attackDamage: 40,
@@ -651,7 +651,7 @@ export const items = {
         id: "treasure_chest",
         name: "Treasure Chest",
         image: "items/treasure_chest.webp",
-        cost: 2800,
+        cost: 1850,
         tags: ["Magic", "Attack", "Defense", "Movement"],
         stats: {
             attackDamage: 5,
@@ -699,7 +699,7 @@ export const items = {
         id: "tridents_vow",
         name: "Trident's Vow",
         image: "items/tridents_vow.webp",
-        cost: 2900,
+        cost: 2300,
         tags: ["Attack Speed", "Attack", "Healing Reduction"],
         stats: {
             attackSpeed: 0.25,
@@ -711,7 +711,7 @@ export const items = {
         id: "abyssal_anchor",
         name: "Abyssal Anchor",
         image: "items/abyssal_anchor.webp",
-        cost: 2700,
+        cost: 2250,
         tags: ["Defense"],
         stats: {
             armor: 8,
@@ -778,13 +778,13 @@ export const items = {
         cost: 2600,
         tags: ["Attack", "Defense"],
         stats: {
-            attackDamage: 35,
+            attackDamage: 30,
             health: 250,
-            lifeSteal: 8
+            lifeSteal: 4
         },
         passive: {
             name: "Street Brawler",
-            description: "Your basic attacks restore an additional 4% of your missing health"
+            description: "Your basic attacks restore an additional 1% of your missing health"
         }
     },
     bodega_champions_belt: {
@@ -807,7 +807,7 @@ export const items = {
         id: "empire_phantoms_mask",
         name: "Empire Phantom's Mask",
         image: "items/empire_phantoms_mask.webp",
-        cost: 3300,
+        cost: 2900,
         tags: ["Attack"],
         stats: {
             attackDamage: 60
@@ -932,7 +932,7 @@ export const items = {
         id: "street_kings_chain",
         name: "Street King's Chain",
         image: "items/street_kings_chain.webp",
-        cost: 2800,
+        cost: 1850,
         tags: ["Attack"],
         stats: {
             attackDamage: 30,

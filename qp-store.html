@@ -460,6 +460,17 @@
                 <button class="purchase-btn" onclick="purchaseItem(this)">Purchase</button>
             </div>
 
+            <!-- Battleborn Scythe Icon -->
+            <div class="store-item" data-item-name="battleborn_scythe" data-item-type="icon">
+                <img src="Icons/Profile/battleborn_scythe.png" alt="Battleborn Scythe">
+                <div class="item-name">Battleborn Scythe Icon</div>
+                <div class="item-price">
+                    <img src="res/img/qp.png" alt="QP">
+                    <span>500</span>
+                </div>
+                <button class="purchase-btn" onclick="purchaseItem(this)">Purchase</button>
+            </div>
+
             <!-- 500 FM -->
             <div class="store-item" data-item-name="fm_reward" data-item-type="fm">
                 <img src="res/img/fm.png" alt="Fighter Money">
@@ -527,14 +538,43 @@
                 const itemType = item.dataset.itemType;
                 const isRepeatable = item.dataset.repeatable === 'true';
 
-                if (!isRepeatable && itemType === 'sticker' && userData.Stickers && userData.Stickers[itemName]) {
-                    button.disabled = true;
-                    button.textContent = 'Claimed';
-                    const badge = document.createElement('div');
-                    badge.className = 'claimed-badge';
-                    badge.textContent = 'Claimed';
-                    if (!item.querySelector('.claimed-badge')) {
-                        item.appendChild(badge);
+                if (!isRepeatable) {
+                    if (itemType === 'sticker' && userData.Stickers && userData.Stickers[itemName]) {
+                        button.disabled = true;
+                        button.textContent = 'Claimed';
+                        const badge = document.createElement('div');
+                        badge.className = 'claimed-badge';
+                        badge.textContent = 'Claimed';
+                        if (!item.querySelector('.claimed-badge')) {
+                            item.appendChild(badge);
+                        }
+                    } else if (itemType === 'icon' && userData.Icons && userData.Icons[itemName]) {
+                        button.disabled = true;
+                        button.textContent = 'Claimed';
+                        const badge = document.createElement('div');
+                        badge.className = 'claimed-badge';
+                        badge.textContent = 'Claimed';
+                        if (!item.querySelector('.claimed-badge')) {
+                            item.appendChild(badge);
+                        }
+                    } else if (itemType === 'title' && userData.titles && userData.titles[itemName]) {
+                        button.disabled = true;
+                        button.textContent = 'Claimed';
+                        const badge = document.createElement('div');
+                        badge.className = 'claimed-badge';
+                        badge.textContent = 'Claimed';
+                        if (!item.querySelector('.claimed-badge')) {
+                            item.appendChild(badge);
+                        }
+                    } else if (itemType === 'lootbox' && userData.freelootbox && userData.freelootbox[itemName]) {
+                        button.disabled = true;
+                        button.textContent = 'Claimed';
+                        const badge = document.createElement('div');
+                        badge.className = 'claimed-badge';
+                        badge.textContent = 'Claimed';
+                        if (!item.querySelector('.claimed-badge')) {
+                            item.appendChild(badge);
+                        }
                     }
                 }
             });

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Celestial Guardians Event</title>
+    <title>Battleborn Event</title>
     <!-- Updated Font Links -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
@@ -12,19 +12,20 @@
 
     <style>
         :root {
-            --primary-color: #9b59b6;
-            --secondary-color: #f1c40f;
-            --accent-color: #8e44ad;
+            --primary-color: #d4af37;      /* Golden dust */
+            --secondary-color: #ff1e1e;    /* Red */
+            --accent-color: #1a1a1a;       /* Black */
             --text-color: #ffffff;
             --transition-speed: 0.3s;
+            --bg-gradient: linear-gradient(135deg, var(--primary-color), #8B0000);
         }
 
         body {
             margin: 0;
             padding: 0;
-            background: url('Event/Celestial Protectors Event.webp') no-repeat center center fixed;
+            background: url('Event/Battleborn Event.webp') no-repeat center center fixed;
             background-size: cover;
-            background-color: #2c0a37; /* Fallback color */
+            background-color: #000000;
             color: var(--text-color);
             font-family: 'Quicksand', sans-serif;
             min-height: 100vh;
@@ -39,7 +40,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, rgba(155, 89, 182, 0.3) 0%, rgba(44, 10, 55, 0.8) 100%);
+            background: radial-gradient(circle at center, rgba(26, 26, 26, 0.7), rgba(0, 0, 0, 0.9));
             pointer-events: none;
             z-index: 0;
         }
@@ -50,9 +51,10 @@
             justify-content: center;
             align-items: center;
             padding: 10px 20px;
-            background-color: rgba(155, 89, 182, 0.8);
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--primary-color);
             z-index: 1000;
-            border-bottom: 2px solid rgba(241, 196, 15, 0.2);
         }
 
         .menu-items {
@@ -67,9 +69,9 @@
             padding: 14px 16px;
             font-family: 'Cinzel', serif;
             font-size: 20px;
-            transition: background-color 0.3s, transform 0.3s;
+            transition: all var(--transition-speed);
             position: relative;
-            text-shadow: 0 0 5px rgba(155, 89, 182, 0.5);
+            text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
         }
 
         .menu a::after {
@@ -77,7 +79,7 @@
             display: block;
             width: 0;
             height: 2px;
-            background: var(--secondary-color);
+            background: var(--primary-color);
             transition: width .3s;
             margin: auto;
         }
@@ -87,34 +89,34 @@
         }
 
         .menu a:hover {
-            background-color: rgba(155, 89, 182, 0.3);
-            color: var(--secondary-color);
+            background-color: rgba(26, 26, 26, 0.3);
+            color: var(--primary-color);
             transform: scale(1.05);
         }
 
         .play-button {
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            background: var(--bg-gradient);
             color: var(--text-color);
-            border: none;
+            border: 2px solid var(--primary-color);
             border-radius: 25px;
             font-size: 22px;
             font-weight: bold;
             text-decoration: none;
             padding: 15px 40px;
-            transition: all 0.3s;
-            box-shadow: 0 8px 20px rgba(155, 89, 182, 0.4);
+            transition: all var(--transition-speed);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
             z-index: 1;
             top: 5px;
             position: fixed;
             left: 0px;
             font-family: 'Cinzel', serif;
-            text-shadow: 0 0 5px rgba(241, 196, 15, 0.5);
+            text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
         }
 
         .play-button:hover {
-            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            background: linear-gradient(135deg, #8B0000, var(--primary-color));
             transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(241, 196, 15, 0.6);
+            box-shadow: 0 10px 25px rgba(255, 30, 30, 0.3);
         }
 
         /* Event Title */
@@ -127,7 +129,7 @@
 
         .event-title h1 {
             font-size: 72px;
-            color: var(--text-color);
+            color: var(--primary-color);
             margin: 0;
             font-family: 'Orbitron', sans-serif;
             text-transform: uppercase;
@@ -158,7 +160,7 @@
         }
 
         @keyframes titleGlow {
-            0%, 100% { text-shadow: 0 0 20px var(--primary-color), 0 0 30px var(--accent-color), 2px 2px 4px rgba(0, 0, 0, 0.7); }
+            0%, 100% { text-shadow: 0 0 20px var(--primary-color), 0 0 30px var(--secondary-color), 2px 2px 4px rgba(0, 0, 0, 0.7); }
             50% { text-shadow: 0 0 30px var(--secondary-color), 0 0 40px var(--primary-color), 2px 2px 4px rgba(0, 0, 0, 0.7); }
         }
 
@@ -179,18 +181,19 @@
         }
 
         .skin-card {
-            background: rgba(155, 89, 182, 0.2);
-            border: 2px solid var(--secondary-color);
+            background: rgba(26, 26, 26, 0.8);
+            border: 2px solid var(--primary-color);
             border-radius: 15px;
             overflow: hidden;
-            transition: all var(--transition-speed) ease;
+            transition: all var(--transition-speed);
             position: relative;
             backdrop-filter: blur(5px);
         }
 
         .skin-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 10px 30px rgba(241, 196, 15, 0.3);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+            border-color: var(--secondary-color);
         }
 
         .skin-image {
@@ -215,7 +218,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to top, rgba(155, 89, 182, 0.8), transparent);
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
             padding: 20px;
             transform: translateY(100%);
             transition: transform var(--transition-speed);
@@ -244,12 +247,13 @@
 
         .skin-name {
             font-size: 28px;
-            color: var(--text-color);
+            color: var(--primary-color);
             margin: 0;
             font-family: 'Cinzel', serif;
             position: relative;
             display: block;
             width: 100%;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
         }
 
         .skin-name::after {
@@ -275,9 +279,10 @@
             font-family: 'Orbitron', sans-serif;
             font-weight: bold;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            background: var(--bg-gradient);
             padding: 5px 15px;
             border-radius: 20px;
+            border: 1px solid var(--primary-color);
             display: block;
         }
 
@@ -287,10 +292,10 @@
             top: 125px;
             left: 75px;
             background: linear-gradient(135deg, 
-                rgba(155, 89, 182, 0.8),
-                rgba(142, 68, 173, 0.8)
+                rgba(26, 26, 26, 0.9),
+                rgba(0, 0, 0, 0.9)
             );
-            border: 2px solid var(--secondary-color);
+            border: 2px solid var(--primary-color);
             border-radius: 20px;
             cursor: pointer;
             z-index: 1000;
@@ -298,7 +303,7 @@
             backdrop-filter: blur(10px);
             transition: all var(--transition-speed);
             overflow: hidden;
-            box-shadow: 0 0 20px rgba(241, 196, 15, 0.3);
+            box-shadow: 0 0 20px rgba(255, 30, 30, 0.3);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -342,7 +347,7 @@
             background: linear-gradient(
                 90deg,
                 transparent,
-                rgba(241, 196, 15, 0.4),
+                rgba(212, 175, 55, 0.4),
                 transparent
             );
             transition: all 0.6s;
@@ -354,7 +359,7 @@
 
         .battlepass-button:hover {
             transform: translateY(-5px);
-            box-shadow: 0 0 30px rgba(241, 196, 15, 0.5);
+            box-shadow: 0 0 30px rgba(255, 30, 30, 0.5);
         }
 
         .battlepass-button i {
@@ -381,22 +386,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 0 10px rgba(241, 196, 15, 0.3);
-        }
-
-        /* Celestial Stars Animation */
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
-            50% { transform: translateY(-20px) rotate(10deg) scale(1.1); }
-        }
-
-        .star {
-            position: fixed;
-            pointer-events: none;
-            z-index: 1;
-            opacity: 0.6;
-            animation: float 4s ease-in-out infinite;
-            font-size: 24px;
-            color: var(--secondary-color);
         }
 
         /* Responsive Design */
@@ -505,82 +494,71 @@
     </button>
 
     <div class="event-title">
-        <h1>Celestial Protectors</h1>
+        <h1>Battleborn</h1>
     </div>
 
     <div class="skin-gallery-container">
         <div class="skin-grid">
             <div class="skin-card">
                 <div class="skin-image">
-                    <img src="Skins/Celestial Protector Lili.jpeg" alt="Celestial Protector Lili">
+                    <img src="Skins/Battleborn Zasalamel.jpeg" alt="Battleborn Zasalamel">
                     <div class="skin-overlay">
                         <p>Click to view details</p>
                     </div>
                 </div>
                 <div class="skin-details">
-                    <h3 class="skin-name">Celestial Protector Lili</h3>
+                    <h3 class="skin-name">Battleborn Zasalamel</h3>
+                    <p class="price-tag">3000 FM</p>
+                </div>
+            </div>
+            <div class="skin-card">
+                <div class="skin-image">
+                    <img src="Skins/Battleborn Talim.jpeg" alt="Battleborn Talim">
+                    <div class="skin-overlay">
+                        <p>Click to view details</p>
+                    </div>
+                </div>
+                <div class="skin-details">
+                    <h3 class="skin-name">Battleborn Talim</h3>
                     <p class="price-tag">2000 FM</p>
                 </div>
             </div>
             <div class="skin-card">
                 <div class="skin-image">
-                    <img src="Skins/Celestial Protector Juri.jpeg" alt="Celestial Protector Juri">
+                    <img src="Skins/Battleborn Yugo.jpeg" alt="Battleborn Yugo">
                     <div class="skin-overlay">
                         <p>Click to view details</p>
                     </div>
                 </div>
                 <div class="skin-details">
-                    <h3 class="skin-name">Celestial Protector Juri</h3>
+                    <h3 class="skin-name">Battleborn Yugo</h3>
                     <p class="price-tag">2000 FM</p>
                 </div>
             </div>
             <div class="skin-card">
                 <div class="skin-image">
-                    <img src="Skins/Celestial Protector Elphelt.jpeg" alt="Celestial Protector Elphelt">
+                    <img src="Skins/Battleborn Eagle.jpeg" alt="Battleborn Eagle">
                     <div class="skin-overlay">
                         <p>Click to view details</p>
                     </div>
                 </div>
                 <div class="skin-details">
-                    <h3 class="skin-name">Celestial Protector Elphelt</h3>
+                    <h3 class="skin-name">Battleborn Eagle</h3>
                     <p class="price-tag">2000 FM</p>
                 </div>
             </div>
             <div class="skin-card">
                 <div class="skin-image">
-                    <img src="Skins/Celestial Protector Sophitia.jpeg" alt="Celestial Protector Sophitia">
+                    <img src="Skins/Battleborn Ayane.jpeg" alt="Battleborn Ayane">
                     <div class="skin-overlay">
                         <p>Click to view details</p>
                     </div>
                 </div>
                 <div class="skin-details">
-                    <h3 class="skin-name">Celestial Protector Sophitia</h3>
+                    <h3 class="skin-name">Battleborn Ayane</h3>
                     <p class="price-tag">2000 FM</p>
                 </div>
             </div>
-            <div class="skin-card">
-                <div class="skin-image">
-                    <img src="Skins/Celestial Protector Cham Cham.jpeg" alt="Celestial Protector Cham Cham">
-                    <div class="skin-overlay">
-                        <p>Click to view details</p>
-                    </div>
-                </div>
-                <div class="skin-details">
-                    <h3 class="skin-name">Celestial Protector Cham Cham</h3>
-                    <p class="price-tag">2000 FM</p>
-                </div>
-            </div>
-            <div class="skin-card">
-                <div class="skin-image">
-                    <img src="Skins/Celestial Protector R Mika.jpeg" alt="Celestial Protector R Mika">
-                    <div class="skin-overlay">
-                        <p>Click to view details</p>
-                    </div>
-                </div>
-                <div class="skin-details">
-                    <h3 class="skin-name">Celestial Protector R Mika</h3>
-                    <p class="price-tag">2000 FM</p>
-                </div>
             </div>
         </div>
     </div>
@@ -598,22 +576,6 @@
     </div>
 
     <script>
-        // Celestial Stars Animation
-        function createStars() {
-            const starSymbols = ['✦', '✧', '⋆', '✯', '✬'];
-            const numStars = 15;
-
-            for (let i = 0; i < numStars; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + 'vw';
-                star.style.top = Math.random() * 100 + 'vh';
-                star.style.animationDelay = Math.random() * 4 + 's';
-                star.innerHTML = starSymbols[Math.floor(Math.random() * starSymbols.length)];
-                document.body.appendChild(star);
-            }
-        }
-
         // Lightbox Functionality
         const lightbox = document.querySelector('.lightbox');
         const lightboxImage = document.getElementById('lightbox-image');
@@ -663,9 +625,6 @@
             }
         });
 
-        // Initialize stars
-        createStars();
-
         // Hover effect for skin cards
         skinCards.forEach(card => {
             card.addEventListener('mouseenter', () => {
@@ -697,10 +656,10 @@
         // Check if background image fails to load
         window.addEventListener('load', () => {
             const img = new Image();
-            img.src = 'Event/Celestial Protectors Event.webp';
+            img.src = 'Event/Battleborn Event.webp';
             img.onerror = () => {
                 console.error('Background image failed to load');
-                document.body.style.backgroundColor = '#2c0a37';
+                document.body.style.backgroundColor = '#000000';
             };
         });
     </script>

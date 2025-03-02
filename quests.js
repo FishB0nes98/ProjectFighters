@@ -7,8 +7,8 @@ export const questTypes = {
     },
     special: {
         title: 'Special Quests',
-        resetInterval: 'daily',
-        maxActive: 3
+        resetInterval: null,
+        maxActive: 5
     }
 };
 
@@ -36,13 +36,13 @@ export const questTemplates = {
             }
         },
         {
-            id: 'celestial_kills',
-            icon: 'fa-skull',
-            title: 'Celestial Slayer',
-            description: 'Get 50 kills in total',
+            id: 'combat_prowess',
+            icon: 'fa-fist-raised',
+            title: 'Combat Prowess',
+            description: 'Deal 10,000 damage to enemy champions',
             requirements: {
-                count: 50,
-                type: 'kills'
+                count: 10000,
+                type: 'damage'
             },
             rewards: [
                 { type: 'questPoints', icon: 'res/img/qp.png', amount: 60 }
@@ -53,114 +53,156 @@ export const questTemplates = {
                 completed: false,
                 claimed: false,
                 lastReset: null,
-                totalKills: 0
+                totalDamage: 0
+            }
+        },
+        {
+            id: 'team_player',
+            icon: 'fa-users',
+            title: 'Team Player',
+            description: 'Get 15 assists in games',
+            requirements: {
+                count: 15,
+                type: 'assists'
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 55 }
+            ],
+            resetInterval: 68400000, // 19 hours in milliseconds
+            defaultData: {
+                progress: 0,
+                completed: false,
+                claimed: false,
+                lastReset: null,
+                totalAssists: 0
             }
         }
     ],
     special: [
         {
-            id: 'top_lane_games',
-            icon: 'fa-chevron-up',
-            title: 'Top Lane Mastery',
-            description: 'Play 10 games as Top',
+            id: 'win_streak',
+            icon: 'fa-trophy',
+            title: 'Win Streak',
+            description: 'Win 2 games in a row',
             requirements: {
-                count: 10,
-                type: 'play_role',
-                roles: ['top']
+                count: 2,
+                type: 'win_streak'
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 35 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 75 }
             ],
-            resetInterval: 72000000, // 20 hours in milliseconds
+            repeatable: true,
             defaultData: {
                 progress: 0,
                 completed: false,
                 claimed: false,
-                lastReset: null
+                streak: 0,
+                completionCount: 0
             }
         },
         {
-            id: 'jungle_games',
-            icon: 'fa-tree',
-            title: 'Jungle Mastery',
-            description: 'Play 10 games as Jungle',
+            id: 'battleborn_champion',
+            icon: 'fa-crown',
+            title: 'Battleborn Champion',
+            description: 'Win 50 SoloQ games',
             requirements: {
-                count: 10,
-                type: 'play_role',
-                roles: ['jungle']
+                count: 50,
+                type: 'soloq_wins'
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 35 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 200 },
+                { type: 'skin', icon: 'fa-user', name: 'Battleborn Talim' }
             ],
-            resetInterval: 72000000, // 20 hours in milliseconds
+            repeatable: false,
             defaultData: {
                 progress: 0,
                 completed: false,
                 claimed: false,
-                lastReset: null
+                wins: 0
             }
         },
         {
-            id: 'mid_lane_games',
+            id: 'champion_mastery',
             icon: 'fa-star',
-            title: 'Mid Lane Mastery',
-            description: 'Play 10 games as Mid',
+            title: 'Champion Mastery',
+            description: 'Play 5 games with the same champion',
             requirements: {
-                count: 10,
-                type: 'play_role',
-                roles: ['mid']
+                count: 5,
+                type: 'play_champion'
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 35 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 80 }
             ],
-            resetInterval: 72000000, // 20 hours in milliseconds
+            repeatable: true,
             defaultData: {
                 progress: 0,
                 completed: false,
                 claimed: false,
-                lastReset: null
+                champion: null,
+                completionCount: 0
             }
         },
         {
-            id: 'adc_games',
-            icon: 'fa-crosshairs',
-            title: 'ADC Mastery',
-            description: 'Play 10 games as ADC',
+            id: 'multikill_hunter',
+            icon: 'fa-skull-crossbones',
+            title: 'Multikill Hunter',
+            description: 'Get 3 multikills in games',
             requirements: {
-                count: 10,
-                type: 'play_role',
-                roles: ['adc']
+                count: 3,
+                type: 'multikills'
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 35 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 90 }
             ],
-            resetInterval: 72000000, // 20 hours in milliseconds
+            repeatable: true,
             defaultData: {
                 progress: 0,
                 completed: false,
                 claimed: false,
-                lastReset: null
+                multikills: 0,
+                completionCount: 0
             }
         },
         {
-            id: 'support_games',
-            icon: 'fa-heart',
-            title: 'Support Mastery',
-            description: 'Play 10 games as Support',
+            id: 'objective_taker',
+            icon: 'fa-flag',
+            title: 'Objective Taker',
+            description: 'Participate in taking 10 objectives (towers, dragons, etc.)',
             requirements: {
                 count: 10,
-                type: 'play_role',
-                roles: ['support']
+                type: 'objectives'
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 35 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 85 }
             ],
-            resetInterval: 72000000, // 20 hours in milliseconds
+            repeatable: true,
             defaultData: {
                 progress: 0,
                 completed: false,
                 claimed: false,
-                lastReset: null
+                objectives: 0,
+                completionCount: 0
+            }
+        },
+        {
+            id: 'survival_expert',
+            icon: 'fa-shield-alt',
+            title: 'Survival Expert',
+            description: 'Complete 3 games with 3 or fewer deaths',
+            requirements: {
+                count: 3,
+                type: 'low_deaths'
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 70 }
+            ],
+            repeatable: true,
+            defaultData: {
+                progress: 0,
+                completed: false,
+                claimed: false,
+                games: 0,
+                completionCount: 0
             }
         }
     ]

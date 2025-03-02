@@ -1,6 +1,25 @@
 // Export the sticker data for use in other files
 export const stickers = {
     // New Stickers
+    "shao_kahn_smirk": {
+        name: "Shao Kahn Smirk",
+        image: "Stickers/shao_kahn_smirk.png",
+        price: 650,
+        category: "special",
+        qpPrice: 650
+    },
+    "talim_too_slow": {
+        name: "Talim Too Slow",
+        image: "Stickers/talim_too_slow.png",
+        price: 350,
+        category: "regular"
+    },
+    "ayane_try_me": {
+        name: "Ayane Try Me",
+        image: "Stickers/ayane_try_me.png",
+        price: 350,
+        category: "regular"
+    },
     "heart": {
         name: "Heart",
         image: "Stickers/heart.png",

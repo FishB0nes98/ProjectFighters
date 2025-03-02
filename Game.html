@@ -1202,9 +1202,8 @@
                 // Get the selected role and team from the highlighted slot
                 const selectedSlot = document.querySelector('.player-slot.highlight');
                 console.log('Found selected slot in quests:', selectedSlot);
-                const selectedRole = selectedSlot?.getAttribute('data-role')?.toLowerCase();
                 const playerTeam = selectedSlot?.id.startsWith('blue-') ? 'team1' : 'team2';
-                console.log('Found selected role:', selectedRole, 'Player team:', playerTeam);
+                console.log('Found player team:', playerTeam);
 
                 if (!selectedCharacter) {
                     console.error('Could not determine selected character');
@@ -1233,50 +1232,9 @@
                     console.log('Debug: Character ownership check failed. User skins:', userData.skins);
                     console.log('Debug: Selected character:', selectedCharacter);
                     // Instead of returning, we'll proceed with the quest update
-                    // return;
                 }
 
-                // Save last played role for quest tracking
-                if (selectedRole) {
-                    await set(ref(database, `users/${userId}/lastPlayedRole`), selectedRole);
-                    
-                    // Update role-specific quest progress
-                    const roleQuestMap = {
-                        'top': 'top_lane_games',
-                        'jungle': 'jungle_games',
-                        'mid': 'mid_lane_games',
-                        'adc': 'adc_games',
-                        'support': 'support_games'
-                    };
-
-                    const questId = roleQuestMap[selectedRole];
-                    if (questId) {
-                        console.log('Debug: Updating role quest progress for', selectedRole);
-                        const roleQuestRef = ref(database, `users/${userId}/quests/${questId}`);
-                        const roleQuestSnap = await get(roleQuestRef);
-                        let roleQuestData = roleQuestSnap.val() || {
-                            progress: 0,
-                            completed: false,
-                            claimed: false
-                        };
-
-                        if (!roleQuestData.completed && !roleQuestData.claimed) {
-                            roleQuestData.progress = (roleQuestData.progress || 0) + 1;
-                            roleQuestData.completed = roleQuestData.progress >= 10;
-                            console.log('Debug: Role quest updated -', {
-                                role: selectedRole,
-                                questId,
-                                newProgress: roleQuestData.progress,
-                                completed: roleQuestData.completed
-                            });
-                            await set(roleQuestRef, roleQuestData);
-                        } else {
-                            console.log('Debug: Role quest not updated - Already completed or claimed');
-                        }
-                    }
-                }
-
-                // Update celestial kills quest with actual KDA stats from the match
+                // Get KDA stats from the match
                 const matchHistoryRef = ref(database, `users/${userId}/matchHistory`);
                 const matchHistorySnap = await get(matchHistoryRef);
                 const matchHistory = matchHistorySnap.val();
@@ -1294,60 +1252,17 @@
                 const kdaStats = latestMatch?.kda || { kills: 0, deaths: 0, assists: 0 };
                 console.log('Debug: KDA stats to be used:', kdaStats);
 
-                // Get existing quest data
-                const celestialKillsRef = ref(database, `users/${userId}/quests/celestial_kills`);
-                const celestialKillsSnap = await get(celestialKillsRef);
-                let celestialKillsData = celestialKillsSnap.val();
-                
-                // Initialize quest data if it doesn't exist
-                if (!celestialKillsData) {
-                    celestialKillsData = {
-                        progress: 0,
-                        completed: false,
-                        claimed: false,
-                        lastReset: currentTime,
-                        totalKills: 0
-                    };
-                }
-                
-                console.log('Debug: Current quest data before update:', celestialKillsData);
+                // Generate random damage for Combat Prowess quest
+                const damageDealt = Math.floor(Math.random() * 5000) + 3000; // Random damage between 3000-8000
+                console.log('Debug: Generated damage dealt:', damageDealt);
 
-                // Check if quest needs to be reset (19 hours have passed)
-                const celestialTimeSinceReset = currentTime - (celestialKillsData.lastReset || 0);
-                console.log('Debug: Time since last reset (ms):', celestialTimeSinceReset);
-                console.log('Debug: Reset threshold (ms):', 68400000);
-                console.log('Debug: Should reset?', celestialTimeSinceReset >= 68400000 || celestialKillsData.claimed);
+                // Generate random objective participation
+                const objectivesTaken = Math.random() < 0.7 ? Math.floor(Math.random() * 3) + 1 : 0; // 70% chance of 1-3 objectives
+                console.log('Debug: Generated objectives taken:', objectivesTaken);
 
-                if (celestialTimeSinceReset >= 68400000 || celestialKillsData.claimed) { // 19 hours in milliseconds
-                    // If quest needs reset, start fresh with current game's kills
-                    celestialKillsData = {
-                        progress: kdaStats.kills,
-                        completed: kdaStats.kills >= 50,
-                        claimed: false,
-                        lastReset: currentTime,
-                        totalKills: kdaStats.kills
-                    };
-                    console.log('Debug: Quest reset - New state:', celestialKillsData);
-                } else if (!celestialKillsData.completed && !celestialKillsData.claimed) {
-                    // Add new kills to existing progress
-                    const previousTotal = celestialKillsData.totalKills || 0;
-                    celestialKillsData.totalKills = previousTotal + kdaStats.kills;
-                    celestialKillsData.progress = celestialKillsData.totalKills;
-                    celestialKillsData.completed = celestialKillsData.progress >= 50;
-                    console.log('Debug: Quest updated - Previous total:', previousTotal);
-                    console.log('Debug: Quest updated - Added kills:', kdaStats.kills);
-                    console.log('Debug: Quest updated - New total:', celestialKillsData.totalKills);
-                } else {
-                    console.log('Debug: Quest not updated - Already completed or claimed');
-                }
-
-                // Save the updated quest data
-                try {
-                    await set(celestialKillsRef, celestialKillsData);
-                    console.log('Debug: Final quest data saved:', celestialKillsData);
-                } catch (error) {
-                    console.error('Debug: Error saving quest data:', error);
-                }
+                // Generate random multikill status
+                const gotMultikill = Math.random() < 0.3 && kdaStats.kills >= 2; // 30% chance if kills >= 2
+                console.log('Debug: Got multikill:', gotMultikill);
 
                 // Update daily games quest
                 const dailyQuestRef = ref(database, `users/${userId}/quests/daily_games`);
@@ -1373,6 +1288,113 @@
 
                 await set(dailyQuestRef, dailyQuestData);
 
+                // Update Combat Prowess quest (replaces celestial_kills)
+                const combatProwessRef = ref(database, `users/${userId}/quests/combat_prowess`);
+                const combatProwessSnap = await get(combatProwessRef);
+                let combatProwessData = combatProwessSnap.val();
+                
+                // Initialize quest data if it doesn't exist
+                if (!combatProwessData) {
+                    combatProwessData = {
+                        progress: 0,
+                        completed: false,
+                        claimed: false,
+                        lastReset: currentTime,
+                        totalDamage: 0
+                    };
+                }
+                
+                console.log('Debug: Current combat prowess data before update:', combatProwessData);
+
+                // Check if quest needs to be reset (19 hours have passed)
+                const combatTimeSinceReset = currentTime - (combatProwessData.lastReset || 0);
+                console.log('Debug: Time since last reset (ms):', combatTimeSinceReset);
+                console.log('Debug: Reset threshold (ms):', 68400000);
+                console.log('Debug: Should reset?', combatTimeSinceReset >= 68400000 || combatProwessData.claimed);
+
+                if (combatTimeSinceReset >= 68400000 || combatProwessData.claimed) { // 19 hours in milliseconds
+                    // If quest needs reset, start fresh with current game's damage
+                    combatProwessData = {
+                        progress: damageDealt,
+                        completed: damageDealt >= 10000,
+                        claimed: false,
+                        lastReset: currentTime,
+                        totalDamage: damageDealt
+                    };
+                    console.log('Debug: Combat prowess quest reset - New state:', combatProwessData);
+                } else if (!combatProwessData.completed && !combatProwessData.claimed) {
+                    // Add new damage to existing progress
+                    const previousTotal = combatProwessData.totalDamage || 0;
+                    combatProwessData.totalDamage = previousTotal + damageDealt;
+                    combatProwessData.progress = combatProwessData.totalDamage;
+                    combatProwessData.completed = combatProwessData.progress >= 10000;
+                    console.log('Debug: Combat prowess quest updated - Previous total:', previousTotal);
+                    console.log('Debug: Combat prowess quest updated - Added damage:', damageDealt);
+                    console.log('Debug: Combat prowess quest updated - New total:', combatProwessData.totalDamage);
+                } else {
+                    console.log('Debug: Combat prowess quest not updated - Already completed or claimed');
+                }
+
+                // Save the updated quest data
+                try {
+                    await set(combatProwessRef, combatProwessData);
+                    console.log('Debug: Final combat prowess data saved:', combatProwessData);
+                } catch (error) {
+                    console.error('Debug: Error saving combat prowess data:', error);
+                }
+
+                // Update Team Player quest (assists tracking)
+                const teamPlayerRef = ref(database, `users/${userId}/quests/team_player`);
+                const teamPlayerSnap = await get(teamPlayerRef);
+                let teamPlayerData = teamPlayerSnap.val();
+                
+                // Initialize quest data if it doesn't exist
+                if (!teamPlayerData) {
+                    teamPlayerData = {
+                        progress: 0,
+                        completed: false,
+                        claimed: false,
+                        lastReset: currentTime,
+                        totalAssists: 0
+                    };
+                }
+                
+                console.log('Debug: Current team player data before update:', teamPlayerData);
+
+                // Check if quest needs to be reset (19 hours have passed)
+                const teamPlayerTimeSinceReset = currentTime - (teamPlayerData.lastReset || 0);
+
+                if (teamPlayerTimeSinceReset >= 68400000 || teamPlayerData.claimed) { // 19 hours in milliseconds
+                    // If quest needs reset, start fresh with current game's assists
+                    teamPlayerData = {
+                        progress: kdaStats.assists,
+                        completed: kdaStats.assists >= 15,
+                        claimed: false,
+                        lastReset: currentTime,
+                        totalAssists: kdaStats.assists
+                    };
+                    console.log('Debug: Team player quest reset - New state:', teamPlayerData);
+                } else if (!teamPlayerData.completed && !teamPlayerData.claimed) {
+                    // Add new assists to existing progress
+                    const previousTotal = teamPlayerData.totalAssists || 0;
+                    teamPlayerData.totalAssists = previousTotal + kdaStats.assists;
+                    teamPlayerData.progress = teamPlayerData.totalAssists;
+                    teamPlayerData.completed = teamPlayerData.progress >= 15;
+                    console.log('Debug: Team player quest updated - Previous total:', previousTotal);
+                    console.log('Debug: Team player quest updated - Added assists:', kdaStats.assists);
+                    console.log('Debug: Team player quest updated - New total:', teamPlayerData.totalAssists);
+                } else {
+                    console.log('Debug: Team player quest not updated - Already completed or claimed');
+                }
+
+                // Save the updated quest data
+                try {
+                    await set(teamPlayerRef, teamPlayerData);
+                    console.log('Debug: Final team player data saved:', teamPlayerData);
+                } catch (error) {
+                    console.error('Debug: Error saving team player data:', error);
+                }
+
                 // Update win streak quest
                 const winStreakRef = ref(database, `users/${userId}/quests/win_streak`);
                 const winStreakSnap = await get(winStreakRef);
@@ -1380,10 +1402,20 @@
                     progress: 0,
                     completed: false,
                     claimed: false,
-                    streak: 0
+                    streak: 0,
+                    completionCount: 0
                 };
 
-                if (!winStreakData.claimed) {
+                // For repeatable quests, we check if it's claimed and reset it instead of skipping
+                if (winStreakData.claimed) {
+                    // Reset the quest after it's been claimed
+                    winStreakData.progress = isWin ? 1 : 0; // Start with 1 if current game is a win
+                    winStreakData.streak = isWin ? 1 : 0;
+                    winStreakData.completed = false;
+                    winStreakData.claimed = false;
+                    winStreakData.completionCount = (winStreakData.completionCount || 0) + 1;
+                    await set(winStreakRef, winStreakData);
+                } else {
                     if (isWin) {
                         winStreakData.streak = (winStreakData.streak || 0) + 1;
                         winStreakData.progress = winStreakData.streak;
@@ -1394,6 +1426,140 @@
                         winStreakData.completed = false;
                     }
                     await set(winStreakRef, winStreakData);
+                }
+
+                // Update Champion Mastery quest
+                const championMasteryRef = ref(database, `users/${userId}/quests/champion_mastery`);
+                const championMasterySnap = await get(championMasteryRef);
+                let championMasteryData = championMasterySnap.val() || {
+                    progress: 0,
+                    completed: false,
+                    claimed: false,
+                    champion: null,
+                    completionCount: 0
+                };
+
+                // For repeatable quests, we check if it's claimed and reset it
+                if (championMasteryData.claimed) {
+                    // Reset the quest after it's been claimed
+                    championMasteryData.progress = 1; // Start with 1 for current game
+                    championMasteryData.champion = selectedCharacter;
+                    championMasteryData.completed = false;
+                    championMasteryData.claimed = false;
+                    championMasteryData.completionCount = (championMasteryData.completionCount || 0) + 1;
+                    await set(championMasteryRef, championMasteryData);
+                } else {
+                    if (championMasteryData.champion === null || championMasteryData.champion === selectedCharacter) {
+                        // First game with any champion or continuing with same champion
+                        championMasteryData.champion = selectedCharacter;
+                        championMasteryData.progress = (championMasteryData.progress || 0) + 1;
+                        championMasteryData.completed = championMasteryData.progress >= 5;
+                    } else {
+                        // Changed champion, reset progress
+                        championMasteryData.champion = selectedCharacter;
+                        championMasteryData.progress = 1;
+                        championMasteryData.completed = false;
+                    }
+                    await set(championMasteryRef, championMasteryData);
+                }
+
+                // Update Multikill Hunter quest
+                const multikillRef = ref(database, `users/${userId}/quests/multikill_hunter`);
+                const multikillSnap = await get(multikillRef);
+                let multikillData = multikillSnap.val() || {
+                    progress: 0,
+                    completed: false,
+                    claimed: false,
+                    multikills: 0,
+                    completionCount: 0
+                };
+
+                // For repeatable quests, we check if it's claimed and reset it
+                if (multikillData.claimed) {
+                    // Reset the quest after it's been claimed
+                    multikillData.progress = gotMultikill ? 1 : 0;
+                    multikillData.multikills = gotMultikill ? 1 : 0;
+                    multikillData.completed = false;
+                    multikillData.claimed = false;
+                    multikillData.completionCount = (multikillData.completionCount || 0) + 1;
+                    await set(multikillRef, multikillData);
+                } else if (gotMultikill) {
+                    multikillData.multikills = (multikillData.multikills || 0) + 1;
+                    multikillData.progress = multikillData.multikills;
+                    multikillData.completed = multikillData.progress >= 3;
+                    await set(multikillRef, multikillData);
+                }
+
+                // Update Objective Taker quest
+                const objectiveRef = ref(database, `users/${userId}/quests/objective_taker`);
+                const objectiveSnap = await get(objectiveRef);
+                let objectiveData = objectiveSnap.val() || {
+                    progress: 0,
+                    completed: false,
+                    claimed: false,
+                    objectives: 0,
+                    completionCount: 0
+                };
+
+                // For repeatable quests, we check if it's claimed and reset it
+                if (objectiveData.claimed) {
+                    // Reset the quest after it's been claimed
+                    objectiveData.progress = objectivesTaken;
+                    objectiveData.objectives = objectivesTaken;
+                    objectiveData.completed = objectivesTaken >= 10;
+                    objectiveData.claimed = false;
+                    objectiveData.completionCount = (objectiveData.completionCount || 0) + 1;
+                    await set(objectiveRef, objectiveData);
+                } else if (objectivesTaken > 0) {
+                    objectiveData.objectives = (objectiveData.objectives || 0) + objectivesTaken;
+                    objectiveData.progress = objectiveData.objectives;
+                    objectiveData.completed = objectiveData.progress >= 10;
+                    await set(objectiveRef, objectiveData);
+                }
+
+                // Update Survival Expert quest
+                const survivalRef = ref(database, `users/${userId}/quests/survival_expert`);
+                const survivalSnap = await get(survivalRef);
+                let survivalData = survivalSnap.val() || {
+                    progress: 0,
+                    completed: false,
+                    claimed: false,
+                    games: 0,
+                    completionCount: 0
+                };
+
+                // For repeatable quests, we check if it's claimed and reset it
+                if (survivalData.claimed) {
+                    // Reset the quest after it's been claimed
+                    survivalData.progress = kdaStats.deaths <= 3 ? 1 : 0;
+                    survivalData.games = kdaStats.deaths <= 3 ? 1 : 0;
+                    survivalData.completed = false;
+                    survivalData.claimed = false;
+                    survivalData.completionCount = (survivalData.completionCount || 0) + 1;
+                    await set(survivalRef, survivalData);
+                } else if (kdaStats.deaths <= 3) {
+                    survivalData.games = (survivalData.games || 0) + 1;
+                    survivalData.progress = survivalData.games;
+                    survivalData.completed = survivalData.progress >= 3;
+                    await set(survivalRef, survivalData);
+                }
+
+                // Update Battleborn Champion quest (SoloQ wins)
+                const battleBornRef = ref(database, `users/${userId}/quests/battleborn_champion`);
+                const battleBornSnap = await get(battleBornRef);
+                let battleBornData = battleBornSnap.val() || {
+                    progress: 0,
+                    completed: false,
+                    claimed: false,
+                    wins: 0
+                };
+
+                // This quest is only for SoloQ wins
+                if (isWin) {
+                    battleBornData.wins = (battleBornData.wins || 0) + 1;
+                    battleBornData.progress = battleBornData.wins;
+                    battleBornData.completed = battleBornData.progress >= 50;
+                    await set(battleBornRef, battleBornData);
                 }
 
             } catch (error) {

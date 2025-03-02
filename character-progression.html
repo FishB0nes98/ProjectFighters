@@ -2,271 +2,76 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Character Progression</title>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
-    <style>
-        body {
-            background-color: #333;
-            color: white;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#4f46e5',
+                        accent: '#ffbb00',
+                        dark: '#1e1e2e',
+                        'dark-light': '#2a2a3c',
+                        'tier-legendary': '#ffa500',
+                        'tier-epic': '#800080',
+                        'tier-rare': '#0000ff',
+                        'tier-common': '#008000',
+                        'tier-basic': '#808080'
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
         }
-
-        .menu {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-        }
-
-        .menu-items {
-            display: flex;
-            justify-content: center;
-            padding: 15px;
-        }
-
-        .menu-items a {
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            margin: 0 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-
-        .menu-items a:hover {
-            background-color: #ffbb00;
-        }
-
-        .play-button-container {
-            position: fixed;
-            top: 15px;
-            right: 20px;
-            z-index: 1001;
-        }
-
-        .play-button {
-            display: inline-block;
-            padding: 10px 30px;
-            background-color: #ffbb00;
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .play-button:hover {
-            background-color: #ff8800;
-            transform: scale(1.05);
-        }
-
-        .character-container {
-            margin-top: 80px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .character-card {
-            background-color: #444;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .character-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: inherit;
-            opacity: 0.2;
-            z-index: -1;
-        }
-
-        .character-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-        }
-
-        .character-image {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            margin-bottom: 10px;
-            border: 3px solid transparent;
-            transition: border-color 0.3s;
-        }
-
-        .character-card:hover .character-image {
-            border-color: white;
-        }
-
-        /* Add tier indicators */
-        .character-card::after {
-            content: attr(data-tier);
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 2000;
-        }
-
-        .modal-content {
-            position: relative;
-            background-color: #444;
-            margin: 2% auto;
-            padding: 30px;
-            width: 90%;
-            max-width: 1200px;
-            border-radius: 10px;
-        }
-
-        .close-modal {
-            position: absolute;
-            right: 20px;
-            top: 10px;
-            font-size: 30px;
-            cursor: pointer;
-            color: white;
-        }
-
-        .rewards-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-            margin-top: 20px;
-        }
-
-        .reward-item {
-            position: relative;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 10px;
-            background: #555;
-            transition: transform 0.3s;
-            display: flex;
-            align-items: center;
-        }
-
-        .reward-item.locked {
-            opacity: 0.5;
-            filter: grayscale(1);
-        }
-
-        .reward-item.claimed {
-            border: 2px solid #4CAF50;
-        }
-
-        .claim-button {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            padding: 5px 15px;
-            background: #4CAF50;
-            border: none;
-            border-radius: 4px;
-            color: white;
-            cursor: pointer;
-        }
-
-        .claimed-text {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            color: #4CAF50;
-            font-weight: bold;
-        }
-
-        .reward-image {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
-        .reward-info {
-            display: flex;
-            flex-direction: column;
-            margin-left: 20px;
-            flex-grow: 1;
-        }
-
-        .reward-name {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .reward-type {
-            color: #aaa;
-            margin-bottom: 5px;
-        }
-
-        .reward-xp {
-            color: #ffbb00;
-        }
-
-        .next-reward-info {
-            margin-top: 20px;
-            padding: 10px;
-            background: #666;
-            border-radius: 8px;
-            text-align: center;
-        }
-    </style>
+    </script>
 </head>
-<body>
-    <!-- Menu -->
-    <div class="menu">
-        <div class="menu-items">
-            <a href="home.html">Home</a>
-            <a href="Store.html">Store</a>
-            <a href="event.html">Event</a>
-            <a href="Team Builder.html">Team Builder</a>
-            <a href="statistics.html">Statistics</a>
+<body class="bg-gradient-to-br from-dark to-dark-light text-white font-sans min-h-screen">
+    <!-- Navigation Bar -->
+    <nav class="fixed top-0 left-0 w-full bg-black/80 backdrop-blur-md z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <a href="home.html" class="px-4 py-2 rounded-lg hover:bg-primary/20 transition-all duration-300" tabindex="0" aria-label="Home">Home</a>
+                    <a href="Store.html" class="px-4 py-2 rounded-lg hover:bg-primary/20 transition-all duration-300" tabindex="0" aria-label="Store">Store</a>
+                    <a href="event.html" class="px-4 py-2 rounded-lg hover:bg-primary/20 transition-all duration-300" tabindex="0" aria-label="Event">Event</a>
+                    <a href="Team Builder.html" class="px-4 py-2 rounded-lg hover:bg-primary/20 transition-all duration-300" tabindex="0" aria-label="Team Builder">Team Builder</a>
+                    <a href="statistics.html" class="px-4 py-2 rounded-lg hover:bg-primary/20 transition-all duration-300" tabindex="0" aria-label="Statistics">Statistics</a>
+                </div>
+                <a href="Game Modes.html" class="px-6 py-2 bg-accent hover:bg-accent/80 rounded-full font-medium shadow-lg transform hover:scale-105 transition-all duration-300" tabindex="0" aria-label="Play">Play</a>
+            </div>
         </div>
-    </div>
-    <div class="play-button-container">
-        <a href="Game Modes.html" class="play-button">Play</a>
+    </nav>
+
+    <!-- Page Title -->
+    <div class="container mx-auto pt-24 pb-6 px-4">
+        <h1 class="text-3xl font-bold text-center mb-2">Character Progression</h1>
+        <p class="text-center text-gray-300 mb-8">Level up your characters and unlock exclusive rewards</p>
     </div>
 
-    <div class="character-container" id="character-container"></div>
+    <!-- Character Grid -->
+    <div id="character-container" class="container mx-auto px-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 pb-12"></div>
 
-    <!-- Modal -->
-    <div id="rewards-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2 id="modal-character-name"></h2>
-            <div class="rewards-grid" id="rewards-grid"></div>
+    <!-- Rewards Modal -->
+    <div id="rewards-modal" class="fixed inset-0 bg-black/80 z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-dark-light rounded-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="p-6 border-b border-gray-700 sticky top-0 bg-dark-light z-10 flex justify-between items-center">
+                <h2 id="modal-character-name" class="text-2xl font-bold"></h2>
+                <button class="close-modal text-3xl hover:text-accent transition-colors" aria-label="Close modal">&times;</button>
+            </div>
+            
+            <!-- Modal Content -->
+            <div class="p-6">
+                <div id="rewards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
         </div>
     </div>
 
@@ -292,7 +97,7 @@
         const database = getDatabase(app);
     
         // Import Julia's rewards
-        import { characterRewards, getJuliaRewards, getkabalRewards, getLiliRewards, getJuriRewards, getAliceRewards, getkumaRewards, getmegamanRewards, getMaiRewards, getFangRewards, getKagomeRewards, getChristieRewards, getShizumaruRewards, getSophitiaRewards, getsubZeroRewards, getKokoroRewards, getEagleRewards, getShomaRewards, getNinaRewards, getSiegfriedRewards, getIbukiRewards, getAyaneRewards, getBlankaRewards, getNoelRewards, getRaidenRewards, getYugoRewards, getTalimRewards, getAstarothRewards, getAngelRewards, getPeacockRewards, getScorpionRewards, getRMikaRewards, getKotalKahnRewards, getElpheltRewards, getAkumaRewards, getBirdieRewards, getReptileRewards, getErronBlackRewards, getChamChamRewards, getJunRewards, getMorriganRewards, getZasalamelRewards, isRewardUnlocked, getNextReward, claimReward } from './character-rewards.js';
+        import { characterRewards, getJuliaRewards, getkabalRewards, getLiliRewards, getJuriRewards, getAliceRewards, getkumaRewards, getmegamanRewards, getMaiRewards, getFangRewards, getKagomeRewards, getChristieRewards, getShizumaruRewards, getSophitiaRewards, getsubZeroRewards, getKokoroRewards, getEagleRewards, getShomaRewards, getNinaRewards, getSiegfriedRewards, getIbukiRewards, getAyaneRewards, getBlankaRewards, getNoelRewards, getRaidenRewards, getYugoRewards, getTalimRewards, getAstarothRewards, getAngelRewards, getPeacockRewards, getScorpionRewards, getRMikaRewards, getKotalKahnRewards, getElpheltRewards, getAkumaRewards, getBirdieRewards, getReptileRewards, getErronBlackRewards, getChamChamRewards, getJunRewards, getMorriganRewards, getZasalamelRewards, getShaoKahnRewards, isRewardUnlocked, getNextReward, claimReward } from './character-rewards.js';
     
         const XP_TIERS = {
             LEGENDARY: 75001,
@@ -303,20 +108,55 @@
         };
     
         const TIER_COLORS = {
-            LEGENDARY: '#ffa500', // Orange
-            EPIC: '#800080',      // Purple
-            RARE: '#0000ff',      // Blue
-            COMMON: '#008000',    // Green
-            BASIC: '#808080'      // Grey
+            LEGENDARY: 'tier-legendary', // Orange
+            EPIC: 'tier-epic',      // Purple
+            RARE: 'tier-rare',      // Blue
+            COMMON: 'tier-common',    // Green
+            BASIC: 'tier-basic'      // Grey
+        };
+
+        const TIER_BADGES = {
+            LEGENDARY: '👑 LEGENDARY',
+            EPIC: '💎 EPIC',
+            RARE: '🔷 RARE',
+            COMMON: '🍀 COMMON',
+            BASIC: '⚪ BASIC'
         };
     
-        function getXPTier(xp) {
+        const getXPTier = (xp) => {
             if (xp >= XP_TIERS.LEGENDARY) return 'LEGENDARY';
             if (xp >= XP_TIERS.EPIC) return 'EPIC';
             if (xp >= XP_TIERS.RARE) return 'RARE';
             if (xp >= XP_TIERS.COMMON) return 'COMMON';
             return 'BASIC';
-        }
+        };
+
+        const getNextTierXP = (currentXP) => {
+            if (currentXP < XP_TIERS.COMMON) return XP_TIERS.COMMON;
+            if (currentXP < XP_TIERS.RARE) return XP_TIERS.RARE;
+            if (currentXP < XP_TIERS.EPIC) return XP_TIERS.EPIC;
+            if (currentXP < XP_TIERS.LEGENDARY) return XP_TIERS.LEGENDARY;
+            return null; // Already at max tier
+        };
+
+        const calculateXPProgress = (currentXP) => {
+            const tier = getXPTier(currentXP);
+            const nextTierXP = getNextTierXP(currentXP);
+            
+            if (!nextTierXP) return 100; // Max tier
+            
+            let tierMinXP;
+            switch(tier) {
+                case 'BASIC': tierMinXP = XP_TIERS.BASIC; break;
+                case 'COMMON': tierMinXP = XP_TIERS.COMMON; break;
+                case 'RARE': tierMinXP = XP_TIERS.RARE; break;
+                case 'EPIC': tierMinXP = XP_TIERS.EPIC; break;
+                default: tierMinXP = 0;
+            }
+            
+            const tierProgress = ((currentXP - tierMinXP) / (nextTierXP - tierMinXP)) * 100;
+            return Math.min(Math.max(tierProgress, 0), 100); // Ensure between 0-100
+        };
     
         // Add this right after your existing script imports
         const DEBUG_CHARACTER_LIST = [
@@ -328,7 +168,7 @@
             'Juri', 'Sub Zero', 'Christie', 'Kokoro', 'Eagle',
             'Sophitia', 'Shizumaru', 'Kagome', 'Kabal', 'Kuma',
             'Alice', 'Shinnok', 'FANG', 'Lili', 'Mega Man', 'Mai',
-            'Zasalamel'
+            'Zasalamel', 'Shao Kahn'
         ];
     
         // Add debug mode handler
@@ -338,20 +178,7 @@
                 container.innerHTML = ''; // Clear existing characters
                 
                 DEBUG_CHARACTER_LIST.forEach(character => {
-                    const card = document.createElement('div');
-                    card.className = 'character-card';
-                    card.innerHTML = `
-                        <img src="Icons/${character}.png" alt="${character}" class="character-image">
-                        <h3>${character}</h3>
-                        <p>XP: 0</p>
-                    `;
-                    
-                    // Apply default styling
-                    card.style.backgroundColor = '#444';
-                    card.style.border = '2px solid #808080'; // BASIC tier color
-                    
-                    card.onclick = () => showRewardsModal(character, 0);
-                    container.appendChild(card);
+                    createCharacterCard(container, character, 0);
                 });
             }
         });
@@ -372,26 +199,72 @@
                 
                 // Create character cards for owned characters
                 for (const character in characters) {
+                    // Skip ARAM as it's not a real character
+                    if (character === 'ARAM') continue;
+                    
                     const characterData = characters[character];
                     const xp = characterData.xp || 0;
-                    const tier = getXPTier(xp);
                     
-                    const card = document.createElement('div');
-                    card.className = 'character-card';
-                    card.innerHTML = `
-                        <img src="Icons/${character}.png" alt="${character}" class="character-image">
-                        <h3>${character}</h3>
-                        <p>XP: ${xp}</p>
-                    `;
-                    
-                    card.style.backgroundColor = TIER_COLORS[tier];
-                    card.style.border = `2px solid ${TIER_COLORS[tier]}`;
-                    
-                    card.onclick = () => showRewardsModal(character, xp);
-                    container.appendChild(card);
+                    createCharacterCard(container, character, xp);
                 }
             }
         });
+
+        const createCharacterCard = (container, character, xp) => {
+            const tier = getXPTier(xp);
+            const tierColor = TIER_COLORS[tier];
+            const progress = calculateXPProgress(xp);
+            const nextTierXP = getNextTierXP(xp);
+            
+            const card = document.createElement('div');
+            card.className = `relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-${tierColor}/20 cursor-pointer group`;
+            card.setAttribute('tabindex', '0');
+            card.setAttribute('aria-label', `${character} character card`);
+            
+            // Handle keyboard interaction
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    showRewardsModal(character, xp);
+                }
+            });
+            
+            // Create card content
+            card.innerHTML = `
+                <div class="bg-dark-light border-2 border-${tierColor} rounded-xl h-full flex flex-col">
+                    <!-- Tier Badge -->
+                    <div class="absolute top-2 right-2 bg-${tierColor} text-xs font-bold px-2 py-1 rounded-full z-10">
+                        ${TIER_BADGES[tier]}
+                    </div>
+                    
+                    <!-- Character Image -->
+                    <div class="p-4 flex justify-center">
+                        <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-${tierColor} group-hover:border-white transition-colors duration-300">
+                            <img src="Icons/${character}.png" alt="${character}" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                    
+                    <!-- Character Info -->
+                    <div class="p-3 text-center">
+                        <h3 class="font-bold text-lg mb-1 truncate">${character}</h3>
+                        <p class="text-sm text-gray-300 mb-2">${xp} XP</p>
+                        
+                        <!-- XP Progress Bar -->
+                        <div class="w-full bg-gray-700 rounded-full h-2.5 mb-1">
+                            <div class="bg-${tierColor} h-2.5 rounded-full" style="width: ${progress}%"></div>
+                        </div>
+                        
+                        ${nextTierXP ? 
+                            `<p class="text-xs text-gray-400">${nextTierXP - xp} XP to next tier</p>` : 
+                            `<p class="text-xs text-${tierColor}">Max Tier Reached!</p>`
+                        }
+                    </div>
+                </div>
+            `;
+            
+            card.onclick = () => showRewardsModal(character, xp);
+            container.appendChild(card);
+        };
     
         // Add debug mode toggle off (press 6 to return to normal)
         document.addEventListener('keydown', (event) => {
@@ -401,23 +274,13 @@
                 
                 // Recreate original character cards
                 for (const character in originalCharacters) {
+                    // Skip ARAM as it's not a real character
+                    if (character === 'ARAM') continue;
+                    
                     const characterData = originalCharacters[character];
                     const xp = characterData.xp || 0;
-                    const tier = getXPTier(xp);
                     
-                    const card = document.createElement('div');
-                    card.className = 'character-card';
-                    card.innerHTML = `
-                        <img src="Icons/${character}.png" alt="${character}" class="character-image">
-                        <h3>${character}</h3>
-                        <p>XP: ${xp}</p>
-                    `;
-                    
-                    card.style.backgroundColor = TIER_COLORS[tier];
-                    card.style.border = `2px solid ${TIER_COLORS[tier]}`;
-                    
-                    card.onclick = () => showRewardsModal(character, xp);
-                    container.appendChild(card);
+                    createCharacterCard(container, character, xp);
                 }
             }
         });
@@ -515,11 +378,26 @@
                 rewards = await getJuriRewards(user.uid);
             } else if (character === 'Zasalamel') {
                 rewards = await getZasalamelRewards(user.uid);
+            } else if (character === 'Shao Kahn') {
+                rewards = await getShaoKahnRewards(user.uid, database);
             } else {
                 rewards = await characterRewards; // Default rewards for other characters
             }
 
-            modalCharacterName.textContent = `${character} - ${tier} (${xp} XP)`;
+            const tierColor = TIER_COLORS[tier];
+            modalCharacterName.innerHTML = `
+                <div class="flex items-center">
+                    <img src="Icons/${character}.png" alt="${character}" class="w-10 h-10 rounded-full mr-3 border-2 border-${tierColor}">
+                    <div>
+                        <span>${character}</span>
+                        <div class="flex items-center">
+                            <span class="text-sm font-normal text-${tierColor} mr-2">${TIER_BADGES[tier]}</span>
+                            <span class="text-sm font-normal text-gray-400">${xp} XP</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
             rewardsGrid.innerHTML = '';
 
             // Get claimed rewards for this character
@@ -532,17 +410,32 @@
                 const isClaimed = claimedRewards[reward.rewardName];
                 
                 const rewardItem = document.createElement('div');
-                rewardItem.className = `reward-item ${isUnlocked ? 'unlocked' : 'locked'} ${isClaimed ? 'claimed' : ''}`;
+                rewardItem.className = `bg-dark/60 rounded-lg overflow-hidden transition-all duration-300 ${isUnlocked ? 'hover:shadow-md' : 'opacity-60'} ${isClaimed ? 'border-2 border-green-500' : ''}`;
                 
                 rewardItem.innerHTML = `
-                    <img src="${reward.rewardImage}" class="reward-image" alt="${reward.rewardName}">
-                    <div class="reward-info">
-                        <span class="reward-name">${reward.rewardName}</span>
-                        <span class="reward-type">${reward.rewardType}</span>
-                        <span class="reward-xp">${reward.xpRequired} XP Required</span>
+                    <div class="flex p-4">
+                        <div class="w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
+                            <img src="${reward.rewardImage}" class="w-full h-full object-cover" alt="${reward.rewardName}">
+                        </div>
+                        <div class="ml-4 flex-grow">
+                            <h3 class="font-semibold text-lg">${reward.rewardName}</h3>
+                            <p class="text-sm text-gray-400">${reward.rewardType}</p>
+                            <div class="flex items-center mt-1">
+                                <div class="w-full bg-gray-700 rounded-full h-1.5 mr-2">
+                                    <div class="bg-accent h-1.5 rounded-full" style="width: ${Math.min(100, (xp / reward.xpRequired) * 100)}%"></div>
+                                </div>
+                                <span class="text-xs whitespace-nowrap ${isUnlocked ? 'text-green-400' : 'text-gray-400'}">${reward.xpRequired} XP</span>
+                            </div>
+                        </div>
                     </div>
-                    ${isUnlocked && !isClaimed ? '<button class="claim-button">Claim</button>' : ''}
-                    ${isClaimed ? '<span class="claimed-text">Claimed</span>' : ''}
+                    <div class="px-4 pb-4 flex justify-end">
+                        ${isUnlocked && !isClaimed ? 
+                            `<button class="claim-button bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-md text-sm font-medium transition-colors" tabindex="0">Claim Reward</button>` : 
+                            isClaimed ? 
+                            `<span class="text-green-500 text-sm font-medium">✓ Claimed</span>` : 
+                            `<span class="text-gray-500 text-sm">${reward.xpRequired - xp} XP needed</span>`
+                        }
+                    </div>
                 `;
 
                 if (isUnlocked && !isClaimed) {
@@ -551,12 +444,21 @@
                         await claimReward(database, user.uid, reward, character);
                         showRewardsModal(character, xp); // Refresh modal
                     };
+                    
+                    // Add keyboard support
+                    claimButton.addEventListener('keydown', async (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            await claimReward(database, user.uid, reward, character);
+                            showRewardsModal(character, xp); // Refresh modal
+                        }
+                    });
                 }
 
                 rewardsGrid.appendChild(rewardItem);
             });
 
-            modal.style.display = 'block';
+            modal.style.display = 'flex';
         }
     
         // Close modal when clicking the X
@@ -571,6 +473,13 @@
                 modal.style.display = 'none';
             }
         }
+        
+        // Add keyboard support for closing modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('rewards-modal').style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>

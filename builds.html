@@ -490,6 +490,42 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .patch-selector {
+            margin-right: 10px;
+        }
+
+        .patch-dropdown {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .patch-dropdown:hover {
+            background: var(--item-hover);
+        }
+
+        .patch-dropdown:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .no-builds-message {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+            font-size: 1.2em;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            border: 1px dashed var(--border-color);
+            margin: 20px auto;
+            max-width: 500px;
+        }
     </style>
 </head>
 <body>
@@ -556,6 +592,18 @@
             <div class="builds-header">
                 <div class="builds-title">Popular Builds</div>
                 <div class="filter-buttons">
+                    <div class="patch-selector">
+                        <select id="patch-selector" class="patch-dropdown">
+                            <option value="2.0">Patch 2.0</option>
+                            <option value="2.1.1">Patch 2.1.1 (Season 2 Beta)</option>
+                            <option value="1.7">Patch 1.7</option>
+                            <option value="1.5">Patch 1.5</option>
+                            <option value="1.4">Patch 1.4</option>
+                            <option value="1.3">Patch 1.3</option>
+                            <option value="1.2">Patch 1.2</option>
+                            <option value="1.1">Patch 1.1</option>
+                        </select>
+                    </div>
                     <button class="filter-button active" data-filter="popular">
                         <i class="fas fa-fire"></i>
                         Popular
@@ -606,7 +654,7 @@
         // Global variables
         let selectedCharacter = null;
         let currentFilter = 'popular';
-        const PATCH_VERSION = '2.1.1';
+        let currentPatchVersion = '2.0';
 
         // Initialize auth state
         onAuthStateChanged(auth, (user) => {
@@ -683,7 +731,7 @@
             buildsGrid.innerHTML = '';
 
             try {
-                const safePatchVersion = PATCH_VERSION.replace(/\./g, '_');
+                const safePatchVersion = currentPatchVersion.replace(/\./g, '_');
                 const buildsRef = ref(database, `builds/${safePatchVersion}`);
                 const snapshot = await get(buildsRef);
                 
@@ -707,9 +755,16 @@
                         const card = createBuildCard(build);
                         buildsGrid.appendChild(card);
                     });
+
+                    if (builds.length === 0) {
+                        buildsGrid.innerHTML = `<div class="no-builds-message">No builds found for ${character} in Patch ${currentPatchVersion}.</div>`;
+                    }
+                } else {
+                    buildsGrid.innerHTML = `<div class="no-builds-message">No builds found for ${character} in Patch ${currentPatchVersion}.</div>`;
                 }
             } catch (error) {
                 console.error('Error loading builds:', error);
+                buildsGrid.innerHTML = `<div class="no-builds-message">Error loading builds. Please try again.</div>`;
             }
         }
 
@@ -741,7 +796,7 @@
                     <div class="build-name">${build.name}</div>
                     <div class="build-meta">
                         <div class="build-creator">by ${build.creatorName}</div>
-                        <div class="build-patch">Patch ${PATCH_VERSION}</div>
+                        <div class="build-patch">Patch ${build.patch || currentPatchVersion}</div>
                     </div>
                 </div>
                 <div class="build-items">
@@ -876,13 +931,21 @@
             });
         });
 
+        // Patch selector functionality
+        document.getElementById('patch-selector').addEventListener('change', (e) => {
+            currentPatchVersion = e.target.value;
+            if (selectedCharacter) {
+                loadBuilds(selectedCharacter);
+            }
+        });
+
         // Like build functionality
         window.likeBuild = async function(buildId) {
             try {
                 const user = auth.currentUser;
                 if (!user) return;
 
-                const safePatchVersion = PATCH_VERSION.replace(/\./g, '_');
+                const safePatchVersion = currentPatchVersion.replace(/\./g, '_');
                 const buildRef = ref(database, `builds/${safePatchVersion}/${buildId}`);
                 const snapshot = await get(buildRef);
                 
@@ -904,7 +967,7 @@
         // Copy build functionality
         window.copyBuild = async function(buildId) {
             try {
-                const safePatchVersion = PATCH_VERSION.replace(/\./g, '_');
+                const safePatchVersion = currentPatchVersion.replace(/\./g, '_');
                 const buildRef = ref(database, `builds/${safePatchVersion}/${buildId}`);
                 const snapshot = await get(buildRef);
                 
@@ -970,6 +1033,14 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadCharacters();
+            
+            // Set initial patch version from URL if provided
+            const urlParams = new URLSearchParams(window.location.search);
+            const patchParam = urlParams.get('patch');
+            if (patchParam) {
+                currentPatchVersion = patchParam;
+                document.getElementById('patch-selector').value = patchParam;
+            }
         });
     </script>
 </body>

@@ -50,11 +50,11 @@
                     <span class="nav-text">Event</span>
                     <div class="nav-indicator"></div>
                 </a>
-                <a href="build-planner.html" class="nav-link">
+                <a href="#" class="nav-link" onclick="toggleBuildWindow(event)">
                     <div class="nav-icon">
                         <i class="fas fa-hammer"></i>
                     </div>
-                    <span class="nav-text">Build Planner</span>
+                    <span class="nav-text">Build</span>
                     <div class="nav-indicator"></div>
                 </a>
                 <a href="Team Builder.html" class="nav-link">
@@ -94,7 +94,7 @@
         <div class="side-buttons">
             <!-- Changelog Button -->
             <div class="side-button" onclick="window.location.href='changelog.html'">
-                <img src="Default Splash/Kokoro.png" alt="Changelog">
+                <img src="Default Splash/Scorpion.png" alt="Changelog">
                 <div class="button-content">
                     <h3 class="button-title">Changelog</h3>
                 </div>
@@ -115,7 +115,7 @@
             </div>
             <!-- Battlepass Button -->
             <div class="side-button" onclick="window.location.href='battlepass.html'">
-                <img src="Event/Celestial Protectors Event.webp" alt="Battlepass">
+                <img src="Event/Battleborn Event.webp" alt="Battlepass">
                 <div class="button-content">
                     <h3 class="button-title">Battlepass</h3>
                 </div>
@@ -390,31 +390,13 @@
                         </div>
                     </div>
 
-                    <!-- Girl Power Title -->
-                    <div class="qp-store-item" data-item-name="girl_power" data-item-type="title">
+                    <!-- Battleborn Scythe Icon -->
+                    <div class="qp-store-item" data-item-name="battleborn_scythe" data-item-type="icon">
                         <div class="item-preview">
-                            <img src="titles/titleimage.jpeg" alt="Girl Power Title">
+                            <img src="Icons/Profile/battleborn_scythe.png" alt="Battleborn Scythe Icon">
                         </div>
                         <div class="item-details">
-                            <h3 class="item-name">Girl Power Title</h3>
-                            <div class="item-price">
-                                <img src="res/img/qp.png" alt="QP">
-                                <span>750</span>
-                            </div>
-                            <button class="purchase-btn" onclick="purchaseItem(this)">
-                                <span>Purchase</span>
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Celestial Protector Emblem -->
-                    <div class="qp-store-item" data-item-name="celestial_protector_emblem" data-item-type="icon">
-                        <div class="item-preview">
-                            <img src="Icons/Profile/Celestial_Protector_Emblem.png" alt="Celestial Protector Emblem">
-                        </div>
-                        <div class="item-details">
-                            <h3 class="item-name">Celestial Protector Emblem</h3>
+                            <h3 class="item-name">Battleborn Scythe Icon</h3>
                             <div class="item-price">
                                 <img src="res/img/qp.png" alt="QP">
                                 <span>500</span>
@@ -426,16 +408,52 @@
                         </div>
                     </div>
 
-                    <!-- 500 FM -->
-                    <div class="qp-store-item" data-item-name="fm_reward" data-item-type="fm">
+                    <!-- Battleborn Title -->
+                    <div class="qp-store-item" data-item-name="battleborn" data-item-type="title">
                         <div class="item-preview">
-                            <img src="res/img/fm.png" alt="Fighter Money">
+                            <img src="titles/titleimage.jpeg" alt="Battleborn Title">
                         </div>
                         <div class="item-details">
-                            <h3 class="item-name">500 FM</h3>
+                            <h3 class="item-name">Battleborn Title</h3>
                             <div class="item-price">
                                 <img src="res/img/qp.png" alt="QP">
-                                <span>2000</span>
+                                <span>750</span>
+                            </div>
+                            <button class="purchase-btn" onclick="purchaseItem(this)">
+                                <span>Purchase</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Shao Kahn Character Unlock -->
+                    <div class="qp-store-item" data-item-name="Shao Kahn" data-item-type="character">
+                        <div class="item-preview">
+                            <img src="Icons/Shao Kahn.png" alt="Shao Kahn">
+                        </div>
+                        <div class="item-details">
+                            <h3 class="item-name">Shao Kahn Unlock</h3>
+                            <div class="item-price">
+                                <img src="res/img/qp.png" alt="QP">
+                                <span>400</span>
+                            </div>
+                            <button class="purchase-btn" onclick="purchaseItem(this)">
+                                <span>Purchase</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Shao Kahn Smirk Sticker -->
+                    <div class="qp-store-item" data-item-name="shao_kahn_smirk" data-item-type="sticker">
+                        <div class="item-preview">
+                            <img src="Stickers/shao_kahn_smirk.png" alt="Shao Kahn Smirk">
+                        </div>
+                        <div class="item-details">
+                            <h3 class="item-name">Shao Kahn Smirk</h3>
+                            <div class="item-price">
+                                <img src="res/img/qp.png" alt="QP">
+                                <span>650</span>
                             </div>
                             <button class="purchase-btn" onclick="purchaseItem(this)">
                                 <span>Purchase</span>
@@ -464,6 +482,44 @@
                                 <i class="fas fa-arrow-right"></i>
                             </button>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Build Window -->
+        <div id="build-window" class="build-modal">
+            <div class="build-modal-content">
+                <div class="build-header">
+                    <h2>
+                        <i class="fas fa-hammer"></i>
+                        Build Menu
+                    </h2>
+                    <button class="build-close" onclick="closeBuildWindow()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="build-content">
+                    <div class="build-options">
+                        <a href="builds.html" class="build-option">
+                            <div class="build-option-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="build-option-info">
+                                <h3>Builds</h3>
+                                <p>View and share character builds</p>
+                            </div>
+                        </a>
+                        <a href="build-planner.html" class="build-option">
+                            <div class="build-option-icon">
+                                <i class="fas fa-hammer"></i>
+                            </div>
+                            <div class="build-option-info">
+                                <h3>Build Planner</h3>
+                                <p>Create and plan your builds</p>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -874,6 +930,263 @@
                     font-size: 1.8em;
                 }
             }
+
+            /* Build Window Styles */
+            .build-modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.85);
+                backdrop-filter: blur(10px);
+                z-index: 2000;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .build-modal.show {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .build-modal-content {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.95);
+                width: 90%;
+                max-width: 600px;
+                background: rgba(20, 20, 35, 0.95);
+                border-radius: 24px;
+                overflow: hidden;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            }
+
+            .build-modal.show .build-modal-content {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            .build-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 24px;
+                border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+                position: relative;
+            }
+
+            .build-header::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                width: 100px;
+                height: 2px;
+                background: linear-gradient(90deg, #9b59b6, #3498db);
+            }
+
+            .build-header h2 {
+                font-size: 1.8em;
+                font-weight: 700;
+                color: #fff;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .build-close {
+                background: none;
+                border: none;
+                color: rgba(255, 255, 255, 0.6);
+                font-size: 1.5em;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .build-close:hover {
+                color: #fff;
+                transform: rotate(90deg);
+            }
+
+            .build-content {
+                padding: 24px;
+            }
+
+            .build-options {
+                display: grid;
+                gap: 16px;
+            }
+
+            .build-option {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                padding: 20px;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 16px;
+                transition: all 0.3s;
+                text-decoration: none;
+                color: #fff;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .build-option:hover {
+                background: rgba(255, 255, 255, 0.1);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 20px rgba(155, 89, 182, 0.2);
+            }
+
+            .build-option-icon {
+                width: 48px;
+                height: 48px;
+                background: linear-gradient(135deg, #9b59b6, #3498db);
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5em;
+            }
+
+            .build-option-info h3 {
+                font-size: 1.2em;
+                margin-bottom: 4px;
+            }
+
+            .build-option-info p {
+                color: rgba(255, 255, 255, 0.6);
+                font-size: 0.9em;
+            }
+
+            @media (max-width: 480px) {
+                .build-modal-content {
+                    width: 95%;
+                }
+
+                .build-option {
+                    padding: 16px;
+                }
+
+                .build-option-icon {
+                    width: 40px;
+                    height: 40px;
+                    font-size: 1.2em;
+                }
+
+                .build-option-info h3 {
+                    font-size: 1.1em;
+                }
+
+                .build-option-info p {
+                    font-size: 0.8em;
+                }
+            }
+
+            .quest-reward {
+                display: flex;
+                align-items: center;
+                background: rgba(255, 255, 255, 0.1);
+                padding: 5px 10px;
+                border-radius: 15px;
+                margin-right: 10px;
+                font-size: 0.9em;
+            }
+
+            .quest-reward i, .quest-reward img {
+                margin-right: 5px;
+            }
+
+            .quest-reward[data-type="skin"] {
+                background: linear-gradient(135deg, #9b59b6, #3498db);
+                color: white;
+                padding: 5px 12px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            }
+
+            .quest-reward[data-type="skin"] i {
+                color: #ffeb3b;
+            }
+            
+            /* Tooltip for skin rewards */
+            .quest-reward[data-type="skin"] {
+                position: relative;
+                cursor: pointer;
+                padding-right: 20px;
+            }
+            
+            .quest-reward[data-type="skin"]::after {
+                content: '\f06e';
+                font-family: 'Font Awesome 5 Free';
+                position: absolute;
+                right: 6px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 0.9em;
+                color: #ffeb3b;
+                opacity: 0.8;
+            }
+            
+            .quest-reward[data-type="skin"]::before {
+                content: 'Hover to preview';
+                position: absolute;
+                bottom: -25px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.7);
+                color: #fff;
+                padding: 3px 8px;
+                border-radius: 4px;
+                font-size: 0.8em;
+                white-space: nowrap;
+                opacity: 0;
+                transition: opacity 0.2s;
+                pointer-events: none;
+            }
+            
+            .quest-reward[data-type="skin"]:hover::before {
+                opacity: 1;
+            }
+            
+            .quest-reward[data-type="skin"]:hover::after {
+                content: attr(data-skin-name);
+                position: absolute;
+                top: -180px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 240px;
+                height: 170px;
+                background-size: cover;
+                background-position: center;
+                border: 2px solid #9b59b6;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                padding-top: 140px;
+                color: white;
+                text-align: center;
+                font-weight: bold;
+                text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+                background-color: #1a1a2e;
+                right: auto;
+                opacity: 1;
+            }
+            
+            .quest-reward[data-type="skin"][data-skin-name="Battleborn Talim"]:hover::after {
+                background-image: url('Loading Screen/Battleborn Talim.png');
+                background-color: #1a1a2e;
+            }
+            
+            /* Fallback for any skin that might not have an image */
+            .quest-reward[data-type="skin"]:not([data-skin-name="Battleborn Talim"]):hover::after {
+                background-image: url('Icons/Talim.png');
+                background-size: 50%;
+                background-repeat: no-repeat;
+                background-position: center 30%;
+            }
         </style>
 
     <script type="module">
@@ -935,6 +1248,12 @@
                         } else if (itemType === 'title' && userData.titles && userData.titles[itemName]) {
                             isOwned = true;
                         } else if (itemType === 'skin' && userData.skins && userData.skins[itemName]) {
+                            isOwned = true;
+                        } else if (itemType === 'icon' && userData.Icons && userData.Icons[itemName]) {
+                            isOwned = true;
+                        } else if (itemType === 'lootbox' && userData.freelootbox && userData.freelootbox[itemName]) {
+                            isOwned = true;
+                        } else if (itemType === 'character' && userData.characters && userData.characters[itemName]) {
                             isOwned = true;
                         }
 
@@ -1001,6 +1320,28 @@
                             return;
                         }
                         break;
+                    case 'character':
+                        price = 400;
+                        if (userData.characters && userData.characters[itemName]) {
+                            alert('You already own this character!');
+                            return;
+                        }
+                        break;
+                    case 'sticker':
+                        // Get price from the item element
+                        price = parseInt(item.querySelector('.item-price span').textContent);
+                        if (userData.Stickers && userData.Stickers[itemName]) {
+                            alert('You already own this sticker!');
+                            return;
+                        }
+                        break;
+                    case 'skin':
+                        price = 1000; // Default price for skins
+                        if (userData.skins && userData.skins[itemName]) {
+                            alert('You already own this skin!');
+                            return;
+                        }
+                        break;
                     case 'fm':
                         price = 2000;
                         break;
@@ -1029,6 +1370,15 @@
                         break;
                     case 'icon':
                         updates[`Icons/${itemName}`] = 1;
+                        break;
+                    case 'character':
+                        updates[`characters/${itemName}`] = true;
+                        break;
+                    case 'sticker':
+                        updates[`Stickers/${itemName}`] = 1;
+                        break;
+                    case 'skin':
+                        updates[`skins/${itemName}`] = itemName;
                         break;
                     case 'fm':
                         updates['FM'] = (userData.FM || 0) + 500;
@@ -1244,7 +1594,9 @@
                 'Blanka.png', 'Nina.png', 'Ayane.png', 'Siegfried.png', 'Shoma.png', 
                 'Juri.png', 'Sub Zero.png', 'Christie.png', 'Kokoro.png', 'Eagle.png',
                 'Sophitia.png', 'Shizumaru.png', 'Kagome.png', 'Kabal.png', 'Kuma.png',
-                'Alice.png', 'Shinnok.png', 'FANG.png', 'Lili.png', 'Mega Man.png', 'Mai.png'
+                'Alice.png', 'Shinnok.png', 'FANG.png', 'Lili.png', 'Mega Man.png', 'Mai.png',
+                'Zasalamel.png', 'Shao Kahn.png'
+            
             ];
 
             const user = auth.currentUser;
@@ -1670,8 +2022,8 @@
 
             // Determine time display text
             let timeDisplay = '';
-            if (quest.id === 'win_streak' || quest.id === 'bot_lane_games' || quest.id === 'love_day_win') {
-                timeDisplay = 'Repeatable Quest';
+            if (quest.id === 'win_streak' || quest.id === 'bot_lane_games' || quest.id === 'love_day_win' || quest.id === 'battleborn_champion') {
+                timeDisplay = quest.id === 'battleborn_champion' ? 'One-time Quest' : 'Repeatable Quest';
             } else if (quest.lastReset) {
                 const resetTime = quest.lastReset + 64800000; // 18 hours in milliseconds
                 const currentTime = Date.now();
@@ -1702,11 +2054,11 @@
                     </div>
                     <div class="quest-rewards">
                         ${quest.rewards.map(reward => `
-                            <div class="quest-reward">
+                            <div class="quest-reward" data-type="${reward.type}" ${reward.type === 'skin' ? `data-skin-name="${reward.name}"` : ''}>
                                 ${reward.icon.startsWith('res/') ? 
                                     `<img src="${reward.icon}" alt="QP" class="reward-icon">` :
                                     `<i class="fas ${reward.icon}"></i>`}
-                                <span>${reward.amount || reward.amounts?.[0]}</span>
+                                <span>${reward.type === 'skin' ? reward.name : reward.amount || reward.amounts?.[0]}</span>
                             </div>
                         `).join('')}
                     </div>
@@ -1791,6 +2143,23 @@
                         const currentCM = userData.CM || 0;
                         updates['CM'] = currentCM + reward.amount;
                         console.log('Adding CM reward:', reward.amount);
+                    } else if (reward.type === 'skin' && reward.name) {
+                        // Add the skin to the user's collection
+                        updates[`skins/${reward.name}`] = reward.name;
+                        console.log('Adding skin reward:', reward.name);
+                        
+                        // Show a success message for the skin reward
+                        const successMsg = document.createElement('div');
+                        successMsg.className = 'purchase-success';
+                        successMsg.innerHTML = `
+                            <i class="fas fa-check-circle"></i>
+                            Unlocked skin: ${reward.name}!
+                        `;
+                        document.body.appendChild(successMsg);
+                        
+                        setTimeout(() => {
+                            successMsg.remove();
+                        }, 3000);
                     }
                 }
                 
@@ -1830,6 +2199,40 @@
                 console.error('Error claiming quest reward:', error);
             }
         };
+
+        // Build Window Functions
+        window.toggleBuildWindow = function(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            const buildWindow = document.getElementById('build-window');
+            if (!buildWindow.classList.contains('show')) {
+                buildWindow.style.display = 'block';
+                // Trigger reflow
+                buildWindow.offsetHeight;
+                buildWindow.classList.add('show');
+            } else {
+                closeBuildWindow();
+            }
+        };
+
+        window.closeBuildWindow = function() {
+            const buildWindow = document.getElementById('build-window');
+            buildWindow.classList.remove('show');
+            // Wait for animation to complete before hiding
+            setTimeout(() => {
+                buildWindow.style.display = 'none';
+            }, 300);
+        };
+
+        // Close build window when clicking outside
+        window.addEventListener('click', function(event) {
+            const buildWindow = document.getElementById('build-window');
+            if (event.target === buildWindow) {
+                closeBuildWindow();
+            }
+        });
     </script>
     </div>
 </body>

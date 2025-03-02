@@ -21,6 +21,7 @@ export const profileIcons = {
         'Kokoro_Butterfly', 'Morrigan_Darkness', 'Neoncore_ErronBlack', 'Neoncore_SubZero',
         'Pajama_ChamCham', 'Pajama_Shoma', 'Pirate_Shoma', 'Primal_kid_Shoma', 'Primal_Scorpion',
         'Rainy_Day_Shinnok', 'Regal_Ayane_Emerald', 'Regal_Julia', 'Root', 'Schoolgirl_Julia',
-        'Summertime_Nina', 'Summertime_Shoma', 'Void_Akuma', 'Void_Blanka', 'Panda'
+        'Summertime_Nina', 'Summertime_Shoma', 'Void_Akuma', 'Void_Blanka', 'Panda',
+        'battleborn_scythe', 'battleborn_yugo', 'battleborn_ayane'
     ]
 }; 

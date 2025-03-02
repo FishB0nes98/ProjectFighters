@@ -463,5 +463,16 @@ export const skinToBaseCharacterMap = {
     'Celestial Protector Juri': 'Juri',
     'Celestial Protector Lili': 'Lili',
     'Celestial Protector R Mika': 'R Mika',
-    'Celestial Protector Sophitia': 'Sophitia'
+    'Celestial Protector Sophitia': 'Sophitia',
+    'Battleborn Zasalamel': 'Zasalamel',
+    'Battleborn Talim': 'Talim',
+    'Battleborn Yugo': 'Yugo',
+    'Battleborn Eagle': 'Eagle',
+    'Battleborn Ayane': 'Ayane',
+    'Thunderstrike Shao Kahn': 'Shao Kahn',
+    'Shao Kahn': 'Shao Kahn',
+    'Shao Kahn Demon': 'Shao Kahn',
+    'Shao Kahn Metal': 'Shao Kahn',
+    'Shao Kahn Molten': 'Shao Kahn',
+    'Glorious Julia': 'Julia'
 };
