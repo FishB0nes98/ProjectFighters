@@ -2,12 +2,11 @@
 export const questTypes = {
     daily: {
         title: 'Daily Quests',
-        resetInterval: 'daily',
-        maxActive: 3
+        resetInterval: 64800000, // 18 hours in milliseconds
+        maxActive: 2
     },
     special: {
         title: 'Special Quests',
-        resetInterval: null,
         maxActive: 5
     }
 };
@@ -16,18 +15,17 @@ export const questTypes = {
 export const questTemplates = {
     daily: [
         {
-            id: 'daily_games',
-            icon: 'fa-gamepad',
-            title: 'Daily Games',
-            description: 'Play 2 games',
+            id: 'gang_warfare',
+            icon: 'fa-fist-raised',
+            title: 'Gang Warfare',
+            description: 'Play 3 games',
             requirements: {
-                count: 2,
+                count: 3,
                 type: 'play'
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 50 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 100 }
             ],
-            resetInterval: 64800000, // 18 hours in milliseconds
             defaultData: {
                 progress: 0,
                 completed: false,
@@ -36,18 +34,17 @@ export const questTemplates = {
             }
         },
         {
-            id: 'combat_prowess',
-            icon: 'fa-fist-raised',
-            title: 'Combat Prowess',
-            description: 'Deal 10,000 damage to enemy champions',
+            id: 'territory_control',
+            icon: 'fa-fire',
+            title: 'Territory Control',
+            description: 'Deal 15,000 damage to enemy champions',
             requirements: {
-                count: 10000,
+                count: 15000,
                 type: 'damage'
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 60 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 100 }
             ],
-            resetInterval: 68400000, // 19 hours in milliseconds
             defaultData: {
                 progress: 0,
                 completed: false,
@@ -55,41 +52,20 @@ export const questTemplates = {
                 lastReset: null,
                 totalDamage: 0
             }
-        },
-        {
-            id: 'team_player',
-            icon: 'fa-users',
-            title: 'Team Player',
-            description: 'Get 15 assists in games',
-            requirements: {
-                count: 15,
-                type: 'assists'
-            },
-            rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 55 }
-            ],
-            resetInterval: 68400000, // 19 hours in milliseconds
-            defaultData: {
-                progress: 0,
-                completed: false,
-                claimed: false,
-                lastReset: null,
-                totalAssists: 0
-            }
         }
     ],
     special: [
         {
-            id: 'win_streak',
+            id: 'street_enforcer',
             icon: 'fa-trophy',
-            title: 'Win Streak',
-            description: 'Win 2 games in a row',
+            title: 'Street Enforcer',
+            description: 'Win 3 games in a row',
             requirements: {
-                count: 2,
+                count: 3,
                 type: 'win_streak'
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 75 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 30 }
             ],
             repeatable: true,
             defaultData: {
@@ -101,58 +77,16 @@ export const questTemplates = {
             }
         },
         {
-            id: 'battleborn_champion',
-            icon: 'fa-crown',
-            title: 'Battleborn Champion',
-            description: 'Win 50 SoloQ games',
-            requirements: {
-                count: 50,
-                type: 'soloq_wins'
-            },
-            rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 200 },
-                { type: 'skin', icon: 'fa-user', name: 'Battleborn Talim' }
-            ],
-            repeatable: false,
-            defaultData: {
-                progress: 0,
-                completed: false,
-                claimed: false,
-                wins: 0
-            }
-        },
-        {
-            id: 'champion_mastery',
-            icon: 'fa-star',
-            title: 'Champion Mastery',
-            description: 'Play 5 games with the same champion',
-            requirements: {
-                count: 5,
-                type: 'play_champion'
-            },
-            rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 80 }
-            ],
-            repeatable: true,
-            defaultData: {
-                progress: 0,
-                completed: false,
-                claimed: false,
-                champion: null,
-                completionCount: 0
-            }
-        },
-        {
-            id: 'multikill_hunter',
+            id: 'gang_hitman',
             icon: 'fa-skull-crossbones',
-            title: 'Multikill Hunter',
-            description: 'Get 3 multikills in games',
+            title: 'Gang Hitman',
+            description: 'Get 2 multikills in games',
             requirements: {
-                count: 3,
+                count: 2,
                 type: 'multikills'
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 90 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 25 }
             ],
             repeatable: true,
             defaultData: {
@@ -164,16 +98,16 @@ export const questTemplates = {
             }
         },
         {
-            id: 'objective_taker',
+            id: 'turf_war',
             icon: 'fa-flag',
-            title: 'Objective Taker',
-            description: 'Participate in taking 10 objectives (towers, dragons, etc.)',
+            title: 'Turf War',
+            description: 'Participate in taking 8 objectives (towers, dragons, etc.)',
             requirements: {
-                count: 10,
+                count: 8,
                 type: 'objectives'
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 85 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 35 }
             ],
             repeatable: true,
             defaultData: {
@@ -185,16 +119,16 @@ export const questTemplates = {
             }
         },
         {
-            id: 'survival_expert',
-            icon: 'fa-shield-alt',
-            title: 'Survival Expert',
-            description: 'Complete 3 games with 3 or fewer deaths',
+            id: 'gang_domination',
+            icon: 'fa-crown',
+            title: 'Gang Domination',
+            description: 'Complete 2 games with 8+ kills and 4 or fewer deaths',
             requirements: {
-                count: 3,
-                type: 'low_deaths'
+                count: 2,
+                type: 'high_kda'
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 70 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 40 }
             ],
             repeatable: true,
             defaultData: {
@@ -202,6 +136,27 @@ export const questTemplates = {
                 completed: false,
                 claimed: false,
                 games: 0,
+                completionCount: 0
+            }
+        },
+        {
+            id: 'gang_loyalty',
+            icon: 'fa-star',
+            title: 'Gang Loyalty',
+            description: 'Play 4 games with the same champion',
+            requirements: {
+                count: 4,
+                type: 'play_champion'
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 35 }
+            ],
+            repeatable: true,
+            defaultData: {
+                progress: 0,
+                completed: false,
+                claimed: false,
+                champion: null,
                 completionCount: 0
             }
         }
@@ -243,7 +198,15 @@ export function generateDailyQuests(userLevel) {
 }
 
 export function generateSpecialQuests(userLevel, activeEvents) {
-    // This function will be implemented to generate special quests based on active events
-    // For now, return sample quests
-    return questTemplates.special;
+    // Filter out completed non-repeatable quests
+    const availableQuests = questTemplates.special.filter(quest => {
+        // If quest is repeatable, always include it
+        if (quest.repeatable) return true;
+        
+        // For non-repeatable quests, only include if not completed
+        const questData = getUserQuestData(quest.id); // You'll need to implement this function
+        return !questData || !questData.completed;
+    });
+    
+    return availableQuests;
 } 

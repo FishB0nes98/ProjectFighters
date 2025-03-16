@@ -47,6 +47,7 @@ const skinReference = {
         { name: "Blossom Cham Cham", price: 2000, imagePath: "Skins/Blossom Cham Cham.png" }
     ],
     Reptile: [
+        { name: "Bandito Reptile", price: 1000, imagePath: "Skins/Bandito Reptile.jpg" },
         { name: "Lunar Festival Reptile", price: "UNAVAILABLE", imagePath: "Skins/Lunar Festival Reptile.jpeg" },
         { name: "Rainy Day Reptile", price: 1000, imagePath: "Skins/Rainy Day Reptile.jfif" },
         { name: "Goth Reptile", price: 1000, imagePath: "Skins/Goth Reptile.png" },
@@ -87,6 +88,7 @@ const skinReference = {
         { name: "Infernal Scorpion", price: 2000, imagePath: "Skins/Infernal Scorpion.png" }
     ],
     Peacock: [
+        { name: "Gangster Peacock", price: 1000, imagePath: "Skins/Gangster Peacock.jfif" },
         { name: "Voidborn Peacock", price: 2000, imagePath: "Skins/Voidborn Peacock.jfif" },
         { name: "Captain Peacock", price: 3000, imagePath: "Skins/Captain Peacock.png" },
         { name: "Arctic Huntress Peacock", price: 2000, imagePath: "Skins/Arctic Huntress Peacock.png" },
@@ -159,6 +161,7 @@ const skinReference = {
         { name: "Officer Noel", price: 1000, imagePath: "Skins/Officer Noel.jpeg" }
     ],
     Blanka: [
+        { name: "Gangster Blanka", price: 1000, imagePath: "Skins/Gangster Blanka.jpg" },
         { name: "Jack O Blanka", price: "UNAVAILABLE", imagePath: "Skins/Jack O Blanka.jpeg" },
         { name: "Voidborn Blanka", price: 2000, imagePath: "Skins/Voidborn Blanka.jfif" },
         { name: "Pajama Party Blanka", price: 1000, imagePath: "Skins/Pajama Party Blanka.jpeg" },
@@ -197,6 +200,7 @@ const skinReference = {
         { name: "Summertime Shoma", price: 2000, imagePath: "Skins/Summertime Shoma.png" }
     ],
     Juri: [
+        { name: "Gangster Juri", price: 1000, imagePath: "Skins/Gangster Juri.jpg" },
         { name: "Celestial Protector Juri", price: 2000, imagePath: "Skins/Celestial Protector Juri.jpeg" },
         { name: "Winter Festival Juri", price: "UNAVAILABLE", imagePath: "Skins/Winter Festival Juri.jpeg" },
         { name: "Primal Warrior Juri", price: 1000, imagePath: "Skins/Primal Warrior Juri.png" },
@@ -219,6 +223,7 @@ const skinReference = {
            
     ],
     Eagle: [
+        { name: "Bandito Eagle", price: 1000, imagePath: "Skins/Bandito Eagle.jpg" },
         { name: "Battleborn Eagle", price: 2000, imagePath: "Skins/Battleborn Eagle.jpeg" },
         { name: "High Elf Eagle", price: 2000, imagePath: "Skins/High Elf Eagle.png" },
         { name: "Goth Eagle", price: 2000, imagePath: "Skins/Goth Eagle.png" }
@@ -281,6 +286,7 @@ const skinReference = {
         { name: "Feather Dancer Mai", price: 1000, imagePath: "Skins/Feather Dancer Mai.jpeg" }
     ],
     Shinnok: [
+        { name: "Bandito Shinnok", price: 1000, imagePath: "Skins/Bandito Shinnok.jpg" },
         { name: "Atlantean Shinnok", price: 2000, imagePath: "Skins/Atlantean Shinnok.jpeg" },
         { name: "Rainy Day Shinnok", price: 2000, imagePath: "Skins/Rainy Day Shinnok.jpeg" }
     ],

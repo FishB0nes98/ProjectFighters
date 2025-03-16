@@ -94,7 +94,7 @@
         <div class="side-buttons">
             <!-- Changelog Button -->
             <div class="side-button" onclick="window.location.href='changelog.html'">
-                <img src="Default Splash/Scorpion.png" alt="Changelog">
+                <img src="Default Splash/Juri.png" alt="Changelog">
                 <div class="button-content">
                     <h3 class="button-title">Changelog</h3>
                 </div>
@@ -115,7 +115,7 @@
             </div>
             <!-- Battlepass Button -->
             <div class="side-button" onclick="window.location.href='battlepass.html'">
-                <img src="Event/Battleborn Event.webp" alt="Battlepass">
+                <img src="Event/Banditos and Gangsters event.webp" alt="Battlepass">
                 <div class="button-content">
                     <h3 class="button-title">Battlepass</h3>
                 </div>
@@ -390,16 +390,16 @@
                         </div>
                     </div>
 
-                    <!-- Battleborn Scythe Icon -->
-                    <div class="qp-store-item" data-item-name="battleborn_scythe" data-item-type="icon">
+                    <!-- Bandito Eagle -->
+                    <div class="qp-store-item" data-item-name="Bandito Eagle" data-item-type="character">
                         <div class="item-preview">
-                            <img src="Icons/Profile/battleborn_scythe.png" alt="Battleborn Scythe Icon">
+                            <img src="Skins/Bandito Eagle.jpg" alt="Bandito Eagle">
                         </div>
                         <div class="item-details">
-                            <h3 class="item-name">Battleborn Scythe Icon</h3>
+                            <h3 class="item-name">Bandito Eagle</h3>
                             <div class="item-price">
                                 <img src="res/img/qp.png" alt="QP">
-                                <span>500</span>
+                                <span>5000</span>
                             </div>
                             <button class="purchase-btn" onclick="purchaseItem(this)">
                                 <span>Purchase</span>
@@ -408,13 +408,31 @@
                         </div>
                     </div>
 
-                    <!-- Battleborn Title -->
-                    <div class="qp-store-item" data-item-name="battleborn" data-item-type="title">
+                    <!-- Gangster Title -->
+                    <div class="qp-store-item" data-item-name="gangster" data-item-type="title">
                         <div class="item-preview">
-                            <img src="titles/titleimage.jpeg" alt="Battleborn Title">
+                            <img src="titles/titleimage.jpeg" alt="Gangster Title">
                         </div>
                         <div class="item-details">
-                            <h3 class="item-name">Battleborn Title</h3>
+                            <h3 class="item-name">Gangster Title</h3>
+                            <div class="item-price">
+                                <img src="res/img/qp.png" alt="QP">
+                                <span>750</span>
+                            </div>
+                            <button class="purchase-btn" onclick="purchaseItem(this)">
+                                <span>Purchase</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Bandito Title -->
+                    <div class="qp-store-item" data-item-name="bandito" data-item-type="title">
+                        <div class="item-preview">
+                            <img src="titles/titleimage.jpeg" alt="Bandito Title">
+                        </div>
+                        <div class="item-details">
+                            <h3 class="item-name">Bandito Title</h3>
                             <div class="item-price">
                                 <img src="res/img/qp.png" alt="QP">
                                 <span>750</span>
@@ -435,7 +453,7 @@
                             <h3 class="item-name">Shao Kahn Unlock</h3>
                             <div class="item-price">
                                 <img src="res/img/qp.png" alt="QP">
-                                <span>400</span>
+                                <span>200</span>
                             </div>
                             <button class="purchase-btn" onclick="purchaseItem(this)">
                                 <span>Purchase</span>
@@ -444,13 +462,13 @@
                         </div>
                     </div>
 
-                    <!-- Shao Kahn Smirk Sticker -->
-                    <div class="qp-store-item" data-item-name="shao_kahn_smirk" data-item-type="sticker">
+                    <!-- Bandito Eagle Icon -->
+                    <div class="qp-store-item" data-item-name="bandito_eagle" data-item-type="icon">
                         <div class="item-preview">
-                            <img src="Stickers/shao_kahn_smirk.png" alt="Shao Kahn Smirk">
+                            <img src="Icons/Profile/bandito_eagle.webp" alt="Bandito Eagle Icon">
                         </div>
                         <div class="item-details">
-                            <h3 class="item-name">Shao Kahn Smirk</h3>
+                            <h3 class="item-name">Bandito Eagle Icon</h3>
                             <div class="item-price">
                                 <img src="res/img/qp.png" alt="QP">
                                 <span>650</span>
@@ -1526,11 +1544,45 @@
         function setProfileImage(primaryPath, fallbackPath) {
             const img = document.getElementById('profile-image');
             if (img) {
-                img.onerror = () => {
-                    img.onerror = null;
-                    img.src = fallbackPath;
+                // Extract the base name without extension
+                const getBasePath = (path) => {
+                    const lastDot = path.lastIndexOf('.');
+                    const lastSlash = path.lastIndexOf('/');
+                    if (lastDot > lastSlash) {
+                        return path.substring(0, lastDot);
+                    }
+                    return path;
                 };
-                img.src = primaryPath;
+                
+                const primaryBasePath = getBasePath(primaryPath);
+                const fallbackBasePath = getBasePath(fallbackPath);
+                const extensions = ['webp', 'png', 'jpg', 'jpeg', 'jfif'];
+                
+                // Try loading with different extensions
+                let extensionIndex = 0;
+                const tryNextExtension = () => {
+                    if (extensionIndex < extensions.length) {
+                        img.src = `${primaryBasePath}.${extensions[extensionIndex]}`;
+                        extensionIndex++;
+                    } else {
+                        // If all primary extensions fail, try fallback path with different extensions
+                        extensionIndex = 0;
+                        img.onerror = () => {
+                            if (extensionIndex < extensions.length) {
+                                img.src = `${fallbackBasePath}.${extensions[extensionIndex]}`;
+                                extensionIndex++;
+                            } else {
+                                // If all fallback extensions fail, use default icon
+                                img.src = 'Icons/default-icon.jpg';
+                                img.onerror = null;
+                            }
+                        };
+                        img.src = `${fallbackBasePath}.${extensions[0]}`;
+                    }
+                };
+                
+                img.onerror = tryNextExtension;
+                tryNextExtension();
             }
         }
 
@@ -1616,8 +1668,28 @@
                     const userIcons = iconSnapshot.val();
                     Object.entries(userIcons).forEach(([iconName, owned]) => {
                         if (owned === 1) {
-                            const iconFileName = `${iconName}.png`;
-                            createIconElement(iconFileName, iconFileName === currentIcon, true);
+                            // Try to find the icon with different extensions
+                            const extensions = ['webp', 'png', 'jpg', 'jpeg', 'jfif'];
+                            let iconFound = false;
+                            
+                            // First try to check if the file exists in the Profile directory
+                            for (const ext of extensions) {
+                                const img = new Image();
+                                img.onload = function() {
+                                    if (!iconFound) {
+                                        iconFound = true;
+                                        createIconElement(`${iconName}.${ext}`, `${iconName}.${ext}` === currentIcon, true);
+                                    }
+                                };
+                                img.src = `Icons/Profile/${iconName}.${ext}`;
+                            }
+                            
+                            // If no icon is found after a short delay, use a default extension
+                            setTimeout(() => {
+                                if (!iconFound) {
+                                    createIconElement(`${iconName}.png`, `${iconName}.png` === currentIcon, true);
+                                }
+                            }, 300);
                         }
                     });
                 }
@@ -1634,15 +1706,35 @@
             iconPreview.className = 'icon-preview';
 
             const img = document.createElement('img');
+            // Try to determine the file extension from the icon name
+            const fileExtension = icon.split('.').pop().toLowerCase();
+            const iconName = icon.replace(/\.(png|jpg|jpeg|webp|jfif)$/i, '');
+            
+            // Set initial source based on category and detected extension
             img.src = isSpecial ? `Icons/Profile/${icon}` : `Icons/${icon}`;
-            img.alt = icon.replace('.png', '');
-            img.onerror = () => {
-                img.src = isSpecial ? `Icons/${icon}` : `Icons/Profile/${icon}`;
+            img.alt = iconName;
+            
+            // Handle image loading errors by trying different extensions
+            img.onerror = function() {
+                // Try different paths and extensions if the image fails to load
+                if (this.src.includes('/Profile/')) {
+                    // If we're already looking in Profile folder, try the main Icons folder
+                    this.src = `Icons/${icon}`;
+                } else {
+                    // If we're in the main Icons folder, try Profile with different extensions
+                    const extensions = ['webp', 'png', 'jpg', 'jpeg', 'jfif'];
+                    for (const ext of extensions) {
+                        if (!this.src.endsWith(`.${ext}`)) {
+                            this.src = `Icons/Profile/${iconName}.${ext}`;
+                            return;
+                        }
+                    }
+                }
             };
 
             const name = document.createElement('div');
             name.className = 'icon-name';
-            name.textContent = icon.replace('.png', '');
+            name.textContent = iconName;
 
             if (isSpecial) {
                 const specialBadge = document.createElement('div');
@@ -1668,6 +1760,12 @@
                 const snapshot = await get(userRef);
                 if (snapshot.exists()) {
                     const userData = snapshot.val();
+                    
+                    // Extract the base name and extension
+                    const fileExtension = icon.split('.').pop().toLowerCase();
+                    const iconName = icon.replace(/\.(png|jpg|jpeg|webp|jfif)$/i, '');
+                    
+                    // Store just the base name with extension in the database
                     userData.icon = icon;
                     await set(userRef, userData);
 
@@ -1677,7 +1775,7 @@
                     });
                     selectedItem.classList.add('selected');
 
-                    // Update profile image
+                    // Update profile image with both possible paths
                     setProfileImage(`Icons/${icon}`, `Icons/Profile/${icon}`);
                     closeIconSelector();
                     console.log('Icon updated successfully');

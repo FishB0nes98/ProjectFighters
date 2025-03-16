@@ -775,7 +775,7 @@
                     skinItem.className = 'skin-item';
                     
                     const img = document.createElement('img');
-                    img.src = `Loading Screen/${skin}.png`;
+                    loadImage(img, `Loading Screen/${skin}`);
                     img.alt = skin;
                     
                     skinItem.appendChild(img);
@@ -794,7 +794,7 @@
         function setSkin(slot, skinName) {
             userProfile.selectedSkins[slot] = skinName;
             const skinImage = document.querySelector(`.skin-slot[data-slot="${slot}"] img`);
-            skinImage.src = `Loading Screen/${skinName}.png`;
+            loadImage(skinImage, `Loading Screen/${skinName}`);
             skinImage.alt = skinName;
 
             const userRef = ref(database, 'users/' + auth.currentUser.uid + '/selectedSkins');
@@ -811,7 +811,7 @@
                 const skinName = userProfile.selectedSkins[slot];
                 const skinImage = document.querySelector(`.skin-slot[data-slot="${slot}"] img`);
                 if (skinName) {
-                    skinImage.src = `Loading Screen/${skinName}.png`;
+                    loadImage(skinImage, `Loading Screen/${skinName}`);
                     skinImage.alt = skinName;
                 }
             });
@@ -876,6 +876,27 @@
                 loadStickers();
             }
         });
+
+        // Function to load images with multiple extensions
+        function loadImage(imgElement, basePath) {
+            const extensions = ['.png', '.jpg', '.jpeg', '.jfif'];
+            let found = false;
+            for (const ext of extensions) {
+                const img = new Image();
+                img.src = basePath + ext;
+                img.onload = () => {
+                    if (!found) {
+                        imgElement.src = img.src;
+                        found = true;
+                    }
+                };
+                img.onerror = () => {
+                    if (!found && ext === '.jfif') {
+                        imgElement.src = ''; // Clear src if not found after trying all extensions
+                    }
+                };
+            }
+        }
     </script>
 </body>
 </html>

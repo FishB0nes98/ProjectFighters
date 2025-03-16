@@ -789,14 +789,9 @@
                 (bundleName === 'CaptainTalim' && skins['Captain Talim'] === 1) ||
                 (bundleName === 'FeatherDancerMai' && skins['Feather Dancer Mai'] === 1) ||
                 (bundleName === 'PyromancerMegaMan' && skins['Pyromancer Mega Man'] === 1) ||
-                (bundleName === 'BattlebornBundle' && 
-                    skins['Battleborn Zasalamel'] === 1 && 
-                    skins['Battleborn Talim'] === 1 && 
-                    skins['Battleborn Yugo'] === 1 && 
-                    skins['Battleborn Eagle'] === 1 && 
-                    skins['Battleborn Ayane'] === 1) ||
-                (bundleName === 'BattlebornYugoBundle' && skins['Battleborn Yugo'] === 1) ||
-                (bundleName === 'SamuraiShizumaru' && skins['Samurai Shizumaru'] === 1)) {
+                (bundleName === 'RainyDayNoel' && skins['Rainy Day Noel'] === 1) ||
+                (bundleName === 'SacredCeremonyMorrigan' && skins['Sacred Ceremony Morrigan'] === 1) ||
+                (bundleName === 'SandSoldierBirdie' && skins['Sand Soldier Birdie'] === 1)) {
                 button.disabled = true;
                 button.textContent = 'Owned';
             }
@@ -851,7 +846,25 @@
             const userData = snapshot.val();
 
             // Handle different bundles
-            if (bundleName === 'BattlebornBundle') {
+            if (bundleName === 'GangstersVsBanditosBundle') {
+                updates[`skins/Gangster Juri`] = 1;
+                updates[`skins/Gangster Blanka`] = 1;
+                updates[`skins/Gangster Peacock`] = 1;
+                updates[`skins/Bandito Reptile`] = 1;
+                updates[`skins/Bandito Eagle`] = 1;
+                updates[`skins/Bandito Shinnok`] = 1;
+                updates[`Bundles/${bundleName}`] = 1;
+            } else if (bundleName === 'GangstersBundle') {
+                updates[`skins/Gangster Juri`] = 1;
+                updates[`skins/Gangster Blanka`] = 1;
+                updates[`skins/Gangster Peacock`] = 1;
+                updates[`Bundles/${bundleName}`] = 1;
+            } else if (bundleName === 'BanditosBundle') {
+                updates[`skins/Bandito Reptile`] = 1;
+                updates[`skins/Bandito Eagle`] = 1;
+                updates[`skins/Bandito Shinnok`] = 1;
+                updates[`Bundles/${bundleName}`] = 1;
+            } else if (bundleName === 'BattlebornBundle') {
                 updates[`skins/Battleborn Zasalamel`] = 1;
                 updates[`skins/Battleborn Talim`] = 1;
                 updates[`skins/Battleborn Yugo`] = 1;
@@ -862,14 +875,14 @@
                 updates[`skins/Battleborn Yugo`] = 1;
                 updates[`lootboxes/basic`] = (userData.lootboxes?.basic || 0) + 3;
                 updates[`Bundles/${bundleName}`] = 1;
-            } else if (bundleName === 'PyromancerMegaMan') {
-                updates[`skins/Pyromancer Mega Man`] = 1;
+            } else if (bundleName === 'RainyDayNoel') {
+                updates[`skins/Rainy Day Noel`] = 1;
                 updates[`Bundles/${bundleName}`] = 1;
             } else if (bundleName === 'SacredCeremonyMorrigan') {
                 updates[`skins/Sacred Ceremony Morrigan`] = 1;
                 updates[`Bundles/${bundleName}`] = 1;
-            } else if (bundleName === 'SamuraiShizumaru') {
-                updates[`skins/Samurai Shizumaru`] = 1;
+            } else if (bundleName === 'SandSoldierBirdie') {
+                updates[`skins/Sand Soldier Birdie`] = 1;
                 updates[`Bundles/${bundleName}`] = 1;
             }
 
@@ -1007,6 +1020,159 @@
         function showBundleDetails(bundleName) {
             let modalContent = '';
             switch (bundleName) {
+                case 'GangstersVsBanditosBundle':
+                    modalContent = `
+                        <div class="bundle-details">
+                            <h2>Gangsters vs Banditos Bundle</h2>
+                            <div class="bundle-grid">
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Gangster Juri.jpg" alt="Gangster Juri">
+                                    </div>
+                                    <h3>Juri</h3>
+                                    <p>Gangster Juri Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Gangster Blanka.jpg" alt="Gangster Blanka">
+                                    </div>
+                                    <h3>Blanka</h3>
+                                    <p>Gangster Blanka Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Gangster Peacock.jfif" alt="Gangster Peacock">
+                                    </div>
+                                    <h3>Peacock</h3>
+                                    <p>Gangster Peacock Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Bandito Reptile.jpg" alt="Bandito Reptile">
+                                    </div>
+                                    <h3>Reptile</h3>
+                                    <p>Bandito Reptile Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Bandito Eagle.jpg" alt="Bandito Eagle">
+                                    </div>
+                                    <h3>Eagle</h3>
+                                    <p>Bandito Eagle Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Bandito Shinnok.jpg" alt="Bandito Shinnok">
+                                    </div>
+                                    <h3>Shinnok</h3>
+                                    <p>Bandito Shinnok Skin</p>
+                                </div>
+                            </div>
+                            <div class="bundle-purchase">
+                                <div class="price-container">
+                                    <div class="original-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>6000</span>
+                                    </div>
+                                    <div class="price-divider"></div>
+                                    <div class="final-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>4800</span>
+                                    </div>
+                                </div>
+                                <button class="purchase-bundle-btn" data-bundle-name="GangstersVsBanditosBundle" onclick="purchaseBundle(this)">Purchase Bundle</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'GangstersBundle':
+                    modalContent = `
+                        <div class="bundle-details">
+                            <h2>Gangsters Bundle</h2>
+                            <div class="bundle-grid">
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Gangster Juri.jpg" alt="Gangster Juri">
+                                    </div>
+                                    <h3>Juri</h3>
+                                    <p>Gangster Juri Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Gangster Blanka.jpg" alt="Gangster Blanka">
+                                    </div>
+                                    <h3>Blanka</h3>
+                                    <p>Gangster Blanka Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Gangster Peacock.jfif" alt="Gangster Peacock">
+                                    </div>
+                                    <h3>Peacock</h3>
+                                    <p>Gangster Peacock Skin</p>
+                                </div>
+                            </div>
+                            <div class="bundle-purchase">
+                                <div class="price-container">
+                                    <div class="original-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>3000</span>
+                                    </div>
+                                    <div class="price-divider"></div>
+                                    <div class="final-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>2400</span>
+                                    </div>
+                                </div>
+                                <button class="purchase-bundle-btn" data-bundle-name="GangstersBundle" onclick="purchaseBundle(this)">Purchase Bundle</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'BanditosBundle':
+                    modalContent = `
+                        <div class="bundle-details">
+                            <h2>Banditos Bundle</h2>
+                            <div class="bundle-grid">
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Bandito Reptile.jpg" alt="Bandito Reptile">
+                                    </div>
+                                    <h3>Reptile</h3>
+                                    <p>Bandito Reptile Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Bandito Eagle.jpg" alt="Bandito Eagle">
+                                    </div>
+                                    <h3>Eagle</h3>
+                                    <p>Bandito Eagle Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Bandito Shinnok.jpg" alt="Bandito Shinnok">
+                                    </div>
+                                    <h3>Shinnok</h3>
+                                    <p>Bandito Shinnok Skin</p>
+                                </div>
+                            </div>
+                            <div class="bundle-purchase">
+                                <div class="price-container">
+                                    <div class="original-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>3000</span>
+                                    </div>
+                                    <div class="price-divider"></div>
+                                    <div class="final-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>2400</span>
+                                    </div>
+                                </div>
+                                <button class="purchase-bundle-btn" data-bundle-name="BanditosBundle" onclick="purchaseBundle(this)">Purchase Bundle</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
                 case 'BattlebornBundle':
                     modalContent = `
                         <div class="bundle-details">
@@ -1065,84 +1231,48 @@
                         </div>
                     `;
                     break;
-                case 'PyromancerMegaMan':
+                case 'RainyDayNoel':
                     modalContent = `
                         <div class="bundle-details">
-                            <h2>Pyromancer Mega Man</h2>
+                            <h2>Rainy Day Noel</h2>
                             <div class="bundle-grid">
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Pyromancer Mega Man.jpeg" alt="Pyromancer Mega Man">
+                                        <img src="Skins/Rainy Day Noel.jpeg" alt="Rainy Day Noel">
                                     </div>
-                                    <h3>Mega Man</h3>
-                                    <p>Pyromancer Mega Man Skin</p>
+                                    <h3>Noel</h3>
+                                    <p>Rainy Day Noel Skin</p>
                                 </div>
                             </div>
                             <div class="bundle-purchase">
                                 <div class="price-container">
                                     <div class="original-price">
                                         <img src="res/img/fm.png" alt="FM">
-                                        <span>2000</span>
+                                        <span>1000</span>
                                     </div>
                                     <div class="price-divider"></div>
                                     <div class="final-price">
                                         <img src="res/img/fm.png" alt="FM">
-                                        <span>800</span>
+                                        <span>450</span>
                                     </div>
                                 </div>
-                                <button class="purchase-bundle-btn" data-bundle-name="PyromancerMegaMan" onclick="purchaseBundle(this)">Purchase Bundle</button>
+                                <div class="discount-badge">-55%</div>
+                                <button class="purchase-bundle-btn" data-bundle-name="RainyDayNoel" onclick="purchaseBundle(this)">Purchase Bundle</button>
                             </div>
                         </div>
                     `;
                     break;
-                case 'BattlebornYugoBundle':
+                case 'SandSoldierBirdie':
                     modalContent = `
                         <div class="bundle-details">
-                            <h2>Battleborn Yugo Bundle</h2>
+                            <h2>Sand Soldier Birdie</h2>
                             <div class="bundle-grid">
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Battleborn Yugo.jpeg" alt="Battleborn Yugo">
+                                        <img src="Skins/Sand Soldier Birdie.jpg" alt="Sand Soldier Birdie">
                                     </div>
-                                    <h3>Yugo</h3>
-                                    <p>Battleborn Yugo Skin</p>
-                                </div>
-                                <div class="bundle-character">
-                                    <div class="image-container">
-                                        <img src="res/img/basicbox.png" alt="Basic Lootbox">
-                                    </div>
-                                    <h3>Lootboxes</h3>
-                                    <p>3 Basic Lootboxes</p>
-                                </div>
-                            </div>
-                            <div class="bundle-purchase">
-                                <div class="price-container">
-                                    <div class="original-price">
-                                        <img src="res/img/fm.png" alt="FM">
-                                        <span>5000</span>
-                                    </div>
-                                    <div class="price-divider"></div>
-                                    <div class="final-price">
-                                        <img src="res/img/fm.png" alt="FM">
-                                        <span>3750</span>
-                                    </div>
-                                </div>
-                                <button class="purchase-bundle-btn" data-bundle-name="BattlebornYugoBundle" onclick="purchaseBundle(this)">Purchase Bundle</button>
-                            </div>
-                        </div>
-                    `;
-                    break;
-                case 'SamuraiShizumaru':
-                    modalContent = `
-                        <div class="bundle-details">
-                            <h2>Samurai Shizumaru</h2>
-                            <div class="bundle-grid">
-                                <div class="bundle-character">
-                                    <div class="image-container">
-                                        <img src="Skins/Samurai Shizumaru.jpeg" alt="Samurai Shizumaru">
-                                    </div>
-                                    <h3>Shizumaru</h3>
-                                    <p>Samurai Shizumaru Skin</p>
+                                    <h3>Birdie</h3>
+                                    <p>Sand Soldier Birdie Skin</p>
                                 </div>
                             </div>
                             <div class="bundle-purchase">
@@ -1157,7 +1287,8 @@
                                         <span>80000</span>
                                     </div>
                                 </div>
-                                <button class="purchase-bundle-btn" data-bundle-name="SamuraiShizumaru" onclick="purchaseBundle(this)">Purchase Bundle</button>
+                                <div class="discount-badge">CM SALE</div>
+                                <button class="purchase-bundle-btn" data-bundle-name="SandSoldierBirdie" onclick="purchaseBundle(this)">Buy Now</button>
                             </div>
                         </div>
                     `;
@@ -1173,13 +1304,19 @@
 
         function getBundlePrice(bundleName) {
             switch(bundleName) {
+                case 'GangstersVsBanditosBundle':
+                    return '4800';
+                case 'GangstersBundle':
+                    return '2400';
+                case 'BanditosBundle':
+                    return '2400';
                 case 'BattlebornBundle':
                     return '8250';
                 case 'BattlebornYugoBundle':
                     return '3750';
-                case 'PyromancerMegaMan':
-                    return '800';
-                case 'SamuraiShizumaru':
+                case 'RainyDayNoel':
+                    return '450';
+                case 'SandSoldierBirdie':
                     return '80000';
                 default:
                     return '2000';
@@ -1188,13 +1325,19 @@
 
         function getOriginalPrice(bundleName) {
             switch(bundleName) {
+                case 'GangstersVsBanditosBundle':
+                    return '6000';
+                case 'GangstersBundle':
+                    return '3000';
+                case 'BanditosBundle':
+                    return '3000';
                 case 'BattlebornBundle':
                     return '11000';
                 case 'BattlebornYugoBundle':
                     return '5000';
-                case 'PyromancerMegaMan':
-                    return '2000';
-                case 'SamuraiShizumaru':
+                case 'RainyDayNoel':
+                    return '1000';
+                case 'SandSoldierBirdie':
                     return '1000';
                 default:
                     return '2500';
@@ -1280,74 +1423,76 @@
         </a>
     </div>
     <div class="bundle-container">
-        <div class="bundle-item" data-bundle-name="BattlebornBundle" onclick="showBundleDetails('BattlebornBundle')">
-            <div class="bundle-name">Battleborn Bundle</div>
-            <div class="discount-badge">-25%</div>
+        <div class="bundle-item" data-bundle-name="GangstersVsBanditosBundle" onclick="showBundleDetails('GangstersVsBanditosBundle')">
+            <div class="bundle-name">Gangsters vs Banditos Bundle</div>
+            <div class="discount-badge">-20%</div>
             <div class="images-grid">
-                <img src="Skins/Battleborn Zasalamel.jpeg" alt="Battleborn Zasalamel">
-                <img src="Skins/Battleborn Talim.jpeg" alt="Battleborn Talim">
-                <img src="Skins/Battleborn Yugo.jpeg" alt="Battleborn Yugo">
-                <img src="Skins/Battleborn Eagle.jpeg" alt="Battleborn Eagle">
-                <img src="Skins/Battleborn Ayane.jpeg" alt="Battleborn Ayane">
+                <img src="Skins/Gangster Juri.jpg" alt="Gangster Juri">
+                <img src="Skins/Gangster Blanka.jpg" alt="Gangster Blanka">
+                <img src="Skins/Gangster Peacock.jfif" alt="Gangster Peacock">
+                <img src="Skins/Bandito Reptile.jpg" alt="Bandito Reptile">
+                <img src="Skins/Bandito Eagle.jpg" alt="Bandito Eagle">
+                <img src="Skins/Bandito Shinnok.jpg" alt="Bandito Shinnok">
             </div>
             <div class="price-container">
                 <div class="original-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>11000</span>
+                    <span>6000</span>
                 </div>
                 <div class="price-divider"></div>
                 <div class="final-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>8250</span>
+                    <span>4800</span>
                 </div>
             </div>
             <button onclick="purchaseBundle(this)">Buy Bundle</button>
         </div>
-        <div class="bundle-item" data-bundle-name="PyromancerMegaMan" onclick="showBundleDetails('PyromancerMegaMan')">
-            <div class="bundle-name">Pyromancer Mega Man</div>
-            <div class="image-container">
-                <img src="Skins/Pyromancer Mega Man.jpeg" alt="Pyromancer Mega Man">
-            </div>
-            <div class="price-container">
-                <div class="original-price">
-                    <img src="res/img/fm.png" alt="FM">
-                    <span>2000</span>
-                </div>
-                <div class="price-divider"></div>
-                <div class="final-price">
-                    <img src="res/img/fm.png" alt="FM">
-                    <span>800</span>
-                </div>
-            </div>
-            <div class="discount-badge">-60%</div>
-            <button onclick="purchaseBundle(this)">Buy Now</button>
-        </div>
-        <div class="bundle-item" data-bundle-name="BattlebornYugoBundle" onclick="showBundleDetails('BattlebornYugoBundle')">
-            <div class="bundle-name">Battleborn Yugo Bundle</div>
+        <div class="bundle-item" data-bundle-name="GangstersBundle" onclick="showBundleDetails('GangstersBundle')">
+            <div class="bundle-name">Gangsters Bundle</div>
+            <div class="discount-badge">-20%</div>
             <div class="images-grid">
-                <img src="Skins/Battleborn Yugo.jpeg" alt="Battleborn Yugo">
-                <img src="res/img/basicbox.png" alt="Lootbox">
-                <img src="res/img/basicbox.png" alt="Lootbox">
-                <img src="res/img/basicbox.png" alt="Lootbox">
+                <img src="Skins/Gangster Juri.jpg" alt="Gangster Juri">
+                <img src="Skins/Gangster Blanka.jpg" alt="Gangster Blanka">
+                <img src="Skins/Gangster Peacock.jfif" alt="Gangster Peacock">
             </div>
             <div class="price-container">
                 <div class="original-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>5000</span>
+                    <span>3000</span>
                 </div>
                 <div class="price-divider"></div>
                 <div class="final-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>3750</span>
+                    <span>2400</span>
                 </div>
             </div>
-            <div class="discount-badge">-25%</div>
             <button onclick="purchaseBundle(this)">Buy Bundle</button>
         </div>
-        <div class="bundle-item" data-bundle-name="SamuraiShizumaru" onclick="showBundleDetails('SamuraiShizumaru')">
-            <div class="bundle-name">Samurai Shizumaru</div>
+        <div class="bundle-item" data-bundle-name="BanditosBundle" onclick="showBundleDetails('BanditosBundle')">
+            <div class="bundle-name">Banditos Bundle</div>
+            <div class="discount-badge">-20%</div>
+            <div class="images-grid">
+                <img src="Skins/Bandito Reptile.jpg" alt="Bandito Reptile">
+                <img src="Skins/Bandito Eagle.jpg" alt="Bandito Eagle">
+                <img src="Skins/Bandito Shinnok.jpg" alt="Bandito Shinnok">
+            </div>
+            <div class="price-container">
+                <div class="original-price">
+                    <img src="res/img/fm.png" alt="FM">
+                    <span>3000</span>
+                </div>
+                <div class="price-divider"></div>
+                <div class="final-price">
+                    <img src="res/img/fm.png" alt="FM">
+                    <span>2400</span>
+                </div>
+            </div>
+            <button onclick="purchaseBundle(this)">Buy Bundle</button>
+        </div>
+        <div class="bundle-item" data-bundle-name="RainyDayNoel" onclick="showBundleDetails('RainyDayNoel')">
+            <div class="bundle-name">Rainy Day Noel</div>
             <div class="image-container">
-                <img src="Skins/Samurai Shizumaru.jpeg" alt="Samurai Shizumaru">
+                <img src="Skins/Rainy Day Noel.jpeg" alt="Rainy Day Noel">
             </div>
             <div class="price-container">
                 <div class="original-price">
@@ -1356,228 +1501,40 @@
                 </div>
                 <div class="price-divider"></div>
                 <div class="final-price">
-                    <img src="res/img/cm.png" alt="CM">
-                    <span>80000</span>
+                    <img src="res/img/fm.png" alt="FM">
+                    <span>450</span>
                 </div>
             </div>
-            <div class="discount-badge">CM SALE</div>
+            <div class="discount-badge">-55%</div>
             <button onclick="purchaseBundle(this)">Buy Now</button>
         </div>
-    </div>
+        <div class="bundle-item" data-bundle-name="SandSoldierBirdie" onclick="showBundleDetails('SandSoldierBirdie')">
+            <div class="bundle-name">Sand Soldier Birdie</div>
+                        <div class="image-container">
+                <img src="Skins/Sand Soldier Birdie.jpg" alt="Sand Soldier Birdie">
+                        </div>
+                    <div class="price-container">
+                        <div class="original-price">
+                            <img src="res/img/fm.png" alt="FM">
+                    <span>1000</span>
+                        </div>
+                        <div class="price-divider"></div>
+                        <div class="final-price">
+                    <img src="res/img/cm.png" alt="CM">
+                    <span>80000</span>
+                        </div>
+                    </div>
+            <div class="discount-badge">CM SALE</div>
+            <button onclick="purchaseBundle(this)">Buy Now</button>
+                </div>
+            </div>
 
     <!-- Starter Bundles Modal -->
     <div id="starter-bundles-modal" class="starter-bundles-modal">
         <div class="starter-bundles-content">
             <span class="close" onclick="closeStarterBundlesModal()">&times;</span>
-            <h2 style="color: white; text-align: center; margin-bottom: 30px;">Starter Bundles</h2>
-            
-            <div class="bundle-tabs">
-                <div class="bundle-tab active" onclick="showBundle('top')">Top Bundle</div>
-                <div class="bundle-tab" onclick="showBundle('jungle')">Jungle Bundle</div>
-                <div class="bundle-tab" onclick="showBundle('mid')">Mid Bundle</div>
-                <div class="bundle-tab" onclick="showBundle('adc')">ADC Bundle</div>
-                <div class="bundle-tab" onclick="showBundle('support')">Support Bundle</div>
-            </div>
-
-            <div id="top-bundle" class="bundle-content active">
-                <div class="bundle-grid">
-                    <div class="bundle-character">
-                        <div class="image-container">
-                            <img src="Skins/High Elf Siegfried.png" alt="High Elf Siegfried">
-                        </div>
-                        <h3>Siegfried</h3>
-                        <p>High Elf Siegfried Skin</p>
-                    </div>
-                    <div class="bundle-character">
-                        <div class="image-container">
-                            <img src="Skins/Goth Sophitia.png" alt="Goth Sophitia">
-                        </div>
-                        <h3>Sophitia</h3>
-                        <p>Goth Sophitia Skin</p>
-                    </div>
-                    <div class="bundle-character">
-                        <div class="image-container">
-                            <img src="Skins/Battle Bistro Lili.jpeg" alt="Battle Bistro Lili">
-                        </div>
-                        <h3>Lili</h3>
-                        <p>Battle Bistro Lili Skin</p>
-                    </div>
-                </div>
-                <div class="bundle-purchase">
-                    <div class="price-container">
-                        <div class="original-price">
-                            <img src="res/img/fm.png" alt="FM">
-                            <span>${getOriginalPrice('TopStarterBundle')}</span>
-                        </div>
-                        <div class="price-divider"></div>
-                        <div class="final-price">
-                            <img src="res/img/fm.png" alt="FM">
-                            <span>${getBundlePrice('TopStarterBundle')}</span>
-                        </div>
-                    </div>
-                    <button class="purchase-bundle-btn" onclick="purchaseStarterBundle('top')">Purchase Bundle</button>
-                </div>
-            </div>
-
-            <div id="jungle-bundle" class="bundle-content">
-                <div class="bundle-grid">
-                    <div class="bundle-character">
-                        <div class="image-container">
-                            <img src="Skins/Frosted Kabal.jpeg" alt="Frosted Kabal">
-                        </div>
-                        <h3>Kabal</h3>
-                        <p>Frosted Kabal Skin</p>
-                    </div>
-                    <div class="bundle-character">
-                        <div class="image-container">
-                            <img src="Skins/Casual Wear Juri.png" alt="Casual Wear Juri">
-                        </div>
-                        <h3>Juri</h3>
-                        <p>Casual Wear Juri Skin</p>
-                    </div>
-                    <div class="bundle-character">
-                        <div class="image-container">
-                            <img src="Skins/Mythic Sentinel Alice.jpeg" alt="Mythic Sentinel Alice">
-                        </div>
-                        <h3>Alice</h3>
-                        <p>Mythic Sentinel Alice Skin</p>
-                    </div>
-                </div>
-                <div class="bundle-purchase">
-                    <div class="price-container">
-                        <div class="original-price">
-                            <img src="res/img/fm.png" alt="FM">
-                            <span>${getOriginalPrice('JungleStarterBundle')}</span>
-                        </div>
-                        <div class="price-divider"></div>
-                        <div class="final-price">
-                            <img src="res/img/fm.png" alt="FM">
-                            <span>${getBundlePrice('JungleStarterBundle')}</span>
-                        </div>
-                    </div>
-                    <button class="purchase-bundle-btn" onclick="purchaseStarterBundle('jungle')">Purchase Bundle</button>
-                </div>
-            </div>
-
-            <div id="mid-bundle" class="bundle-content">
-                <div class="bundle-grid">
-                    <div class="bundle-character">
-                        <div class="image-container">
-                            <img src="Skins/Neon Core Sub Zero.png" alt="Neon Core Sub Zero">
-                        </div>
-                        <h3>Sub Zero</h3>
-                        <p>Neon Core Sub Zero Skin</p>
-                    </div>
-                    <div class="bundle-character">
-                        <div class="image-container">
-                            <img src="Skins/Samurai Shizumaru.jpeg" alt="Samurai Shizumaru">
-                        </div>
-                        <h3>Shizumaru</h3>
-                        <p>Samurai Shizumaru Skin</p>
-                    </div>
-                    <div class="bundle-character">
-                        <div class="image-container">
-                            <img src="Skins/Rainy Day Shinnok.jpeg" alt="Rainy Day Shinnok">
-                        </div>
-                        <h3>Shinnok</h3>
-                        <p>Rainy Day Shinnok Skin</p>
-                    </div>
-                </div>
-                <div class="bundle-purchase">
-                    <div class="price-container">
-                        <div class="original-price">
-                            <img src="res/img/fm.png" alt="FM">
-                            <span>${getOriginalPrice('MidStarterBundle')}</span>
-                        </div>
-                            <div class="price-divider"></div>
-                            <div class="final-price">
-                                <img src="res/img/fm.png" alt="FM">
-                                <span>${getBundlePrice('MidStarterBundle')}</span>
-                            </div>
-                        </div>
-                        <button class="purchase-bundle-btn" onclick="purchaseStarterBundle('mid')">Purchase Bundle</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="adc-bundle" class="bundle-content">
-                <div class="bundle-grid">
-                    <div class="bundle-character">
-                        <div class="image-container">
-                            <img src="Skins/Goth Eagle.png" alt="Goth Eagle">
-                        </div>
-                        <h3>Eagle</h3>
-                        <p>Goth Eagle Skin</p>
-                    </div>
-                    <div class="bundle-character">
-                        <div class="image-container">
-                            <img src="Skins/Primal Huntress Kagome.jpeg" alt="Primal Huntress Kagome">
-                        </div>
-                        <h3>Kagome</h3>
-                        <p>Primal Huntress Kagome Skin</p>
-                    </div>
-                    <div class="bundle-character">
-                        <div class="image-container">
-                            <img src="Skins/Steamcore MegaMan.jpeg" alt="Steamcore MegaMan">
-                        </div>
-                        <h3>Mega Man</h3>
-                        <p>Steamcore MegaMan Skin</p>
-                    </div>
-                </div>
-                <div class="bundle-purchase">
-                    <div class="price-container">
-                        <div class="original-price">
-                            <img src="res/img/fm.png" alt="FM">
-                            <span>${getOriginalPrice('ADCStarterBundle')}</span>
-                        </div>
-                        <div class="price-divider"></div>
-                        <div class="final-price">
-                            <img src="res/img/fm.png" alt="FM">
-                            <span>${getBundlePrice('ADCStarterBundle')}</span>
-                        </div>
-                    </div>
-                    <button class="purchase-bundle-btn" onclick="purchaseStarterBundle('adc')">Purchase Bundle</button>
-                </div>
-            </div>
-            <div id="support-bundle" class="bundle-content">
-                <div class="bundle-grid">
-                    <div class="bundle-character">
-                        <div class="image-container">
-                            <img src="Skins/Battle Bistro Kuma.jpeg" alt="Battle Bistro Kuma">
-                        </div>
-                        <h3>Kuma</h3>
-                        <p>Battle Bistro Kuma Skin</p>
-                    </div>
-                    <div class="bundle-character">
-                        <div class="image-container">
-                            <img src="Skins/Schoolgirl Kokoro.png" alt="Schoolgirl Kokoro">
-                        </div>
-                        <h3>Kokoro</h3>
-                        <p>Schoolgirl Kokoro Skin</p>
-                    </div>
-                    <div class="bundle-character">
-                        <div class="image-container">
-                            <img src="Skins/Voidborn FANG.jpeg" alt="Voidborn FANG">
-                        </div>
-                        <h3>FANG</h3>
-                        <p>Voidborn FANG Skin</p>
-                    </div>
-                </div>
-                <div class="bundle-purchase">
-                    <div class="price-container">
-                        <div class="original-price">
-                            <img src="res/img/fm.png" alt="FM">
-                            <span>${getOriginalPrice('SupportStarterBundle')}</span>
-                        </div>
-                        <div class="price-divider"></div>
-                        <div class="final-price">
-                            <img src="res/img/fm.png" alt="FM">
-                            <span>${getBundlePrice('SupportStarterBundle')}</span>
-                        </div>
-                    </div>
-                    <button class="purchase-bundle-btn" onclick="purchaseStarterBundle('support')">Purchase Bundle</button>
-                </div>
-            </div>
+            <h2 style="color: white; text-align: center; margin-bottom: 30px;">Bundle Details</h2>
+            <!-- Bundle content will be inserted here by JavaScript -->
         </div>
     </div>
 

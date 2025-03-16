@@ -3,65 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Season 2 (Patch 2.0) Notes - Major Update</title>
+    <title>Patch 2.1: Gangland Showdown - Changelog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@400;700&family=Raleway:wght@400;600&family=Cinzel:wght@400;700&display=swap');
-
         :root {
-            --primary-color: #c80000;
-            --secondary-color: #FFD700;
-            --background-dark: #121212;
+            --primary: #c80000;
+            --secondary: #FFD700;
+            --dark: #121212;
+            --light: #f8f8f8;
+            --accent: #8B0000;
+            --text-dark: #333;
             --text-light: #e1e1e1;
-            --accent-color: #8B0000;
+            --gradient: linear-gradient(135deg, var(--primary), var(--accent));
+            --card-bg: rgba(18, 18, 18, 0.85);
         }
-
-        body {
+        
+        * {
             margin: 0;
             padding: 0;
-            font-family: 'Raleway', sans-serif;
-            background: var(--background-dark);
-            color: var(--text-light);
+            box-sizing: border-box;
         }
-
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
         .menu {
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 10px 20px;
             background-color: rgba(0, 0, 0, 0.8);
-            z-index: 0;
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
         }
-
+        
         .menu-items {
             display: flex;
             justify-content: center;
-            position: relative;
         }
-
+        
         .menu a {
             color: white;
             text-decoration: none;
             padding: 14px 16px;
-            font-family: 'Roboto', sans-serif;
             font-size: 16px;
-            transition: background-color 0.3s, transform 0.3s;
+            transition: all 0.3s ease;
+            position: relative;
         }
-
+        
+        .menu a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 8px;
+            left: 50%;
+            background: var(--secondary);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        
+        .menu a:hover::after {
+            width: 70%;
+        }
+        
         .menu a:hover {
-            background-color: #111;
-            transform: scale(1.1);
+            color: var(--secondary);
+            transform: translateY(-2px);
         }
-
-        .play-button-container {
-            display: flex;
-            justify-content: flex-start;
-            padding: 20px;
-            z-index: auto;
-            position: fixed;
-        }
-
+        
         .play-button {
-            background-color: var(--primary-color);
+            background: var(--gradient);
             color: white;
             border: none;
             border-radius: 25px;
@@ -69,177 +90,404 @@
             font-weight: bold;
             text-decoration: none;
             padding: 15px 40px;
-            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            z-index: 1;
-            top: 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(200, 0, 0, 0.3);
             position: fixed;
-            left: 0px;
+            top: 15px;
+            left: 20px;
+            z-index: 1001;
         }
-
+        
         .play-button:hover {
-            background-color: #8B0000;
             transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 25px rgba(200, 0, 0, 0.5);
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 60px auto 0;
-            padding: 20px;
-        }
-
-        .patch-header {
+        
+        /* Hero Section */
+        .hero {
+            height: 100vh;
             position: relative;
-            height: 500px;
-            margin-bottom: 40px;
-            border-radius: 15px;
             overflow: hidden;
-            border: 3px solid var(--secondary-color);
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        .patch-header img {
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            background: url('Skins/Gangster Juri.jpg') no-repeat center center/cover;
+            filter: brightness(0.6);
+            z-index: -1;
         }
-
-        .patch-title {
+        
+        .hero::after {
+            content: '';
             position: absolute;
-            bottom: 0;
+            top: 0;
             left: 0;
-            right: 0;
-            padding: 40px;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(0deg, var(--dark) 0%, transparent 50%, rgba(0,0,0,0.8) 100%);
+            z-index: -1;
+        }
+        
+        .hero-content {
             text-align: center;
+            max-width: 800px;
+            padding: 0 20px;
+            margin-top: 60px;
+            z-index: 1;
         }
-
-        .patch-title h1 {
-            font-family: 'Cinzel', serif;
-            font-size: 4em;
-            margin: 0;
-            color: var(--secondary-color);
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-        }
-
-        .patch-title h2 {
+        
+        .patch-badge {
+            background: var(--gradient);
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 30px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.8em;
-            margin: 10px 0 0;
-            color: var(--text-light);
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(200, 0, 0, 0.4);
+            animation: pulse 2s infinite;
         }
-
-        .update-section {
-            background: rgba(20, 20, 20, 0.9);
-            border-radius: 15px;
-            padding: 30px;
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .hero-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(to right, var(--light), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.8rem;
             margin-bottom: 30px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: var(--secondary);
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
-
+        
+        .hero-description {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+        
+        .scroll-down {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            color: var(--secondary);
+            animation: bounce 2s infinite;
+            cursor: pointer;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+            40% { transform: translateY(-20px) translateX(-50%); }
+            60% { transform: translateY(-10px) translateX(-50%); }
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
         .section-title {
-            font-family: 'Cinzel', serif;
-            color: var(--secondary-color);
-            font-size: 2.2em;
-            margin-bottom: 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
             text-align: center;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            margin-bottom: 50px;
+            position: relative;
+            color: var(--secondary);
         }
-
-        .section-description {
-            text-align: center;
-            margin-bottom: 40px;
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 4px;
+            background: var(--gradient);
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+        
+        /* Cards */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(200, 0, 0, 0.3);
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+        
+        .card-header {
+            padding: 20px;
+            background: var(--gradient);
+            position: relative;
+        }
+        
+        .card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title i {
+            margin-right: 10px;
+        }
+        
+        .card-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .card-body {
+            padding: 25px;
+        }
+        
+        .change-list {
+            list-style: none;
+        }
+        
+        .change-item {
+            margin-bottom: 15px;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .change-item::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+        
+        .change-item strong {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        
+        /* Champion Changes */
+        .champion-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .champion-header {
+            display: flex;
+            align-items: center;
             padding: 20px;
             background: rgba(200, 0, 0, 0.2);
-            border-radius: 15px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
         }
-
-        .section-description p {
-            font-size: 1.2em;
-            color: var(--text-light);
-            margin: 0;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        
+        .champion-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 2px solid var(--secondary);
         }
-
-        .feature-grid {
+        
+        .champion-info {
+            flex: 1;
+        }
+        
+        .champion-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+            color: var(--secondary);
+        }
+        
+        .champion-title {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* Item Changes */
+        .item-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .item-card:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .item-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 1px solid var(--secondary);
+        }
+        
+        .item-info {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--secondary);
+        }
+        
+        .item-changes {
+            font-size: 0.9rem;
+        }
+        
+        /* Event Section */
+        .event-section {
+            background: rgba(18, 18, 18, 0.7);
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 60px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .event-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
         }
-
-        .feature-card {
+        
+        .event-card {
             background: rgba(30, 30, 30, 0.8);
             border-radius: 15px;
-            padding: 25px;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: 1px solid rgba(255, 215, 0, 0.2);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(200, 0, 0, 0.3);
-        }
-
-        .feature-image {
-            width: 100%;
-            height: 200px;
-            border-radius: 10px;
             overflow: hidden;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 215, 0, 0.1);
         }
-
-        .feature-image img {
+        
+        .event-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+        
+        .event-image {
+            height: 200px;
+            overflow: hidden;
+        }
+        
+        .event-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.3s;
+            transition: transform 0.5s ease;
         }
-
-        .feature-card:hover .feature-image img {
-            transform: scale(1.05);
+        
+        .event-card:hover .event-image img {
+            transform: scale(1.1);
         }
-
-        .feature-title {
+        
+        .event-details {
+            padding: 20px;
+        }
+        
+        .event-name {
             font-family: 'Orbitron', sans-serif;
-            color: var(--secondary-color);
-            font-size: 1.5em;
-            margin: 0 0 15px 0;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--secondary);
         }
-
-        .feature-description {
-            color: var(--text-light);
-            line-height: 1.6;
+        
+        .event-price {
+            display: inline-block;
+            background: var(--gradient);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
         }
-
-        .feature-list {
-            list-style: none;
-            padding: 0;
-            margin: 15px 0 0;
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            margin-top: 80px;
         }
-
-        .feature-list li {
-            padding: 8px 0 8px 25px;
-            position: relative;
+        
+        .footer-text {
+            font-size: 0.9rem;
+            opacity: 0.7;
         }
-
-        .feature-list li:before {
-            content: "•";
-            color: var(--primary-color);
-            font-size: 1.5em;
-            position: absolute;
-            left: 0;
-            top: 5px;
-        }
-
-        .highlight {
-            color: var(--secondary-color);
-            font-weight: bold;
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.4rem;
+            }
+            
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .play-button {
+                padding: 12px 30px;
+                font-size: 18px;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
@@ -253,483 +501,218 @@
             <a href="statistics.html">Statistics</a>
         </div>
     </div>
-    <div class="play-button-container">
-        <a href="Game Modes.html" class="play-button">Play</a>
-    </div>
     
-    <div class="container">
-        <div class="patch-header">
-            <img src="Default Splash/Scorpion.png" alt="Season 2 Header">
-            <div class="patch-title">
-                <h1>Season 2</h1>
-                <h2>PATCH 2.0: RISE OF LEGENDS</h2>
-            </div>
+    <a href="Game Modes.html" class="play-button">Play</a>
+    
+    <section class="hero">
+        <div class="hero-content">
+            <div class="patch-badge">PATCH 2.1</div>
+            <h1 class="hero-title">Gangland Showdown</h1>
+            <h2 class="hero-subtitle">Balance Changes & New Event</h2>
+            <p class="hero-description">Experience the clash between Banditos and Gangsters with new skins, balance adjustments, and gameplay improvements.</p>
         </div>
+        <a href="#main-content" class="scroll-down">
+            <i class="fas fa-chevron-down"></i>
+        </a>
+    </section>
+    
+    <main id="main-content" class="main-content">
+        <h2 class="section-title">Champion Balance Changes</h2>
         
-        <div class="update-section">
-            <h2 class="section-title">New Character Selection & Loading Screen</h2>
-            
-            <div class="section-description">
-                <p>Experience our completely redesigned character selection and loading screens for both ARAM and SoloQ, featuring enhanced visuals, improved functionality, and a more immersive pre-game experience!</p>
+        <div class="cards-container">
+            <div class="card champion-card">
+                <div class="champion-header">
+                    <img src="Icons/Juri.png" alt="Juri" class="champion-icon">
+                    <div class="champion-info">
+                        <h3 class="champion-name">Juri</h3>
+                        <p class="champion-title">The Arcane Kicker</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ul class="change-list">
+                        <li class="change-item"><strong>Attack Damage Growth:</strong> Reduced from 7 to 6.5</li>
+                        <li class="change-item"><strong>Q "Whirling Kick":</strong> Damage reduced at later ranks: 100/210/425/650/880 → 100/210/380/550/750</li>
+                        <li class="change-item"><strong>Level 20 Talent "Arcane Overflow":</strong> Double damage chance reduced from 25% to 15%</li>
+                    </ul>
+                </div>
             </div>
             
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="feature-image">
-                        <img src="UI/aram_select.png" alt="ARAM Character Selection">
-                    </div>
-                    <h3 class="feature-title">ARAM Character Selection</h3>
-                    <div class="feature-description">
-                        <p>The new ARAM character selection screen provides a cleaner, more intuitive interface with enhanced visual elements.</p>
-                        <ul class="feature-list">
-                            <li>Random champion pool with <span class="highlight">visual clarity improvements</span></li>
-                            <li>Champion trading system with <span class="highlight">drag-and-drop functionality</span></li>
-                            <li>Champion details panel with <span class="highlight">ability previews</span></li>
-                            <li>Team composition overview with <span class="highlight">role distribution</span></li>
-                            <li>Reroll counter with <span class="highlight">visual indicators</span></li>
-                        </ul>
+            <div class="card champion-card">
+                <div class="champion-header">
+                    <img src="Icons/Shoma.png" alt="Shoma" class="champion-icon">
+                    <div class="champion-info">
+                        <h3 class="champion-name">Shoma</h3>
+                        <p class="champion-title">The Baseballer Boy</p>
                     </div>
                 </div>
-                
-                <div class="feature-card">
-                    <div class="feature-image">
-                        <img src="UI/soloq_select.png" alt="SoloQ Character Selection">
-                    </div>
-                    <h3 class="feature-title">SoloQ Character Selection</h3>
-                    <div class="feature-description">
-                        <p>The redesigned SoloQ character selection screen offers a competitive-focused experience with strategic planning tools.</p>
-                        <ul class="feature-list">
-                            <li>Role-based champion filtering with <span class="highlight">quick access tabs</span></li>
-                            <li>Ban phase with <span class="highlight">strategic recommendations</span></li>
-                            <li>Pick intent declaration with <span class="highlight">team synergy indicators</span></li>
-                            <li>Champion statistics integration with <span class="highlight">win rate displays</span></li>
-                            <li>Skin selection with <span class="highlight">preview animations</span></li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-image">
-                        <img src="UI/loading_screen.png" alt="New Loading Screen">
-                    </div>
-                    <h3 class="feature-title">Enhanced Loading Screen</h3>
-                    <div class="feature-description">
-                        <p>Our new loading screen provides valuable information while maintaining visual appeal during the transition to gameplay.</p>
-                        <ul class="feature-list">
-                            <li>Player card designs with <span class="highlight">rank emblems and mastery levels</span></li>
-                            <li>Loading progress indicators with <span class="highlight">individual player status</span></li>
-                            <li>Match information panel with <span class="highlight">game mode details</span></li>
-                            <li>Team composition overview with <span class="highlight">role distribution</span></li>
-                            <li>Interactive tips and trivia with <span class="highlight">game knowledge</span></li>
-                        </ul>
-                    </div>
+                <div class="card-body">
+                    <ul class="change-list">
+                        <li class="change-item"><strong>Level 10 Talent "Safe Base":</strong> Damage reduction increased from 30% to 40%</li>
+                        <li class="change-item"><strong>Level 5 Talent "Healing Balls":</strong> Replaced with "Defensive Stance": Shoma converts 25% of his Attack Damage into armor and magic resistance while holding a ball, with additional effects based on ball type</li>
+                    </ul>
                 </div>
             </div>
         </div>
         
-        <div class="update-section">
-            <h2 class="section-title">New Game Mode UI & Champion Store</h2>
-            
-            <div class="section-description">
-                <p>Discover our completely redesigned Game Mode selection interface and Champion Store, offering improved navigation, enhanced visuals, and a more intuitive shopping experience!</p>
-            </div>
-            
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="feature-image">
-                        <img src="UI/game_mode_ui.png" alt="Game Mode UI">
-                    </div>
-                    <h3 class="feature-title">Game Mode Selection</h3>
-                    <div class="feature-description">
-                        <p>The new Game Mode selection interface provides a visually stunning and user-friendly way to choose your preferred gameplay experience.</p>
-                        <ul class="feature-list">
-                            <li>Visual game mode cards with <span class="highlight">dynamic backgrounds</span></li>
-                            <li>Mode description panels with <span class="highlight">gameplay details</span></li>
-                            <li>Queue status indicators with <span class="highlight">estimated wait times</span></li>
-                            <li>Featured game mode highlights with <span class="highlight">special events</span></li>
-                            <li>Party size compatibility with <span class="highlight">visual indicators</span></li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-image">
-                        <img src="UI/champion_store.png" alt="Champion Store">
-                    </div>
-                    <h3 class="feature-title">Champion Store</h3>
-                    <div class="feature-description">
-                        <p>Our redesigned Champion Store offers an intuitive shopping experience with improved navigation and comprehensive champion information.</p>
-                        <ul class="feature-list">
-                            <li>Role-based filtering with <span class="highlight">quick access tabs</span></li>
-                            <li>Champion cards with <span class="highlight">key information display</span></li>
-                            <li>Detailed champion profiles with <span class="highlight">ability previews</span></li>
-                            <li>Skin showcase with <span class="highlight">3D model viewer</span></li>
-                            <li>Purchase recommendations based on <span class="highlight">play style</span></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <h2 class="section-title">Item Balance Changes</h2>
         
-        <div class="update-section">
-            <h2 class="section-title">Temporary Game Mode Changes</h2>
-            
-            <div class="section-description">
-                <p>As part of our Season 2 update, we've made some temporary changes to available game modes while we prepare exciting new features!</p>
+        <div class="cards-container">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-shield-alt"></i> Support Items</h3>
+                    <p class="card-subtitle">Defensive and utility adjustments</p>
+                </div>
+                <div class="card-body">
+                    <div class="item-card">
+                        <img src="items/scarab_amulet.webp" alt="Scarab Amulet" class="item-icon">
+                        <div class="item-info">
+                            <h4 class="item-name">Scarab Amulet</h4>
+                            <p class="item-changes">Shield increased from 500 to 850<br>Healing and Shielding Power increased from 5 to 8</p>
+                        </div>
+                    </div>
+                    
+                    <div class="item-card">
+                        <img src="items/mermaid_essence.webp" alt="Mermaid Essence" class="item-icon">
+                        <div class="item-info">
+                            <h4 class="item-name">Mermaid Essence</h4>
+                            <p class="item-changes">AP scaling reduced from 200% to 85%<br>Healing and Shielding Power reduced from 15% to 12%<br>Cost reduced from 3050 to 2900</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="feature-image">
-                        <img src="res/img/1v1.jpeg" alt="1v1 Mode" style="filter: grayscale(100%);">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-fist-raised"></i> Offensive Items</h3>
+                    <p class="card-subtitle">Damage and combat adjustments</p>
+                </div>
+                <div class="card-body">
+                    <div class="item-card">
+                        <img src="items/flask_of_strength.webp" alt="Flask of Strength" class="item-icon">
+                        <div class="item-info">
+                            <h4 class="item-name">Flask of Strength</h4>
+                            <p class="item-changes">Cost increased from 1000 to 1200<br>Attack Damage bonus increased from 90 to 120<br>Duration increased from 10s to 12s</p>
+                        </div>
                     </div>
-                    <h3 class="feature-title">1vs1 Mode Temporarily Disabled</h3>
-                    <div class="feature-description">
-                        <p>We've temporarily disabled the 1vs1 game mode during the Season 2 launch to focus on core gameplay improvements and stability.</p>
-                        <ul class="feature-list">
-                            <li>1vs1 mode will <span class="highlight">return in Patch 2.1</span> with improved mechanics</li>
-                            <li>Working on <span class="highlight">enhanced dueling systems</span> for a better competitive experience</li>
-                            <li>Implementing <span class="highlight">new matchmaking algorithms</span> specific to 1vs1 gameplay</li>
-                            <li>Developing <span class="highlight">specialized balance adjustments</span> for dueling scenarios</li>
-                            <li>Creating <span class="highlight">unique rewards</span> for 1vs1 achievements</li>
-                        </ul>
+                    
+                    <div class="item-card">
+                        <img src="items/venomous_blade.webp" alt="Venomous Blade" class="item-icon">
+                        <div class="item-info">
+                            <h4 class="item-name">Venomous Blade</h4>
+                            <p class="item-changes">Attack Damage reduced from 28 to 24<br>Ability Power reduced from 30 to 27</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-coins"></i> Economy Items</h3>
+                    <p class="card-subtitle">Gold generation adjustments</p>
+                </div>
+                <div class="card-body">
+                    <div class="item-card">
+                        <img src="items/street_kings_chain.webp" alt="Street King's Chain" class="item-icon">
+                        <div class="item-info">
+                            <h4 class="item-name">Street King's Chain</h4>
+                            <p class="item-changes">Bonus gold per stack increased from 50 to 150<br>Maximum gold cap increased to 1000<br>Attack Damage increased from 30 to 40</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <div class="update-section">
-            <h2 class="section-title">Champion Stats & Ranked System Reset</h2>
+        <div class="event-section">
+            <h2 class="section-title">Gangland Showdown Event</h2>
             
-            <div class="section-description">
-                <p>Season 2 brings a complete overhaul of our champion statistics system and a full ranked ladder reset, providing players with more detailed performance metrics and a fresh competitive environment!</p>
-            </div>
-            
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <h3 class="feature-title">Enhanced Champion Statistics</h3>
-                    <div class="feature-description">
-                        <p>Our new champion statistics system provides comprehensive performance data to help you analyze and improve your gameplay with each character.</p>
-                        <ul class="feature-list">
-                            <li>Detailed performance metrics with <span class="highlight">role-specific statistics</span></li>
-                            <li>Historical win rate tracking with <span class="highlight">visual trend graphs</span></li>
-                            <li>Matchup analysis with <span class="highlight">counter recommendations</span></li>
-                            <li>Skill progression tracking with <span class="highlight">mastery milestones</span></li>
-                            <li>Personalized improvement suggestions based on <span class="highlight">gameplay patterns</span></li>
-                        </ul>
+            <div class="event-grid">
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Gangster Juri.jpg" alt="Gangster Juri">
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Gangster Juri</h3>
+                        <span class="event-price">1000 FM</span>
                     </div>
                 </div>
                 
-                <div class="feature-card">
-                    <h3 class="feature-title">Ranked System Reset</h3>
-                    <div class="feature-description">
-                        <p>Season 2 introduces a complete ranked ladder reset with an improved ranking system, new rewards, and enhanced competitive features.</p>
-                        <ul class="feature-list">
-                            <li>Full ladder reset with <span class="highlight">placement matches</span> for all players</li>
-                            <li>Redesigned rank tiers with <span class="highlight">new visual emblems</span></li>
-                            <li>Enhanced matchmaking system for <span class="highlight">more balanced games</span></li>
-                            <li>Expanded seasonal rewards with <span class="highlight">exclusive cosmetics</span></li>
-                            <li>Rank decay protection for <span class="highlight">lower-tier players</span></li>
-                        </ul>
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Gangster Blanka.jpg" alt="Gangster Blanka">
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Gangster Blanka</h3>
+                        <span class="event-price">1000 FM</span>
                     </div>
                 </div>
                 
-                <div class="feature-card">
-                    <h3 class="feature-title">Revamped Leaderboards</h3>
-                    <div class="feature-description">
-                        <p>Our new leaderboard system showcases top players across multiple categories, providing more opportunities for recognition and competitive goals.</p>
-                        <ul class="feature-list">
-                            <li>Global and regional rankings with <span class="highlight">real-time updates</span></li>
-                            <li>Champion-specific leaderboards for <span class="highlight">mastery recognition</span></li>
-                            <li>Role-based rankings to highlight <span class="highlight">position specialists</span></li>
-                            <li>Friend comparison features with <span class="highlight">personal rivalries</span></li>
-                            <li>Historical performance tracking with <span class="highlight">season-to-season comparisons</span></li>
-                        </ul>
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Gangster Peacock.jfif" alt="Gangster Peacock">
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Gangster Peacock</h3>
+                        <span class="event-price">1000 FM</span>
+                    </div>
+                </div>
+                
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Bandito Reptile.jpg" alt="Bandito Reptile">
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Bandito Reptile</h3>
+                        <span class="event-price">1000 FM</span>
+                    </div>
+                </div>
+                
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Bandito Eagle.jpg" alt="Bandito Eagle">
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Bandito Eagle</h3>
+                        <span class="event-price">1000 FM</span>
+                    </div>
+                </div>
+                
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Bandito Shinnok.jpg" alt="Bandito Shinnok">
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Bandito Shinnok</h3>
+                        <span class="event-price">1000 FM</span>
                     </div>
                 </div>
             </div>
         </div>
+    </main>
+    
+    <footer class="footer">
+        <p class="footer-text">Patch 2.1: Gangland Showdown - Released on 2025-03-16</p>
+    </footer>
+    
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
         
-        <div class="update-section">
-            <h2 class="section-title">New Item System & Build Planner</h2>
-            
-            <div class="section-description">
-                <p>Season 2 introduces a completely revamped item system and a powerful new build planner, giving players unprecedented flexibility in customizing their champions for any playstyle!</p>
-            </div>
-            
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <h3 class="feature-title">Expanded Item Catalog</h3>
-                    <div class="feature-description">
-                        <p>Our new item system features a diverse catalog of equipment with unique effects, allowing for deeper strategic customization of your champions.</p>
-                        <ul class="feature-list">
-                            <li>Over 100 unique items with <span class="highlight">specialized effects</span></li>
-                            <li>New item categories with <span class="highlight">distinct gameplay impacts</span></li>
-                            <li>Expanded stat options for <span class="highlight">tailored builds</span></li>
-                            <li>Unique passive and active abilities with <span class="highlight">game-changing effects</span></li>
-                            <li>Situational counter-items to <span class="highlight">adapt to enemy compositions</span></li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <h3 class="feature-title">Interactive Build Planner</h3>
-                    <div class="feature-description">
-                        <p>Our new build planner tool allows you to create, test, and share optimized champion builds with the community.</p>
-                        <ul class="feature-list">
-                            <li>Intuitive drag-and-drop interface for <span class="highlight">easy build creation</span></li>
-                            <li>Real-time stat calculations with <span class="highlight">visual feedback</span></li>
-                            <li>Build sharing system with <span class="highlight">community ratings</span></li>
-                            <li>Build filtering options by <span class="highlight">popularity and win rate</span></li>
-                            <li>Patch-specific build archives for <span class="highlight">meta tracking</span></li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <h3 class="feature-title">Champion-Specific Recommendations</h3>
-                    <div class="feature-description">
-                        <p>The new system provides intelligent item recommendations tailored to each champion's strengths and your personal playstyle.</p>
-                        <ul class="feature-list">
-                            <li>Role-optimized suggestions with <span class="highlight">pro player insights</span></li>
-                            <li>Matchup-based recommendations to <span class="highlight">counter opponents</span></li>
-                            <li>Adaptive build paths based on <span class="highlight">game progression</span></li>
-                            <li>Detailed item tooltips with <span class="highlight">effectiveness ratings</span></li>
-                            <li>Personal build history with <span class="highlight">performance analytics</span></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="update-section">
-            <h2 class="section-title">Balance Changes Notice</h2>
-            
-            <div class="section-description">
-                <p>Due to the extensive item system overhaul in Season 2, we are temporarily pausing champion balance changes to evaluate the impact of the new items on the meta.</p>
-            </div>
-            
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <h3 class="feature-title">No Champion Balance Changes This Patch</h3>
-                    <div class="feature-description">
-                        <p>We're holding off on champion balance adjustments while we gather data on how the new item system affects overall game balance.</p>
-                        <ul class="feature-list">
-                            <li>Monitoring champion performance with <span class="highlight">the new item system</span></li>
-                            <li>Collecting player feedback on <span class="highlight">item interactions</span></li>
-                            <li>Preparing targeted balance updates for <span class="highlight">Patch 2.1</span></li>
-                            <li>Addressing any critical issues with <span class="highlight">hotfixes if necessary</span></li>
-                            <li>Establishing a new baseline for <span class="highlight">future balance decisions</span></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="update-section">
-            <h2 class="section-title">Featured Items Showcase</h2>
-            
-            <div class="section-description">
-                <p>Explore a preview of some of the powerful new items available in Season 2, each with unique effects that can dramatically change your champion's capabilities!</p>
-            </div>
-            
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <h3 class="feature-title">Mythic Tier Items</h3>
-                    <div class="feature-description">
-                        <p>These powerful items provide game-changing effects that can define your playstyle.</p>
-                        <ul class="feature-list">
-                            <li><img src="items/ra_wand.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Ra's Wand</span> - Grants 100 Ability Power and amplifies your total Ability Power by 15%</li>
-                            <li><img src="items/tanyas_spear.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Tanya's Spear</span> - Provides both Attack Damage and Ability Power with a Spellblade passive effect</li>
-                            <li><img src="items/mermaid_essence.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Mermaid Essence</span> - Periodically heals nearby allies based on your Ability Power</li>
-                            <li><img src="items/times_square_orb.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Times Square Orb</span> - Every 10 seconds, your next spell deals 25% increased damage and refunds mana</li>
-                            <li><img src="items/empire_phantoms_mask.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Empire Phantom's Mask</span> - Guarantees critical strikes after exiting stealth or camouflage</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <h3 class="feature-title">Defensive Options</h3>
-                    <div class="feature-description">
-                        <p>Survive longer in fights with these powerful defensive items.</p>
-                        <ul class="feature-list">
-                            <li><img src="items/sand_brick_armor.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Sand Brick Armor</span> - Grants damage reduction that increases as your health decreases</li>
-                            <li><img src="items/thorny_shield.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Thorny Shield</span> - Reflects damage back to attackers</li>
-                            <li><img src="items/abyssal_anchor.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Abyssal Anchor</span> - Releases a knockback shockwave when you're immobilized</li>
-                            <li><img src="items/golden_mask.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Golden Mask</span> - Active ability reduces the first damage you take by 85%</li>
-                            <li><img src="items/atlantean_crown.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Atlantean Crown</span> - Increases all healing effects on you by 20%</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <h3 class="feature-title">Offensive Powerhouses</h3>
-                    <div class="feature-description">
-                        <p>Devastate your opponents with these damage-focused items.</p>
-                        <ul class="feature-list">
-                            <li><img src="items/venomous_blade.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Venomous Blade</span> - Poisons targets hit by your spells, dealing additional damage over time</li>
-                            <li><img src="items/cyber_revolver.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Cyber Revolver</span> - Every fourth attack fires a piercing bullet that hits all enemies in a line</li>
-                            <li><img src="items/toxic_alley_shiv.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Toxic Alley Shiv</span> - Makes enemies bleed and grants movement speed toward bleeding targets</li>
-                            <li><img src="items/stormcallers_orb.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Stormcaller's Orb</span> - Chance to critically strike low-health enemies with your abilities</li>
-                            <li><img src="items/pharaoh_amulet.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Pharaoh Amulet</span> - Burns targets with stacking damage over time</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <h3 class="feature-title">Utility & Support</h3>
-                    <div class="feature-description">
-                        <p>Enhance your team's performance with these utility-focused items.</p>
-                        <ul class="feature-list">
-                            <li><img src="items/scarab_amulet.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Scarab Amulet</span> - Active ability grants a shield to a target champion</li>
-                            <li><img src="items/sphinx_choker.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Sphinx Choker</span> - Your heals and shields also affect yourself at 20% effectiveness</li>
-                            <li><img src="items/seaborne_crown.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Seaborne Crown</span> - Creates water currents that boost allies' movement speed</li>
-                            <li><img src="items/broadway_star_badge.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Broadway Star Badge</span> - Restores health to nearby allies when they cast abilities</li>
-                            <li><img src="items/taxi_drivers_whistle.webp" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 1px solid var(--accent-color);"> <span class="highlight">Taxi Driver's Whistle</span> - Grants a burst of movement speed to yourself and nearby allies</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="text-align: center; margin-top: 30px;">
-                <a href="builds.html" style="display: inline-block; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); color: white; text-decoration: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; font-size: 1.2em; transition: transform 0.3s, box-shadow 0.3s;">
-                    <i class="fas fa-hammer" style="margin-right: 10px;"></i>Try the New Build Planner
-                </a>
-            </div>
-        </div>
-        
-        <div class="update-section">
-            <h2 class="section-title">Upcoming Champions</h2>
-            
-            <div class="section-description">
-                <p>Get ready for new faces joining the battle! Season 2 will introduce powerful new champions in upcoming patches, each with unique abilities and playstyles!</p>
-            </div>
-            
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="feature-image">
-                        <img src="UI/Tanya.jpg" alt="Tanya">
-                    </div>
-                    <h3 class="feature-title">Tanya</h3>
-                    <div class="feature-description">
-                        <p>A deadly assassin with lightning-fast reflexes and devastating combo potential, Tanya excels at eliminating high-priority targets with precision and speed.</p>
-                        <ul class="feature-list">
-                            <li>Wields her signature <span class="highlight">dual-bladed weapons</span> with deadly precision</li>
-                            <li>Utilizes <span class="highlight">teleportation abilities</span> to outmaneuver opponents</li>
-                            <li>Specializes in <span class="highlight">high burst damage</span> and quick escapes</li>
-                            <li>Excels in <span class="highlight">1v1 duels</span> and flanking maneuvers</li>
-                            <li>Unique <span class="highlight">combo system</span> rewards skillful execution</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-image">
-                        <img src="UI/Anna.jpg" alt="Anna">
-                    </div>
-                    <h3 class="feature-title">Anna</h3>
-                    <div class="feature-description">
-                        <p>A versatile fighter with a mix of close-quarters combat expertise and tactical weaponry, Anna brings a balanced kit that can adapt to various situations on the battlefield.</p>
-                        <ul class="feature-list">
-                            <li>Masters both <span class="highlight">hand-to-hand combat</span> and advanced weaponry</li>
-                            <li>Deploys <span class="highlight">tactical gadgets</span> to control the battlefield</li>
-                            <li>Features a <span class="highlight">stance-switching mechanic</span> for versatile playstyles</li>
-                            <li>Excels at <span class="highlight">medium-range engagements</span> and team fights</li>
-                            <li>Ultimate ability unleashes her <span class="highlight">signature rocket launcher</span> for massive area damage</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="text-align: center; margin-top: 30px;">
-                <p style="font-size: 1.2em; margin-bottom: 15px;">Both champions will be released during Season 2, with Tanya arriving in Patch 2.1 and Anna following in Patch 2.2.</p>
-                <p style="font-style: italic; color: var(--secondary-color);">Stay tuned for detailed champion spotlights and ability previews in the coming weeks!</p>
-            </div>
-        </div>
-        
-        <div class="update-section">
-            <h2 class="section-title">Battleborn Event</h2>
-            
-            <div class="section-description">
-                <p>Season 2 introduces our exciting new Battleborn event with exclusive themed content! Collect unique skins, stickers, icons, and more through the event and Battle Pass!</p>
-            </div>
-            
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="feature-image">
-                        <img src="Skins/Battleborn Zasalamel.jpeg" alt="Battleborn Skins">
-                    </div>
-                    <h3 class="feature-title">Exclusive Battleborn Skins</h3>
-                    <div class="feature-description">
-                        <p>Outfit your favorite fighters with these limited-time Battleborn-themed skins, available only during the Season 2 event.</p>
-                        <ul class="feature-list">
-                            <li>Battleborn <span class="highlight">Zasalamel</span> - Legendary skin with unique visual effects</li>
-                            <li>Battleborn <span class="highlight">Talim</span> - Epic skin with custom animations</li>
-                            <li>Battleborn <span class="highlight">Yugo</span> - Epic skin with themed particle effects</li>
-                            <li>Battleborn <span class="highlight">Eagle</span> - Epic skin with custom sound effects</li>
-                            <li>Battleborn <span class="highlight">Ayane</span> - Epic skin with unique visual elements</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-image">
-                        <img src="Stickers/Ayane_Try_Me.png" alt="Battleborn Stickers">
-                    </div>
-                    <h3 class="feature-title">Themed Stickers Collection</h3>
-                    <div class="feature-description">
-                        <p>Express yourself in chat with our new collection of Battleborn-themed stickers, available in the Sticker Shop.</p>
-                        <ul class="feature-list">
-                            <li><span class="highlight">Ayane Try Me</span> - Show your confidence with this sassy sticker</li>
-                            <li><span class="highlight">Talim Too Slow</span> - Taunt your opponents with Talim's speed</li>
-                            <li><span class="highlight">Ayane Side Eye</span> - Express skepticism with Ayane's signature look</li>
-                            <li><span class="highlight">Ayane Isthisa</span> - Share confusion with this expressive sticker</li>
-                            <li><span class="highlight">Scorpion</span> - Intimidate opponents with this fierce sticker</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-image">
-                        <img src="Icons/Profile/battleborn_ayane.png" alt="Battleborn Icons">
-                    </div>
-                    <h3 class="feature-title">Profile Icons</h3>
-                    <div class="feature-description">
-                        <p>Customize your profile with these exclusive Battleborn-themed icons to showcase your participation in the event.</p>
-                        <ul class="feature-list">
-                            <li><span class="highlight">Battleborn Ayane</span> - Available through the Battle Pass</li>
-                            <li><span class="highlight">Battleborn Yugo</span> - Available in the Icon Store</li>
-                            <li><span class="highlight">Jade Yugo</span> - Special themed icon with unique border</li>
-                            <li><span class="highlight">Jade Panda</span> - Cute companion icon with Battleborn elements</li>
-                            <li><span class="highlight">Jade Claws</span> - Symbolic icon representing the Battleborn theme</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-image">
-                        <img src="Skins/Thunderstrike Shao Kahn.jfif" alt="Battle Pass Rewards">
-                    </div>
-                    <h3 class="feature-title">Battle Pass Rewards</h3>
-                    <div class="feature-description">
-                        <p>Progress through 50 levels of our Season 2 Battle Pass to unlock exclusive content and rewards!</p>
-                        <ul class="feature-list">
-                            <li><span class="highlight">Shao Kahn Character Unlock</span> - Instantly unlock this powerful fighter</li>
-                            <li><span class="highlight">Thunderstrike Shao Kahn</span> - Exclusive legendary skin</li>
-                            <li><span class="highlight">Battleborn Ayane</span> - Epic skin at level 8</li>
-                            <li><span class="highlight">Battleborn Eagle</span> - Epic skin at level 15</li>
-                            <li><span class="highlight">Random Recolors</span>, <span class="highlight">FM & CM Currency</span>, and more!</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="text-align: center; margin-top: 30px;">
-                <a href="event.html" style="display: inline-block; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); color: white; text-decoration: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; font-size: 1.2em; transition: transform 0.3s, box-shadow 0.3s;">
-                    <i class="fas fa-calendar-alt" style="margin-right: 10px;"></i>Join the Battleborn Event
-                </a>
-            </div>
-        </div>
-    </div>
+        // Parallax effect for hero section
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.pageYOffset;
+            const hero = document.querySelector('.hero::before');
+            if (hero) {
+                hero.style.transform = `translateY(${scrollPosition * 0.4}px)`;
+            }
+        });
+    </script>
 </body>
 </html>

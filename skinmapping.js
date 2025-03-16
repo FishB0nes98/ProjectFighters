@@ -474,5 +474,12 @@ export const skinToBaseCharacterMap = {
     'Shao Kahn Demon': 'Shao Kahn',
     'Shao Kahn Metal': 'Shao Kahn',
     'Shao Kahn Molten': 'Shao Kahn',
-    'Glorious Julia': 'Julia'
+    'Glorious Julia': 'Julia',
+    'Gangster Juri': 'Juri',
+    'Gangster Blanka': 'Blanka',
+    'Gangster Peacock': 'Peacock',
+    'Bandito Reptile': 'Reptile',
+    'Bandito Eagle': 'Eagle',
+    'Bandito Shinnok': 'Shinnok',
+    'Bandito Shinnok Fel Fire': 'Shinnok'
 };

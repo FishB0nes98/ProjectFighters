@@ -12,6 +12,7 @@ export const profileIcons = {
     ],
     // Special icons
     special: [
+        'gangster_peacock', 'bandito_eagle', 'bandito_shinnok',
         'lovely_kagome', 'date_night_kuma', 'heartbreaker_ibuki', 'lunar_rabbit', 'golden_snake',
         'atlantean_hourglass', 'coral_armor', 'rapid_golden_arrows', 'Steampunk_City', 'Steampunk_Hat',
         'Angry_Carrot_Icon', 'Nina_A2', 'Julia_Sacred', 'Birdie_Sacred', 'Black_Red_Rose',

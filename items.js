@@ -34,12 +34,12 @@ export const items = {
         id: "flask_of_strength",
         name: "Flask of Strength",
         image: "items/flask_of_strength.webp",
-        cost: 1000,
+        cost: 1200,
         tags: ["Attack"],
         stats: {},
         active: {
             name: "Surge of Power",
-            description: "Grants +90 Attack Damage for 10s",
+            description: "Grants +120 Attack Damage for 12s",
             cooldown: 60
         }
     },
@@ -50,8 +50,8 @@ export const items = {
         cost: 2900,
         tags: ["Attack", "Magic"],
         stats: {
-            attackDamage: 28,
-            abilityPower: 30
+            attackDamage: 24,
+            abilityPower: 27
         },
         passive: {
             name: "Poison Strike",
@@ -326,13 +326,13 @@ export const items = {
         cost: 2600,
         tags: ["Support", "Movement", "Cooldown Reduction"],
         stats: {
-            healingAndShieldingPower: 5,
+            healingAndShieldingPower: 8,
             movementSpeed: 15,
             cooldownReduction: 1
         },
         active: {
             name: "Scarab's Protection",
-            description: "Grant a target champion a [500] shield",
+            description: "Grant a target champion a [850] shield",
             cooldown: 60
         }
     },
@@ -563,15 +563,15 @@ export const items = {
         id: "mermaid_essence",
         name: "Mermaid Essence",
         image: "items/mermaid_essence.webp",
-        cost: 3050,
+        cost: 2900,
         tags: ["Magic", "Support"],
         stats: {
             abilityPower: 50,
-            healingAndShieldingPower: 15
+            healingAndShieldingPower: 12
         },
         passive: {
             name: "Ocean's Blessing",
-            description: "Casting an ability grants a counter. At 4 counters, heal nearby allies for [200% AP] health"
+            description: "Casting an ability grants a counter. At 4 counters, heal nearby allies for [85% AP] health"
         }
     },
     coral_polearm: {
@@ -935,12 +935,12 @@ export const items = {
         cost: 1850,
         tags: ["Attack"],
         stats: {
-            attackDamage: 30,
+            attackDamage: 40,
             movementSpeed: 5
         },
         passive: {
             name: "Street Dominance",
-            description: "Kills and assists grant stacking bonuses: First stack gives 50 bonus gold, each subsequent stack increases the bonus by 50 gold (up to 300 gold per kill). Dying resets all stacks"
+            description: "Kills and assists grant stacking bonuses: First stack gives 150 bonus gold, each subsequent stack increases the bonus by 150 gold (up to 1000 gold per kill). Dying resets all stacks"
         }
     },
     cyber_revolver: {

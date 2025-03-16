@@ -474,7 +474,7 @@ async function updateCharacterSpecificQuests(team1, team2) {
         }
 
         function loadImage(imgElement, basePath) {
-            const extensions = ['.png'];
+            const extensions = ['.png', '.jpg', '.jpeg', '.jfif'];
             let found = false;
             for (const ext of extensions) {
                 const img = new Image();
@@ -486,8 +486,8 @@ async function updateCharacterSpecificQuests(team1, team2) {
                     }
                 };
                 img.onerror = () => {
-                    if (!found) {
-                        imgElement.src = ''; // Clear src if not found
+                    if (!found && ext === '.jfif') {
+                        imgElement.src = ''; // Clear src if not found after trying all extensions
                     }
                 };
             }

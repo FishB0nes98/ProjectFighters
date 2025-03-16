@@ -695,11 +695,19 @@
                                     console.log(`Setting skin for ${team}-${slot}:`, decodedSkin);
                                     const skinImage = slotElement.querySelector('.skin-image');
                                     if (skinImage) {
-                                        skinImage.src = `Loading Screen/${decodedSkin}.png`;
-                                        skinImage.onerror = function() {
-                                            console.log(`Fallback to champion icon for ${team}-${slot}`);
-                                            skinImage.src = `Icons/${player.champion}.png`;
+                                        // Try multiple file extensions for skin images
+                                        const trySkinExtensions = (extensions = ['png', 'jpg', 'jpeg', 'jfif']) => {
+                                            if (extensions.length === 0) {
+                                                console.log(`Fallback to champion icon for ${team}-${slot}`);
+                                                skinImage.src = `Icons/${player.champion}.png`;
+                                                return;
+                                            }
+                                            
+                                            skinImage.src = `Loading Screen/${decodedSkin}.${extensions[0]}`;
+                                            skinImage.onerror = () => trySkinExtensions(extensions.slice(1));
                                         };
+                                        
+                                        trySkinExtensions();
                                     }
                                 }
 

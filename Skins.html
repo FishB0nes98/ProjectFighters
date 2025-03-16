@@ -235,24 +235,62 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #FFD700;
-            color: #000;
-            padding: 10px 20px;
+            background: linear-gradient(45deg, #8B0000, #FFD700);
+            color: #fff;
+            padding: 12px 30px;
             border: none;
-            border-radius: 25px;
+            border-radius: 30px;
             cursor: pointer;
             font-weight: bold;
-            transition: all 0.3s ease;
+            font-size: 16px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.4s ease;
+            box-shadow: 0 5px 15px rgba(139, 0, 0, 0.4);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .purchase-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s ease;
+            z-index: -1;
         }
 
         .purchase-button:hover {
-            background-color: #FFC000;
-            transform: translateX(-50%) scale(1.05);
+            background: linear-gradient(45deg, #FFD700, #8B0000);
+            transform: translateX(-50%) translateY(-3px);
+            box-shadow: 0 8px 25px rgba(139, 0, 0, 0.6);
+        }
+
+        .purchase-button:hover::before {
+            left: 100%;
+        }
+
+        .purchase-button:active {
+            transform: translateX(-50%) translateY(0);
+            box-shadow: 0 4px 10px rgba(139, 0, 0, 0.4);
         }
 
         .purchase-button.disabled {
-            background-color: #666;
+            background: linear-gradient(45deg, #555, #888);
             cursor: not-allowed;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .purchase-button.disabled:hover {
+            transform: translateX(-50%);
+        }
+
+        .purchase-button.disabled::before {
+            display: none;
         }
 
         .badges-container {
@@ -363,40 +401,35 @@
             100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
 		}
 
-        /* Add celestial badge style */
-        .celestial-badge {
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-            color: white;
-            background: linear-gradient(45deg, #9b59b6, #8e44ad);
-            box-shadow: 0 0 10px rgba(155, 89, 182, 0.3);
-            animation: celestialGlow 2s ease-in-out infinite;
-        }
-
-        @keyframes celestialGlow {
-            0% { box-shadow: 0 0 10px rgba(155, 89, 182, 0.3); }
-            50% { box-shadow: 0 0 20px rgba(241, 196, 15, 0.5); }
-            100% { box-shadow: 0 0 10px rgba(155, 89, 182, 0.3); }
-        }
-
-        /* Add Battleborn badge style */
-        .battleborn-badge {
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-            color: #000000;
-            background: linear-gradient(45deg, #FFD700, #DAA520);
+        /* Season 2 tag style */
+        .tag-s2 {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-            animation: battlebornGlow 2s ease-in-out infinite;
+            animation: s2Glow 2s ease-in-out infinite;
+            color: #000000;
+            font-weight: bold;
         }
 
-        @keyframes battlebornGlow {
+        @keyframes s2Glow {
             0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
-            50% { box-shadow: 0 0 20px rgba(218, 165, 32, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(255, 165, 0, 0.5); }
             100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+        }
+
+        /* Gangster tag style */
+        .tag-gangster {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            box-shadow: 0 0 10px rgba(44, 62, 80, 0.3);
+            color: #FFD700;
+            text-shadow: 0 0 3px rgba(0,0,0,0.8);
+        }
+
+        /* Bandito tag style */
+        .tag-bandito {
+            background: linear-gradient(45deg, #8B0000, #A52A2A);
+            box-shadow: 0 0 10px rgba(139, 0, 0, 0.3);
+            color: #F0E68C;
+            text-shadow: 0 0 3px rgba(0,0,0,0.8);
         }
 
         /* Add tag styles */
@@ -483,10 +516,14 @@
         // Initialize champions grid
         function initChampionsGrid() {
             const grid = document.getElementById('champions-grid');
-            // Update new skins list for Battleborn
-            const newSkins = ["Shao Kahn", "Julia", "Zasalamel", "Talim", "Yugo", "Eagle", "Ayane"];
-            // Add Battleborn characters list
-            const battlebornSkins = ["Zasalamel", "Talim", "Yugo", "Eagle", "Ayane"];
+            // Update new skins list for characters who received new skins in Patch 2.1
+            const newSkins = ["Juri", "Blanka", "Peacock", "Reptile", "Eagle", "Shinnok"];
+            // Season 2 characters (former Battleborn + new skins)
+            const seasonTwoSkins = ["Zasalamel", "Talim", "Yugo", "Eagle", "Ayane", "Juri", "Blanka", "Peacock", "Reptile", "Shinnok"];
+            // Characters with Gangster skins
+            const gangsterSkins = ["Juri", "Blanka", "Peacock"];
+            // Characters with Bandito skins
+            const banditoSkins = ["Reptile", "Eagle", "Shinnok"];
             const freeSkins = ["Kuma"];
             
             const fileNameCorrections = {
@@ -521,6 +558,8 @@
                 badgeRow1.className = 'badge-row';
                 const badgeRow2 = document.createElement('div');
                 badgeRow2.className = 'badge-row';
+                const badgeRow3 = document.createElement('div');
+                badgeRow3.className = 'badge-row';
                 
                 if (newSkins.includes(champion)) {
                     const newBadge = document.createElement('div');
@@ -529,24 +568,47 @@
                     badgeRow1.appendChild(newBadge);
                 }
                 
-                if (battlebornSkins.includes(champion)) {
-                    const battlebornBadge = document.createElement('div');
-                    battlebornBadge.className = 'battleborn-badge';
-                    battlebornBadge.textContent = 'BATTLEBORN';
-                    badgeRow1.appendChild(battlebornBadge);
+                if (seasonTwoSkins.includes(champion)) {
+                    const s2Badge = document.createElement('div');
+                    s2Badge.className = 'skin-tag tag-s2';
+                    s2Badge.textContent = 'S2';
+                    badgeRow1.appendChild(s2Badge);
+                }
+
+                if (gangsterSkins.includes(champion)) {
+                    const gangsterBadge = document.createElement('div');
+                    gangsterBadge.className = 'skin-tag tag-gangster';
+                    gangsterBadge.textContent = 'GANGSTER';
+                    badgeRow2.appendChild(gangsterBadge);
+                }
+
+                if (banditoSkins.includes(champion)) {
+                    const banditoBadge = document.createElement('div');
+                    banditoBadge.className = 'skin-tag tag-bandito';
+                    banditoBadge.textContent = 'BANDITO';
+                    badgeRow2.appendChild(banditoBadge);
                 }
 
                 if (freeSkins.includes(champion)) {
                     const freeBadge = document.createElement('div');
                     freeBadge.className = 'skin-tag tag-free';
                     freeBadge.textContent = 'FREE';
-                    // Add to second row if first row has 2 badges
-                    badgeRow1.children.length < 2 ? badgeRow1.appendChild(freeBadge) : badgeRow2.appendChild(freeBadge);
+                    // Add to third row if needed
+                    if (badgeRow1.children.length >= 2 && badgeRow2.children.length >= 1) {
+                        badgeRow3.appendChild(freeBadge);
+                    } else if (badgeRow1.children.length >= 2) {
+                        badgeRow2.appendChild(freeBadge);
+                    } else {
+                        badgeRow1.appendChild(freeBadge);
+                    }
                 }
                 
                 badgesContainer.appendChild(badgeRow1);
                 if (badgeRow2.children.length > 0) {
                     badgesContainer.appendChild(badgeRow2);
+                }
+                if (badgeRow3.children.length > 0) {
+                    badgesContainer.appendChild(badgeRow3);
                 }
                 
                 if (badgesContainer.children.length > 0) {
@@ -579,11 +641,45 @@
                 tagsContainer.className = 'skin-tags';
                 
                 // Add appropriate tags based on conditions
-                if (skin.name.includes('Battleborn')) {
+                if (skin.name.includes('Gangster')) {
+                    const gangsterTag = document.createElement('div');
+                    gangsterTag.className = 'skin-tag tag-gangster';
+                    gangsterTag.textContent = 'GANGSTER';
+                    tagsContainer.appendChild(gangsterTag);
+                    
+                    const s2Tag = document.createElement('div');
+                    s2Tag.className = 'skin-tag tag-s2';
+                    s2Tag.textContent = 'S2';
+                    tagsContainer.appendChild(s2Tag);
+                    
                     const newTag = document.createElement('div');
                     newTag.className = 'skin-tag tag-new';
                     newTag.textContent = 'NEW';
                     tagsContainer.appendChild(newTag);
+                }
+                
+                if (skin.name.includes('Bandito')) {
+                    const banditoTag = document.createElement('div');
+                    banditoTag.className = 'skin-tag tag-bandito';
+                    banditoTag.textContent = 'BANDITO';
+                    tagsContainer.appendChild(banditoTag);
+                    
+                    const s2Tag = document.createElement('div');
+                    s2Tag.className = 'skin-tag tag-s2';
+                    s2Tag.textContent = 'S2';
+                    tagsContainer.appendChild(s2Tag);
+                    
+                    const newTag = document.createElement('div');
+                    newTag.className = 'skin-tag tag-new';
+                    newTag.textContent = 'NEW';
+                    tagsContainer.appendChild(newTag);
+                }
+                
+                if (skin.name.includes('Battleborn')) {
+                    const s2Tag = document.createElement('div');
+                    s2Tag.className = 'skin-tag tag-s2';
+                    s2Tag.textContent = 'S2';
+                    tagsContainer.appendChild(s2Tag);
                 }
 
                 // Add reward tag for specific skins

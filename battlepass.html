@@ -406,7 +406,7 @@
                 </div>
                 <div class="progress-info">
                     <span id="current-level">Level 1</span>
-                    <span id="battlepass-exp">0 / 11500 BP Exp</span>
+                    <span id="battlepass-exp">0 / 8500 BP Exp</span>
                 </div>
             </div>
             <div class="header-buttons">
@@ -466,6 +466,18 @@
         
         // Recolor data for random recolor rewards
         const recolorData = {
+            "Gangster Peacock": {
+                base: "Gangster Peacock",
+                recolors: ["Red", "Blue", "Green", "Purple", "Gold"],
+                availability: {}
+            },
+            "Bandito Shinnok": {
+                base: "Bandito Shinnok",
+                recolors: ["Red", "Blue", "Green", "Purple", "Gold", "Fel Fire"],
+                availability: {
+                    "Fel Fire": false // Fel Fire is only available through battlepass
+                }
+            },
             "Cham Cham": {
                 base: "Cham Cham",
                 recolors: ["Red", "Blue", "Green", "Purple", "Gold"],
@@ -515,56 +527,46 @@
         
         // Battle Pass Items
         const battlePassItems = [
-            { id: 'Item1', exp: 0, img: 'Skins/Shao Kahn.jpg', skinName: 'Shao Kahn', name: 'Shao Kahn Character Unlock' },
-            { id: 'Item2', exp: 30, img: 'Skins/Thunderstrike Shao Kahn.jfif', skinName: 'Thunderstrike Shao Kahn', name: 'Thunderstrike Shao Kahn' },
-            { id: 'Item3', exp: 85, img: 'Stickers/Ayane_Try_Me.png', name: 'Ayane Try Me', type: 'Sticker', stickerName: 'Ayane_Try_Me' },
-            { id: 'Item4', exp: 150, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
-            { id: 'Item5', exp: 200, img: 'Icons/Profile/Battleborn_Ayane.png', name: 'Battleborn Ayane Icon', type: 'icon', rewardName: 'Battleborn_Ayane' },
-            { id: 'Item6', exp: 260, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item7', exp: 320, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
-            { id: 'Item8', exp: 395, img: 'Skins/Battleborn Ayane.jpeg', skinName: 'Battleborn Ayane', name: 'Battleborn Ayane' },
-            { id: 'Item9', exp: 480, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
-            { id: 'Item10', exp: 580, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
-            { id: 'Item11', exp: 665, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item12', exp: 750, img: 'Stickers/Talim_Too_Slow.png', name: 'Talim Too Slow', type: 'Sticker', stickerName: 'Talim_Too_Slow' },
-            { id: 'Item13', exp: 835, img: 'res/img/recolor.png', name: 'Random Recolor', type: 'RandomRecolor', rewardName: 'random_recolor' },
-            { id: 'Item14', exp: 910, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
-            { id: 'Item15', exp: 1000, img: 'Skins/Battleborn Eagle.jpeg', skinName: 'Battleborn Eagle', name: 'Battleborn Eagle' },
+            { id: 'Item1', exp: 0, img: 'Skins/Gangster Peacock.jfif', skinName: 'Gangster Peacock', name: 'Gangster Peacock Skin' },
+            { id: 'Item2', exp: 30, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
+            { id: 'Item3', exp: 85, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
+            { id: 'Item4', exp: 150, img: 'Stickers/peacock_sassy.png', name: 'Peacock Sassy', type: 'Sticker', stickerName: 'peacock_sassy' },
+            { id: 'Item5', exp: 200, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item6', exp: 260, img: 'Icons/Profile/gangster_peacock.webp', name: 'Gangster Peacock Icon', type: 'icon', rewardName: 'gangster_peacock' },
+            { id: 'Item7', exp: 320, img: 'Stickers/reptile_ok.png', name: 'Reptile OK', type: 'Sticker', stickerName: 'reptile_ok' },
+            { id: 'Item8', exp: 395, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
+            { id: 'Item9', exp: 480, img: 'Icons/Profile/bandito_shinnok.webp', name: 'Bandito Shinnok Icon', type: 'icon', rewardName: 'bandito_shinnok' },
+            { id: 'Item10', exp: 580, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item11', exp: 665, img: 'res/img/basicbox.png', folder: 'freelootbox', name: 'Free Lootbox' },
+            { id: 'Item12', exp: 750, img: 'Skins/Bandito Shinnok.jpg', skinName: 'Bandito Shinnok', name: 'Bandito Shinnok Skin' },
+            { id: 'Item13', exp: 835, img: 'res/img/fm.png', name: '500 FM', type: 'FM', amount: 500 },
+            { id: 'Item14', exp: 910, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item15', exp: 1000, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
             { id: 'Item16', exp: 1300, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
             { id: 'Item17', exp: 1600, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item18', exp: 1900, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item18', exp: 1900, img: 'Skins/Bandito Shinnok Fel Fire.webp', skinName: 'Bandito Shinnok Fel Fire', name: 'Bandito Shinnok Fel Fire Skin' },
             { id: 'Item19', exp: 2200, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
             { id: 'Item20', exp: 2500, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
             { id: 'Item21', exp: 2800, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item22', exp: 3100, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
-            { id: 'Item23', exp: 3400, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item22', exp: 3100, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item23', exp: 3400, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
             { id: 'Item24', exp: 3700, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
             { id: 'Item25', exp: 4000, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
             { id: 'Item26', exp: 4300, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
             { id: 'Item27', exp: 4600, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item28', exp: 4900, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item29', exp: 5200, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
+            { id: 'Item28', exp: 4900, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
+            { id: 'Item29', exp: 5200, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
             { id: 'Item30', exp: 5500, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
             { id: 'Item31', exp: 5800, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
             { id: 'Item32', exp: 6100, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item33', exp: 6400, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item33', exp: 6400, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
             { id: 'Item34', exp: 6700, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
             { id: 'Item35', exp: 7000, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item36', exp: 7300, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
+            { id: 'Item36', exp: 7300, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
             { id: 'Item37', exp: 7600, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item38', exp: 7900, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
+            { id: 'Item38', exp: 7900, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
             { id: 'Item39', exp: 8200, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item40', exp: 8500, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item41', exp: 8800, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item42', exp: 9100, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item43', exp: 9400, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 },
-            { id: 'Item44', exp: 9700, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item45', exp: 10000, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item46', exp: 10300, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item47', exp: 10600, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item48', exp: 10900, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item49', exp: 11200, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 },
-            { id: 'Item50', exp: 11500, img: 'res/img/fm.png', name: '100 FM', type: 'FM', amount: 100 }
+            { id: 'Item40', exp: 8500, img: 'res/img/cm.png', name: '8,000 CM', type: 'CM', amount: 8000 }
         ];
 
         // Update progress bar

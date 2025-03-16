@@ -1,4 +1,11 @@
 const recolorData = {
+    "Bandito Shinnok": {
+        base: "Bandito Shinnok",
+        recolors: ["Fel Fire"],
+        availability: {
+            "Fel Fire": false
+        }
+    },
     "Lunar Festival Kokoro": {
         base: "Lunar Festival Kokoro",
         recolors: ["Sweet"],

@@ -1325,11 +1325,12 @@ function populateCharacterButtons(characters) {
                     });
 
                     const img = document.createElement('img');
-                    img.src = `Loading Screen/${skin}.png`; // Assuming all skins are .png
+                    // Try loading with multiple extensions
+                    loadImage(img, `Loading Screen/${skin}`);
                     img.alt = skin;
                     img.classList.add('skin-image');
                     skinCard.appendChild(img);
-                    console.log('Skin image added:', img.src);
+                    console.log('Skin image added with multi-extension support');
 
                     const skinName = document.createElement('div');
                     skinName.textContent = skin;
@@ -1366,7 +1367,7 @@ function populateCharacterButtons(characters) {
        
 
         function loadImage(imgElement, basePath) {
-            const extensions = ['.png'];
+            const extensions = ['.png', '.jpg', '.jpeg', '.jfif'];
             let found = false;
             for (const ext of extensions) {
                 const img = new Image();
@@ -1378,8 +1379,8 @@ function populateCharacterButtons(characters) {
                     }
                 };
                 img.onerror = () => {
-                    if (!found) {
-                        imgElement.src = ''; // Clear src if not found
+                    if (!found && ext === '.jfif') {
+                        imgElement.src = ''; // Clear src if not found after trying all extensions
                     }
                 };
             }

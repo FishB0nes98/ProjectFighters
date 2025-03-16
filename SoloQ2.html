@@ -1530,8 +1530,12 @@
                                 // If png fails, try jpg
                                 this.src = `Skins/${skin}.jpg`;
                                 this.onerror = function() {
-                                    // If all fail, use champion icon
-                                    this.src = `Icons/${champion}.png`;
+                                    // If jpg fails, try jfif
+                                    this.src = `Skins/${skin}.jfif`;
+                                    this.onerror = function() {
+                                        // If all fail, use champion icon
+                                        this.src = `Icons/${champion}.png`;
+                                    }
                                 }
                             }
                         };
@@ -1604,8 +1608,12 @@
                 this.onerror = function() {
                     this.src = `Skins/${skin}.jpg`;
                     this.onerror = function() {
-                        // If all fail, use default champion icon
-                        this.src = `Icons/${selectedChampion}.png`;
+                        // Try jfif format
+                        this.src = `Skins/${skin}.jfif`;
+                        this.onerror = function() {
+                            // If all fail, use default champion icon
+                            this.src = `Icons/${selectedChampion}.png`;
+                        }
                     }
                 }
             };
@@ -1683,7 +1691,7 @@
                 };
                 
                 // Enhanced image loading with multiple retries
-                const tryLoadImage = (skin, extensions = ['jpeg', 'png', 'jpg']) => {
+                const tryLoadImage = (skin, extensions = ['jpeg', 'png', 'jpg', 'jfif']) => {
                     if (extensions.length === 0) {
                         img.src = `Icons/${randomChampion}.png`;
                         return;
@@ -2130,7 +2138,7 @@
                             const playerName = memberElement.querySelector('.player-name')?.textContent;
                             const championPortrait = memberElement.querySelector('.champion-portrait img');
                             const champion = championPortrait ? championPortrait.alt : null;
-                            const skin = memberElement.style.backgroundImage.match(/Skins\/(.*?)\.(jpeg|jpg|png)/)?.[1] || champion;
+                            const skin = memberElement.style.backgroundImage.match(/Skins\/(.*?)\.(jpeg|jpg|png|jfif)/)?.[1] || champion;
                             
                             if (!champion) {
                                 console.error(`No champion found for ${team}-${slot}`);
