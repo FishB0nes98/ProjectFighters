@@ -835,11 +835,29 @@
             object-fit: cover;
         }
 
-        .skin-name {
+        /* Add a new class for skin names in the skin selection modal */
+        .skin-card-name {
             padding: 10px;
             text-align: center;
             color: var(--text-color);
             font-size: 14px;
+            display: block;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .skin-name {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 14px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 3px 6px;
+            border-radius: 4px;
+            display: none !important; /* Hide it visually but keep the element */
+            visibility: hidden !important;
+            opacity: 0 !important;
+            z-index: 10;
         }
 
         .team-member {
@@ -1322,6 +1340,10 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
+        // Add after Firebase initialization and before game state variables
+        let queueId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+        console.log('Generated queue ID:', queueId);
+
         // Champion Select Timer
         let timeLeft = 30;
         const timerElement = document.querySelector('.timer');
@@ -1522,19 +1544,23 @@
                         card.className = 'skin-card';
                         
                         const img = document.createElement('img');
-                        img.src = `Skins/${skin}.jpeg`; // Try jpeg first
+                        img.src = `Skins/${skin}.webp`; // Try webp first
                         img.onerror = function() {
-                            // If jpeg fails, try png
-                            this.src = `Skins/${skin}.png`;
+                            // If webp fails, try jpeg
+                            this.src = `Skins/${skin}.jpeg`;
                             this.onerror = function() {
-                                // If png fails, try jpg
-                                this.src = `Skins/${skin}.jpg`;
+                                // If jpeg fails, try png
+                                this.src = `Skins/${skin}.png`;
                                 this.onerror = function() {
-                                    // If jpg fails, try jfif
-                                    this.src = `Skins/${skin}.jfif`;
+                                    // If png fails, try jpg
+                                    this.src = `Skins/${skin}.jpg`;
                                     this.onerror = function() {
-                                        // If all fail, use champion icon
-                                        this.src = `Icons/${champion}.png`;
+                                        // If jpg fails, try jfif
+                                        this.src = `Skins/${skin}.jfif`;
+                                        this.onerror = function() {
+                                            // If all fail, use champion icon
+                                            this.src = `Icons/${champion}.png`;
+                                        }
                                     }
                                 }
                             }
@@ -1543,8 +1569,8 @@
                         img.className = 'skin-image';
                         
                         const name = document.createElement('div');
-                        name.className = 'skin-name';
-                        name.textContent = skin.replace(champion + " ", "");
+                        name.className = 'skin-card-name';
+                        name.textContent = skin;
                         
                         card.appendChild(img);
                         card.appendChild(name);
@@ -1573,14 +1599,32 @@
             }
         }
 
-        // Update selectSkin function to show Load Build button with animation
+        // Update selectSkin function
         function selectSkin(skin) {
+            console.log('Selecting skin:', skin);
+            if (!queueId) {
+                console.error('No queue ID available');
+                return;
+            }
+
             const currentPick = pickOrder[currentPickIndex];
             const memberElement = document.getElementById(`${currentPick.team}-${currentPick.slot}`);
             
             // Update portrait
             const portrait = memberElement.querySelector('.champion-portrait');
             portrait.innerHTML = `<img src="Icons/${selectedChampion}.png" alt="${selectedChampion}">`;
+            
+            // Create or get the skin-name element
+            let skinNameElement = memberElement.querySelector('.skin-name');
+            if (!skinNameElement) {
+                skinNameElement = document.createElement('div');
+                skinNameElement.className = 'skin-name';
+                memberElement.appendChild(skinNameElement);
+            }
+            
+            // Set the skin name immediately in the UI but don't display it
+            skinNameElement.textContent = skin;
+            console.log(`Set skin name for ${currentPick.team}-${currentPick.slot} to ${skin}`);
             
             // Try different image extensions for the skin
             const img = new Image();
@@ -1599,20 +1643,39 @@
                 const loadBuildButton = document.getElementById('loadBuildButton');
                 loadBuildButton.style.display = 'block';
                 loadBuildButton.classList.add('available');
+
+                // Update the queue data with the selected skin
+                const queueRef = ref(database, `Queue/${queueId}/players/${currentPick.team}_${currentPick.slot}`);
+                update(queueRef, {
+                    skin: skin,
+                    champion: selectedChampion
+                }).then(() => {
+                    console.log('Selected skin updated in queue data:', skin);
+                    
+                    // Update the skin name in the data but don't show it
+                    const skinNameElement = memberElement.querySelector('.skin-name');
+                    if (skinNameElement) {
+                        skinNameElement.textContent = skin;
+                        console.log(`Updated skin name data for ${currentPick.team}-${currentPick.slot} to ${skin}`);
+                    }
+                }).catch(error => {
+                    console.error('Error updating skin in queue:', error);
+                });
             };
             
             // Try loading different image formats
-            img.src = `Skins/${skin}.jpeg`;
+            img.src = `Skins/${skin}.webp`;
             img.onerror = function() {
-                this.src = `Skins/${skin}.png`;
+                this.src = `Skins/${skin}.jpeg`;
                 this.onerror = function() {
-                    this.src = `Skins/${skin}.jpg`;
+                    this.src = `Skins/${skin}.png`;
                     this.onerror = function() {
-                        // Try jfif format
-                        this.src = `Skins/${skin}.jfif`;
+                        this.src = `Skins/${skin}.jpg`;
                         this.onerror = function() {
-                            // If all fail, use default champion icon
-                            this.src = `Icons/${selectedChampion}.png`;
+                            this.src = `Skins/${skin}.jfif`;
+                            this.onerror = function() {
+                                this.src = `Icons/${selectedChampion}.png`;
+                            }
                         }
                     }
                 }
@@ -1677,6 +1740,18 @@
                 const portrait = memberElement.querySelector('.champion-portrait');
                 portrait.innerHTML = `<img src="Icons/${randomChampion}.png" alt="${randomChampion}">`;
                 
+                // Create the skin-name element if it doesn't exist
+                let skinNameElement = memberElement.querySelector('.skin-name');
+                if (!skinNameElement) {
+                    skinNameElement = document.createElement('div');
+                    skinNameElement.className = 'skin-name';
+                    memberElement.appendChild(skinNameElement);
+                }
+                
+                // Set the skin name but don't display it
+                skinNameElement.textContent = randomSkin;
+                console.log(`Set skin name for ${currentPick.team}-${currentPick.slot} to ${randomSkin}`);
+                
                 // Try different image extensions for the skin with improved error handling
                 const img = new Image();
                 img.onload = function() {
@@ -1691,7 +1766,7 @@
                 };
                 
                 // Enhanced image loading with multiple retries
-                const tryLoadImage = (skin, extensions = ['jpeg', 'png', 'jpg', 'jfif']) => {
+                const tryLoadImage = (skin, extensions = ['webp', 'jpeg', 'png', 'jpg', 'jfif']) => {
                     if (extensions.length === 0) {
                         img.src = `Icons/${randomChampion}.png`;
                         return;
@@ -1702,6 +1777,24 @@
                 };
                 
                 tryLoadImage(randomSkin);
+                
+                // Update the queue data with the selected skin
+                const queueRef = ref(database, `Queue/${queueId}/players/${currentPick.team}_${currentPick.slot}`);
+                update(queueRef, {
+                    skin: randomSkin,
+                    champion: randomChampion
+                }).then(() => {
+                    console.log('AI selected skin updated in queue data:', randomSkin);
+                    
+                    // Update the skin name in the data but don't show it
+                    const skinNameElement = memberElement.querySelector('.skin-name');
+                    if (skinNameElement) {
+                        skinNameElement.textContent = randomSkin;
+                        console.log(`Updated skin name data for ${currentPick.team}-${currentPick.slot} to ${randomSkin}`);
+                    }
+                }).catch(error => {
+                    console.error('Error updating AI skin in queue:', error);
+                });
                 
                 pickedChampions.add(randomChampion);
                 checkAllChampionsSelected(); // Check after each pick
@@ -2138,7 +2231,19 @@
                             const playerName = memberElement.querySelector('.player-name')?.textContent;
                             const championPortrait = memberElement.querySelector('.champion-portrait img');
                             const champion = championPortrait ? championPortrait.alt : null;
-                            const skin = memberElement.style.backgroundImage.match(/Skins\/(.*?)\.(jpeg|jpg|png|jfif)/)?.[1] || champion;
+                            
+                            // Get skin data from the UI element instead of trying to fetch from database
+                            // (The database won't have data yet because we just created this queueId)
+                            let skin;
+                            const skinNameElement = memberElement.querySelector('.skin-name');
+                            if (skinNameElement && skinNameElement.textContent) {
+                                skin = skinNameElement.textContent;
+                                console.log(`Retrieved skin '${skin}' from UI for ${team}-${slot}`);
+                            } else {
+                                // If no skin is set in UI, default to champion name
+                                skin = champion;
+                                console.log(`No skin found in UI for ${team}-${slot}, defaulting to '${champion}'`);
+                            }
                             
                             if (!champion) {
                                 console.error(`No champion found for ${team}-${slot}`);
@@ -2634,6 +2739,19 @@
                 }
             }
         }
+
+        // ... existing code ...
+        // Initialize data after processing the role
+        selectedRole = null;
+        playerTeam = team;
+        playerSlot = slot;
+        document.getElementById(`${team}-${slot}`).classList.add('player-slot');
+        
+        // Initialize game
+        initializeGame();
+        
+        // Hide the modal
+        document.getElementById('roleSelectModal').style.display = 'none';
     </script>
 </body>
 </html> 

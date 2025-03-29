@@ -1,6 +1,30 @@
 // Export the sticker data for use in other files
 export const stickers = {
     // New Stickers
+    "chamcham_hello": {
+        name: "ChamCham Hello",
+        image: "Stickers/chamcham_hello.png",
+        price: 350,
+        category: "regular"
+    },
+    "angel_thank_you": {
+        name: "Angel Thank You",
+        image: "Stickers/angel_thank_you.png",
+        price: 350,
+        category: "regular"
+    },
+    "shizumaru_come_at_me": {
+        name: "Shizumaru Come At Me",
+        image: "Stickers/shizumaru_come_at_me.png",
+        price: 350,
+        category: "regular"
+    },
+    "scorpion_this_is_fine": {
+        name: "Scorpion This Is Fine",
+        image: "Stickers/scorpion_this_is_fine.png",
+        price: 350,
+        category: "regular"
+    },
     "reptile_ok": {
         name: "Reptile OK",
         image: "Stickers/reptile_ok.png",

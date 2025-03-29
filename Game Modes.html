@@ -592,6 +592,20 @@ h1 {
         font-size: 0.8em;
     }
 }
+
+/* Debug Button Styles */
+.debug-button {
+    display: none; /* Hide the debug button by default */
+}
+
+/* Debug Mode Card - Hidden by default */
+.debug-mode {
+    display: none;
+}
+
+.debug-active .debug-mode {
+    display: block;
+}
     </style>
 </head>
     <!-- Menu -->
@@ -692,15 +706,15 @@ h1 {
                 </div>
 
                 <!-- 1v1 Mode -->
-                <div class="game-mode-card" style="filter: grayscale(100%); cursor: not-allowed;">
+                <div class="game-mode-card" onclick="location.href='1v1_2.html'">
                     <img src="res/img/1v1.jpeg" alt="1v1 Background" class="mode-background">
-                    <div class="mode-badge" style="background: linear-gradient(135deg, #777, #333);">DISABLED</div>
+                    <div class="mode-badge">Ranked</div>
                     <div class="mode-content">
                         <h3 class="mode-title">
                             <i class="fas fa-fist-raised"></i>
                             1v1 Mode
                         </h3>
-                        <p class="mode-description">Currently unavailable. This game mode is temporarily disabled for Season 2 updates.</p>
+                        <p class="mode-description">Test your skills in intense 1v1 duels. Challenge opponents in direct combat and prove your mastery.</p>
                     </div>
                 </div>
             </div>
@@ -722,9 +736,25 @@ h1 {
                         <p class="mode-description">Team up with friends to take on epic boss battles and earn exclusive rewards in challenging PvE content.</p>
                     </div>
                 </div>
+
+                <!-- Debug Mode - Pokemon Battle -->
+                <div class="game-mode-card debug-mode" onclick="location.href='project-m/index.html'">
+                    <img src="res/img/1v1.jpeg" alt="Pokemon Battle Background" class="mode-background">
+                    <div class="mode-badge">DEBUG</div>
+                    <div class="mode-content">
+                        <h3 class="mode-title">
+                            <i class="fas fa-bug"></i>
+                            Pokemon Battle
+                        </h3>
+                        <p class="mode-description">Debug mode: Test the Pokemon battle system with type advantages and battle mechanics.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Debug Button -->
+    <button class="debug-button" onclick="toggleDebugMode()">Debug</button>
 
     <script>
         // Particle Effect
@@ -757,6 +787,18 @@ h1 {
         // Video Background
         const video = document.getElementById('video-background');
         video.playbackRate = 1.0;
+
+        // Debug Mode Toggle
+        function toggleDebugMode() {
+            document.body.classList.toggle('debug-active');
+        }
+
+        // Add keyboard event listener for NUM5
+        document.addEventListener('keydown', function(event) {
+            if (event.key === '5' && event.location === 3) { // NUM5 key
+                toggleDebugMode();
+            }
+        });
     </script>
 </body>
 </html>

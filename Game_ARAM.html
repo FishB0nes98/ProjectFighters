@@ -1583,54 +1583,64 @@
         // Update saveMatchHistory to include gameMode
         async function saveMatchHistory(userId, matchData) {
             try {
+                const matchId = Date.now().toString();
+                
+                // Get user's match history
                 const matchHistoryRef = ref(database, `users/${userId}/matchHistory`);
                 const snapshot = await get(matchHistoryRef);
-                const existingMatches = snapshot.val() || {};
+                const matchCount = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
                 
-                // Convert matches to array and sort by timestamp
-                const matchesArray = Object.entries(existingMatches).map(([id, match]) => ({
-                    id,
-                    ...match
-                }));
-                matchesArray.sort((a, b) => b.timestamp - a.timestamp);
-
-                // If there are more than 19 matches (we're adding one new one)
-                if (matchesArray.length >= 19) {
-                    // Get the matches to remove (all matches after the 19th most recent)
-                    const matchesToRemove = matchesArray.slice(19);
+                // Keep only the last 20 matches if there are more than 20
+                let deletions = {};
+                if (matchCount >= 20) {
+                    const matches = [];
                     
-                    // Create deletion operations
-                    const deletions = {};
-                    matchesToRemove.forEach(match => {
-                        deletions[`users/${userId}/matchHistory/${match.id}`] = null;
+                    snapshot.forEach(childSnapshot => {
+                        matches.push({
+                            id: childSnapshot.key,
+                            timestamp: childSnapshot.val().timestamp || childSnapshot.key
+                        });
                     });
-
-                    // Add new match with gameMode
-                    const matchId = Date.now().toString();
-                    const updates = {
-                        ...deletions,
-                        [`users/${userId}/matchHistory/${matchId}`]: {
-                            ...matchData,
-                            gameMode: 'ARAM',
-                            timestamp: matchId
-                        }
-                    };
-
-                    // Perform all updates in one operation
-                    await update(ref(database), updates);
-                } else {
-                    // Just add the new match if we're under the limit
-                    const matchId = Date.now().toString();
-                    await set(ref(database, `users/${userId}/matchHistory/${matchId}`), {
-                        ...matchData,
-                        gameMode: 'ARAM',
-                        timestamp: matchId
-                    });
+                    
+                    // Sort matches by timestamp (descending)
+                    matches.sort((a, b) => b.timestamp - a.timestamp);
+                    
+                    // Mark matches beyond the 19th for deletion
+                    for (let i = 19; i < matches.length; i++) {
+                        deletions[`users/${userId}/matchHistory/${matches[i].id}`] = null;
+                    }
                 }
                 
-                console.log('ARAM match history saved successfully');
+                // Prepare updates with deletions and new match
+                const updates = {
+                    ...deletions,
+                    [`users/${userId}/matchHistory/${matchId}`]: {
+                        ...matchData,
+                        gameMode: 'ARAM',
+                        timestamp: matchId,
+                        date: new Date().toISOString()
+                    }
+                };
+                
+                // Save to database
+                await update(ref(database), updates);
+                
+                // Also update the most recent match for quest tracking
+                await set(ref(database, `users/${userId}/mostRecentMatch`), {
+                    id: matchId,
+                    timestamp: Date.now(),
+                    gameMode: 'ARAM',
+                    result: matchData.result
+                });
+                
+                // Update quest progress with match data
+                const { updateQuestProgress } = await import('./quests.js');
+                await updateQuestProgress(userId, { ...matchData, gameMode: 'ARAM' }, database, ref, get, update);
+                
+                return matchId;
             } catch (error) {
-                console.error('Error saving ARAM match history:', error);
+                console.error('Error saving match history:', error);
+                return null;
             }
         }
     </script>

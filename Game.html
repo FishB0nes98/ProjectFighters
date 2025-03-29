@@ -636,6 +636,21 @@
                     console.error('No game data found');
                     return;
                 }
+                
+                // Log all player data for debugging
+                console.log('Full queue data loaded:', gameData);
+                console.log('Player data from database:', gameData.players);
+                
+                Object.entries(gameData.players).forEach(([key, player]) => {
+                    if (player) {
+                        console.log(`Player ${key} data:`, 
+                            `Name: ${player.name}, `,
+                            `Champion: ${player.champion}, `,
+                            `Skin: ${player.skin || 'None'}, `,
+                            `Role: ${player.role}, `,
+                            `isAI: ${player.isAI || false}`);
+                    }
+                });
 
                 // Get current user's data
                 const currentUser = auth.currentUser;
@@ -696,18 +711,25 @@
                                     const skinImage = slotElement.querySelector('.skin-image');
                                     if (skinImage) {
                                         // Try multiple file extensions for skin images
-                                        const trySkinExtensions = (extensions = ['png', 'jpg', 'jpeg', 'jfif']) => {
+                                        const trySkinExtensions = (extensions = ['webp', 'png', 'jpg', 'jpeg', 'jfif']) => {
                                             if (extensions.length === 0) {
                                                 console.log(`Fallback to champion icon for ${team}-${slot}`);
                                                 skinImage.src = `Icons/${player.champion}.png`;
                                                 return;
                                             }
                                             
+                                            console.log(`Trying to load skin image: Loading Screen/${decodedSkin}.${extensions[0]}`);
                                             skinImage.src = `Loading Screen/${decodedSkin}.${extensions[0]}`;
                                             skinImage.onerror = () => trySkinExtensions(extensions.slice(1));
                                         };
                                         
                                         trySkinExtensions();
+                                    }
+                                } else {
+                                    console.log(`No skin data for ${team}-${slot}, using champion icon`);
+                                    const skinImage = slotElement.querySelector('.skin-image');
+                                    if (skinImage) {
+                                        skinImage.src = `Icons/${player.champion}.png`;
                                     }
                                 }
 
@@ -717,9 +739,10 @@
                                 const profileIcon = slotElement.querySelector('.profile-icon img');
 
                                 if (nameElement) nameElement.textContent = player.name || 'Unknown';
-                                if (skinElement && player.skin) {
-                                    const decodedSkin = decodeURIComponent(player.skin);
+                                if (skinElement) {
+                                    const decodedSkin = player.skin ? decodeURIComponent(player.skin) : player.champion;
                                     skinElement.textContent = decodedSkin;
+                                    console.log(`Set skin name for ${team}-${slot}:`, decodedSkin);
                                 }
 
                                 // Set profile icon
@@ -1483,7 +1506,9 @@
                         ...deletions,
                         [`users/${userId}/matchHistory/${matchId}`]: {
                             ...matchData,
-                            timestamp: matchId
+                            gameMode: '5v5',
+                            timestamp: matchId,
+                            date: new Date().toISOString()
                         }
                     };
 
@@ -1494,11 +1519,25 @@
                     const matchId = Date.now().toString();
                     await set(ref(database, `users/${userId}/matchHistory/${matchId}`), {
                         ...matchData,
-                        timestamp: matchId
+                        gameMode: '5v5',
+                        timestamp: matchId,
+                        date: new Date().toISOString()
                     });
                 }
                 
-                console.log('Match history saved successfully');
+                // Also update the most recent match for quest tracking
+                await set(ref(database, `users/${userId}/mostRecentMatch`), {
+                    id: matchId,
+                    timestamp: Date.now(),
+                    gameMode: '5v5',
+                    result: matchData.result
+                });
+                
+                // Update quest progress with match data
+                const { updateQuestProgress } = await import('./quests.js');
+                await updateQuestProgress(userId, { ...matchData, gameMode: '5v5' }, database, ref, get, update);
+                
+                console.log('Match history and quest progress saved successfully');
             } catch (error) {
                 console.error('Error saving match history:', error);
             }

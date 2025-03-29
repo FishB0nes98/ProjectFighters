@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patch 2.2: Blossom Event - Changelog</title>
+    <link rel="stylesheet" href="styles_new.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Specific styles for changelog */
+        body {
+            background-color: var(--bg-dark);
+            overflow-x: hidden;
+        }
+
+        .changelog-container {
+            max-width: 1200px;
+            margin: 80px auto 40px;
+            padding: 20px;
+        }
+
+        .changelog-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .patch-badge {
+            background: var(--bg-gradient);
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px var(--shadow-primary);
+            animation: pulse 2s infinite;
+        }
+
+        .changelog-title {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, var(--theme-primary), var(--theme-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .changelog-subtitle {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--theme-accent);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .changelog-section {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: var(--radius-lg);
+            margin-bottom: 30px;
+            padding: 30px;
+            border: 1px solid var(--theme-primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .changelog-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius-lg);
+            padding: 2px;
+            background: var(--bg-gradient);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            position: relative;
+            color: var(--theme-secondary);
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: var(--bg-gradient);
+            bottom: -8px;
+            left: 0;
+            border-radius: 2px;
+        }
+
+        .champion-card {
+            display: flex;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: var(--radius-lg);
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .champion-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--theme-primary);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .champion-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 20px;
+            border: 3px solid var(--theme-secondary);
+        }
+
+        .champion-info {
+            padding: 20px 20px 20px 0;
+            flex: 1;
+        }
+
+        .champion-name {
+            font-size: 1.6rem;
+            margin-bottom: 5px;
+            color: var(--theme-secondary);
+        }
+        
+        .champion-title {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+        
+        .change-list {
+            list-style: none;
+        }
+        
+        .change-item {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .change-item::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--theme-primary);
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .item-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-md);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .item-card:hover {
+            transform: translateX(5px);
+            background: rgba(0, 0, 0, 0.4);
+            border-color: var(--theme-primary);
+        }
+
+        .item-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 1px solid var(--theme-secondary);
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--theme-secondary);
+        }
+
+        .event-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .event-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 100%;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--theme-primary);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .event-image {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .event-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .event-card:hover .event-image img {
+            transform: scale(1.1);
+        }
+
+        .event-details {
+            padding: 20px;
+        }
+
+        .event-name {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--theme-secondary);
+        }
+
+        .event-price {
+            display: inline-block;
+            background: var(--bg-gradient);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            margin-top: 80px;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .champion-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .champion-info {
+                padding: 0 20px 20px;
+            }
+            .champion-icon {
+                margin-bottom: 0;
+            }
+            .changelog-title {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <video id="video-background" autoplay muted loop playsinline>
+        <source src="Event/Eventvideo.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Navigation Menu -->
+    <nav class="main-nav">
+        <div class="nav-content">
+            <a href="Game Modes.html" class="play-button">
+                <i class="fas fa-play play-icon"></i>
+                <span class="play-text">Play</span>
+            </a>
+            <a href="home.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <span class="nav-text">Home</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="Store.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <span class="nav-text">Store</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="event.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-calendar"></i>
+                </div>
+                <span class="nav-text">Event</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="#" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-hammer"></i>
+                </div>
+                <span class="nav-text">Build</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="Team Builder.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <span class="nav-text">Team Builder</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="statistics.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <span class="nav-text">Statistics</span>
+                <div class="nav-indicator"></div>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Changelog Content -->
+    <div class="changelog-container">
+        <div class="changelog-header">
+            <div class="patch-badge">PATCH 2.2</div>
+            <h1 class="changelog-title">Blossom Event</h1>
+            <h2 class="changelog-subtitle">Balance Changes & New Event</h2>
+        </div>
+
+        <div class="changelog-section">
+            <h2 class="section-title">Champion Balance Changes</h2>
+            
+            <div class="champion-card">
+                <img src="Icons/Noel.png" alt="Noel" class="champion-icon">
+                <div class="champion-info">
+                    <h3 class="champion-name">Noel</h3>
+                    <p class="champion-title">The Dual-Wielding Sharpshooter</p>
+                    <ul class="change-list">
+                        <li class="change-item"><strong>Q "Revolver Barrage":</strong> Damage changed from 35-245 + 8% AD to 30-200 + 7% AD</li>
+                        <li class="change-item"><strong>E "Flash Guard":</strong> Damage scaling reduced from 45% AD to 40% AD</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="champion-card">
+                <img src="Icons/Zasalamel.png" alt="Zasalamel" class="champion-icon">
+                <div class="champion-info">
+                    <h3 class="champion-name">Zasalamel</h3>
+                    <p class="champion-title">The Time Reaper</p>
+                    <ul class="change-list">
+                        <li class="change-item"><strong>Base Attack Damage:</strong> Reduced from 68 to 55</li>
+                        <li class="change-item"><strong>Q Ability - "Reap":</strong> Damage scaling reduced from 100% AD to 80% AD</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="champion-card">
+                <img src="Icons/Lili.png" alt="Lili" class="champion-icon">
+                <div class="champion-info">
+                    <h3 class="champion-name">Lili</h3>
+                    <p class="champion-title">The Kung Fu Phoenix Girl</p>
+                    <ul class="change-list">
+                        <li class="change-item"><strong>AD Growth:</strong> Increased from 10.25 to 12.5</li>
+                        <li class="change-item"><strong>Base HP:</strong> Increased from 602 to 615</li>
+                        <li class="change-item"><strong>Base Movement Speed:</strong> Increased from 340 to 350</li>
+                        <li class="change-item"><strong>R Ability - Execute Kick:</strong> HP threshold increased from 8200 to 9500. Cooldown reduced from 125s to 100s</li>
+                        <li class="change-item"><strong>Level 15 Talent - Reckless Jumps:</strong> Cooldown refund increased from 25% to 40%</li>
+                        <li class="change-item"><strong>Level 1 Talent - Flashing Acrobat:</strong> Added "Cleansing debuffs grants 10% damage reduction for 1.5s"</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="champion-card">
+                <img src="Icons/Akuma.png" alt="Akuma" class="champion-icon">
+                <div class="champion-info">
+                    <h3 class="champion-name">Akuma</h3>
+                    <p class="champion-title">Master of the Fist</p>
+                    <ul class="change-list">
+                        <li class="change-item"><strong>Passive - Oni's Fury:</strong> Damage per Q hit increased from +5 to +7</li>
+                        <li class="change-item"><strong>AD Growth:</strong> Increased from 4 to 5.5</li>
+                        <li class="change-item"><strong>Movement Speed Growth:</strong> Increased from 4 to 5</li>
+                        <li class="change-item"><strong>Level 15 Talent - Quick Misogi:</strong> Cooldown reduced from 6s to 4s</li>
+                        <li class="change-item"><strong>Level 15 Talent - Shadow Power:</strong> Damage boost increased from 20% to 25%</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="champion-card">
+                <img src="Icons/Morrigan.png" alt="Morrigan" class="champion-icon">
+                <div class="champion-info">
+                    <h3 class="champion-name">Morrigan</h3>
+                    <p class="champion-title">Soul Stealer</p>
+                    <ul class="change-list">
+                        <li class="change-item"><strong>E - Bat Dash:</strong> Added new effect where kills/assists reset the Bat Dash cooldown</li>
+                        <li class="change-item"><strong>W - Sharp Shield:</strong> Increased base damage from 80-600 to 100-650</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="changelog-section">
+            <h2 class="section-title">Item Balance Changes</h2>
+            
+            <div class="item-card">
+                <img src="items/flask_of_strength.webp" alt="Flask of Strength" class="item-icon">
+                <div class="item-info">
+                    <h4 class="item-name">Flask_of_Strength</h4>
+                    <p>Grants +95 Attack Damage for 10s (was 120 for 12s). Cost reduced from 1200 to 1100.</p>
+                </div>
+            </div>
+            
+            <div class="item-card">
+                <img src="items/tanya_spear.webp" alt="Tanya's Spear" class="item-icon">
+                <div class="item-info">
+                    <h4 class="item-name">tanya_spear</h4>
+                    <p>Attack Damage and Ability Power reduced to 40 (was 50).</p>
+                </div>
+            </div>
+
+            <div class="item-card">
+                <img src="items/leviathan_fang.webp" alt="Leviathan's Fang" class="item-icon">
+                <div class="item-info">
+                    <h4 class="item-name">leviathan_fang</h4>
+                    <p>Removed passive Attack Speed bonus.</p>
+                </div>
+            </div>
+
+            <div class="item-card">
+                <img src="items/taxi_whistle.webp" alt="Taxi Driver's Whistle" class="item-icon">
+                <div class="item-info">
+                    <h4 class="item-name">taxi_drivers_whistle</h4>
+                    <p>Armor increased to 5 (was 3) and Magic Resistance increased to 4 (was 2).</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="changelog-section">
+            <h2 class="section-title">Blossom Event</h2>
+            
+            <div class="event-grid">
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Blossom Julia.jpg" alt="Blossom Julia">
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Blossom Julia</h3>
+                        <span class="event-price">2000 FM</span>
+                    </div>
+                </div>
+                
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Blossom Mai.jpg" alt="Blossom Mai">
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Blossom Mai</h3>
+                        <span class="event-price">2000 FM</span>
+                    </div>
+                </div>
+                
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Blossom Raiden.jpg" alt="Blossom Raiden">
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Blossom Raiden</h3>
+                        <span class="event-price">2000 FM</span>
+                    </div>
+                </div>
+                
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Blossom Shizumaru.jpg" alt="Blossom Shizumaru">
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Blossom Shizumaru</h3>
+                        <span class="event-price">2000 FM</span>
+                    </div>
+                </div>
+                
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Blossom Talim.jpg" alt="Blossom Talim">
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Blossom Talim</h3>
+                        <span class="event-price">2000 FM</span>
+                    </div>
+                </div>
+                
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Blossom Panda.webp" alt="Blossom Panda">
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Blossom Panda</h3>
+                        <span class="event-price">2000 FM</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p>Patch 2.2: Blossom Event - Released on 2025-04-16</p>
+    </footer>
+    
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Add parallax effect
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.pageYOffset;
+            document.getElementById('video-background').style.transform = `translateY(${scrollPosition * 0.1}px)`;
+        });
+    </script>
+</body>
+</html> 

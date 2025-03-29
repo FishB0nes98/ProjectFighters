@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Fighters - 1v1 Match</title>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <style>
+        :root {
+            --primary-color: #0A1428;
+            --secondary-color: #1E2328;
+            --accent-color: #C89B3C;
+            --text-color: #F0E6D2;
+            --border-color: #463714;
+            --hover-color: #785A28;
+            --team1-color: #1E90FF;
+            --team2-color: #FF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('res/img/ls.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            overflow: hidden;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .team-container {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            padding: 20px;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .player-slot {
+            width: 400px;
+            height: 600px;
+            background-color: black;
+            border: 3px solid transparent;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* Blue team styling */
+        .team1 .player-slot {
+            border-color: var(--team1-color);
+            background: linear-gradient(to bottom,
+                       rgba(30, 144, 255, 0.1),
+                       rgba(0, 0, 0, 0.95));
+        }
+
+        /* Red team styling */
+        .team2 .player-slot {
+            border-color: var(--team2-color);
+            background: linear-gradient(to bottom,
+                       rgba(255, 68, 68, 0.1),
+                       rgba(0, 0, 0, 0.95));
+        }
+
+        .skin-image-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .skin-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .player-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom-left-radius: 17px;
+            border-bottom-right-radius: 17px;
+            z-index: 2;
+        }
+
+        .profile-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-color);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .profile-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .player-text {
+            flex-grow: 1;
+        }
+
+        .player-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .skin-name {
+            font-size: 14px;
+            background: linear-gradient(135deg, rgba(0,0,0,0.85), rgba(0,0,0,0.65));
+            border: 2px solid var(--accent-color);
+            padding: 5px 12px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-color);
+            text-shadow: 0 0 5px var(--accent-color);
+            display: inline-block;
+        }
+
+        .versus-text {
+            font-size: 72px;
+            font-weight: bold;
+            color: var(--accent-color);
+            text-align: center;
+            margin: 0;
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .decide-game-container {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+        }
+
+        .decide-game-button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transform: scale(0);
+        }
+
+        @keyframes buttonPopIn {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .home-button {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 12px 24px;
+            background: linear-gradient(to bottom right, var(--accent-color), #785A28);
+            color: var(--text-color);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            z-index: 2000;
+            text-decoration: none;
+        }
+
+        .home-button:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(45deg, #D4AF37, var(--accent-color));
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .rank-update-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            background-color: rgba(0, 0, 0, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border: 2px solid var(--accent-color);
+        }
+
+        .rank-update-modal .modal-content {
+            position: relative;
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .rank-update-modal .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .rank-update-modal .close-modal:hover {
+            color: #fff;
+        }
+
+        .game-result {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 1500;
+            border: 3px solid var(--accent-color);
+            min-width: 300px;
+        }
+
+        .game-result h3 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .player-highlight {
+            box-shadow: 0 0 30px var(--accent-color);
+            transform: scale(1.02);
+        }
+
+        .build-info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: var(--accent-color);
+        }
+
+        /* Add these styles for the fighting game loading screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .versus-screen {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 0 50px;
+            position: relative;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('res/img/ls.jpeg') no-repeat center center;
+            background-size: cover;
+        }
+
+        .player-card, .opponent-card {
+            width: 400px;
+            height: 600px;
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .player-card {
+            transform: translateX(-100%);
+            opacity: 0;
+            animation: slideInLeft 1s forwards;
+        }
+
+        .opponent-card {
+            transform: translateX(100%);
+            opacity: 0;
+            animation: slideInRight 1s forwards;
+        }
+
+        .player-card img, .opponent-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 3px solid var(--accent-color);
+            box-shadow: 0 0 20px rgba(200, 155, 60, 0.3);
+        }
+
+        .loading-player-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .loading-profile-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-color);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .loading-profile-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .loading-player-text {
+            flex-grow: 1;
+        }
+
+        .loading-player-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .loading-skin-name {
+            font-size: 14px;
+            background: linear-gradient(135deg, rgba(0,0,0,0.85), rgba(0,0,0,0.65));
+            border: 2px solid var(--accent-color);
+            padding: 5px 12px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-color);
+            text-shadow: 0 0 5px var(--accent-color);
+            display: inline-block;
+        }
+
+        @keyframes slideInLeft {
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInRight {
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .versus-text {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 120px;
+            color: var(--accent-color);
+            text-shadow: 0 0 20px rgba(200, 155, 60, 0.5);
+            animation: vsPopIn 0.5s 1s forwards;
+            z-index: 10;
+        }
+
+        @keyframes vsPopIn {
+            to {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .loading-bar-container {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+        }
+
+        .loading-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--accent-color);
+            border-radius: 2px;
+            transition: width 0.5s linear;
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .player-card img, .opponent-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 3px solid var(--accent-color);
+            box-shadow: 0 0 20px rgba(200, 155, 60, 0.3);
+        }
+
+        /* Remove build info display */
+        .build-info {
+            display: none;
+        }
+
+        /* Add CSS for button animation */
+        @keyframes popIn {
+            0% {
+                transform: translateY(-50%) scale(0);
+            }
+            50% {
+                transform: translateY(-50%) scale(1.2);
+            }
+            100% {
+                transform: translateY(-50%) scale(1);
+            }
+        }
+
+        .decide-game-button {
+            transform: translateY(-50%) scale(0);
+        }
+
+        /* Hide the team container and other elements initially */
+        .team-container, .versus-text:not(.loading-screen .versus-text) {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="home.html" class="home-button" id="homeButton">HOME</a>
+
+    <!-- Update loading screen structure -->
+    <div class="loading-screen">
+        <div class="versus-screen">
+            <div class="player-card">
+                <!-- Player image will be added here -->
+                <div class="loading-player-info">
+                    <div class="loading-profile-icon">
+                        <img src="" alt="Profile">
+                    </div>
+                    <div class="loading-player-text">
+                        <div class="loading-player-name"></div>
+                        <div class="loading-skin-name"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="versus-text">VS</div>
+            <div class="opponent-card">
+                <!-- Opponent image will be added here -->
+                <div class="loading-player-info">
+                    <div class="loading-profile-icon">
+                        <img src="" alt="Profile">
+                    </div>
+                    <div class="loading-player-text">
+                        <div class="loading-player-name"></div>
+                        <div class="loading-skin-name"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="loading-bar-container">
+                <div class="loading-bar"></div>
+            </div>
+            <div class="decide-game-container">
+                <button class="decide-game-button">Decide Game</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="team-container">
+        <!-- Blue Team Player -->
+        <div class="player-slot" id="blue-1">
+            <div class="skin-image-container">
+                <img class="skin-image" src="" alt="Champion Skin">
+            </div>
+            <div class="player-info">
+                <div class="profile-icon">
+                    <img src="" alt="Profile">
+                </div>
+                <div class="player-text">
+                    <div class="player-name"></div>
+                    <div class="skin-name"></div>
+                    <div class="build-info"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Red Team Player -->
+        <div class="player-slot" id="red-1">
+            <div class="skin-image-container">
+                <img class="skin-image" src="" alt="Champion Skin">
+            </div>
+            <div class="player-info">
+                <div class="profile-icon">
+                    <img src="" alt="Profile">
+                </div>
+                <div class="player-text">
+                    <div class="player-name"></div>
+                    <div class="skin-name"></div>
+                    <div class="build-info"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="versus-text">VS</div>
+
+    <!-- Add rank update modal -->
+    <div class="rank-update-modal" id="rankUpdateModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <p id="rankUpdateMessage"></p>
+        </div>
+    </div>
+
+    <!-- Add game result container -->
+    <div class="game-result" id="gameResult"></div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, update, increment, set } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { skinToBaseCharacterMap } from './skinmapping.js';
+        import { updateQuestProgress } from './quests.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // Get queue ID from session storage
+        const queueId = sessionStorage.getItem('currentQueueId');
+        if (!queueId) {
+            console.error('No queue ID found');
+            window.location.href = 'home.html';
+        }
+
+        // Load game data
+        async function loadGameData() {
+            try {
+                const queueRef = ref(database, `Queue/${queueId}`);
+                const snapshot = await get(queueRef);
+                const gameData = snapshot.val();
+
+                if (!gameData || !gameData.players) {
+                    console.error('No game data found');
+                    return;
+                }
+
+                // Get current user's data
+                const currentUser = auth.currentUser;
+                const userRef = ref(database, `users/${currentUser.uid}`);
+                const userSnapshot = await get(userRef);
+                const userData = userSnapshot.val();
+
+                // Load player data
+                const player = gameData.players.blue_1;
+                const opponent = gameData.players.red_1;
+
+                // Update loading screen cards
+                const playerCard = document.querySelector('.player-card');
+                const opponentCard = document.querySelector('.opponent-card');
+
+                // Update player card
+                loadSkinImage(playerCard, player.skin, player.champion);
+                updateLoadingPlayerInfo(playerCard, player);
+
+                // Update opponent card
+                loadSkinImage(opponentCard, opponent.skin, opponent.champion);
+                updateLoadingPlayerInfo(opponentCard, opponent);
+
+                // Update player slots
+                updatePlayerSlot(document.getElementById('blue-1'), player, true);
+                updatePlayerSlot(document.getElementById('red-1'), opponent, false);
+
+                // Initialize loading screen
+                initializeLoadingScreen();
+            } catch (error) {
+                console.error('Error loading game data:', error);
+            }
+        }
+
+        function updatePlayerSlot(slot, player, isPlayer) {
+            // Update skin image
+            const skinImage = slot.querySelector('.skin-image');
+            if (skinImage) {
+                const tryLoadSkin = (extensions = ['jpeg', 'jpg', 'png', 'webp']) => {
+                    if (extensions.length === 0) {
+                        skinImage.src = `Icons/${player.champion}.png`;
+                        return;
+                    }
+                    
+                    skinImage.src = `Loading Screen/${player.skin}.${extensions[0]}`;
+                    skinImage.onerror = () => tryLoadSkin(extensions.slice(1));
+                };
+                
+                tryLoadSkin();
+            }
+
+            // Update profile icon
+            const profileIcon = slot.querySelector('.profile-icon img');
+            if (profileIcon) {
+                if (player.isAI) {
+                    profileIcon.src = 'Icons/AI_Profile.png';
+                    profileIcon.onerror = () => profileIcon.src = 'Icons/Birdie.png';
+                } else {
+                    const icon = player.profileIcon || 'Birdie.png';
+                    profileIcon.src = `Icons/${icon}`;
+                    profileIcon.onerror = () => profileIcon.src = 'Icons/Birdie.png';
+                }
+            }
+
+            // Update player info
+            const nameElement = slot.querySelector('.player-name');
+            const skinElement = slot.querySelector('.skin-name');
+            const buildElement = slot.querySelector('.build-info');
+
+            if (nameElement) nameElement.textContent = player.name;
+            if (skinElement) skinElement.textContent = player.skin;
+            if (buildElement) buildElement.textContent = `Build: ${player.build}`;
+
+            // Add highlight for player's slot
+            if (isPlayer) {
+                slot.classList.add('player-highlight');
+            }
+        }
+
+        // Load game data when page loads
+        window.addEventListener('load', loadGameData);
+
+        // Update initializeLoadingScreen function
+        function initializeLoadingScreen() {
+            const loadingBar = document.querySelector('.loading-bar');
+            const decideGameButton = document.querySelector('.decide-game-button');
+            let progress = 0;
+            
+            // Hide decide game button initially
+            decideGameButton.style.display = 'none';
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 3;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        // Show and animate the decide game button
+                        decideGameButton.style.display = 'block';
+                        decideGameButton.style.animation = 'buttonPopIn 0.5s forwards';
+                    }, 500);
+                }
+                loadingBar.style.width = `${progress}%`;
+            }, 50);
+        }
+
+        // Update decide game button click handler
+        document.querySelector('.decide-game-button').addEventListener('click', async function() {
+            try {
+                // Hide the loading screen
+                document.querySelector('.loading-screen').style.display = 'none';
+                
+                // Show the game result elements
+                document.querySelector('.team-container').style.display = 'flex';
+                document.querySelector('.versus-text:not(.loading-screen .versus-text)').style.display = 'block';
+                
+                const user = auth.currentUser;
+                if (!user) {
+                    console.error('No user logged in');
+                    return;
+                }
+
+                // Get game data
+                const queueRef = ref(database, `Queue/${queueId}`);
+                const snapshot = await get(queueRef);
+                const gameData = snapshot.val();
+
+                if (!gameData) {
+                    console.error('No game data found');
+                    return;
+                }
+
+                const player = gameData.players.blue_1;
+                const opponent = gameData.players.red_1;
+
+                // Calculate winner based on builds and meta data
+                const winner = await calculateWinner(player, opponent);
+                const isPlayerWinner = winner === 'blue';
+
+                // Generate match stats
+                const matchStats = generateMatchStats(isPlayerWinner);
+
+                // Create match history entry
+                const matchData = {
+                    date: new Date().toISOString(),
+                    gameMode: "1v1",
+                    character: player.champion,
+                    skin: player.skin,
+                    result: isPlayerWinner ? 'Victory' : 'Defeat',
+                    opponent: {
+                        name: opponent.name,
+                        character: opponent.champion,
+                        skin: opponent.skin
+                    },
+                    build: player.build,
+                    stats: matchStats
+                };
+
+                // Save match history
+                await saveMatchHistory(user.uid, matchData);
+
+                // Update character stats
+                await updateCharacterStats(user.uid, player.champion, opponent.champion, isPlayerWinner);
+
+                // Update rank points
+                await updateRankPoints(user, isPlayerWinner);
+
+                // Display result
+                displayResult(isPlayerWinner);
+
+                // Show home button
+                document.getElementById('homeButton').style.display = 'block';
+
+                // Clean up queue data
+                await set(queueRef, null);
+
+            } catch (error) {
+                console.error('Error in decide game:', error);
+            }
+        });
+
+        async function calculateWinner(player, opponent) {
+            try {
+                const response = await fetch('meta.json');
+                const meta = await response.json();
+
+                let playerScore = meta[player.champion] || 0;
+                let opponentScore = meta[opponent.champion] || 0;
+
+                // Apply build modifiers
+                const buildModifiers = {
+                    'Balanced': 1,
+                    'Offense': 1.2,
+                    'Defense': 0.9,
+                    'Speed': 1.1
+                };
+
+                playerScore *= buildModifiers[player.build] || 1;
+                opponentScore *= buildModifiers[opponent.build] || 1;
+
+                // Add randomness (20%)
+                playerScore *= (1 + Math.random() * 0.2);
+                opponentScore *= (1 + Math.random() * 0.2);
+
+                return playerScore >= opponentScore ? 'blue' : 'red';
+            } catch (error) {
+                console.error('Error calculating winner:', error);
+                return Math.random() < 0.5 ? 'blue' : 'red';
+            }
+        }
+
+        function generateMatchStats(isWin) {
+            // In 1v1 mode, it's always 1/0 for winner, 0/1 for loser
+            if (isWin) {
+                return { 
+                    kills: 1, 
+                    deaths: 0, 
+                    assists: 0 
+                };
+            } else {
+                return { 
+                    kills: 0, 
+                    deaths: 1, 
+                    assists: 0 
+                };
+            }
+        }
+
+        async function saveMatchHistory(userId, matchData) {
+            try {
+                const matchId = Date.now().toString();
+                const matchRecord = {
+                    ...matchData,
+                    timestamp: matchId,
+                    date: new Date().toISOString(),
+                    kda: {
+                        kills: matchData.stats.kills,
+                        deaths: matchData.stats.deaths,
+                        assists: matchData.stats.assists
+                    }
+                };
+                
+                await set(ref(database, `users/${userId}/matchHistory/${matchId}`), matchRecord);
+                
+                // Update quest progress with match data
+                await updateQuestProgress(userId, matchRecord, database, ref, get, update);
+            } catch (error) {
+                console.error('Error saving match history:', error);
+            }
+        }
+
+        async function updateCharacterStats(userId, playerChampion, opponentChampion, isWin) {
+            try {
+                const updates = {};
+                
+                // Update player's character stats
+                const charRef = ref(database, `users/${userId}/characters/${playerChampion}`);
+                const snapshot = await get(charRef);
+                const charData = snapshot.val() || { win: 0, lose: 0 };
+                
+                if (isWin) {
+                    charData.win = (charData.win || 0) + 1;
+                } else {
+                    charData.lose = (charData.lose || 0) + 1;
+                }
+                
+                updates[`users/${userId}/characters/${playerChampion}`] = charData;
+
+                // Update global character stats
+                const globalUpdates = {};
+                [playerChampion, opponentChampion].forEach(champion => {
+                    const isWinner = (champion === playerChampion && isWin) || 
+                                   (champion === opponentChampion && !isWin);
+                    globalUpdates[`characters/${champion}/${isWinner ? 'win' : 'lose'}`] = increment(1);
+                });
+
+                await update(ref(database), { ...updates, ...globalUpdates });
+            } catch (error) {
+                console.error('Error updating character stats:', error);
+            }
+        }
+
+        async function updateRankPoints(user, isWin) {
+            try {
+                const rankRef = ref(database, `users/${user.uid}/Rank points`);
+                const snapshot = await get(rankRef);
+                const currentRank = Number(snapshot.val()) || 0;
+
+                let rankChange;
+                if (isWin) {
+                    rankChange = Math.floor(Math.random() * 16) + 20; // 20-35 points for win
+                } else {
+                    rankChange = -(Math.floor(Math.random() * 6) + 15); // -15 to -20 points for loss
+                }
+
+                let newRank = Math.max(0, currentRank + rankChange);
+                await update(ref(database, `users/${user.uid}`), { "Rank points": newRank });
+
+                showRankUpdateModal(currentRank, rankChange, newRank);
+            } catch (error) {
+                console.error('Error updating rank points:', error);
+            }
+        }
+
+        function showRankUpdateModal(originalRank, rankChange, newRank) {
+            const modal = document.querySelector('.rank-update-modal');
+            const message = document.getElementById('rankUpdateMessage');
+            const sign = rankChange >= 0 ? '+' : '';
+
+            message.innerHTML = `
+                <h3 style="color: ${rankChange >= 0 ? '#4CAF50' : '#f44336'}">Rank Update</h3>
+                <p style="margin: 15px 0;">
+                    <strong>Original RP:</strong> ${originalRank}<br>
+                    <strong>Change:</strong> <span style="color: ${rankChange >= 0 ? '#4CAF50' : '#f44336'}">${sign}${rankChange}</span><br>
+                    <strong>New RP:</strong> ${newRank}
+                </p>
+            `;
+
+            modal.style.display = 'block';
+
+            const closeBtn = modal.querySelector('.close-modal');
+            closeBtn.onclick = () => modal.style.display = 'none';
+
+            window.onclick = (event) => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            };
+        }
+
+        function displayResult(isWin) {
+            const resultContainer = document.getElementById('gameResult');
+            resultContainer.innerHTML = `
+                <div style="text-align: center;">
+                    <h3 style="color: ${isWin ? '#4CAF50' : '#f44336'}; font-size: 48px; margin-bottom: 20px;">
+                        ${isWin ? 'VICTORY!' : 'DEFEAT!'}
+                    </h3>
+                </div>
+            `;
+            resultContainer.style.display = 'block';
+        }
+
+        // Add helper function to load skin images
+        function loadSkinImage(container, skin, champion) {
+            const img = document.createElement('img');
+            img.alt = skin;
+            
+            const tryLoadImage = (extensions = ['jpeg', 'png', 'jpg', 'jfif']) => {
+                if (extensions.length === 0) {
+                    img.src = `Icons/${champion}.png`;
+                    return;
+                }
+                
+                img.src = `Loading Screen/${skin}.${extensions[0]}`;
+                img.onerror = () => tryLoadImage(extensions.slice(1));
+            };
+            
+            tryLoadImage();
+            container.appendChild(img);
+        }
+
+        // Add function to update loading screen player info
+        function updateLoadingPlayerInfo(card, player) {
+            const profileIcon = card.querySelector('.loading-profile-icon img');
+            const playerName = card.querySelector('.loading-player-name');
+            const skinName = card.querySelector('.loading-skin-name');
+
+            // Update profile icon
+            if (player.isAI) {
+                profileIcon.src = 'Icons/AI_Profile.png';
+                profileIcon.onerror = () => profileIcon.src = 'Icons/Birdie.png';
+            } else {
+                profileIcon.src = `Icons/${player.profileIcon}`;
+                profileIcon.onerror = () => profileIcon.src = 'Icons/Birdie.png';
+            }
+
+            // Update player name and skin name
+            playerName.textContent = player.name;
+            skinName.textContent = player.skin;
+        }
+    </script>
+</body>
+</html> 

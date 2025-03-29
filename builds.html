@@ -594,6 +594,7 @@
                 <div class="filter-buttons">
                     <div class="patch-selector">
                         <select id="patch-selector" class="patch-dropdown">
+                            <option value="2.2">Patch 2.2 (Blossom Event)</option>
                             <option value="2.0">Patch 2.0</option>
                             <option value="2.1.1">Patch 2.1.1 (Season 2 Beta)</option>
                             <option value="1.7">Patch 1.7</option>
@@ -615,6 +616,10 @@
                     <button class="filter-button" data-filter="winrate">
                         <i class="fas fa-trophy"></i>
                         Highest Winrate
+                    </button>
+                    <button class="filter-button" data-filter="all">
+                        <i class="fas fa-globe"></i>
+                        All Patch
                     </button>
                 </div>
             </div>
@@ -654,7 +659,7 @@
         // Global variables
         let selectedCharacter = null;
         let currentFilter = 'popular';
-        let currentPatchVersion = '2.1.1';
+        let currentPatchVersion = '2.2';
 
         // Initialize auth state
         onAuthStateChanged(auth, (user) => {
@@ -731,36 +736,52 @@
             buildsGrid.innerHTML = '';
 
             try {
-                const safePatchVersion = currentPatchVersion.replace(/\./g, '_');
-                const buildsRef = ref(database, `builds/${safePatchVersion}`);
-                const snapshot = await get(buildsRef);
-                
-                if (snapshot.exists()) {
-                    const builds = [];
-                    snapshot.forEach(childSnapshot => {
-                        const build = childSnapshot.val();
-                        if (build.character === character) {
-                            builds.push({
-                                id: childSnapshot.key,
-                                ...build
+                let builds = [];
+                if (currentFilter === 'all') {
+                    const patches = ['2_2', '2_0', '2_1_1', '1_7', '1_5', '1_4', '1_3', '1_2', '1_1'];
+                    for (const patch of patches) {
+                        const buildsRef = ref(database, `builds/${patch}`);
+                        const snapshot = await get(buildsRef);
+                        if (snapshot.exists()) {
+                            snapshot.forEach(childSnapshot => {
+                                const build = childSnapshot.val();
+                                if (build.character === character) {
+                                    builds.push({
+                                        id: childSnapshot.key,
+                                        ...build
+                                    });
+                                }
                             });
                         }
-                    });
-
-                    // Sort builds based on current filter
-                    sortBuilds(builds);
-
-                    // Create build cards
-                    builds.forEach(build => {
-                        const card = createBuildCard(build);
-                        buildsGrid.appendChild(card);
-                    });
-
-                    if (builds.length === 0) {
-                        buildsGrid.innerHTML = `<div class="no-builds-message">No builds found for ${character} in Patch ${currentPatchVersion}.</div>`;
                     }
                 } else {
-                    buildsGrid.innerHTML = `<div class="no-builds-message">No builds found for ${character} in Patch ${currentPatchVersion}.</div>`;
+                    const safePatchVersion = currentPatchVersion.replace(/\./g, '_');
+                    const buildsRef = ref(database, `builds/${safePatchVersion}`);
+                    const snapshot = await get(buildsRef);
+                    if (snapshot.exists()) {
+                        snapshot.forEach(childSnapshot => {
+                            const build = childSnapshot.val();
+                            if (build.character === character) {
+                                builds.push({
+                                    id: childSnapshot.key,
+                                    ...build
+                                });
+                            }
+                        });
+                    }
+                }
+
+                // Sort builds based on current filter
+                sortBuilds(builds);
+
+                // Create build cards
+                builds.forEach(build => {
+                    const card = createBuildCard(build);
+                    buildsGrid.appendChild(card);
+                });
+
+                if (builds.length === 0) {
+                    buildsGrid.innerHTML = `<div class="no-builds-message">No builds found for ${character} in the selected filter.</div>`;
                 }
             } catch (error) {
                 console.error('Error loading builds:', error);
@@ -779,6 +800,9 @@
                     break;
                 case 'winrate':
                     builds.sort((a, b) => (b.winrate || 0) - (a.winrate || 0));
+                    break;
+                case 'all':
+                    builds.sort((a, b) => a.name.localeCompare(b.name));
                     break;
             }
         }

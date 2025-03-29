@@ -1,5 +1,6 @@
 const skinReference = {
     Julia: [
+        { name: "Blossom Julia", price: 2000, imagePath: "Skins/Blossom Julia.jpg" },
         { name: "Glorious Julia", price: "UNAVAILABLE", imagePath: "Skins/Glorious Julia.jpg" },
         { name: "Sacred Ceremony Julia", price: 1000, imagePath: "Skins/Sacred Ceremony Julia.jpeg" },
         { name: "Witch Julia", price: "UNAVAILABLE", imagePath: "Skins/Witch Julia.jpeg" },
@@ -128,6 +129,7 @@ const skinReference = {
         { name: "Phoenix R.Mika", price: 1000, imagePath: "Skins/Phoenix R Mika.png" }
     ],
     Raiden: [
+        { name: "Blossom Raiden", price: 2000, imagePath: "Skins/Blossom Raiden.jpg" },
         { name: "Farmer Raiden", price: 1000, imagePath: "Skins/Farmer Raiden.jpeg" },
         { name: "Arcade Raiden", price: 2000, imagePath: "Skins/Arcade Raiden.jpeg" },
         { name: "Neon Core Raiden", price: 2000, imagePath: "Skins/Neon Core Raiden.png" },
@@ -145,6 +147,7 @@ const skinReference = {
         { name: "Street Fighter Yugo", price: 1000, imagePath: "Skins/Street Fighter Yugo.png" }
     ],
     Talim: [
+        { name: "Blossom Talim", price: 2000, imagePath: "Skins/Blossom Talim.jpg" },
         { name: "Battleborn Talim", price: 2000, imagePath: "Skins/Battleborn Talim.jpeg" },
         { name: "Sand Soldier Talim", price: 2000, imagePath: "Skins/Sand Soldier Talim.jpg" },
         { name: "Captain Talim", price: 2000, imagePath: "Skins/Captain Talim.png" },
@@ -235,6 +238,7 @@ const skinReference = {
         { name: "Goth Sophitia", price: 2000, imagePath: "Skins/Goth Sophitia.png" }
     ],
     Shizumaru: [
+        { name: "Blossom Shizumaru", price: 2000, imagePath: "Skins/Blossom Shizumaru.jpg" },
         { name: "Winter Festival Shizumaru", price: "UNAVAILABLE", imagePath: "Skins/Winter Festival Shizumaru.jpeg" },
         { name: "Desert Demon Shizumaru", price: 3000, imagePath: "Skins/Desert Demon Shizumaru.jpg" },
         { name: "Superhero Shizumaru", price: 3000, imagePath: "Skins/Superhero Shizumaru.jpeg" },
@@ -256,8 +260,8 @@ const skinReference = {
         { name: "Atlantean Kotal Kahn", price: 2000, imagePath: "Skins/Atlantean Kotal Kahn.jpeg" }
     ],
     Kuma: [
+        { name: "Blossom Panda", price: 2000, imagePath: "Skins/Blossom Panda.webp" },
         { name: "Date Night Kuma", price: "UNAVAILABLE", imagePath: "Skins/Date Night Kuma.jpeg" },
-        { name: "Winter Festival Kuma", price: "UNAVAILABLE", imagePath: "Skins/Winter Festival Kuma.jpeg" },
         { name: "Jade Panda", price: 2000, imagePath: "Skins/Jade Panda.jpeg" },
         { name: "Battle Bistro Kuma", price: 1000, imagePath: "Skins/Battle Bistro Kuma.jpeg" },
         { name: "Panda", price: 0, imagePath: "Skins/Panda.jpeg" }
@@ -282,6 +286,7 @@ const skinReference = {
         { name: "Pyromancer Mega Man", price: 2000, imagePath: "Skins/Pyromancer Mega Man.jpeg" }
     ],
     Mai: [
+        { name: "Blossom Mai", price: 2000, imagePath: "Skins/Blossom Mai.jpg" },
         { name: "Winter Festival Mai", price: "UNAVAILABLE", imagePath: "Skins/Winter Festival Mai.jpeg" },
         { name: "Feather Dancer Mai", price: 1000, imagePath: "Skins/Feather Dancer Mai.jpeg" }
     ],

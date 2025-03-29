@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Fighters - 1v1 Mode</title>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <style>
+        :root {
+            --primary-color: #0A1428;
+            --secondary-color: #1E2328;
+            --accent-color: #C89B3C;
+            --text-color: #F0E6D2;
+            --border-color: #463714;
+            --hover-color: #785A28;
+            --blue-team: #1E90FF;
+            --red-team: #FF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('res/img/ls.jpeg') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: rgba(10, 20, 40, 0.8);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .home-button {
+            background: linear-gradient(to bottom right, var(--accent-color), #785A28);
+            color: var(--text-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .home-button:hover {
+            background: linear-gradient(to bottom right, #D4AF37, var(--accent-color));
+            transform: translateY(-2px);
+        }
+
+        .main-title {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .vs-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .player-container {
+            width: 300px;
+            height: 400px;
+            background-color: rgba(30, 35, 40, 0.8);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+        }
+
+        .player-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1;
+        }
+
+        .player-container > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .player-container.blue {
+            border-color: var(--blue-team);
+        }
+
+        .player-container.red {
+            border-color: var(--red-team);
+        }
+
+        .vs-text {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--accent-color);
+            align-self: center;
+        }
+
+        .champion-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(30, 35, 40, 0.8);
+            border-radius: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .champion-item {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .champion-item:hover {
+            border-color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        .champion-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .champion-portrait {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-bottom: 15px;
+            border: 3px solid var(--border-color);
+            background-color: var(--secondary-color);
+            position: relative;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .champion-portrait img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: relative;
+            z-index: 1;
+        }
+
+        .player-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .player-rank {
+            font-size: 14px;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        .selection-info {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .skin-selection {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .skin-item {
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .skin-item:hover {
+            border-color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        .skin-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: var(--accent-color);
+        }
+
+        .selected-skin {
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .start-match-btn {
+            background: linear-gradient(to bottom right, var(--accent-color), #785A28);
+            color: var(--text-color);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            align-self: center;
+        }
+
+        .start-match-btn:hover {
+            background: linear-gradient(to bottom right, #D4AF37, var(--accent-color));
+            transform: translateY(-2px);
+        }
+
+        .start-match-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .build-selection {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .build-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .build-option {
+            padding: 8px 15px;
+            background-color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .build-option:hover {
+            background-color: rgba(200, 155, 60, 0.2);
+            border-color: var(--accent-color);
+        }
+
+        .build-option.selected {
+            background-color: rgba(200, 155, 60, 0.3);
+            border-color: var(--accent-color);
+        }
+
+        /* Role selection modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--secondary-color);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .modal h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .role-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .role-select-btn {
+            background: linear-gradient(to bottom right, var(--accent-color), #785A28);
+            color: var(--text-color);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .role-select-btn:hover {
+            background: linear-gradient(to bottom right, #D4AF37, var(--accent-color));
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .vs-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .vs-text {
+                font-size: 36px;
+                margin: 0;
+            }
+
+            .champion-grid {
+                grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            }
+
+            .champion-item {
+                width: 60px;
+                height: 60px;
+            }
+        }
+
+        /* Add these styles for skin selection modal */
+        .skin-selection-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .skin-selection-content {
+            background-color: var(--secondary-color);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 30px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .skin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .skin-card {
+            background: var(--primary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .skin-card:hover {
+            transform: scale(1.05);
+            border-color: var(--accent-color);
+        }
+
+        .skin-card img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+        }
+
+        .skin-name {
+            padding: 10px;
+            text-align: center;
+            color: var(--text-color);
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Build selection modal styles */
+        .build-selection-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .build-selection-content {
+            background-color: var(--secondary-color);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 30px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .build-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .build-card {
+            background: var(--primary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .build-card:hover {
+            transform: scale(1.02);
+            border-color: var(--accent-color);
+        }
+
+        .build-title {
+            font-size: 18px;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .build-info {
+            font-size: 14px;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .build-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            gap: 10px;
+        }
+
+        .copy-build {
+            padding: 8px 16px;
+            background: linear-gradient(to bottom right, var(--accent-color), #785A28);
+            color: var(--text-color);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .copy-build:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(45deg, #D4AF37, var(--accent-color));
+        }
+
+        /* Add these styles for build items */
+        .build-items {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .build-item {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: var(--primary-color);
+        }
+
+        .build-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="home.html" class="home-button">← Home</a>
+        <div class="timer">-</div>
+    </div>
+
+    <h1 class="main-title">1v1 Mode</h1>
+
+    <div class="vs-container">
+        <div class="player-container blue" id="player-you">
+            <div class="champion-portrait" id="player-portrait">
+                <!-- Champion portrait will be added here -->
+            </div>
+            <div class="player-name" id="player-name">Your Champion</div>
+            <div class="player-rank" id="player-rank"></div>
+            <div class="selected-skin" id="player-skin">No skin selected</div>
+            <div class="build-selection">
+                <div class="build-options" id="build-options">
+                    <!-- Build options will be added here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="vs-text">VS</div>
+
+        <div class="player-container red" id="player-opponent">
+            <div class="champion-portrait" id="opponent-portrait">
+                <!-- Champion portrait will be added here -->
+            </div>
+            <div class="player-name">Opponent</div>
+            <div class="player-rank">AI Opponent</div>
+            <div class="selected-skin" id="opponent-skin">Waiting...</div>
+        </div>
+    </div>
+
+    <div class="selection-info" id="selection-info">
+        Select your champion
+    </div>
+
+    <div class="champion-grid" id="champion-grid">
+        <!-- Champion grid will be populated dynamically -->
+    </div>
+
+    <div class="skin-selection" id="skin-selection" style="display: none;">
+        <!-- Skin selection will be populated dynamically -->
+    </div>
+
+    <button class="start-match-btn" id="start-match-btn" disabled>START MATCH</button>
+
+    <!-- Role selection modal -->
+    <div class="modal" id="roleSelectModal">
+        <div class="modal-content">
+            <h2>Select Your Role</h2>
+            <div class="role-buttons">
+                <button class="role-select-btn" data-role="Top">Top</button>
+                <button class="role-select-btn" data-role="Jungle">Jungle</button>
+                <button class="role-select-btn" data-role="Mid">Mid</button>
+                <button class="role-select-btn" data-role="Adc">ADC</button>
+                <button class="role-select-btn" data-role="Support">Support</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this new modal -->
+    <div class="build-selection-modal" id="buildSelectionModal">
+        <div class="build-selection-content">
+            <h2 class="role-select-title">Select Build</h2>
+            <div class="build-grid" id="buildGrid">
+                <!-- Builds will be added here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this HTML after your role selection modal -->
+    <div class="skin-selection-modal" id="skinSelectionModal">
+        <div class="skin-selection-content">
+            <h2 class="role-select-title">Select Your Skin</h2>
+            <div class="skin-grid" id="skinGrid">
+                <!-- Skins will be added here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, update, set } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { roles } from './roles.js';
+        import { characters } from './characterskinref.js';
+        import { usernames } from './usernames.js';
+        import { skinToBaseCharacterMap } from './skinmapping.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // DOM Elements
+        const championGrid = document.getElementById('champion-grid');
+        const skinSelection = document.getElementById('skin-selection');
+        const playerPortrait = document.getElementById('player-portrait');
+        const opponentPortrait = document.getElementById('opponent-portrait');
+        const playerSkin = document.getElementById('player-skin');
+        const opponentSkin = document.getElementById('opponent-skin');
+        const selectionInfo = document.getElementById('selection-info');
+        const startMatchBtn = document.getElementById('start-match-btn');
+        const buildOptions = document.getElementById('build-options');
+
+        // Game state
+        let currentUser = null;
+        let selectedRole = null;
+        let selectedChampion = null;
+        let selectedSkin = null;
+        let selectedBuild = null;
+        let opponentChampion = null;
+        let opponentSkinName = null;
+        let availableSkins = [];
+        let availableBuilds = [];
+
+        // Add AI profile icons list
+        const aiProfileIcons = [
+            'lovely_kagome', 'date_night_kuma', 'heartbreaker_ibuki', 'lunar_rabbit', 'golden_snake',
+            'atlantean_hourglass', 'coral_armor', 'rapid_golden_arrows', 'Steampunk_City', 'Steampunk_Hat',
+            'Angry_Carrot_Icon', 'Nina_A2', 'Julia_Sacred', 'Birdie_Sacred', 'Black_Red_Rose',
+            'Jade_Panda', 'Jade_Yugo', 'Jade_Claws', 'Arcade_Raiden', 'Arcade_Sub_Zero',
+            'Ayane_Blade', 'Bistro_Kuma', 'Bistro_Shizumaru', 'Captain_Akuma', 'Elphelt_Heart',
+            'Forest_Goddess_Angel', 'Goth_Shield', 'Infernal_Birdie', 'Infernal_Ibuki', 'Infernal_Raiden',
+            'Kokoro_Butterfly', 'Morrigan_Darkness', 'Neoncore_ErronBlack', 'Neoncore_SubZero'
+        ];
+
+        // Check authentication
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                // Get user data
+                const userRef = ref(database, `users/${user.uid}`);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+
+                // Update player name and rank
+                document.getElementById('player-name').textContent = userData.username || user.email.split('@')[0];
+                document.getElementById('player-rank').textContent = `${userData['Rank points'] || 0} RP`;
+
+                // Populate champion grid immediately instead of showing role modal
+                populateChampionGrid();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Populate champion grid
+        async function populateChampionGrid() {
+            try {
+                // Clear grid first
+                championGrid.innerHTML = '';
+
+                // Get all characters data
+                const charactersData = await get(ref(database, 'characters'));
+                const allCharacters = charactersData.val() || {};
+
+                // Create grid items
+                for (const [charName, charData] of Object.entries(allCharacters)) {
+                    // Skip if characters.js doesn't have this character
+                    if (!characters[charName]) continue;
+
+                    const championItem = document.createElement('div');
+                    championItem.className = 'champion-item';
+                    championItem.title = charName;
+                    
+                    // Try to load image with fallback
+                    const img = document.createElement('img');
+                    img.alt = charName;
+                    img.src = `Icons/${charName}.png`;
+                    
+                    img.onerror = function() {
+                        this.src = 'Icons/Unknown.png';
+                    };
+                    
+                    championItem.appendChild(img);
+                    
+                    // Add click event
+                    championItem.addEventListener('click', () => selectChampion(charName));
+                    
+                    championGrid.appendChild(championItem);
+                }
+                
+                selectionInfo.textContent = "Select your champion";
+            } catch (error) {
+                console.error('Error populating champion grid:', error);
+            }
+        }
+
+        // Function to select champion
+        async function selectChampion(champion) {
+            selectedChampion = champion;
+            
+            // Update player portrait
+            playerPortrait.innerHTML = `<img src="Icons/${champion}.png" alt="${champion}">`;
+            
+            selectionInfo.textContent = "Select a skin";
+            
+            // Show skin selection
+            await showSkinSelection(champion);
+            
+            // Select opponent champion and skin (random AI)
+            await selectRandomOpponent();
+            
+            // Enable start match button
+            checkStartMatchReady();
+        }
+
+        // Function to show skin selection
+        async function showSkinSelection(champion) {
+            try {
+                const modal = document.getElementById('skinSelectionModal');
+                const skinGrid = document.getElementById('skinGrid');
+                skinGrid.innerHTML = '';
+
+                // Get user's owned skins
+                const userRef = ref(database, `users/${currentUser.uid}/skins`);
+                const snapshot = await get(userRef);
+                const userSkins = snapshot.val() || {};
+
+                // Get champion skins from characterskinref.js
+                if (characters[champion]) {
+                    const champSkins = characters[champion];
+                    availableSkins = [];
+
+                    // Add other skins if user owns them
+                    champSkins.forEach(skin => {
+                        // Check if user owns the skin and if it's a valid skin for this champion
+                        if (userSkins[skin] && skinToBaseCharacterMap[skin] === champion) {
+                            const skinCard = createSkinCard(skin, champion);
+                            skinGrid.appendChild(skinCard);
+                            availableSkins.push(skin);
+                        }
+                    });
+
+                    // If no skins owned, show message
+                    if (availableSkins.length === 0) {
+                        const noSkinsMessage = document.createElement('div');
+                        noSkinsMessage.style.textAlign = 'center';
+                        noSkinsMessage.style.padding = '20px';
+                        noSkinsMessage.style.color = 'var(--text-color)';
+                        noSkinsMessage.textContent = 'No skins owned for this champion.';
+                        skinGrid.appendChild(noSkinsMessage);
+                        
+                        // Auto-select the champion as the skin
+                        selectSkin(champion);
+                        modal.style.display = 'none';
+                        showBuildSelection();
+                        return;
+                    }
+                }
+
+                // Show modal
+                modal.style.display = 'flex';
+            } catch (error) {
+                console.error('Error showing skin selection:', error);
+                // If there's an error, use champion as skin
+                selectSkin(champion);
+                showBuildSelection();
+            }
+        }
+
+        // Update createSkinCard helper function
+        function createSkinCard(skin, champion) {
+            const card = document.createElement('div');
+            card.className = 'skin-card';
+            
+            const img = document.createElement('img');
+            img.alt = skin;
+            
+            // Try to load skin image with proper case sensitivity
+            const loadImage = () => {
+                img.src = `Skins/${skin}.jpeg`;
+                img.onerror = function() {
+                    this.src = `Skins/${skin}.png`;
+                    this.onerror = function() {
+                        this.src = `Skins/${skin}.jpg`;
+                        this.onerror = function() {
+                            this.src = `Skins/${skin}.jfif`;
+                            this.onerror = function() {
+                                // If all skin images fail, try loading the champion icon
+                                this.src = `Icons/${champion}.png`;
+                                this.onerror = function() {
+                                    // If even the champion icon fails, use a default image
+                                    this.src = 'Icons/Unknown.png';
+                                }
+                            }
+                        }
+                    };
+                };
+            };
+            
+            loadImage();
+            
+            const name = document.createElement('div');
+            name.className = 'skin-name';
+            name.textContent = skin === champion ? champion : skin.replace(champion + " ", "");
+            
+            card.appendChild(img);
+            card.appendChild(name);
+            
+            card.addEventListener('click', () => {
+                selectSkin(skin);
+                document.getElementById('skinSelectionModal').style.display = 'none';
+                showBuildSelection();
+            });
+            
+            return card;
+        }
+
+        // Update showBuildSelection function
+        async function showBuildSelection() {
+            const modal = document.getElementById('buildSelectionModal');
+            const buildGrid = document.getElementById('buildGrid');
+            buildGrid.innerHTML = '';
+
+            try {
+                const safePatchVersion = '2_1_1';
+                const buildsRef = ref(database, `builds/${safePatchVersion}`);
+                const snapshot = await get(buildsRef);
+                
+                if (snapshot.exists()) {
+                    const builds = [];
+                    snapshot.forEach(childSnapshot => {
+                        const build = childSnapshot.val();
+                        if (build.character === selectedChampion) {
+                            builds.push({
+                                id: childSnapshot.key,
+                                ...build
+                            });
+                        }
+                    });
+
+                    builds.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+
+                    builds.forEach(build => {
+                        const card = document.createElement('div');
+                        card.className = 'build-card';
+
+                        const header = document.createElement('div');
+                        header.className = 'build-header';
+                        header.innerHTML = `
+                            <div class="build-title">${build.name || 'Unnamed Build'}</div>
+                            <div class="build-info">
+                                <span>by ${build.creatorName || 'Anonymous'}</span>
+                                <span>• Patch ${safePatchVersion.replace(/_/g, '.')}</span>
+                            </div>
+                        `;
+
+                        const items = document.createElement('div');
+                        items.className = 'build-items';
+                        
+                        build.items.forEach(itemId => {
+                            if (itemId) {
+                                const itemDiv = document.createElement('div');
+                                itemDiv.className = 'build-item';
+                                const img = document.createElement('img');
+                                
+                                img.onerror = function() {
+                                    if (this.src.endsWith('.webp')) {
+                                        this.src = `Items/${itemId}.jpeg`;
+                                    } else if (this.src.endsWith('.jpeg')) {
+                                        this.src = `Items/${itemId}.png`;
+                                    } else if (this.src.endsWith('.png')) {
+                                        this.src = `Items/${itemId}.jpg`;
+                                    }
+                                };
+                                
+                                img.src = `Items/${itemId}.webp`;
+                                img.alt = itemId;
+                                itemDiv.appendChild(img);
+                                items.appendChild(itemDiv);
+                            }
+                        });
+
+                        const actions = document.createElement('div');
+                        actions.className = 'build-actions';
+                        
+                        const selectButton = document.createElement('button');
+                        selectButton.className = 'copy-build';
+                        selectButton.innerHTML = '<i class="fas fa-check"></i> Select Build';
+                        selectButton.onclick = () => {
+                            selectBuild(build);
+                            modal.style.display = 'none';
+                        };
+
+                        actions.appendChild(selectButton);
+                        card.appendChild(header);
+                        card.appendChild(items);
+                        card.appendChild(actions);
+                        buildGrid.appendChild(card);
+                    });
+
+                    modal.style.display = 'flex';
+                } else {
+                    buildGrid.innerHTML = `
+                        <div style="text-align: center; padding: 20px; color: var(--text-color);">
+                            No builds found for ${selectedChampion}. 
+                            <br><br>
+                            <button class="copy-build" onclick="location.href='build-planner.html?character=${encodeURIComponent(selectedChampion)}'">
+                                <i class="fas fa-plus"></i> Create New Build
+                            </button>
+                        </div>
+                    `;
+                    modal.style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Error loading builds:', error);
+                buildGrid.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: var(--text-color);">
+                        Error loading builds. Please try again later.
+                    </div>
+                `;
+                modal.style.display = 'flex';
+            }
+        }
+
+        // Function to select skin
+        function selectSkin(skin) {
+            selectedSkin = skin;
+            playerSkin.textContent = skin;
+            
+            // Update portrait with champion icon
+            playerPortrait.innerHTML = `<img src="Icons/${selectedChampion}.png" alt="${selectedChampion}">`;
+            
+            // Try to load skin image for both portrait and player container background
+            const img = new Image();
+            img.onload = function() {
+                // Update portrait background
+                playerPortrait.style.backgroundImage = `url('${this.src}')`;
+                playerPortrait.style.backgroundSize = 'cover';
+                playerPortrait.style.backgroundPosition = 'center';
+                
+                // Update player container background
+                document.getElementById('player-you').style.backgroundImage = `url('${this.src}')`;
+            };
+            
+            // Try different image formats for the skin
+            img.src = `Skins/${skin}.jpeg`;
+            img.onerror = function() {
+                this.src = `Skins/${skin}.png`;
+                this.onerror = function() {
+                    this.src = `Skins/${skin}.jpg`;
+                    this.onerror = function() {
+                        this.src = `Skins/${skin}.jfif`;
+                        this.onerror = function() {
+                            // If all skin images fail, use champion icon
+                            playerPortrait.style.backgroundImage = `url('Icons/${selectedChampion}.png')`;
+                            document.getElementById('player-you').style.backgroundImage = `url('Icons/${selectedChampion}.png')`;
+                        }
+                    }
+                }
+            };
+            
+            checkStartMatchReady();
+        }
+
+        // Update selectRandomOpponent function
+        async function selectRandomOpponent() {
+            try {
+                // Get all characters
+                const availableCharacters = Object.keys(characters);
+                
+                if (availableCharacters.length === 0) {
+                    console.error('No available characters found');
+                    return;
+                }
+                
+                // Randomly select opponent character
+                const randomIndex = Math.floor(Math.random() * availableCharacters.length);
+                opponentChampion = availableCharacters[randomIndex];
+                
+                // Update opponent portrait
+                opponentPortrait.innerHTML = `<img src="Icons/${opponentChampion}.png" alt="${opponentChampion}">`;
+                
+                // Get available skins for the opponent
+                const champSkins = characters[opponentChampion] || [opponentChampion];
+
+                // 50% chance to use a skin if available, otherwise use base champion
+                if (champSkins.length > 0 && Math.random() > 0.5) {
+                    const randomSkinIndex = Math.floor(Math.random() * champSkins.length);
+                    opponentSkinName = champSkins[randomSkinIndex];
+                } else {
+                    opponentSkinName = opponentChampion;
+                }
+
+                // Set random AI name and rank
+                const aiName = usernames[Math.floor(Math.random() * usernames.length)];
+                const aiRankPoints = Math.floor(Math.random() * 1000) + 500;
+                
+                document.querySelector('#player-opponent .player-name').textContent = aiName;
+                document.querySelector('#player-opponent .player-rank').textContent = `${aiRankPoints} RP`;
+                opponentSkin.textContent = opponentSkinName;
+
+                // Update opponent portrait background with skin
+                const img = new Image();
+                img.onload = function() {
+                    opponentPortrait.style.backgroundImage = `url('${this.src}')`;
+                    opponentPortrait.style.backgroundSize = 'cover';
+                    opponentPortrait.style.backgroundPosition = 'center';
+                    
+                    // Update opponent container background
+                    document.getElementById('player-opponent').style.backgroundImage = `url('${this.src}')`;
+                };
+                
+                // Try different image formats for the opponent's skin
+                img.src = `Skins/${opponentSkinName}.jpeg`;
+                img.onerror = function() {
+                    this.src = `Skins/${opponentSkinName}.png`;
+                    this.onerror = function() {
+                        this.src = `Skins/${opponentSkinName}.jpg`;
+                        this.onerror = function() {
+                            this.src = `Skins/${opponentSkinName}.jfif`;
+                            this.onerror = function() {
+                                opponentPortrait.style.backgroundImage = `url('Icons/${opponentChampion}.png')`;
+                                document.getElementById('player-opponent').style.backgroundImage = `url('Icons/${opponentChampion}.png')`;
+                            }
+                        }
+                    }
+                };
+
+            } catch (error) {
+                console.error('Error selecting opponent:', error);
+                // Fallback to default values if there's an error
+                opponentChampion = Object.keys(characters)[0];
+                opponentSkinName = opponentChampion;
+                opponentPortrait.innerHTML = `<img src="Icons/${opponentChampion}.png" alt="${opponentChampion}">`;
+                opponentSkin.textContent = opponentSkinName;
+            }
+        }
+
+        // Function to check if ready to start match
+        function checkStartMatchReady() {
+            startMatchBtn.disabled = !(selectedChampion && selectedSkin && selectedBuild);
+        }
+
+        // Start match button event listener
+        startMatchBtn.addEventListener('click', async function() {
+            try {
+                // Disable the button to prevent multiple clicks
+                this.disabled = true;
+                
+                // Generate a unique queue ID
+                const queueId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+                
+                // Get current user's data for profile icon
+                const userRef = ref(database, `users/${auth.currentUser.uid}`);
+                const userSnapshot = await get(userRef);
+                const userData = userSnapshot.val();
+
+                // Get a random build for the AI opponent
+                const safePatchVersion = '2_1_1';
+                const buildsRef = ref(database, `builds/${safePatchVersion}`);
+                const buildsSnapshot = await get(buildsRef);
+                let aiOpponentBuild = null;
+
+                if (buildsSnapshot.exists()) {
+                    const opponentBuilds = [];
+                    buildsSnapshot.forEach(childSnapshot => {
+                        const build = childSnapshot.val();
+                        if (build.character === opponentChampion) {
+                            opponentBuilds.push(build);
+                        }
+                    });
+
+                    if (opponentBuilds.length > 0) {
+                        aiOpponentBuild = opponentBuilds[Math.floor(Math.random() * opponentBuilds.length)];
+                    }
+                }
+                
+                // Collect game information
+                const gameInfo = {
+                    queueId,
+                    timestamp: Date.now(),
+                    gameMode: "1v1",
+                    players: {
+                        blue_1: {
+                            name: userData.username || auth.currentUser.email.split('@')[0],
+                            champion: selectedChampion,
+                            skin: selectedSkin,
+                            build: selectedBuild,
+                            team: "blue",
+                            isAI: false,
+                            uid: auth.currentUser.uid,
+                            profileIcon: userData.profileIcon || 'Birdie.png'
+                        },
+                        red_1: {
+                            name: document.querySelector('#player-opponent .player-name').textContent,
+                            champion: opponentChampion,
+                            skin: opponentSkinName,
+                            build: aiOpponentBuild || selectedBuild, // Use player's build if no AI build available
+                            team: "red",
+                            isAI: true,
+                            profileIcon: 'Birdie.png'
+                        }
+                    }
+                };
+                
+                // Save to Firebase
+                console.log('Saving queue data:', gameInfo);
+                const queueRef = ref(database, `Queue/${queueId}`);
+                await set(queueRef, gameInfo);
+                
+                // Start countdown
+                const timerElement = document.querySelector('.timer');
+                let countdown = 5;
+                
+                // Update button text during countdown
+                this.textContent = 'STARTING...';
+                
+                const countdownInterval = setInterval(() => {
+                    countdown--;
+                    timerElement.textContent = countdown;
+                    
+                    if (countdown <= 0) {
+                        clearInterval(countdownInterval);
+                        // Store queue ID in sessionStorage for Game.html to access
+                        sessionStorage.setItem('currentQueueId', queueId);
+                        window.location.href = 'Game_1v1.html';
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Error starting game:', error);
+                // Re-enable the button if there's an error
+                this.disabled = false;
+                this.textContent = 'START MATCH';
+                alert('Error starting the game. Please try again.');
+            }
+        });
+
+        // Update selectBuild function
+        function selectBuild(build) {
+            selectedBuild = build;
+            checkStartMatchReady();
+        }
+    </script>
+</body>
+</html> 

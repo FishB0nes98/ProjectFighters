@@ -445,6 +445,21 @@
             50% { box-shadow: 0 0 20px rgba(229, 228, 226, 0.5); }
             100% { box-shadow: 0 0 10px rgba(192, 192, 192, 0.3); }
         }
+
+        /* Add Blossom tag style */
+        .tag-blossom {
+            background: linear-gradient(45deg, #FF69B4, #FFB6C1);
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
+            animation: blossomGlow 2s ease-in-out infinite;
+            color: #FFFFFF;
+            text-shadow: 0 0 3px rgba(0,0,0,0.5);
+        }
+
+        @keyframes blossomGlow {
+            0% { box-shadow: 0 0 10px rgba(255, 105, 180, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 182, 193, 0.5); }
+            100% { box-shadow: 0 0 10px rgba(255, 105, 180, 0.3); }
+        }
     </style>
 </head>
 <body>
@@ -516,14 +531,12 @@
         // Initialize champions grid
         function initChampionsGrid() {
             const grid = document.getElementById('champions-grid');
-            // Update new skins list for characters who received new skins in Patch 2.1
-            const newSkins = ["Juri", "Blanka", "Peacock", "Reptile", "Eagle", "Shinnok"];
-            // Season 2 characters (former Battleborn + new skins)
-            const seasonTwoSkins = ["Zasalamel", "Talim", "Yugo", "Eagle", "Ayane", "Juri", "Blanka", "Peacock", "Reptile", "Shinnok"];
-            // Characters with Gangster skins
-            const gangsterSkins = ["Juri", "Blanka", "Peacock"];
-            // Characters with Bandito skins
-            const banditoSkins = ["Reptile", "Eagle", "Shinnok"];
+            // Update new skins list for characters who received new skins in Patch 2.2
+            const newSkins = ["Julia", "Mai", "Raiden", "Shizumaru", "Talim", "Kuma"];
+            // Season 2 characters (including new Blossom Event characters)
+            const seasonTwoSkins = ["Zasalamel", "Talim", "Yugo", "Eagle", "Ayane", "Julia", "Mai", "Raiden", "Shizumaru", "Kuma"];
+            // Characters with Blossom skins
+            const blossomSkins = ["Julia", "Mai", "Raiden", "Shizumaru", "Talim", "Kuma"];
             const freeSkins = ["Kuma"];
             
             const fileNameCorrections = {
@@ -575,18 +588,11 @@
                     badgeRow1.appendChild(s2Badge);
                 }
 
-                if (gangsterSkins.includes(champion)) {
-                    const gangsterBadge = document.createElement('div');
-                    gangsterBadge.className = 'skin-tag tag-gangster';
-                    gangsterBadge.textContent = 'GANGSTER';
-                    badgeRow2.appendChild(gangsterBadge);
-                }
-
-                if (banditoSkins.includes(champion)) {
-                    const banditoBadge = document.createElement('div');
-                    banditoBadge.className = 'skin-tag tag-bandito';
-                    banditoBadge.textContent = 'BANDITO';
-                    badgeRow2.appendChild(banditoBadge);
+                if (blossomSkins.includes(champion)) {
+                    const blossomBadge = document.createElement('div');
+                    blossomBadge.className = 'skin-tag tag-blossom';
+                    blossomBadge.textContent = 'BLOSSOM';
+                    badgeRow2.appendChild(blossomBadge);
                 }
 
                 if (freeSkins.includes(champion)) {
@@ -640,6 +646,32 @@
                 const tagsContainer = document.createElement('div');
                 tagsContainer.className = 'skin-tags';
                 
+                // Add Blossom tag
+                if (skin.name.includes('Blossom')) {
+                    const blossomTag = document.createElement('div');
+                    blossomTag.className = 'skin-tag tag-blossom';
+                    blossomTag.textContent = 'BLOSSOM';
+                    tagsContainer.appendChild(blossomTag);
+                    
+                    const s2Tag = document.createElement('div');
+                    s2Tag.className = 'skin-tag tag-s2';
+                    s2Tag.textContent = 'S2';
+                    tagsContainer.appendChild(s2Tag);
+                    
+                    const newTag = document.createElement('div');
+                    newTag.className = 'skin-tag tag-new';
+                    newTag.textContent = 'NEW';
+                    tagsContainer.appendChild(newTag);
+                }
+
+                // Add Season 2 tag for appropriate characters
+                if (skin.name.includes('Battleborn')) {
+                    const s2Tag = document.createElement('div');
+                    s2Tag.className = 'skin-tag tag-s2';
+                    s2Tag.textContent = 'S2';
+                    tagsContainer.appendChild(s2Tag);
+                }
+
                 // Add appropriate tags based on conditions
                 if (skin.name.includes('Gangster')) {
                     const gangsterTag = document.createElement('div');
@@ -675,13 +707,6 @@
                     tagsContainer.appendChild(newTag);
                 }
                 
-                if (skin.name.includes('Battleborn')) {
-                    const s2Tag = document.createElement('div');
-                    s2Tag.className = 'skin-tag tag-s2';
-                    s2Tag.textContent = 'S2';
-                    tagsContainer.appendChild(s2Tag);
-                }
-
                 // Add reward tag for specific skins
                 if (skin.name === "Infernal Julia" || skin.name === "Glorious Julia") {
                     const rewardTag = document.createElement('div');

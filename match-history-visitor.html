@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Match History - Project Fighters</title>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0A1428;
+            --secondary-color: #1E2328;
+            --accent-color: #C89B3C;
+            --text-color: #F0E6D2;
+            --border-color: #463714;
+            --hover-color: #785A28;
+            --victory-color: #28a745;
+            --defeat-color: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--secondary-color);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            color: var(--accent-color);
+            font-size: 2em;
+        }
+
+        .back-button {
+            padding: 10px 20px;
+            background: var(--accent-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: var(--hover-color);
+        }
+
+        /* Search Section Styles */
+        .search-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--secondary-color);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px;
+            background: var(--primary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            color: var(--text-color);
+            font-size: 1em;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .search-button {
+            padding: 12px 24px;
+            background: var(--accent-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-button:hover {
+            background: var(--hover-color);
+        }
+
+        .search-results {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .player-card {
+            background: var(--primary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .player-card:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .player-name {
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .player-stats {
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+
+        /* Existing match list styles from match-history.html */
+        .match-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Match Card Styles */
+        .match-card {
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            background-size: cover;
+            background-position: center 20%;
+        }
+
+        .match-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                to right,
+                rgba(0, 0, 0, 0.85) 0%,
+                rgba(0, 0, 0, 0.7) 100%
+            );
+            z-index: 1;
+        }
+
+        .match-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .match-card:hover::before {
+            background: linear-gradient(
+                to right,
+                rgba(0, 0, 0, 0.8) 0%,
+                rgba(0, 0, 0, 0.65) 100%
+            );
+        }
+
+        .match-header {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .game-mode {
+            font-size: 0.9em;
+            color: var(--accent-color);
+            padding: 4px 8px;
+            border: 1px solid var(--accent-color);
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.3);
+            min-width: 80px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .match-result {
+            font-size: 1.1em;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 5px;
+            min-width: 100px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .victory {
+            background: rgba(40, 167, 69, 0.2);
+            color: var(--victory-color);
+            border: 1px solid var(--victory-color);
+        }
+
+        .defeat {
+            background: rgba(220, 53, 69, 0.2);
+            color: var(--defeat-color);
+            border: 1px solid var(--defeat-color);
+        }
+
+        .match-champion {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-width: 200px;
+            flex-shrink: 0;
+        }
+
+        .champion-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-color);
+            flex-shrink: 0;
+        }
+
+        .champion-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .champion-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #fff;
+        }
+
+        .skin-name {
+            color: var(--accent-color);
+            font-size: 0.9em;
+        }
+
+        .match-stats {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: auto;
+            min-width: 150px;
+            flex-shrink: 0;
+        }
+
+        .kda {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .kda-ratio {
+            color: var(--accent-color);
+            font-size: 0.9em;
+            min-width: 70px;
+        }
+
+        .match-time {
+            color: #888;
+            font-size: 0.9em;
+            min-width: 80px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .match-details {
+            position: relative;
+            z-index: 2;
+            display: none;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .teams-container {
+            display: flex;
+            gap: 30px;
+        }
+
+        .team {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .team-header {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .team-members {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .team-member {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+
+        .team-member:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .member-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid var(--accent-color);
+        }
+
+        .member-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .member-name {
+            font-size: 0.9em;
+            color: var(--accent-color);
+        }
+
+        .member-character {
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .build-container {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .build-title {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .build-items {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .item {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease;
+        }
+
+        .item:hover {
+            transform: scale(1.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: var(--accent-color);
+            font-size: 1.2em;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            color: #888;
+            font-size: 1.2em;
+        }
+
+        .selected-player {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: var(--secondary-color);
+            border-radius: 10px;
+            border: 1px solid var(--accent-color);
+        }
+
+        .selected-player h2 {
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .selected-player .stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-item {
+            background: var(--primary-color);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Player Match History</h1>
+            <a href="home.html" class="back-button">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+
+        <div class="search-section">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search for a player..." id="playerSearch">
+                <button class="search-button" id="searchButton">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+            <div class="search-results" id="searchResults"></div>
+        </div>
+
+        <div id="selectedPlayer" style="display: none;" class="selected-player">
+            <!-- Selected player info will be inserted here -->
+        </div>
+
+        <div class="match-list" id="matchList">
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <p>Search for a player to view their match history</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, query, orderByChild, startAt, endAt } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // DOM Elements
+        const searchInput = document.getElementById('playerSearch');
+        const searchButton = document.getElementById('searchButton');
+        const searchResults = document.getElementById('searchResults');
+        const selectedPlayerDiv = document.getElementById('selectedPlayer');
+        const matchList = document.getElementById('matchList');
+
+        // Event Listeners
+        searchButton.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        async function performSearch() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            if (searchTerm.length < 3) {
+                alert('Please enter at least 3 characters to search');
+                return;
+            }
+
+            searchResults.innerHTML = '<div class="loading">Searching for players...</div>';
+
+            try {
+                const usersRef = ref(database, 'users');
+                const usersSnapshot = await get(usersRef);
+                
+                const matchingPlayers = [];
+                usersSnapshot.forEach((userSnapshot) => {
+                    const userData = userSnapshot.val();
+                    if (userData.username && userData.username.toLowerCase().includes(searchTerm)) {
+                        matchingPlayers.push({
+                            id: userSnapshot.key,
+                            username: userData.username,
+                            // Add any other relevant user data
+                        });
+                    }
+                });
+
+                displaySearchResults(matchingPlayers);
+            } catch (error) {
+                console.error('Error searching for players:', error);
+                searchResults.innerHTML = '<div class="no-results">Error searching for players</div>';
+            }
+        }
+
+        function displaySearchResults(players) {
+            if (players.length === 0) {
+                searchResults.innerHTML = '<div class="no-results">No players found</div>';
+                return;
+            }
+
+            searchResults.innerHTML = players.map(player => `
+                <div class="player-card" onclick="selectPlayer('${player.id}', '${player.username}')">
+                    <div class="player-name">${player.username}</div>
+                    <div class="player-stats">Click to view match history</div>
+                </div>
+            `).join('');
+        }
+
+        // Make selectPlayer function globally available
+        window.selectPlayer = async function(playerId, username) {
+            selectedPlayerDiv.style.display = 'block';
+            matchList.innerHTML = '<div class="loading">Loading match history...</div>';
+
+            try {
+                const matchHistoryRef = ref(database, `users/${playerId}/matchHistory`);
+                const snapshot = await get(matchHistoryRef);
+
+                // Update selected player info
+                selectedPlayerDiv.innerHTML = `
+                    <h2>${username}'s Match History</h2>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-value">${snapshot.size || 0}</div>
+                            <div class="stat-label">Total Matches</div>
+                        </div>
+                    </div>
+                `;
+
+                if (!snapshot.exists()) {
+                    matchList.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-history"></i>
+                            <p>No matches found for this player</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const matches = [];
+                snapshot.forEach((childSnapshot) => {
+                    matches.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+
+                // Sort matches by timestamp in descending order (most recent first)
+                matches.sort((a, b) => b.timestamp - a.timestamp);
+
+                // Only take the last 20 matches
+                const recentMatches = matches.slice(0, 20);
+
+                matchList.innerHTML = recentMatches.map(match => createMatchCard(match)).join('');
+
+                // Load skin backgrounds for all cards
+                document.querySelectorAll('.match-card').forEach(card => {
+                    const skinName = card.dataset.skin;
+                    loadSkinImage(card, skinName);
+                    card.addEventListener('click', () => toggleMatchDetails(card));
+                });
+
+            } catch (error) {
+                console.error('Error loading match history:', error);
+                matchList.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Error loading match history</p>
+                    </div>
+                `;
+            }
+        };
+
+        // Copy all the helper functions from match-history.html
+        function createMatchCard(match) {
+            // ... (copy the createMatchCard function from match-history.html)
+            const date = new Date(match.date);
+            const timeAgo = getTimeAgo(date);
+            const kdaRatio = calculateKDA(match.kda);
+
+            // Handle both old and new data formats
+            const team1Data = match.team1 || match.team1Characters?.map(char => ({ character: char, name: 'Unknown' })) || [];
+            const team2Data = match.team2 || match.team2Characters?.map(char => ({ character: char, name: 'Unknown' })) || [];
+
+            // Set default values for KDA display
+            const kills = match.kda?.kills || 0;
+            const deaths = match.kda?.deaths || 0;
+            const assists = match.kda?.assists || 0;
+
+            return `
+                <div class="match-card" data-match-id="${match.id}" data-skin="${match.skin}">
+                    <div class="match-header">
+                        <div class="match-result ${match.result.toLowerCase()}">${match.result}</div>
+                        <div class="game-mode">${match.gameMode || 'Ranked'}</div>
+                        <div class="match-champion">
+                            <img src="Icons/${match.character}.png" alt="${match.character}" class="champion-icon">
+                            <div class="champion-info">
+                                <div class="champion-name">${match.character}</div>
+                                <div class="skin-name">${match.skin}</div>
+                            </div>
+                        </div>
+                        <div class="match-stats">
+                            <div class="kda">${kills}/${deaths}/${assists}</div>
+                            <div class="kda-ratio">${kdaRatio} KDA</div>
+                        </div>
+                        <div class="match-time">${timeAgo}</div>
+                    </div>
+                    <div class="match-details">
+                        <div class="teams-container">
+                            <div class="team">
+                                <div class="team-header">Team 1</div>
+                                <div class="team-members">
+                                    ${team1Data.map(player => `
+                                        <div class="team-member">
+                                            <img src="Icons/${player.character}.png" alt="${player.character}" class="member-icon">
+                                            <div class="member-info">
+                                                <div class="member-name">${player.name}</div>
+                                                <div class="member-character">${player.character}</div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="team">
+                                <div class="team-header">Team 2</div>
+                                <div class="team-members">
+                                    ${team2Data.map(player => `
+                                        <div class="team-member">
+                                            <img src="Icons/${player.character}.png" alt="${player.character}" class="member-icon">
+                                            <div class="member-info">
+                                                <div class="member-name">${player.name}</div>
+                                                <div class="member-character">${player.character}</div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        ${match.build ? `
+                            <div class="build-container">
+                                <div class="build-title">Build</div>
+                                <div class="build-items">
+                                    ${Object.values(match.build.items || {}).map(item => `
+                                        <img src="items/${item}.webp" alt="${item}" class="item"
+                                            onerror="this.onerror=null; this.src='items/${item}.png'">
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function calculateKDA(kda) {
+            if (!kda || typeof kda !== 'object') {
+                return "0.00";
+            }
+            
+            const kills = kda.kills || 0;
+            const deaths = kda.deaths || 0;
+            const assists = kda.assists || 0;
+            
+            const ratio = ((kills + assists) / Math.max(1, deaths)).toFixed(2);
+            return ratio;
+        }
+
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffInSeconds = Math.floor((now - date) / 1000);
+
+            if (diffInSeconds < 60) return 'Just now';
+            if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+            if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+            if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+            return date.toLocaleDateString();
+        }
+
+        function toggleMatchDetails(card) {
+            const details = card.querySelector('.match-details');
+            const isExpanded = details.style.display === 'block';
+            
+            // Close all other expanded cards
+            document.querySelectorAll('.match-details').forEach(detail => {
+                detail.style.display = 'none';
+            });
+            document.querySelectorAll('.match-card').forEach(c => {
+                c.classList.remove('show-details');
+            });
+
+            if (!isExpanded) {
+                details.style.display = 'block';
+                card.classList.add('show-details');
+            }
+        }
+
+        function loadSkinImage(card, skinName) {
+            const formats = ['jpeg', 'jfif', 'png', 'jpg'];
+            let currentFormatIndex = 0;
+
+            function tryNextFormat() {
+                if (currentFormatIndex >= formats.length) {
+                    console.warn(`Could not load skin image for ${skinName} in any format`);
+                    return;
+                }
+
+                const format = formats[currentFormatIndex];
+                const img = new Image();
+                
+                img.onload = function() {
+                    card.style.setProperty('background-image', `url('${img.src}')`);
+                    card.style.setProperty('background-size', 'cover');
+                    card.style.setProperty('background-position', 'center 20%');
+                };
+
+                img.onerror = function() {
+                    currentFormatIndex++;
+                    tryNextFormat();
+                };
+
+                img.src = `Skins/${skinName}.${format}`;
+            }
+
+            tryNextFormat();
+        }
+    </script>
+</body>
+</html>

@@ -34,12 +34,12 @@ export const items = {
         id: "flask_of_strength",
         name: "Flask of Strength",
         image: "items/flask_of_strength.webp",
-        cost: 1200,
+        cost: 1100,
         tags: ["Attack"],
         stats: {},
         active: {
             name: "Surge of Power",
-            description: "Grants +120 Attack Damage for 12s",
+            description: "Grants +95 Attack Damage for 10s",
             cooldown: 60
         }
     },
@@ -232,8 +232,8 @@ export const items = {
         cost: 3000,
         tags: ["Attack", "Magic", "Cooldown Reduction"],
         stats: {
-            attackDamage: 50,
-            abilityPower: 50,
+            attackDamage: 40,
+            abilityPower: 40,
             cooldownReduction: 2
         },
         passive: {
@@ -451,10 +451,9 @@ export const items = {
         name: "Leviathan's Fang",
         image: "items/leviathans_fang.webp",
         cost: 2850,
-        tags: ["Attack", "Attack Speed"],
+        tags: ["Attack", "Magic"],
         stats: {
             attackDamage: 20,
-            attackSpeed: 0.3,
             lifeSteal: 8
         },
         passive: {
@@ -888,8 +887,8 @@ export const items = {
         tags: ["Support", "Movement"],
         stats: {
             health: 250,
-            armor: 3,
-            magicResistance: 2
+            armor: 5,
+            magicResistance: 4
         },
         active: {
             name: "Fast Lane",

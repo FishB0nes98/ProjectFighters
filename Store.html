@@ -424,17 +424,29 @@
         }
 
         .close {
-            color: #888;
+            color: #FF69B4;
             float: right;
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             cursor: pointer;
-            transition: color 0.3s;
+            transition: all 0.3s ease;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 105, 180, 0.1);
+            z-index: 10;
         }
 
-        .close:hover,
-        .close:focus {
-            color: #fff;
+        .close:hover {
+            color: white;
+            background: rgba(255, 105, 180, 0.3);
+            transform: rotate(90deg);
         }
 
         .fm-options button {
@@ -480,19 +492,27 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.8);
-            overflow-y: auto;
+            backdrop-filter: blur(5px);
+            overflow: hidden;
         }
 
         .starter-bundles-content {
             position: relative;
             background: rgba(30, 30, 30, 0.95);
-            margin: 5% auto;
-            padding: 30px;
+            margin: 3% auto;
+            padding: 20px;
             width: 90%;
             max-width: 1200px;
             border-radius: 15px;
-            border: 2px solid #00ced1;
-            box-shadow: 0 0 30px rgba(0, 206, 209, 0.3);
+            border: 2px solid #FF69B4;
+            box-shadow: 0 0 30px rgba(255, 105, 180, 0.3);
+            max-height: 90vh;
+            overflow: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 182, 193, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 30%, rgba(255, 182, 193, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 30% 70%, rgba(255, 182, 193, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 70% 80%, rgba(255, 182, 193, 0.05) 0%, transparent 20%);
         }
 
         .bundle-tabs {
@@ -528,25 +548,31 @@
 
         .bundle-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-top: 20px;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-top: 10px;
         }
 
         .bundle-character {
-            background: rgba(0, 206, 209, 0.1);
-            border: 1px solid #00ced1;
-            border-radius: 10px;
-            padding: 15px;
+            background: rgba(255, 105, 180, 0.1);
+            border: 1px solid #FF69B4;
+            border-radius: 8px;
+            padding: 8px;
             text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .bundle-character:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
         }
 
         .bundle-character .image-container {
             position: relative;
             width: 100%;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            margin-bottom: 10px;
-            border-radius: 8px;
+            padding-bottom: 56.25%;
+            margin-bottom: 3px;
+            border-radius: 6px;
             overflow: hidden;
         }
 
@@ -562,61 +588,66 @@
 
         .bundle-character h3 {
             color: #fff;
-            margin: 10px 0;
-            font-size: 1.4em;
+            margin: 3px 0;
+            font-size: 0.9em;
             font-family: 'Roboto', sans-serif;
-            text-shadow: 0 0 10px rgba(0, 206, 209, 0.5);
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
         }
 
         .bundle-character p {
-            color: #00ced1;
-            font-size: 1.1em;
+            color: #FF69B4;
+            font-size: 0.8em;
             font-family: 'Open Sans', sans-serif;
-            margin: 5px 0;
+            margin: 0;
             font-weight: 500;
             letter-spacing: 0.5px;
         }
 
         .bundle-purchase {
-            margin-top: 30px;
+            margin-top: 15px;
+            margin-bottom: 15px;
             text-align: center;
-        }
-
-        .bundle-price {
             display: flex;
-            align-items: center;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            color: #ffd700;
+            align-items: center;
+            gap: 15px;
         }
 
-        .bundle-price img {
-            width: 30px;
-            height: 30px;
-        }
-
-        .purchase-bundle-btn {
-            background: linear-gradient(45deg, #00ced1, #20b2aa);
+        .bundle-details h2 {
             color: #fff;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 25px;
-            font-size: 1.2em;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+            text-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+            position: relative;
         }
 
-        .purchase-bundle-btn:hover {
-            background: linear-gradient(45deg, #20b2aa, #00ced1);
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(0, 206, 209, 0.4);
+        .bundle-details h2::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #FF69B4, transparent);
         }
 
-        @media (max-width: 1800px) {
-            .bundle-container {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        @media (max-width: 1200px) {
+            .bundle-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .bundle-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .bundle-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 
@@ -736,6 +767,73 @@
             width: 15px;
             height: 15px;
         }
+
+        .purchase-bundle-btn {
+            background: linear-gradient(45deg, #FF69B4, #FFB6C1);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(255, 105, 180, 0.3);
+        }
+
+        .purchase-bundle-btn:hover {
+            background: linear-gradient(45deg, #FFB6C1, #FF69B4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 105, 180, 0.5);
+        }
+
+        .purchase-bundle-btn:disabled {
+            background: linear-gradient(45deg, #999, #777);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .bundle-details .price-container {
+            background: rgba(255, 105, 180, 0.1);
+            padding: 8px 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 105, 180, 0.3);
+        }
+
+        .bundle-details .original-price {
+            color: #aaa;
+            text-decoration: line-through;
+            font-size: 0.9em;
+        }
+
+        .bundle-details .final-price {
+            color: #FF69B4;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .bundle-details .price-divider {
+            margin: 5px 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 105, 180, 0.5), transparent);
+        }
+
+        /* Remove cherry blossom animation */
+        @keyframes falling {
+            0% {
+                transform: translate(0, -10%) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(100px, 100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .cherry-blossom {
+            display: none; /* Hide cherry blossoms completely */
+        }
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
@@ -760,156 +858,170 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        function updateBundleButtons(Bundles, skins) {
-        const bundleItems = document.querySelectorAll('.bundle-item');
-        bundleItems.forEach(item => {
-            const bundleName = item.dataset.bundleName;
-            const button = item.querySelector('button');
-            if (Bundles[bundleName] || 
-                (bundleName === 'ArcticHuntressPeacock' && skins['Arctic Huntress Peacock'] === 1) ||
-                (bundleName === 'ArcadeSubZero' && skins['Arcade Sub Zero'] === 1) ||
-                (bundleName === 'WinterRecolorDuoPack' && 
-                    skins['Jade Scorpion Agate'] === 1 && 
-                    skins['Arcade Sub Zero Frosty Forest'] === 1) ||
-                (bundleName === 'WinterFestivalBundle' && 
-                    skins['Winter Festival Juri'] === 1 && 
-                    skins['Winter Festival Kabal'] === 1 && 
-                    skins['Winter Festival Mai'] === 1 && 
-                    skins['Winter Festival Kuma'] === 1 && 
-                    skins['Winter Festival Shizumaru'] === 1 && 
-                    skins['Winter Queen Angel'] === 1) ||
-                (bundleName === 'LunarFestivalBundle' && 
-                    skins['Lunar Festival Lili'] === 1 && 
-                    skins['Lunar Festival Scorpion'] === 1 && 
-                    skins['Lunar Festival Noel'] === 1 && 
-                    skins['Lunar Festival Reptile'] === 1 && 
-                    skins['Lunar Festival Kokoro'] === 1 && 
-                    skins['Lunar Festival Siegfried'] === 1) ||
-                (bundleName === 'PhoenixRMika' && skins['Phoenix R Mika'] === 1) ||
-                (bundleName === 'CaptainTalim' && skins['Captain Talim'] === 1) ||
-                (bundleName === 'FeatherDancerMai' && skins['Feather Dancer Mai'] === 1) ||
-                (bundleName === 'PyromancerMegaMan' && skins['Pyromancer Mega Man'] === 1) ||
-                (bundleName === 'RainyDayNoel' && skins['Rainy Day Noel'] === 1) ||
-                (bundleName === 'SacredCeremonyMorrigan' && skins['Sacred Ceremony Morrigan'] === 1) ||
-                (bundleName === 'SandSoldierBirdie' && skins['Sand Soldier Birdie'] === 1)) {
-                button.disabled = true;
-                button.textContent = 'Owned';
-            }
-        });
-    }
+        // Add these global variables
+        window.userFM = 0;
+        window.userCM = 0;
+        window.userRef = null;
 
-    window.onload = function() {
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const userRef = ref(database, 'users/' + user.uid);
-                const snapshot = await get(userRef);
+        // Add this function to initialize user data
+        async function initializeUserData() {
+            try {
+                const user = auth.currentUser;
+                if (!user) {
+                    console.error('No user logged in');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                window.userRef = ref(database, 'users/' + user.uid);
+                const snapshot = await get(window.userRef);
                 const userData = snapshot.val();
+
                 if (userData) {
-                    document.getElementById('cm-amount').textContent = userData.CM || 0;
-                    document.getElementById('fm-amount').textContent = userData.FM || 0;
                     window.userFM = userData.FM || 0;
                     window.userCM = userData.CM || 0;
-                    window.userRef = userRef;
+                    
+                    // Update the display
+                    document.getElementById('fm-amount').textContent = window.userFM;
+                    document.getElementById('cm-amount').textContent = window.userCM;
+
+                    // Update bundle buttons based on owned items
                     updateBundleButtons(userData.Bundles || {}, userData.skins || {});
                 }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        // Add auth state listener
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                initializeUserData();
+            } else {
+                window.location.href = 'index.html';
             }
         });
-    };
 
-
-
-    window.purchaseBundle = async function(button) {
-        // Get bundle info either from the store view or modal view
-        const bundleItem = button.closest('.bundle-item');
-        const bundleName = bundleItem ? bundleItem.dataset.bundleName : button.dataset.bundleName;
-        const priceElement = bundleItem ? 
-            bundleItem.querySelector('.final-price span') : 
-            button.closest('.bundle-purchase').querySelector('.final-price span');
-        const currencyElement = bundleItem ? 
-            bundleItem.querySelector('.final-price img') : 
-            button.closest('.bundle-purchase').querySelector('.final-price img');
-        
-        const bundlePrice = parseInt(priceElement.textContent);
-        const currencyType = currencyElement.alt; // 'FM' or 'CM'
-
-        const userCurrency = currencyType === 'FM' ? window.userFM : window.userCM;
-        const userCurrencyElement = document.getElementById(`${currencyType.toLowerCase()}-amount`);
-
-        if (userCurrency >= bundlePrice) {
-            const newCurrencyAmount = userCurrency - bundlePrice;
-            const updates = {};
-            updates[currencyType] = newCurrencyAmount;
-
-            // Get user data first
-            const userRef = ref(database, 'users/' + auth.currentUser.uid);
-            const snapshot = await get(userRef);
-            const userData = snapshot.val();
-
-            // Handle different bundles
-            if (bundleName === 'GangstersVsBanditosBundle') {
-                updates[`skins/Gangster Juri`] = 1;
-                updates[`skins/Gangster Blanka`] = 1;
-                updates[`skins/Gangster Peacock`] = 1;
-                updates[`skins/Bandito Reptile`] = 1;
-                updates[`skins/Bandito Eagle`] = 1;
-                updates[`skins/Bandito Shinnok`] = 1;
-                updates[`Bundles/${bundleName}`] = 1;
-            } else if (bundleName === 'GangstersBundle') {
-                updates[`skins/Gangster Juri`] = 1;
-                updates[`skins/Gangster Blanka`] = 1;
-                updates[`skins/Gangster Peacock`] = 1;
-                updates[`Bundles/${bundleName}`] = 1;
-            } else if (bundleName === 'BanditosBundle') {
-                updates[`skins/Bandito Reptile`] = 1;
-                updates[`skins/Bandito Eagle`] = 1;
-                updates[`skins/Bandito Shinnok`] = 1;
-                updates[`Bundles/${bundleName}`] = 1;
-            } else if (bundleName === 'BattlebornBundle') {
-                updates[`skins/Battleborn Zasalamel`] = 1;
-                updates[`skins/Battleborn Talim`] = 1;
-                updates[`skins/Battleborn Yugo`] = 1;
-                updates[`skins/Battleborn Eagle`] = 1;
-                updates[`skins/Battleborn Ayane`] = 1;
-                updates[`Bundles/${bundleName}`] = 1;
-            } else if (bundleName === 'BattlebornYugoBundle') {
-                updates[`skins/Battleborn Yugo`] = 1;
-                updates[`lootboxes/basic`] = (userData.lootboxes?.basic || 0) + 3;
-                updates[`Bundles/${bundleName}`] = 1;
-            } else if (bundleName === 'RainyDayNoel') {
-                updates[`skins/Rainy Day Noel`] = 1;
-                updates[`Bundles/${bundleName}`] = 1;
-            } else if (bundleName === 'SacredCeremonyMorrigan') {
-                updates[`skins/Sacred Ceremony Morrigan`] = 1;
-                updates[`Bundles/${bundleName}`] = 1;
-            } else if (bundleName === 'SandSoldierBirdie') {
-                updates[`skins/Sand Soldier Birdie`] = 1;
-                updates[`Bundles/${bundleName}`] = 1;
-            }
-
-            await update(userRef, updates);
-            userCurrencyElement.textContent = newCurrencyAmount;
-            if (currencyType === 'FM') {
-                window.userFM = newCurrencyAmount;
-            } else {
-                window.userCM = newCurrencyAmount;
-            }
-            button.disabled = true;
-            button.textContent = 'Owned';
-            alert(`You have successfully purchased ${bundleName}!`);
-            closeStarterBundlesModal(); // Close the modal after purchase
-        } else {
-            alert(`You don't have enough ${currencyType} to purchase this bundle.`);
+        function updateBundleButtons(Bundles, skins) {
+            const bundleItems = document.querySelectorAll('.bundle-item');
+            bundleItems.forEach(item => {
+                const bundleName = item.dataset.bundleName;
+                const button = item.querySelector('button');
+                if (Bundles[bundleName] || 
+                    (bundleName === 'BlossomBundle2025' && 
+                        skins['Blossom Julia'] === 1 && 
+                        skins['Blossom Mai'] === 1 && 
+                        skins['Blossom Raiden'] === 1 && 
+                        skins['Blossom Shizumaru'] === 1 && 
+                        skins['Blossom Talim'] === 1 && 
+                        skins['Blossom Panda'] === 1) ||
+                    (bundleName === 'BlossomBundle2024' && 
+                        skins['Blossom Cham Cham'] === 1 && 
+                        skins['Blossom Jun'] === 1 && 
+                        skins['Blossom Angel'] === 1 && 
+                        skins['Scorpion Blossom'] === 1) ||
+                    (bundleName === 'CombinedBlossomBundle' && 
+                        skins['Blossom Julia'] === 1 && 
+                        skins['Blossom Mai'] === 1 && 
+                        skins['Blossom Raiden'] === 1 && 
+                        skins['Blossom Shizumaru'] === 1 && 
+                        skins['Blossom Talim'] === 1 && 
+                        skins['Blossom Panda'] === 1 && 
+                        skins['Blossom Cham Cham'] === 1 && 
+                        skins['Blossom Jun'] === 1 && 
+                        skins['Blossom Angel'] === 1 && 
+                        skins['Scorpion Blossom'] === 1) ||
+                    (bundleName === 'CyberHunterElphelt' && skins['Cyber Hunter Elphelt'] === 1) ||
+                    (bundleName === 'PopStarRMika' && skins['Pop Star R.Mika'] === 1)) {
+                    button.disabled = true;
+                    button.textContent = 'Owned';
+                }
+            });
         }
-    };
 
-    window.purchaseFM = async function(amount) {
-        const newFMAmount = window.userFM + amount;
-        await update(window.userRef, { FM: newFMAmount });
-        document.getElementById('fm-amount').textContent = newFMAmount;
-        window.userFM = newFMAmount;
-        closeBuyFMWindow();
-        alert(`You have successfully purchased ${amount} FM!`);
-    };
+        window.purchaseBundle = async function(button) {
+            const bundleItem = button.closest('.bundle-item');
+            const bundleName = bundleItem ? bundleItem.dataset.bundleName : button.dataset.bundleName;
+            const priceElement = bundleItem ? 
+                bundleItem.querySelector('.final-price span') : 
+                button.closest('.bundle-purchase').querySelector('.final-price span');
+            const currencyElement = bundleItem ? 
+                bundleItem.querySelector('.final-price img') : 
+                button.closest('.bundle-purchase').querySelector('.final-price img');
+            
+            const bundlePrice = parseInt(priceElement.textContent);
+            const currencyType = currencyElement.alt;
+
+            const userCurrency = currencyType === 'FM' ? window.userFM : window.userCM;
+            const userCurrencyElement = document.getElementById(`${currencyType.toLowerCase()}-amount`);
+
+            if (userCurrency >= bundlePrice) {
+                const newCurrencyAmount = userCurrency - bundlePrice;
+                const updates = {};
+                updates[currencyType] = newCurrencyAmount;
+
+                const userRef = ref(database, 'users/' + auth.currentUser.uid);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+
+                if (bundleName === 'BlossomBundle2025') {
+                    updates[`skins/Blossom Julia`] = 1;
+                    updates[`skins/Blossom Mai`] = 1;
+                    updates[`skins/Blossom Raiden`] = 1;
+                    updates[`skins/Blossom Shizumaru`] = 1;
+                    updates[`skins/Blossom Talim`] = 1;
+                    updates[`skins/Blossom Panda`] = 1;
+                    updates[`Bundles/${bundleName}`] = 1;
+                } else if (bundleName === 'BlossomBundle2024') {
+                    updates[`skins/Blossom Cham Cham`] = 1;
+                    updates[`skins/Blossom Jun`] = 1;
+                    updates[`skins/Blossom Angel`] = 1;
+                    updates[`skins/Scorpion Blossom`] = 1;
+                    updates[`Bundles/${bundleName}`] = 1;
+                } else if (bundleName === 'CombinedBlossomBundle') {
+                    updates[`skins/Blossom Julia`] = 1;
+                    updates[`skins/Blossom Mai`] = 1;
+                    updates[`skins/Blossom Raiden`] = 1;
+                    updates[`skins/Blossom Shizumaru`] = 1;
+                    updates[`skins/Blossom Talim`] = 1;
+                    updates[`skins/Blossom Panda`] = 1;
+                    updates[`skins/Blossom Cham Cham`] = 1;
+                    updates[`skins/Blossom Jun`] = 1;
+                    updates[`skins/Blossom Angel`] = 1;
+                    updates[`skins/Scorpion Blossom`] = 1;
+                    updates[`Bundles/${bundleName}`] = 1;
+                } else if (bundleName === 'CyberHunterElphelt') {
+                    updates[`skins/Cyber Hunter Elphelt`] = 1;
+                    updates[`Bundles/${bundleName}`] = 1;
+                } else if (bundleName === 'PopStarRMika') {
+                    updates[`skins/Pop Star R.Mika`] = 1;
+                    updates[`Bundles/${bundleName}`] = 1;
+                }
+
+                await update(userRef, updates);
+                userCurrencyElement.textContent = newCurrencyAmount;
+                if (currencyType === 'FM') {
+                    window.userFM = newCurrencyAmount;
+                } else {
+                    window.userCM = newCurrencyAmount;
+                }
+                button.disabled = true;
+                button.textContent = 'Owned';
+                alert(`You have successfully purchased ${bundleName}!`);
+                closeStarterBundlesModal();
+            } else {
+                alert(`You don't have enough ${currencyType} to purchase this bundle.`);
+            }
+        };
+
+        window.purchaseFM = async function(amount) {
+            const newFMAmount = window.userFM + amount;
+            await update(window.userRef, { FM: newFMAmount });
+            document.getElementById('fm-amount').textContent = newFMAmount;
+            window.userFM = newFMAmount;
+            closeBuyFMWindow();
+            alert(`You have successfully purchased ${amount} FM!`);
+        };
     </script>
     <script>
         window.onload = function() {
@@ -1020,230 +1132,219 @@
         function showBundleDetails(bundleName) {
             let modalContent = '';
             switch (bundleName) {
-                case 'GangstersVsBanditosBundle':
+                case 'BlossomBundle2025':
                     modalContent = `
                         <div class="bundle-details">
-                            <h2>Gangsters vs Banditos Bundle</h2>
-                            <div class="bundle-grid">
-                                <div class="bundle-character">
-                                    <div class="image-container">
-                                        <img src="Skins/Gangster Juri.jpg" alt="Gangster Juri">
-                                    </div>
-                                    <h3>Juri</h3>
-                                    <p>Gangster Juri Skin</p>
-                                </div>
-                                <div class="bundle-character">
-                                    <div class="image-container">
-                                        <img src="Skins/Gangster Blanka.jpg" alt="Gangster Blanka">
-                                    </div>
-                                    <h3>Blanka</h3>
-                                    <p>Gangster Blanka Skin</p>
-                                </div>
-                                <div class="bundle-character">
-                                    <div class="image-container">
-                                        <img src="Skins/Gangster Peacock.jfif" alt="Gangster Peacock">
-                                    </div>
-                                    <h3>Peacock</h3>
-                                    <p>Gangster Peacock Skin</p>
-                                </div>
-                                <div class="bundle-character">
-                                    <div class="image-container">
-                                        <img src="Skins/Bandito Reptile.jpg" alt="Bandito Reptile">
-                                    </div>
-                                    <h3>Reptile</h3>
-                                    <p>Bandito Reptile Skin</p>
-                                </div>
-                                <div class="bundle-character">
-                                    <div class="image-container">
-                                        <img src="Skins/Bandito Eagle.jpg" alt="Bandito Eagle">
-                                    </div>
-                                    <h3>Eagle</h3>
-                                    <p>Bandito Eagle Skin</p>
-                                </div>
-                                <div class="bundle-character">
-                                    <div class="image-container">
-                                        <img src="Skins/Bandito Shinnok.jpg" alt="Bandito Shinnok">
-                                    </div>
-                                    <h3>Shinnok</h3>
-                                    <p>Bandito Shinnok Skin</p>
-                                </div>
-                            </div>
+                            <h2>Blossom Bundle 2025</h2>
                             <div class="bundle-purchase">
                                 <div class="price-container">
                                     <div class="original-price">
                                         <img src="res/img/fm.png" alt="FM">
-                                        <span>6000</span>
+                                        <span>12000</span>
                                     </div>
                                     <div class="price-divider"></div>
                                     <div class="final-price">
                                         <img src="res/img/fm.png" alt="FM">
-                                        <span>4800</span>
+                                        <span>9000</span>
                                     </div>
                                 </div>
-                                <button class="purchase-bundle-btn" data-bundle-name="GangstersVsBanditosBundle" onclick="purchaseBundle(this)">Purchase Bundle</button>
+                                <button class="purchase-bundle-btn" data-bundle-name="BlossomBundle2025" onclick="purchaseBundle(this)">Purchase Bundle</button>
                             </div>
-                        </div>
-                    `;
-                    break;
-                case 'GangstersBundle':
-                    modalContent = `
-                        <div class="bundle-details">
-                            <h2>Gangsters Bundle</h2>
                             <div class="bundle-grid">
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Gangster Juri.jpg" alt="Gangster Juri">
+                                        <img src="Skins/Blossom Julia.jpg" alt="Blossom Julia">
                                     </div>
-                                    <h3>Juri</h3>
-                                    <p>Gangster Juri Skin</p>
+                                    <h3>Julia</h3>
+                                    <p>Blossom Skin</p>
                                 </div>
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Gangster Blanka.jpg" alt="Gangster Blanka">
+                                        <img src="Skins/Blossom Mai.jpg" alt="Blossom Mai">
                                     </div>
-                                    <h3>Blanka</h3>
-                                    <p>Gangster Blanka Skin</p>
+                                    <h3>Mai</h3>
+                                    <p>Blossom Skin</p>
                                 </div>
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Gangster Peacock.jfif" alt="Gangster Peacock">
+                                        <img src="Skins/Blossom Raiden.jpg" alt="Blossom Raiden">
                                     </div>
-                                    <h3>Peacock</h3>
-                                    <p>Gangster Peacock Skin</p>
-                                </div>
-                            </div>
-                            <div class="bundle-purchase">
-                                <div class="price-container">
-                                    <div class="original-price">
-                                        <img src="res/img/fm.png" alt="FM">
-                                        <span>3000</span>
-                                    </div>
-                                    <div class="price-divider"></div>
-                                    <div class="final-price">
-                                        <img src="res/img/fm.png" alt="FM">
-                                        <span>2400</span>
-                                    </div>
-                                </div>
-                                <button class="purchase-bundle-btn" data-bundle-name="GangstersBundle" onclick="purchaseBundle(this)">Purchase Bundle</button>
-                            </div>
-                        </div>
-                    `;
-                    break;
-                case 'BanditosBundle':
-                    modalContent = `
-                        <div class="bundle-details">
-                            <h2>Banditos Bundle</h2>
-                            <div class="bundle-grid">
-                                <div class="bundle-character">
-                                    <div class="image-container">
-                                        <img src="Skins/Bandito Reptile.jpg" alt="Bandito Reptile">
-                                    </div>
-                                    <h3>Reptile</h3>
-                                    <p>Bandito Reptile Skin</p>
+                                    <h3>Raiden</h3>
+                                    <p>Blossom Skin</p>
                                 </div>
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Bandito Eagle.jpg" alt="Bandito Eagle">
+                                        <img src="Skins/Blossom Shizumaru.jpg" alt="Blossom Shizumaru">
                                     </div>
-                                    <h3>Eagle</h3>
-                                    <p>Bandito Eagle Skin</p>
+                                    <h3>Shizumaru</h3>
+                                    <p>Blossom Skin</p>
                                 </div>
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Bandito Shinnok.jpg" alt="Bandito Shinnok">
-                                    </div>
-                                    <h3>Shinnok</h3>
-                                    <p>Bandito Shinnok Skin</p>
-                                </div>
-                            </div>
-                            <div class="bundle-purchase">
-                                <div class="price-container">
-                                    <div class="original-price">
-                                        <img src="res/img/fm.png" alt="FM">
-                                        <span>3000</span>
-                                    </div>
-                                    <div class="price-divider"></div>
-                                    <div class="final-price">
-                                        <img src="res/img/fm.png" alt="FM">
-                                        <span>2400</span>
-                                    </div>
-                                </div>
-                                <button class="purchase-bundle-btn" data-bundle-name="BanditosBundle" onclick="purchaseBundle(this)">Purchase Bundle</button>
-                            </div>
-                        </div>
-                    `;
-                    break;
-                case 'BattlebornBundle':
-                    modalContent = `
-                        <div class="bundle-details">
-                            <h2>Battleborn Bundle</h2>
-                            <div class="bundle-grid">
-                                <div class="bundle-character">
-                                    <div class="image-container">
-                                        <img src="Skins/Battleborn Zasalamel.jpeg" alt="Battleborn Zasalamel">
-                                    </div>
-                                    <h3>Zasalamel</h3>
-                                    <p>Battleborn Zasalamel Skin</p>
-                                </div>
-                                <div class="bundle-character">
-                                    <div class="image-container">
-                                        <img src="Skins/Battleborn Talim.jpeg" alt="Battleborn Talim">
+                                        <img src="Skins/Blossom Talim.jpg" alt="Blossom Talim">
                                     </div>
                                     <h3>Talim</h3>
-                                    <p>Battleborn Talim Skin</p>
+                                    <p>Blossom Skin</p>
                                 </div>
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Battleborn Yugo.jpeg" alt="Battleborn Yugo">
+                                        <img src="Skins/Blossom Panda.webp" alt="Blossom Panda">
                                     </div>
-                                    <h3>Yugo</h3>
-                                    <p>Battleborn Yugo Skin</p>
+                                    <h3>Panda</h3>
+                                    <p>Blossom Skin</p>
                                 </div>
-                                <div class="bundle-character">
-                                    <div class="image-container">
-                                        <img src="Skins/Battleborn Eagle.jpeg" alt="Battleborn Eagle">
-                                    </div>
-                                    <h3>Eagle</h3>
-                                    <p>Battleborn Eagle Skin</p>
-                                </div>
-                                <div class="bundle-character">
-                                    <div class="image-container">
-                                        <img src="Skins/Battleborn Ayane.jpeg" alt="Battleborn Ayane">
-                                    </div>
-                                    <h3>Ayane</h3>
-                                    <p>Battleborn Ayane Skin</p>
-                                </div>
-                            </div>
-                            <div class="bundle-purchase">
-                                <div class="price-container">
-                                    <div class="original-price">
-                                        <img src="res/img/fm.png" alt="FM">
-                                        <span>11000</span>
-                                    </div>
-                                    <div class="price-divider"></div>
-                                    <div class="final-price">
-                                        <img src="res/img/fm.png" alt="FM">
-                                        <span>8250</span>
-                                    </div>
-                                </div>
-                                <button class="purchase-bundle-btn" data-bundle-name="BattlebornBundle" onclick="purchaseBundle(this)">Purchase Bundle</button>
                             </div>
                         </div>
                     `;
                     break;
-                case 'RainyDayNoel':
+                case 'BlossomBundle2024':
                     modalContent = `
                         <div class="bundle-details">
-                            <h2>Rainy Day Noel</h2>
+                            <h2>Blossom Bundle 2024</h2>
+                            <div class="bundle-purchase">
+                                <div class="price-container">
+                                    <div class="original-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>6500</span>
+                                    </div>
+                                    <div class="price-divider"></div>
+                                    <div class="final-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>4875</span>
+                                    </div>
+                                </div>
+                                <button class="purchase-bundle-btn" data-bundle-name="BlossomBundle2024" onclick="purchaseBundle(this)">Purchase Bundle</button>
+                            </div>
                             <div class="bundle-grid">
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Rainy Day Noel.jpeg" alt="Rainy Day Noel">
+                                        <img src="Skins/Blossom Cham Cham.png" alt="Blossom Cham Cham">
                                     </div>
-                                    <h3>Noel</h3>
-                                    <p>Rainy Day Noel Skin</p>
+                                    <h3>Cham Cham</h3>
+                                    <p>Blossom Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Blossom Jun.png" alt="Blossom Jun">
+                                    </div>
+                                    <h3>Jun</h3>
+                                    <p>Blossom Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Blossom Angel.png" alt="Blossom Angel">
+                                    </div>
+                                    <h3>Angel</h3>
+                                    <p>Blossom Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Scorpion Blossom.png" alt="Scorpion Blossom">
+                                    </div>
+                                    <h3>Scorpion</h3>
+                                    <p>Blossom Skin</p>
                                 </div>
                             </div>
+                        </div>
+                    `;
+                    break;
+                case 'CombinedBlossomBundle':
+                    modalContent = `
+                        <div class="bundle-details">
+                            <h2>Combined Blossom Bundle</h2>
+                            <div class="bundle-purchase">
+                                <div class="price-container">
+                                    <div class="original-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>18500</span>
+                                    </div>
+                                    <div class="price-divider"></div>
+                                    <div class="final-price">
+                                        <img src="res/img/fm.png" alt="FM">
+                                        <span>12025</span>
+                                    </div>
+                                </div>
+                                <button class="purchase-bundle-btn" data-bundle-name="CombinedBlossomBundle" onclick="purchaseBundle(this)">Purchase Bundle</button>
+                            </div>
+                            <div class="bundle-grid">
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Blossom Julia.jpg" alt="Blossom Julia">
+                                    </div>
+                                    <h3>Julia</h3>
+                                    <p>Blossom Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Blossom Mai.jpg" alt="Blossom Mai">
+                                    </div>
+                                    <h3>Mai</h3>
+                                    <p>Blossom Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Blossom Raiden.jpg" alt="Blossom Raiden">
+                                    </div>
+                                    <h3>Raiden</h3>
+                                    <p>Blossom Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Blossom Shizumaru.jpg" alt="Blossom Shizumaru">
+                                    </div>
+                                    <h3>Shizumaru</h3>
+                                    <p>Blossom Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Blossom Talim.jpg" alt="Blossom Talim">
+                                    </div>
+                                    <h3>Talim</h3>
+                                    <p>Blossom Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Blossom Panda.webp" alt="Blossom Panda">
+                                    </div>
+                                    <h3>Panda</h3>
+                                    <p>Blossom Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Blossom Cham Cham.png" alt="Blossom Cham Cham">
+                                    </div>
+                                    <h3>Cham Cham</h3>
+                                    <p>Blossom Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Blossom Jun.png" alt="Blossom Jun">
+                                    </div>
+                                    <h3>Jun</h3>
+                                    <p>Blossom Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Blossom Angel.png" alt="Blossom Angel">
+                                    </div>
+                                    <h3>Angel</h3>
+                                    <p>Blossom Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Scorpion Blossom.png" alt="Scorpion Blossom">
+                                    </div>
+                                    <h3>Scorpion</h3>
+                                    <p>Blossom Skin</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'CyberHunterElphelt':
+                    modalContent = `
+                        <div class="bundle-details">
+                            <h2>Cyber Hunter Elphelt</h2>
                             <div class="bundle-purchase">
                                 <div class="price-container">
                                     <div class="original-price">
@@ -1257,24 +1358,24 @@
                                     </div>
                                 </div>
                                 <div class="discount-badge">-55%</div>
-                                <button class="purchase-bundle-btn" data-bundle-name="RainyDayNoel" onclick="purchaseBundle(this)">Purchase Bundle</button>
+                                <button class="purchase-bundle-btn" data-bundle-name="CyberHunterElphelt" onclick="purchaseBundle(this)">Purchase Bundle</button>
+                            </div>
+                            <div class="bundle-grid">
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Cyber Hunter Elphelt.png" alt="Cyber Hunter Elphelt">
+                                    </div>
+                                    <h3>Elphelt</h3>
+                                    <p>Cyber Hunter Elphelt Skin</p>
+                                </div>
                             </div>
                         </div>
                     `;
                     break;
-                case 'SandSoldierBirdie':
+                case 'PopStarRMika':
                     modalContent = `
                         <div class="bundle-details">
-                            <h2>Sand Soldier Birdie</h2>
-                            <div class="bundle-grid">
-                                <div class="bundle-character">
-                                    <div class="image-container">
-                                        <img src="Skins/Sand Soldier Birdie.jpg" alt="Sand Soldier Birdie">
-                                    </div>
-                                    <h3>Birdie</h3>
-                                    <p>Sand Soldier Birdie Skin</p>
-                                </div>
-                            </div>
+                            <h2>Pop Star R.Mika</h2>
                             <div class="bundle-purchase">
                                 <div class="price-container">
                                     <div class="original-price">
@@ -1288,7 +1389,16 @@
                                     </div>
                                 </div>
                                 <div class="discount-badge">CM SALE</div>
-                                <button class="purchase-bundle-btn" data-bundle-name="SandSoldierBirdie" onclick="purchaseBundle(this)">Buy Now</button>
+                                <button class="purchase-bundle-btn" data-bundle-name="PopStarRMika" onclick="purchaseBundle(this)">Buy Now</button>
+                            </div>
+                            <div class="bundle-grid">
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Pop Star R Mika.png" alt="Pop Star R.Mika">
+                                    </div>
+                                    <h3>R.Mika</h3>
+                                    <p>Pop Star R.Mika Skin</p>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -1423,76 +1533,83 @@
         </a>
     </div>
     <div class="bundle-container">
-        <div class="bundle-item" data-bundle-name="GangstersVsBanditosBundle" onclick="showBundleDetails('GangstersVsBanditosBundle')">
-            <div class="bundle-name">Gangsters vs Banditos Bundle</div>
-            <div class="discount-badge">-20%</div>
+        <div class="bundle-item" data-bundle-name="BlossomBundle2025" onclick="showBundleDetails('BlossomBundle2025')">
+            <div class="bundle-name">Blossom Bundle 2025</div>
+            <div class="discount-badge">-25%</div>
             <div class="images-grid">
-                <img src="Skins/Gangster Juri.jpg" alt="Gangster Juri">
-                <img src="Skins/Gangster Blanka.jpg" alt="Gangster Blanka">
-                <img src="Skins/Gangster Peacock.jfif" alt="Gangster Peacock">
-                <img src="Skins/Bandito Reptile.jpg" alt="Bandito Reptile">
-                <img src="Skins/Bandito Eagle.jpg" alt="Bandito Eagle">
-                <img src="Skins/Bandito Shinnok.jpg" alt="Bandito Shinnok">
+                <img src="Skins/Blossom Julia.jpg" alt="Blossom Julia">
+                <img src="Skins/Blossom Mai.jpg" alt="Blossom Mai">
+                <img src="Skins/Blossom Raiden.jpg" alt="Blossom Raiden">
+                <img src="Skins/Blossom Shizumaru.jpg" alt="Blossom Shizumaru">
+                <img src="Skins/Blossom Talim.jpg" alt="Blossom Talim">
+                <img src="Skins/Blossom Panda.webp" alt="Blossom Panda">
             </div>
             <div class="price-container">
                 <div class="original-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>6000</span>
+                    <span>12000</span>
                 </div>
                 <div class="price-divider"></div>
                 <div class="final-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>4800</span>
+                    <span>9000</span>
                 </div>
             </div>
             <button onclick="purchaseBundle(this)">Buy Bundle</button>
         </div>
-        <div class="bundle-item" data-bundle-name="GangstersBundle" onclick="showBundleDetails('GangstersBundle')">
-            <div class="bundle-name">Gangsters Bundle</div>
-            <div class="discount-badge">-20%</div>
+
+        <div class="bundle-item" data-bundle-name="BlossomBundle2024" onclick="showBundleDetails('BlossomBundle2024')">
+            <div class="bundle-name">Blossom Bundle 2024</div>
+            <div class="discount-badge">-25%</div>
             <div class="images-grid">
-                <img src="Skins/Gangster Juri.jpg" alt="Gangster Juri">
-                <img src="Skins/Gangster Blanka.jpg" alt="Gangster Blanka">
-                <img src="Skins/Gangster Peacock.jfif" alt="Gangster Peacock">
+                <img src="Skins/Blossom Cham Cham.png" alt="Blossom Cham Cham">
+                <img src="Skins/Blossom Jun.png" alt="Blossom Jun">
+                <img src="Skins/Blossom Angel.png" alt="Blossom Angel">
+                <img src="Skins/Scorpion Blossom.png" alt="Scorpion Blossom">
             </div>
             <div class="price-container">
                 <div class="original-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>3000</span>
+                    <span>6500</span>
                 </div>
                 <div class="price-divider"></div>
                 <div class="final-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>2400</span>
+                    <span>4875</span>
                 </div>
             </div>
             <button onclick="purchaseBundle(this)">Buy Bundle</button>
         </div>
-        <div class="bundle-item" data-bundle-name="BanditosBundle" onclick="showBundleDetails('BanditosBundle')">
-            <div class="bundle-name">Banditos Bundle</div>
-            <div class="discount-badge">-20%</div>
+
+        <div class="bundle-item" data-bundle-name="CombinedBlossomBundle" onclick="showBundleDetails('CombinedBlossomBundle')">
+            <div class="bundle-name">Combined Blossom Bundle</div>
+            <div class="discount-badge">-35%</div>
             <div class="images-grid">
-                <img src="Skins/Bandito Reptile.jpg" alt="Bandito Reptile">
-                <img src="Skins/Bandito Eagle.jpg" alt="Bandito Eagle">
-                <img src="Skins/Bandito Shinnok.jpg" alt="Bandito Shinnok">
+                <img src="Skins/Blossom Julia.jpg" alt="Blossom Julia">
+                <img src="Skins/Blossom Mai.jpg" alt="Blossom Mai">
+                <img src="Skins/Blossom Raiden.jpg" alt="Blossom Raiden">
+                <img src="Skins/Blossom Cham Cham.png" alt="Blossom Cham Cham">
+                <img src="Skins/Blossom Angel.png" alt="Blossom Angel">
+                <img src="Skins/Scorpion Blossom.png" alt="Scorpion Blossom">
             </div>
             <div class="price-container">
                 <div class="original-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>3000</span>
+                    <span>18500</span>
                 </div>
                 <div class="price-divider"></div>
                 <div class="final-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>2400</span>
+                    <span>12025</span>
                 </div>
             </div>
             <button onclick="purchaseBundle(this)">Buy Bundle</button>
         </div>
-        <div class="bundle-item" data-bundle-name="RainyDayNoel" onclick="showBundleDetails('RainyDayNoel')">
-            <div class="bundle-name">Rainy Day Noel</div>
+
+        <div class="bundle-item" data-bundle-name="CyberHunterElphelt" onclick="showBundleDetails('CyberHunterElphelt')">
+            <div class="bundle-name">Cyber Hunter Elphelt</div>
             <div class="image-container">
-                <img src="Skins/Rainy Day Noel.jpeg" alt="Rainy Day Noel">
+                <img src="Skins/Cyber Hunter Elphelt.png" alt="Cyber Hunter Elphelt">
             </div>
             <div class="price-container">
                 <div class="original-price">
@@ -1508,141 +1625,37 @@
             <div class="discount-badge">-55%</div>
             <button onclick="purchaseBundle(this)">Buy Now</button>
         </div>
-        <div class="bundle-item" data-bundle-name="SandSoldierBirdie" onclick="showBundleDetails('SandSoldierBirdie')">
-            <div class="bundle-name">Sand Soldier Birdie</div>
-                        <div class="image-container">
-                <img src="Skins/Sand Soldier Birdie.jpg" alt="Sand Soldier Birdie">
-                        </div>
-                    <div class="price-container">
-                        <div class="original-price">
-                            <img src="res/img/fm.png" alt="FM">
+
+        <div class="bundle-item" data-bundle-name="PopStarRMika" onclick="showBundleDetails('PopStarRMika')">
+            <div class="bundle-name">Pop Star R.Mika</div>
+            <div class="image-container">
+                <img src="Skins/Pop Star R Mika.png" alt="Pop Star R.Mika">
+            </div>
+            <div class="price-container">
+                <div class="original-price">
+                    <img src="res/img/fm.png" alt="FM">
                     <span>1000</span>
-                        </div>
-                        <div class="price-divider"></div>
-                        <div class="final-price">
+                </div>
+                <div class="price-divider"></div>
+                <div class="final-price">
                     <img src="res/img/cm.png" alt="CM">
                     <span>80000</span>
-                        </div>
-                    </div>
-            <div class="discount-badge">CM SALE</div>
-            <button onclick="purchaseBundle(this)">Buy Now</button>
                 </div>
             </div>
+            <div class="discount-badge">CM SALE</div>
+            <button onclick="purchaseBundle(this)">Buy Now</button>
+        </div>
+    </div>
 
     <!-- Starter Bundles Modal -->
     <div id="starter-bundles-modal" class="starter-bundles-modal">
         <div class="starter-bundles-content">
             <span class="close" onclick="closeStarterBundlesModal()">&times;</span>
-            <h2 style="color: white; text-align: center; margin-bottom: 30px;">Bundle Details</h2>
             <!-- Bundle content will be inserted here by JavaScript -->
         </div>
     </div>
-
-    <script>
-        window.onload = function() {
-            const video = document.getElementById('video');
-            if (video) {
-                video.playbackRate = 0.75;
-            }
-        };
-
-        function openBuyFMWindow() {
-            document.getElementById('buy-fm-window').style.display = 'block';
-        }
-
-        function closeBuyFMWindow() {
-            document.getElementById('buy-fm-window').style.display = 'none';
-        }
-
-        function openStarterBundlesModal() {
-            document.getElementById('starter-bundles-modal').style.display = 'block';
-        }
-
-        function closeStarterBundlesModal() {
-            document.getElementById('starter-bundles-modal').style.display = 'none';
-        }
-
-        function showBundle(bundleType) {
-            // Hide all bundle contents
-            document.querySelectorAll('.bundle-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            // Show selected bundle content
-            document.getElementById(`${bundleType}-bundle`).classList.add('active');
-
-            // Update tab styling
-            document.querySelectorAll('.bundle-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-        }
-
-        async function purchaseStarterBundle(bundleType) {
-            const bundlePrice = 2000;
-            const updates = {};
-            let champions, skins, bundleName;
-
-            if (bundleType === 'top') {
-                champions = ['Siegfried', 'Sophitia', 'Lili'];
-                skins = ['High Elf Siegfried', 'Goth Sophitia', 'Battle Bistro Lili'];
-                bundleName = 'TopStarterBundle';
-            } else if (bundleType === 'jungle') {
-                champions = ['Kabal', 'Juri', 'Alice'];
-                skins = ['Frosted Kabal', 'Casual Wear Juri', 'Mythic Sentinel Alice'];
-                bundleName = 'JungleStarterBundle';
-            } else if (bundleType === 'mid') {
-                champions = ['Sub Zero', 'Shizumaru', 'Shinnok'];
-                skins = ['Neon Core Sub Zero', 'Samurai Shizumaru', 'Rainy Day Shinnok'];
-                bundleName = 'MidStarterBundle';
-            } else if (bundleType === 'adc') {
-                champions = ['Eagle', 'Kagome', 'Mega Man'];
-                skins = ['Goth Eagle', 'Primal Huntress Kagome', 'Steamcore MegaMan'];
-                bundleName = 'ADCStarterBundle';
-            } else if (bundleType === 'support') {
-                champions = ['Kokoro', 'Kuma', 'FANG'];
-                skins = ['Schoolgirl Kokoro', 'Battle Bistro Kuma', 'Voidborn FANG'];
-                bundleName = 'SupportStarterBundle';
-            }
-
-            if (window.userFM >= bundlePrice) {
-                updates.FM = window.userFM - bundlePrice;
-                
-                // Add champions
-                champions.forEach(champion => {
-                    updates[`champions/${champion}`] = 1;
-                });
-
-                // Add skins
-                skins.forEach(skin => {
-                    updates[`skins/${skin}`] = 1;
-                });
-
-                // Add bundle to owned bundles
-                updates[`Bundles/${bundleName}`] = 1;
-
-                try {
-                    await update(window.userRef, updates);
-                    window.userFM -= bundlePrice;
-                    document.getElementById('fm-amount').textContent = window.userFM;
-                    alert(`${bundleType.charAt(0).toUpperCase() + bundleType.slice(1)} Bundle purchased successfully!`);
-                    closeStarterBundlesModal();
-                } catch (error) {
-                    console.error('Error purchasing bundle:', error);
-                    alert('Error purchasing bundle. Please try again.');
-                }
-            } else {
-                alert('Not enough FM to purchase this bundle!');
-            }
-        }
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('starter-bundles-modal');
-            if (event.target === modal) {
-                closeStarterBundlesModal();
-            }
-        }
-    </script>
 </body>
 </html>
+
+
+

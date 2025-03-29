@@ -85,7 +85,7 @@
             cursor: pointer;
             position: relative;
             background-size: cover;
-            background-position: center;
+            background-position: center 20%;
         }
 
         .match-card::before {
@@ -446,6 +446,11 @@
             const team1Data = match.team1 || match.team1Characters?.map(char => ({ character: char, name: 'Unknown' })) || [];
             const team2Data = match.team2 || match.team2Characters?.map(char => ({ character: char, name: 'Unknown' })) || [];
 
+            // Set default values for KDA display
+            const kills = match.kda?.kills || 0;
+            const deaths = match.kda?.deaths || 0;
+            const assists = match.kda?.assists || 0;
+
             return `
                 <div class="match-card" data-match-id="${match.id}" data-skin="${match.skin}">
                     <div class="match-header">
@@ -459,7 +464,7 @@
                             </div>
                         </div>
                         <div class="match-stats">
-                            <div class="kda">${match.kda.kills}/${match.kda.deaths}/${match.kda.assists}</div>
+                            <div class="kda">${kills}/${deaths}/${assists}</div>
                             <div class="kda-ratio">${kdaRatio} KDA</div>
                         </div>
                         <div class="match-time">${timeAgo}</div>
@@ -512,7 +517,14 @@
         }
 
         function calculateKDA(kda) {
-            const { kills, deaths, assists } = kda;
+            if (!kda || typeof kda !== 'object') {
+                return "0.00";
+            }
+            
+            const kills = kda.kills || 0;
+            const deaths = kda.deaths || 0;
+            const assists = kda.assists || 0;
+            
             const ratio = ((kills + assists) / Math.max(1, deaths)).toFixed(2);
             return ratio;
         }
@@ -563,7 +575,7 @@
                 img.onload = function() {
                     card.style.setProperty('background-image', `url('${img.src}')`);
                     card.style.setProperty('background-size', 'cover');
-                    card.style.setProperty('background-position', 'center');
+                    card.style.setProperty('background-position', 'center 20%');
                 };
 
                 img.onerror = function() {
