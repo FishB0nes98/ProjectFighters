@@ -12,6 +12,8 @@ export const profileIcons = {
     ],
     // Special icons
     special: [
+        'talim_desert', 'astaroth_desert', 'jun_desert', 'blanka_desert', 'scorpion_desert', 'shoma_desert',
+        'ayane_bunny', 'peacock_bunny', 'shinnok_bunny_rage', 'shinnok_bunny',
         'gangster_peacock', 'bandito_eagle', 'bandito_shinnok',
         'lovely_kagome', 'date_night_kuma', 'heartbreaker_ibuki', 'lunar_rabbit', 'golden_snake',
         'atlantean_hourglass', 'coral_armor', 'rapid_golden_arrows', 'Steampunk_City', 'Steampunk_Hat',

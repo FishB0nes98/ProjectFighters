@@ -1,0 +1,2942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Fighters: Battle Royale MOBA</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    
+    <div id="lobbyUI">
+        <h2>Battle Royale MOBA</h2>
+        <button id="createLobby" class="button">Create New Lobby</button>
+        <button id="joinLobby" class="button">Join Lobby</button>
+        <div id="lobbyCode" style="display: none;">
+            <h3>Lobby Code: <span id="lobbyCodeText"></span></h3>
+            <div id="playerList"></div>
+            <div id="characterSelect">
+                <h3>Select Your Character</h3>
+                <div id="characterOptions"></div>
+            </div>
+            <button id="startGame" class="button" style="display: none;">Start Game</button>
+            <button id="startWithBots" class="button">Start with Bots</button>
+        </div>
+    </div>
+
+    <div class="map-info">
+        <div>Map Seed: <span id="mapSeed"></span></div>
+        <div>Players: <span id="playerCount">0</span>/20</div>
+        <div>Storm: <span id="stormTimer">Initializing...</span></div>
+    </div>
+
+    <canvas id="minimapCanvas" class="minimap" width="200" height="200"></canvas>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+
+    <!-- Game Scripts -->
+    <script src="js/map-generator.js"></script>
+    <script src="js/map-renderer.js"></script>
+    <script src="js/item-system.js"></script>
+    <script src="js/chest-renderer.js"></script>
+    <script src="js/ability-system.js"></script>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Game variables
+        let canvas = document.getElementById('gameCanvas');
+        let minimapCanvas = document.getElementById('minimapCanvas');
+        let ctx = canvas.getContext('2d');
+        let minimapCtx = minimapCanvas.getContext('2d');
+        let players = {};
+        let currentPlayer = null;
+        let currentLobby = null;
+        let gameStarted = false;
+        let selectedCharacter = null;
+        let mapGenerator = null;
+        window.mapGenerator = null; // Make mapGenerator globally accessible
+        let mapRenderer = null;
+        let currentMap = null;
+        let isBotsGame = false;
+        let lastUpdateTime = 0;
+        let lastServerUpdateTime = 0;
+        let lastFrameTime = 0;
+        let chests = []; // Array to store chests
+        let droppedItems = []; // Array to store dropped items on the ground
+        let chestRenderer = null; // Renderer for chests and items
+        let abilityRenderer = null; // Renderer for abilities
+        let mousePosition = { x: 0, y: 0 }; // Track mouse position for targeted abilities
+        let easterEggs = []; // Array to store Easter eggs
+        let lastEggSpawnTime = 0; // Time of last egg spawn
+        let isEasterEvent = true; // Enable Easter event
+
+        // Storm system variables
+        let stormSystem = {
+            active: false,
+            phase: 0,
+            maxPhase: 4,
+            center: { x: 0, y: 0 },
+            nextCenter: { x: 0, y: 0 },
+            currentRadius: 4500, // 4.5x larger initial radius
+            nextRadius: 3600, // Matches first phase radius
+            shrinkStartTime: 0,
+            shrinkDuration: 60000, // 1 minute shrink time
+            pauseDuration: 60000,  // 1 minute pause
+            phaseStartTime: 0,
+            damagePerSecond: [1, 2, 3, 4, 5], // Reduced damage per phase since circles are faster
+            gameStartTime: 0,
+            lastSyncTime: 0
+        };
+
+        // Storm phase information - radius for each phase
+        const stormPhases = [
+            { pauseTime: 60000, shrinkTime: 60000, radius: 3600 },   // Phase 0 -> 1 (4.5x bigger initial circle)
+            { pauseTime: 60000, shrinkTime: 60000, radius: 2400 },   // Phase 1 -> 2 (3x bigger second phase)
+            { pauseTime: 60000, shrinkTime: 60000, radius: 1600 },   // Phase 2 -> 3
+            { pauseTime: 60000, shrinkTime: 60000, radius: 800 },    // Phase 3 -> 4
+            { pauseTime: 60000, shrinkTime: 60000, radius: 300 }     // Phase 4 (final)
+        ];
+
+        let keys = { // Updated to include 'e' for interaction
+            w: false,
+            s: false,
+            a: false,
+            d: false,
+            e: false,
+            q: false,
+            r: false,
+            '1': false,
+            '2': false,
+            '3': false,
+            '4': false,
+            '5': false,
+            '6': false
+        };
+        const POSITION_UPDATE_INTERVAL = 16; // Update local position every ~16ms (60fps)
+        const SERVER_UPDATE_INTERVAL = 200; // Update server position every 200ms
+        const PLAYER_SPEED = 4; // Reduced from 8 for slower movement
+        const PLAYER_SIZE = {
+            width: 60,
+            height: 80
+        };
+
+        // Available characters
+        const characters = [
+            'Shinnok.png',
+            'Zasalamel.png',
+            'Lili.png',
+            'Mai.png',
+            'Raiden.png',
+            'Julia.png'
+        ];
+
+        // Bot names for more interesting gameplay
+        const botNames = [
+            'Bot_Ninja', 'Bot_Warrior', 'Bot_Assassin', 'Bot_Tank',
+            'Bot_Mage', 'Bot_Archer', 'Bot_Paladin', 'Bot_Rogue',
+            'Bot_Knight', 'Bot_Berserker', 'Bot_Monk', 'Bot_Druid',
+            'Bot_Hunter', 'Bot_Shaman', 'Bot_Priest', 'Bot_Warlock',
+            'Bot_Ranger', 'Bot_Sorcerer', 'Bot_Guardian'
+        ];
+
+        // Player class
+        class Player {
+            constructor(id, x, y, skin) {
+                this.id = id;
+                this.x = x;
+                this.y = y;
+                this.skin = skin;
+                this.speed = PLAYER_SPEED;
+                this.health = 200;
+                this.shield = 0;
+                this.velocity = { x: 0, y: 0 };
+                this.acceleration = 0.8;
+                this.friction = 0.9;
+                this.lastX = x;
+                this.lastY = y;
+                this.inWater = false;
+                this.inStorm = false;
+                this.lastStormDamageTime = 0;
+                this.inventory = new Inventory(6);
+                this.interactRange = 100;
+                this.abilities = initializeCharacterAbilities(skin);
+                this.eggStats = {
+                    eggsCollected: 0,
+                    damageMultiplier: 1.0,
+                    lastEggTime: 0
+                };
+                this.isRooted = false;  // For effects that prevent movement
+                this.isImmune = false;  // For damage immunity
+                this.loadImage();
+            }
+
+            loadImage() {
+                this.image = new Image();
+                this.image.src = `../Loading Screen/${this.skin}`;
+            }
+
+            update(keys, deltaTime) {
+                this.lastX = this.x;
+                this.lastY = this.y;
+                
+                // Reset status effects each frame - they will be reapplied by abilities if still active
+                this.isRooted = false;
+                this.isImmune = false;
+                
+                if (this.abilities) {
+                    if (this.abilities.q) this.abilities.q.update(deltaTime);
+                    if (this.abilities.r) this.abilities.r.update(deltaTime);
+                    
+                    if (keys.q && this.abilities.q) {
+                        this.abilities.q.use(this, { 
+                            keys, 
+                            players, 
+                            currentLobby, 
+                            isBotsGame, 
+                            database, 
+                            mapGenerator,
+                            mapRenderer,
+                            mousePosition
+                        });
+                    }
+                    
+                    if (keys.r && this.abilities.r) {
+                        this.abilities.r.use(this, { 
+                            keys, 
+                            players, 
+                            currentLobby, 
+                            isBotsGame, 
+                            database, 
+                            mapGenerator,
+                            mapRenderer,
+                            mousePosition
+                        });
+                    }
+                    
+                    if (this.abilities.q && this.abilities.q instanceof DashingKick && this.abilities.q.isDashing) {
+                        this.abilities.q.updateDash(this, { 
+                            keys, 
+                            players, 
+                            currentLobby, 
+                            isBotsGame, 
+                            database, 
+                            mapGenerator,
+                            mapRenderer,
+                            mousePosition
+                        }, deltaTime);
+                        return;
+                    }
+                    
+                    // Handle Blazing Aura if active
+                    if (this.abilities.r && this.abilities.r instanceof BlazingAura && this.abilities.r.isActive) {
+                        // Apply aura effects (immunity and rooting)
+                        this.abilities.r.applyAuraEffects(this, { 
+                            players, 
+                            currentPlayer: this, 
+                            currentLobby, 
+                            isBotsGame, 
+                            database,
+                            mapRenderer
+                        });
+                    }
+                }
+                
+                // If player is rooted, prevent movement
+                if (this.isRooted) {
+                    return;
+                }
+                
+                this.inWater = false;
+                let speedMultiplier = 1.0;
+                if (mapGenerator && currentMap) {
+                    speedMultiplier = mapGenerator.getMovementSpeedMultiplier(this.x, this.y);
+                    this.inWater = speedMultiplier < 1.0;
+                }
+                
+                let targetVelX = 0;
+                let targetVelY = 0;
+
+                if ((keys.w || keys.s) && (keys.a || keys.d)) {
+                    this.speed = PLAYER_SPEED * 0.707 * speedMultiplier;
+                } else {
+                    this.speed = PLAYER_SPEED * speedMultiplier;
+                }
+
+                if (keys.d) targetVelX = this.speed;
+                if (keys.a) targetVelX = -this.speed;
+                if (keys.s) targetVelY = this.speed;
+                if (keys.w) targetVelY = -this.speed;
+
+                this.velocity.x += (targetVelX - this.velocity.x) * this.acceleration;
+                this.velocity.y += (targetVelY - this.velocity.y) * this.acceleration;
+
+                if (!keys.a && !keys.d) this.velocity.x *= this.friction;
+                if (!keys.w && !keys.s) this.velocity.y *= this.friction;
+
+                if (Math.abs(this.velocity.x) < 0.01) this.velocity.x = 0;
+                if (Math.abs(this.velocity.y) < 0.01) this.velocity.y = 0;
+
+                const newX = this.x + this.velocity.x;
+                const newY = this.y + this.velocity.y;
+
+                if (currentMap && mapGenerator.isWalkable(newX, newY)) {
+                    this.x = newX;
+                    this.y = newY;
+                }
+            }
+
+            draw(ctx) {
+                if (this.image.complete) {
+                    const screenPos = mapRenderer.worldToScreen(this.x, this.y);
+                    
+                    // Draw shadow
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+                    ctx.beginPath();
+                    ctx.ellipse(
+                        screenPos.x,
+                        screenPos.y + PLAYER_SIZE.height/2,
+                        PLAYER_SIZE.width/2,
+                        15,
+                        0,
+                        Math.PI * 2,
+                        0
+                    );
+                    ctx.fill();
+
+                    // Draw character
+                    ctx.save();
+                    
+                    // Apply hit effect flash if needed
+                    if (this.hitEffect) {
+                        const now = Date.now();
+                        const elapsed = now - this.hitEffect.time;
+                        
+                        if (elapsed < this.hitEffect.duration) {
+                            // Flash white for hit effect
+                            ctx.globalCompositeOperation = 'lighter';
+                            
+                            // Fade out the flash
+                            const alpha = 1 - (elapsed / this.hitEffect.duration);
+                            ctx.globalAlpha = alpha * 0.8;
+                        } else {
+                            // Remove hit effect when done
+                            this.hitEffect = null;
+                        }
+                    }
+                    
+                    // Apply immunity effect glow if player is immune
+                    if (this.isImmune) {
+                        ctx.shadowColor = 'rgba(255, 215, 0, 0.8)';  // Golden glow
+                        ctx.shadowBlur = 10;
+                    }
+                    
+                    // Apply storm effect if player is in storm
+                    if (this.inStorm) {
+                        ctx.shadowColor = 'rgba(0, 100, 255, 0.8)';  // Blue storm glow
+                        ctx.shadowBlur = 15;
+                        
+                        // Pulsating effect based on time
+                        const pulseAmount = Math.sin(Date.now() / 200) * 0.1 + 0.9;
+                        ctx.globalAlpha = pulseAmount;
+                        
+                        // Add storm hit effect
+                        if (this.stormHitEffect) {
+                            const now = Date.now();
+                            const elapsed = now - this.stormHitEffect.time;
+                            
+                            if (elapsed < this.stormHitEffect.duration) {
+                                // Flash blue for storm hit effect
+                                ctx.globalCompositeOperation = 'lighter';
+                                
+                                // Fade out the flash
+                                const alpha = 1 - (elapsed / this.stormHitEffect.duration);
+                                ctx.globalAlpha = alpha * 0.7;
+                                ctx.shadowColor = 'rgba(0, 150, 255, 0.9)';
+                                ctx.shadowBlur = 20;
+                            } else {
+                                // Remove hit effect when done
+                                this.stormHitEffect = null;
+                            }
+                        }
+                    }
+                    
+                    ctx.drawImage(
+                        this.image, 
+                        screenPos.x - PLAYER_SIZE.width/2, 
+                        screenPos.y - PLAYER_SIZE.height/2, 
+                        PLAYER_SIZE.width, 
+                        PLAYER_SIZE.height
+                    );
+                    
+                    ctx.restore();
+                    
+                    // Draw health bar (max 200)
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                    ctx.fillRect(screenPos.x - PLAYER_SIZE.width/2, screenPos.y - PLAYER_SIZE.height/2 - 15, PLAYER_SIZE.width, 5);
+                    ctx.fillStyle = 'rgba(255, 50, 50, 0.8)';
+                    ctx.fillRect(screenPos.x - PLAYER_SIZE.width/2, screenPos.y - PLAYER_SIZE.height/2 - 15, (this.health / 200) * PLAYER_SIZE.width, 5);
+                    
+                    // Draw shield bar if player has shield (max 200)
+                    if (this.shield > 0) {
+                        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                        ctx.fillRect(screenPos.x - PLAYER_SIZE.width/2, screenPos.y - PLAYER_SIZE.height/2 - 22, PLAYER_SIZE.width, 5);
+                        ctx.fillStyle = 'rgba(50, 150, 255, 0.8)';
+                        ctx.fillRect(screenPos.x - PLAYER_SIZE.width/2, screenPos.y - PLAYER_SIZE.height/2 - 22, (this.shield / 200) * PLAYER_SIZE.width, 5);
+                    }
+                    
+                    // Draw player name/id
+                    ctx.fillStyle = 'white';
+                    ctx.font = '14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+                    ctx.shadowBlur = 3;
+                    ctx.fillText(this.id.substring(0, 6), screenPos.x, screenPos.y - PLAYER_SIZE.height/2 - 30);
+                    ctx.shadowBlur = 0;
+                    
+                    // Indicate if player is in water
+                    if (this.inWater) {
+                        ctx.fillStyle = 'rgba(74, 144, 226, 0.7)';
+                        ctx.beginPath();
+                        ctx.arc(screenPos.x, screenPos.y - PLAYER_SIZE.height/2 + 10, 5, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    
+                    // Indicate if player is in storm with icon
+                    if (this.inStorm) {
+                        ctx.fillStyle = 'rgba(0, 100, 255, 0.8)';
+                        ctx.beginPath();
+                        ctx.arc(screenPos.x, screenPos.y - PLAYER_SIZE.height/2 - 5, 5, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        // Draw lightning bolt icon
+                        ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        const boltX = screenPos.x;
+                        const boltY = screenPos.y - PLAYER_SIZE.height/2 - 5;
+                        ctx.moveTo(boltX - 3, boltY - 4);
+                        ctx.lineTo(boltX, boltY);
+                        ctx.lineTo(boltX - 2, boltY + 4);
+                        ctx.lineTo(boltX + 3, boltY);
+                        ctx.stroke();
+                    }
+                    
+                    // Indicate if player is rooted
+                    if (this.isRooted) {
+                        // Draw chains/roots around player
+                        ctx.strokeStyle = 'rgba(210, 105, 30, 0.8)';  // Brown color for roots
+                        ctx.lineWidth = 3;
+                        ctx.setLineDash([5, 3]);
+                        ctx.beginPath();
+                        ctx.arc(screenPos.x, screenPos.y, PLAYER_SIZE.width/2 + 10, 0, Math.PI * 2);
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+                        
+                        // Draw root icon
+                        ctx.fillStyle = 'rgba(210, 105, 30, 0.8)';
+                        ctx.beginPath();
+                        ctx.arc(screenPos.x, screenPos.y + PLAYER_SIZE.height/2 + 10, 8, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    
+                    // Indicate if player is immune
+                    if (this.isImmune) {
+                        // Draw immunity indicator
+                        ctx.strokeStyle = 'rgba(255, 215, 0, 0.8)';  // Golden color
+                        ctx.lineWidth = 2;
+                        ctx.setLineDash([8, 4]);
+                        ctx.beginPath();
+                        ctx.arc(screenPos.x, screenPos.y, PLAYER_SIZE.width/2 + 15, 0, Math.PI * 2);
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+                        
+                        // Draw shield icon
+                        ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
+                        ctx.beginPath();
+                        ctx.arc(screenPos.x, screenPos.y - PLAYER_SIZE.height/2 - 10, 8, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    
+                    // Render ability effects if active
+                    if (this.abilities && this.abilities.q instanceof DashingKick && this.abilities.q.isDashing) {
+                        this.abilities.q.renderDashEffect(ctx, this, mapRenderer);
+                    }
+                }
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            const keyLower = e.key.toLowerCase();
+            if (keyLower in keys) {
+                keys[keyLower] = true;
+            }
+            
+            if (e.key >= '1' && e.key <= '6') {
+                keys[e.key] = true;
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            const keyLower = e.key.toLowerCase();
+            if (keyLower in keys) {
+                keys[keyLower] = false;
+            }
+            
+            if (e.key >= '1' && e.key <= '6') {
+                keys[e.key] = false;
+            }
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mousePosition.x = e.clientX - rect.left;
+            mousePosition.y = e.clientY - rect.top;
+        });
+        
+        canvas.addEventListener('click', (e) => {
+            if (!gameStarted || !currentPlayer || !currentPlayer.abilities) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+            
+            const abilitySize = 60;
+            const margin = 10;
+            const bottomMargin = 50;
+            
+            const qX = canvas.width / 2 - abilitySize - margin;
+            const qY = canvas.height - abilitySize - bottomMargin;
+            
+            const rX = canvas.width / 2 + margin;
+            const rY = canvas.height - abilitySize - bottomMargin;
+            
+            if (currentPlayer.abilities.q && !currentPlayer.abilities.q.isOnCooldown &&
+                clickX >= qX && clickX <= qX + abilitySize &&
+                clickY >= qY && clickY <= qY + abilitySize) {
+                keys.q = true;
+                setTimeout(() => { keys.q = false; }, 100);
+            }
+            
+            if (currentPlayer.abilities.r && !currentPlayer.abilities.r.isOnCooldown &&
+                clickX >= rX && clickX <= rX + abilitySize &&
+                clickY >= rY && clickY <= rY + abilitySize) {
+                keys.r = true;
+                setTimeout(() => { keys.r = false; }, 100);
+            }
+        });
+
+        function setupCharacterSelect() {
+            const characterOptions = document.getElementById('characterOptions');
+            characterOptions.innerHTML = '';
+            
+            characters.forEach(char => {
+                const option = document.createElement('div');
+                option.className = 'character-option';
+                
+                const img = document.createElement('img');
+                img.src = `../Loading Screen/${char}`;
+                img.alt = char.replace('.png', '');
+                
+                option.appendChild(img);
+                option.addEventListener('click', () => selectCharacter(char));
+                
+                characterOptions.appendChild(option);
+            });
+            
+            document.getElementById('characterSelect').style.display = 'block';
+        }
+
+        function selectCharacter(char) {
+            selectedCharacter = char;
+            document.querySelectorAll('.character-option').forEach(option => {
+                option.classList.remove('selected');
+                if (option.querySelector('img').alt === char.replace('.png', '')) {
+                    option.classList.add('selected');
+                }
+            });
+        }
+
+        function createLobby() {
+            const lobbyId = Math.random().toString(36).substring(2, 8).toUpperCase();
+            const mapSeed = Math.floor(Math.random() * 1000000);
+            const lobbyRef = database.ref('battle-royale/lobbies/' + lobbyId);
+            
+            // Calculate initial storm settings
+            const initialStormCenter = { x: 0, y: 0 }; // Will be updated after map is generated
+            const initialRadius = 3000; // 3x larger initial radius
+            
+            lobbyRef.set({
+                id: lobbyId,
+                players: {},
+                status: 'waiting',
+                mapSeed: mapSeed,
+                storm: {
+                    phase: 0,
+                    center: initialStormCenter,
+                    radius: initialRadius,
+                    currentRadius: initialRadius,
+                    nextRadius: stormPhases[0].radius,
+                    active: false,
+                    lastUpdate: Date.now()
+                }
+            });
+
+            document.getElementById('mapSeed').textContent = mapSeed;
+            joinLobby(lobbyId);
+        }
+
+        function joinLobby(lobbyId) {
+            currentLobby = lobbyId;
+            const lobbyRef = database.ref('battle-royale/lobbies/' + lobbyId);
+            
+            lobbyRef.once('value', (snapshot) => {
+                const lobby = snapshot.val();
+                if (!lobby) {
+                    alert('Lobby not found!');
+                    return;
+                }
+
+                const playerCount = lobby.players ? Object.keys(lobby.players).length : 0;
+                if (playerCount >= 20) {
+                    alert('Lobby is full!');
+                    return;
+                }
+
+                document.getElementById('mapSeed').textContent = lobby.mapSeed;
+                setupCharacterSelect();
+
+                document.getElementById('lobbyUI').style.display = 'block';
+                document.getElementById('lobbyCode').style.display = 'block';
+                document.getElementById('lobbyCodeText').textContent = lobbyId;
+                
+                setupLobbyListeners(lobbyId);
+            });
+        }
+
+        function setupLobbyListeners(lobbyId) {
+            const lobbyRef = database.ref('battle-royale/lobbies/' + lobbyId);
+            
+            lobbyRef.child('players').on('value', (snapshot) => {
+                const playerData = snapshot.val();
+                players = {};
+                
+                for (let id in playerData) {
+                    if (id !== currentPlayer?.id) {
+                        players[id] = new Player(
+                            id,
+                            playerData[id].x,
+                            playerData[id].y,
+                            playerData[id].skin
+                        );
+                        players[id].health = playerData[id].health;
+                    }
+                }
+                
+                updatePlayerList(playerData);
+            });
+
+            lobbyRef.child('status').on('value', (snapshot) => {
+                if (snapshot.val() === 'started') {
+                    startGame();
+                }
+            });
+            
+            // Listen for storm system updates from Firebase
+            lobbyRef.child('storm').on('value', (snapshot) => {
+                const stormData = snapshot.val();
+                if (stormData && gameStarted) {
+                    // Only update if the data is newer than our local state
+                    if (!stormSystem.lastSyncTime || stormData.lastUpdate > stormSystem.lastSyncTime) {
+                        stormSystem.center = stormData.center || stormSystem.center;
+                        stormSystem.nextCenter = stormData.nextCenter || stormSystem.nextCenter;
+                        stormSystem.currentRadius = stormData.currentRadius || stormSystem.currentRadius;
+                        stormSystem.nextRadius = stormData.nextRadius || stormSystem.nextRadius;
+                        stormSystem.phase = stormData.phase || stormSystem.phase;
+                        stormSystem.shrinkStartTime = stormData.shrinkStartTime || stormSystem.shrinkStartTime;
+                        stormSystem.phaseStartTime = stormData.phaseStartTime || stormSystem.phaseStartTime;
+                        stormSystem.active = stormData.active !== undefined ? stormData.active : stormSystem.active;
+                        stormSystem.gameStartTime = stormData.gameStartTime || stormSystem.gameStartTime;
+                        
+                        stormSystem.lastSyncTime = stormData.lastUpdate;
+                        
+                        // Update storm timer display
+                        updateStormTimerDisplay();
+                    }
+                }
+            });
+            
+            lobbyRef.child('abilities').on('child_added', (snapshot) => {
+                const abilityData = snapshot.val();
+                
+                if (abilityData.playerId === currentPlayer?.id || 
+                    Date.now() - abilityData.timestamp > 2000) {
+                    return;
+                }
+                
+                if (abilityData.type === 'dashingKick') {
+                    const player = players[abilityData.playerId];
+                    if (player && player.abilities && player.abilities.q instanceof DashingKick) {
+                        player.abilities.q.isDashing = true;
+                        player.abilities.q.dashStartTime = Date.now() - 50;
+                        player.abilities.q.dashStartX = abilityData.startX;
+                        player.abilities.q.dashStartY = abilityData.startY;
+                        player.abilities.q.dashTargetX = abilityData.targetX;
+                        player.abilities.q.dashTargetY = abilityData.targetY;
+                        
+                        player.x = abilityData.startX;
+                        player.y = abilityData.startY;
+                        
+                        // Apply damage to current player if in range
+                        if (currentPlayer && abilityData.playerId !== currentPlayer.id) {
+                            const distance = player.abilities.q.pointToLineDistance(
+                                currentPlayer.x, currentPlayer.y,
+                                abilityData.startX, abilityData.startY,
+                                abilityData.targetX, abilityData.targetY
+                            );
+                            
+                            if (distance <= player.abilities.q.hitboxWidth) {
+                                // Apply damage using takeDamage function
+                                if (typeof window.takeDamage === 'function') {
+                                    window.takeDamage(currentPlayer, player.abilities.q.damage, player);
+                                } else {
+                                    // Fallback to direct health modification
+                                    currentPlayer.health = Math.max(0, currentPlayer.health - player.abilities.q.damage);
+                                }
+                                player.abilities.q.createHitEffect(currentPlayer);
+                            }
+                        }
+                    }
+                } else if (abilityData.type === 'electricBall') {
+                    const player = players[abilityData.playerId];
+                    if (player && player.abilities && player.abilities.q instanceof ElectricBall) {
+                        const ball = {
+                            x: abilityData.x,
+                            y: abilityData.y,
+                            createdAt: Date.now(),
+                            playerId: abilityData.playerId
+                        };
+                        
+                        player.abilities.q.balls.push(ball);
+                        player.abilities.q.updateConnections();
+                    }
+                } else if (abilityData.type === 'electricDash') {
+                    const player = players[abilityData.playerId];
+                    if (player && player.abilities && player.abilities.r instanceof ElectricDash) {
+                        player.abilities.r.isDashing = true;
+                        player.abilities.r.dashStartTime = Date.now() - 50;
+                        player.abilities.r.dashStartX = abilityData.startX;
+                        player.abilities.r.dashStartY = abilityData.startY;
+                        player.abilities.r.dashTargetX = abilityData.targetX;
+                        player.abilities.r.dashTargetY = abilityData.targetY;
+                        
+                        // Calculate dash direction for effects
+                        const dx = abilityData.targetX - abilityData.startX;
+                        const dy = abilityData.targetY - abilityData.startY;
+                        const length = Math.sqrt(dx * dx + dy * dy);
+                        
+                        player.abilities.r.dashDirX = dx / length;
+                        player.abilities.r.dashDirY = dy / length;
+                        
+                        player.x = abilityData.startX;
+                        player.y = abilityData.startY;
+                    }
+                } else if (abilityData.type === 'electricDamage') {
+                    const target = players[abilityData.targetId];
+                    if (target) {
+                        // Apply damage using takeDamage function
+                        window.takeDamage(target, abilityData.damage, players[abilityData.sourceId]);
+                        
+                        // Create hit effect
+                        if (!target.hitEffects) target.hitEffects = [];
+                        target.hitEffects.push({
+                            type: 'electric',
+                            time: Date.now(),
+                            duration: 500,
+                            x: target.x,
+                            y: target.y
+                        });
+                    }
+                } else if (abilityData.type === 'electricDashHit') {
+                    const target = players[abilityData.targetId];
+                    if (target) {
+                        // Apply damage using takeDamage function
+                        window.takeDamage(target, abilityData.damage, players[abilityData.playerId]);
+                        
+                        // Apply push effect
+                        target.x += abilityData.pushX;
+                        target.y += abilityData.pushY;
+                        
+                        // Create hit effect
+                        if (!target.hitEffects) target.hitEffects = [];
+                        target.hitEffects.push({
+                            type: 'electricDash',
+                            time: Date.now(),
+                            duration: 500,
+                            x: target.x,
+                            y: target.y
+                        });
+                    }
+                } else if (abilityData.type === 'executeKick') {
+                    const player = players[abilityData.playerId];
+                    const target = players[abilityData.targetId];
+                    
+                    if (player && target) {
+                        target.hitEffect = {
+                            time: Date.now(),
+                            duration: 500
+                        };
+                        
+                        if (abilityData.shieldBroken) {
+                            target.shield = 0;
+                            
+                            if (player.abilities && player.abilities.r instanceof ExecuteKick) {
+                                player.abilities.r.createShieldBreakEffect(target);
+                                
+                                player.abilities.r.isOnCooldown = true;
+                                player.abilities.r.currentCooldown = player.abilities.r.cooldown;
+                                player.abilities.r.lastUsedTime = Date.now();
+                            }
+                        } else {
+                            // Apply damage using takeDamage function
+                            if (typeof window.takeDamage === 'function') {
+                                window.takeDamage(target, 80, player); // ExecuteKick damage is 80
+                            } else {
+                                // Fallback to direct health modification
+                                target.health = Math.max(0, target.health - 80);
+                            }
+                            
+                            if (player.abilities && player.abilities.r instanceof ExecuteKick) {
+                                player.abilities.r.createDamageEffect(target);
+                                
+                                player.abilities.r.isOnCooldown = true;
+                                player.abilities.r.currentCooldown = player.abilities.r.cooldown;
+                                player.abilities.r.lastUsedTime = Date.now();
+                            }
+                        }
+                    }
+                } else if (abilityData.type === 'windPush') {
+                    const player = players[abilityData.playerId];
+                    if (player) {
+                        // Find targets within the T-shape wind push
+                        for (const id in players) {
+                            if (id === abilityData.playerId) continue;
+                            
+                            const target = players[id];
+                            const dx = target.x - abilityData.sourceX;
+                            const dy = target.y - abilityData.sourceY;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            
+                            // Approximate the T-shape - it's a simplification
+                            if (distance <= 200) {
+                                // Visual feedback
+                                target.hitEffect = {
+                                    time: Date.now(),
+                                    duration: 300
+                                };
+                                
+                                // Apply damage
+                                target.health = Math.max(0, target.health - 25);
+                                
+                                // Apply push effect (simplification)
+                                const pushDirX = dx / distance;
+                                const pushDirY = dy / distance;
+                                
+                                target.x += pushDirX * 50;
+                                target.y += pushDirY * 50;
+                            }
+                        }
+                        
+                        // Cooldown for the player
+                        if (player.abilities && player.abilities.q instanceof WindPush) {
+                            player.abilities.q.isOnCooldown = true;
+                            player.abilities.q.currentCooldown = player.abilities.q.cooldown;
+                            player.abilities.q.lastUsedTime = Date.now();
+                        }
+                    }
+                } else if (abilityData.type === 'teamHeal') {
+                    const player = players[abilityData.playerId];
+                    if (player) {
+                        // Heal all nearby players including current player
+                        if (currentPlayer) {
+                            const dx = currentPlayer.x - abilityData.sourceX;
+                            const dy = currentPlayer.y - abilityData.sourceY;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            
+                            if (distance <= 500) { // Heal radius
+                                currentPlayer.health = 200; // Full heal
+                                
+                                // Visual feedback
+                                if (player.abilities && player.abilities.r instanceof TeamHeal) {
+                                    player.abilities.r.createHealEffect(currentPlayer);
+                                } else {
+                                    // Fallback visual effect if TeamHeal instance isn't available
+                                    currentPlayer.hitEffect = {
+                                        time: Date.now(),
+                                        duration: 500
+                                    };
+                                }
+                            }
+                        }
+                        
+                        // Visual feedback for the healer
+                        if (player.abilities && player.abilities.r instanceof TeamHeal) {
+                            player.abilities.r.isOnCooldown = true;
+                            player.abilities.r.currentCooldown = player.abilities.r.cooldown;
+                            player.abilities.r.lastUsedTime = Date.now();
+                            player.abilities.r.createHealEffect(player);
+                        }
+                        
+                        // Apply healing effect to other visible players too
+                        for (const id in players) {
+                            if (id === abilityData.playerId) continue;
+                            
+                            const target = players[id];
+                            const dx = target.x - abilityData.sourceX;
+                            const dy = target.y - abilityData.sourceY;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            
+                            if (distance <= 500) { // Heal radius
+                                target.health = 200; // Full heal
+                                
+                                // Visual feedback
+                                if (player.abilities && player.abilities.r instanceof TeamHeal) {
+                                    player.abilities.r.createHealEffect(target);
+                                } else {
+                                    // Fallback visual effect
+                                    target.hitEffect = {
+                                        time: Date.now(),
+                                        duration: 500
+                                    };
+                                }
+                            }
+                        }
+                    }
+                } else if (abilityData.type === 'burstBlastLaunch') {
+                    const player = players[abilityData.playerId];
+                    if (player && player.abilities && player.abilities.q instanceof BurstBlast) {
+                        // Create and launch projectile
+                        const projectile = {
+                            x: abilityData.sourceX,
+                            y: abilityData.sourceY,
+                            dirX: abilityData.dirX,
+                            dirY: abilityData.dirY,
+                            playerId: abilityData.playerId,
+                            distance: 0,
+                            maxDistance: player.abilities.q.range,
+                            startTime: Date.now()
+                        };
+                        
+                        player.abilities.q.activeProjectiles.push(projectile);
+                        
+                        // Set cooldown
+                        player.abilities.q.isOnCooldown = true;
+                        player.abilities.q.currentCooldown = player.abilities.q.cooldown;
+                        player.abilities.q.lastUsedTime = Date.now();
+                    }
+                } else if (abilityData.type === 'burstBlastImpact') {
+                    const player = players[abilityData.playerId];
+                    if (player && player.abilities && player.abilities.q instanceof BurstBlast) {
+                        // Create blast effect at impact point
+                        player.abilities.q.createBlastEffect({
+                            x: abilityData.sourceX,
+                            y: abilityData.sourceY
+                        }, player);
+                        
+                        // Apply damage to current player if in range
+                        if (currentPlayer && abilityData.playerId !== currentPlayer.id) {
+                            const dx = currentPlayer.x - abilityData.sourceX;
+                            const dy = currentPlayer.y - abilityData.sourceY;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            
+                            if (distance <= player.abilities.q.radius) {
+                                // Apply damage using takeDamage function
+                                window.takeDamage(currentPlayer, abilityData.damage, player);
+                                player.abilities.q.createHitEffect(currentPlayer);
+                            }
+                        }
+                        
+                        // Apply damage to affected players
+                        if (abilityData.affectedPlayers) {
+                            for (const id of abilityData.affectedPlayers) {
+                                if (!players[id]) continue;
+                                
+                                const target = players[id];
+                                // Apply damage using takeDamage function
+                                window.takeDamage(target, abilityData.damage, player);
+                                player.abilities.q.createHitEffect(target);
+                            }
+                        }
+                    }
+                } else if (abilityData.type === 'bonePrisonLaunch') {
+                    const player = players[abilityData.playerId];
+                    if (player && player.abilities && player.abilities.r instanceof BonePrison) {
+                        // Create and launch projectile
+                        const projectile = {
+                            x: abilityData.sourceX,
+                            y: abilityData.sourceY,
+                            dirX: abilityData.dirX,
+                            dirY: abilityData.dirY,
+                            playerId: abilityData.playerId,
+                            distance: 0,
+                            maxDistance: player.abilities.r.range,
+                            startTime: Date.now()
+                        };
+                        
+                        player.abilities.r.activeProjectiles.push(projectile);
+                        
+                        // Set cooldown
+                        player.abilities.r.isOnCooldown = true;
+                        player.abilities.r.currentCooldown = player.abilities.r.cooldown;
+                        player.abilities.r.lastUsedTime = Date.now();
+                    }
+                } else if (abilityData.type === 'bonePrisonHit') {
+                    const player = players[abilityData.playerId];
+                    
+                    // Apply root effect to the current player if they're the target
+                    if (currentPlayer && abilityData.targetId === currentPlayer.id) {
+                        currentPlayer.isRooted = true;
+                        
+                        if (player && player.abilities && player.abilities.r instanceof BonePrison) {
+                            // Create visual effect
+                            const prisonEffect = {
+                                targetId: currentPlayer.id,
+                                targetPlayer: currentPlayer,
+                                x: currentPlayer.x,
+                                y: currentPlayer.y,
+                                startTime: Date.now()
+                            };
+                            
+                            player.abilities.r.prisonEffects.push(prisonEffect);
+                            player.abilities.r.createHitEffect(currentPlayer);
+                            
+                            // Schedule the removal of root effect
+                            setTimeout(() => {
+                                if (currentPlayer) {
+                                    currentPlayer.isRooted = false;
+                                }
+                            }, player.abilities.r.rootDuration);
+                        }
+                    }
+                    
+                    // Apply root effect to other visible players
+                    const target = players[abilityData.targetId];
+                    if (target && player && player.abilities && player.abilities.r instanceof BonePrison) {
+                        target.isRooted = true;
+                        
+                        // Create visual effect
+                        const prisonEffect = {
+                            targetId: target.id,
+                            targetPlayer: target,
+                            x: target.x,
+                            y: target.y,
+                            startTime: Date.now()
+                        };
+                        
+                        player.abilities.r.prisonEffects.push(prisonEffect);
+                        player.abilities.r.createHitEffect(target);
+                        
+                        // Schedule the removal of root effect
+                        setTimeout(() => {
+                            if (target) {
+                                target.isRooted = false;
+                            }
+                        }, player.abilities.r.rootDuration);
+                    }
+                } else if (abilityData.type === 'reap') {
+                    const player = players[abilityData.playerId];
+                    if (player && player.abilities && player.abilities.q instanceof Reap) {
+                        // Create spin effect at impact point
+                        player.abilities.q.spinEffects.push({
+                            x: abilityData.sourceX,
+                            y: abilityData.sourceY,
+                            startTime: Date.now(),
+                            duration: player.abilities.q.spinDuration,
+                            startAngle: 0,
+                            endAngle: Math.PI * 4
+                        });
+                        
+                        // Apply damage to current player if in range
+                        if (currentPlayer && abilityData.playerId !== currentPlayer.id) {
+                            const dx = currentPlayer.x - abilityData.sourceX;
+                            const dy = currentPlayer.y - abilityData.sourceY;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            
+                            if (distance <= player.abilities.q.range) {
+                                // Apply damage using takeDamage function
+                                window.takeDamage(currentPlayer, abilityData.damage, player);
+                                player.abilities.q.createHitEffect(currentPlayer);
+                            }
+                        }
+                        
+                        // Apply damage to affected players
+                        if (abilityData.affectedPlayers) {
+                            for (const id of abilityData.affectedPlayers) {
+                                if (!players[id]) continue;
+                                
+                                const target = players[id];
+                                // Apply damage using takeDamage function
+                                window.takeDamage(target, abilityData.damage, player);
+                                player.abilities.q.createHitEffect(target);
+                            }
+                        }
+                    }
+                } else if (abilityData.type === 'soulAura') {
+                    const player = players[abilityData.playerId];
+                    if (player && player.abilities && player.abilities.r instanceof SoulAura) {
+                        // Apply damage to current player if in range
+                        if (currentPlayer && abilityData.playerId !== currentPlayer.id) {
+                            const dx = currentPlayer.x - abilityData.sourceX;
+                            const dy = currentPlayer.y - abilityData.sourceY;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            
+                            if (distance <= player.abilities.r.range) {
+                                // Apply damage using takeDamage function
+                                window.takeDamage(currentPlayer, abilityData.damage, player);
+                                player.abilities.r.createHitEffect(currentPlayer);
+                            }
+                        }
+                        
+                        // Apply damage to affected players
+                        if (abilityData.affectedPlayers) {
+                            for (const id of abilityData.affectedPlayers) {
+                                if (!players[id]) continue;
+                                
+                                const target = players[id];
+                                // Apply damage using takeDamage function
+                                window.takeDamage(target, abilityData.damage, player);
+                                player.abilities.r.createHitEffect(target);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updatePlayerList(playerData) {
+            const playerList = document.getElementById('playerList');
+            playerList.innerHTML = '';
+            
+            const playerCount = playerData ? Object.keys(playerData).length : 0;
+            document.getElementById('playerCount').textContent = playerCount;
+            
+            if (!isBotsGame && playerCount >= 2) {
+                document.getElementById('startGame').style.display = 'block';
+            }
+
+            for (let id in playerData) {
+                const playerDiv = document.createElement('div');
+                const isBot = playerData[id].isBot ? '🤖 ' : '';
+                playerDiv.textContent = `${isBot}Player ${id.substring(0, 6)} - ${playerData[id].skin.replace('.png', '')}`;
+                playerList.appendChild(playerDiv);
+            }
+        }
+
+        function addBots() {
+            if (!currentLobby || !mapGenerator || !currentMap) return;
+
+            const botsToAdd = 19;
+            const lobbyRef = database.ref(`battle-royale/lobbies/${currentLobby}/players`);
+            
+            const mapBoundaryPadding = 50;
+            const minX = mapBoundaryPadding;
+            const minY = mapBoundaryPadding;
+            const maxX = (mapGenerator.width * mapGenerator.tileSize) - mapBoundaryPadding;
+            const maxY = (mapGenerator.height * mapGenerator.tileSize) - mapBoundaryPadding;
+            
+            const centerX = (mapGenerator.width * mapGenerator.tileSize) / 2;
+            const centerY = (mapGenerator.height * mapGenerator.tileSize) / 2;
+
+            for (let i = 0; i < botsToAdd; i++) {
+                const botId = `bot_${Math.random().toString(36).substring(2, 8)}`;
+                const randomCharacter = characters[Math.floor(Math.random() * characters.length)];
+                
+                let spawnX, spawnY;
+                let validSpawn = false;
+                
+                for (let attempt = 0; attempt < 15; attempt++) {
+                    spawnX = minX + Math.random() * (maxX - minX);
+                    spawnY = minY + Math.random() * (maxY - minY);
+                    
+                    if (mapGenerator.isWalkable(spawnX, spawnY)) {
+                        validSpawn = true;
+                        break;
+                    }
+                }
+                
+                if (!validSpawn) {
+                    const sectors = 4;
+                    const sectorWidth = (maxX - minX) / sectors;
+                    const sectorHeight = (maxY - minY) / sectors;
+                    
+                    const sectorX = i % sectors;
+                    const sectorY = Math.floor(i / sectors) % sectors;
+                    
+                    const sectorMinX = minX + (sectorX * sectorWidth);
+                    const sectorMaxX = sectorMinX + sectorWidth;
+                    const sectorMinY = minY + (sectorY * sectorHeight);
+                    const sectorMaxY = sectorMinY + sectorHeight;
+                    
+                    for (let attempt = 0; attempt < 10; attempt++) {
+                        spawnX = sectorMinX + Math.random() * (sectorMaxX - sectorMinX);
+                        spawnY = sectorMinY + Math.random() * (sectorMaxY - sectorMinY);
+                        
+                        if (mapGenerator.isWalkable(spawnX, spawnY)) {
+                            validSpawn = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (!validSpawn) {
+                    spawnX = centerX + (Math.random() * 100 - 50);
+                    spawnY = centerY + (Math.random() * 100 - 50);
+                    
+                    spawnX = Math.max(minX, Math.min(maxX, spawnX));
+                    spawnY = Math.max(minY, Math.min(maxY, spawnY));
+                    
+                    if (!mapGenerator.isWalkable(spawnX, spawnY)) {
+                        spawnX = centerX;
+                        spawnY = centerY;
+                    }
+                }
+
+                lobbyRef.child(botId).set({
+                    id: botId,
+                    x: spawnX,
+                    y: spawnY,
+                    skin: randomCharacter,
+                    health: 200,
+                    isBot: true,
+                    botName: botNames[i % botNames.length]
+                });
+            }
+        }
+
+        function startWithBots() {
+            if (!selectedCharacter) {
+                alert('Please select a character first!');
+                return;
+            }
+
+            isBotsGame = true;
+            const lobbyId = Math.random().toString(36).substring(2, 8).toUpperCase();
+            const mapSeed = Math.floor(Math.random() * 1000000);
+            
+            mapGenerator = new MapGenerator(200, 200, mapSeed);
+            window.mapGenerator = mapGenerator; // Set global reference
+            currentMap = mapGenerator.generateTerrain();
+            
+            mapGenerator.setCurrentMap(currentMap);
+            
+            mapRenderer = new MapRenderer(canvas);
+            
+            chestRenderer = new ChestRenderer(mapRenderer);
+            
+            abilityRenderer = new AbilityRenderer();
+            
+            placeChests();
+
+            const centerX = (mapGenerator.width * mapGenerator.tileSize) / 2;
+            const centerY = (mapGenerator.height * mapGenerator.tileSize) / 2;
+            
+            const playerId = Math.random().toString(36).substring(2, 15);
+            currentPlayer = new Player(playerId, centerX, centerY, selectedCharacter);
+            
+            mapRenderer.camera.x = currentPlayer.x;
+            mapRenderer.camera.y = currentPlayer.y;
+            
+            // Initialize drag and drop functionality
+            chestRenderer.initDragAndDrop(canvas, currentPlayer.inventory, currentPlayer, droppedItems);
+            
+            const lobbyRef = database.ref('battle-royale/lobbies/' + lobbyId);
+            
+            // Calculate initial storm settings
+            const initialStormCenter = { x: centerX, y: centerY };
+            const initialRadius = 3000; // 3x larger initial radius
+            
+            lobbyRef.set({
+                id: lobbyId,
+                players: {
+                    [playerId]: {
+                        id: playerId,
+                        x: centerX,
+                        y: centerY,
+                        skin: selectedCharacter,
+                        health: 200
+                    }
+                },
+                status: 'waiting',
+                mapSeed: mapSeed,
+                storm: {
+                    phase: 0,
+                    center: initialStormCenter,
+                    nextCenter: initialStormCenter,
+                    currentRadius: initialRadius,
+                    nextRadius: stormPhases[0].radius,
+                    active: false,
+                    lastUpdate: Date.now()
+                }
+            }).then(() => {
+                currentLobby = lobbyId;
+                document.getElementById('mapSeed').textContent = mapSeed;
+                document.getElementById('lobbyCode').style.display = 'block';
+                document.getElementById('lobbyCodeText').textContent = lobbyId;
+                
+                setupLobbyListeners(lobbyId);
+                
+                addBots();
+                
+                setTimeout(() => {
+                    gameStarted = true;
+                    document.getElementById('lobbyUI').style.display = 'none';
+                    database.ref(`battle-royale/lobbies/${lobbyId}/status`).set('started');
+                    
+                    // Initialize storm system
+                    initStorm();
+                    
+                    // Show inventory instructions
+                    showInventoryInstructions();
+                }, 1500);
+            });
+        }
+
+        function startGame() {
+            document.getElementById('lobbyUI').style.display = 'none';
+            gameStarted = true;
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const mapSeed = Math.floor(Math.random() * 1000000);
+            document.getElementById('mapSeed').textContent = mapSeed;
+            
+            mapGenerator = new MapGenerator(100, 100, mapSeed);
+            window.mapGenerator = mapGenerator; // Set global reference
+            mapRenderer = new MapRenderer(canvas);
+            
+            currentMap = mapGenerator.generateTerrain();
+            
+            mapGenerator.setCurrentMap(currentMap);
+            
+            chestRenderer = new ChestRenderer(mapRenderer);
+            
+            abilityRenderer = new AbilityRenderer();
+            
+            placeChests();
+            
+            const centerX = (mapGenerator.width * mapGenerator.tileSize) / 2;
+            const centerY = (mapGenerator.height * mapGenerator.tileSize) / 2;
+            
+            if (!currentPlayer) {
+                const playerId = Math.random().toString(36).substring(2, 15);
+                currentPlayer = new Player(playerId, centerX, centerY, selectedCharacter);
+            } else {
+                currentPlayer.x = centerX;
+                currentPlayer.y = centerY;
+            }
+            
+            mapRenderer.camera.x = currentPlayer.x;
+            mapRenderer.camera.y = currentPlayer.y;
+            
+            // Initialize drag and drop functionality
+            chestRenderer.initDragAndDrop(canvas, currentPlayer.inventory, currentPlayer, droppedItems);
+            
+            // Only initialize storm if this is a bot game or if we're the host (first player)
+            if (isBotsGame) {
+                initStorm();
+            } else if (currentLobby) {
+                // For multiplayer games, only the host should initialize the storm
+                database.ref(`battle-royale/lobbies/${currentLobby}/players`).orderByKey().limitToFirst(1).once('value')
+                    .then(snapshot => {
+                        const players = snapshot.val();
+                        if (players && Object.keys(players)[0] === currentPlayer.id) {
+                            initStorm();
+                        }
+                    });
+            }
+            
+            // Show inventory instructions
+            showInventoryInstructions();
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        function showInventoryInstructions() {
+            // Tips about the inventory system
+            setTimeout(() => {
+                displayNotification("Inventory is now in the bottom-left corner!", "#4CAF50");
+                
+                setTimeout(() => {
+                    displayNotification("You can drag and drop items to reorganize them", "#4CAF50");
+                    
+                    setTimeout(() => {
+                        displayNotification("Drop items by dragging them outside the inventory", "#4CAF50");
+                    }, 3000);
+                }, 3000);
+            }, 2000);
+        }
+
+        function gameLoop(timestamp) {
+            if (!gameStarted) return;
+            
+            const deltaTime = timestamp - lastFrameTime;
+            lastFrameTime = timestamp;
+            
+            if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            if (currentPlayer && (timestamp - lastUpdateTime) > POSITION_UPDATE_INTERVAL) {
+                currentPlayer.update(keys, deltaTime);
+                lastUpdateTime = timestamp;
+            }
+            
+            if (currentPlayer && currentLobby && !isBotsGame && 
+                (timestamp - lastServerUpdateTime) > SERVER_UPDATE_INTERVAL) {
+                
+                database.ref(`battle-royale/lobbies/${currentLobby}/players/${currentPlayer.id}`).update({
+                    x: currentPlayer.x,
+                    y: currentPlayer.y,
+                    health: currentPlayer.health,
+                    shield: currentPlayer.shield
+                });
+                
+                lastServerUpdateTime = timestamp;
+            }
+            
+            if (isBotsGame) {
+                for (const id in players) {
+                    if (id !== currentPlayer.id && players[id]) {
+                        moveBotPlayer(players[id]);
+                    }
+                }
+            }
+            
+            // Update storm system
+            updateStorm(deltaTime);
+            
+            if (isEasterEvent) {
+                spawnEasterEggs(deltaTime);
+            }
+            
+            updateInteractions();
+            
+            if (currentPlayer) {
+                mapRenderer.followTarget(currentPlayer);
+            }
+            
+            mapRenderer.render(currentMap);
+            
+            // Render storm after map but before players and other elements
+            renderStorm(ctx, mapRenderer);
+            
+            if (chestRenderer) {
+                chestRenderer.renderChests(ctx, chests);
+                chestRenderer.renderDroppedItems(ctx, droppedItems);
+                
+                if (isEasterEvent && currentPlayer) {
+                    chestRenderer.renderEasterEggs(ctx, easterEggs, currentPlayer);
+                    
+                    chestRenderer.renderEggStats(ctx, currentPlayer);
+                }
+            }
+            
+            // Process Shinnok's ability collisions
+            for (const id in players) {
+                if (players[id].abilities) {
+                    // Process Bone Prison ability collisions if it exists
+                    if (players[id].abilities.r instanceof BonePrison) {
+                        players[id].abilities.r.checkProjectileCollisions({
+                            players, 
+                            currentPlayer, 
+                            currentLobby,
+                            isBotsGame,
+                            database,
+                            mapRenderer // Add mapRenderer to gameState
+                        });
+                    }
+                    
+                    // Process Burst Blast ability collisions if it exists
+                    if (players[id].abilities.q instanceof BurstBlast) {
+                        players[id].abilities.q.checkProjectileCollisions({
+                            players, 
+                            currentPlayer, 
+                            currentLobby,
+                            isBotsGame,
+                            database
+                        });
+                    }
+
+                    // Process Electric Ball collisions if it exists
+                    if (players[id].abilities.q instanceof ElectricBall) {
+                        players[id].abilities.q.checkPlayerCollisions({
+                            players,
+                            currentPlayer,
+                            currentLobby,
+                            isBotsGame,
+                            database,
+                            mapRenderer
+                        });
+                    }
+
+                    // Process Electric Dash if it exists
+                    if (players[id].abilities.r instanceof ElectricDash && players[id].abilities.r.isDashing) {
+                        players[id].abilities.r.updateDash(players[id], {
+                            players,
+                            currentPlayer,
+                            currentLobby,
+                            isBotsGame,
+                            database,
+                            mapRenderer,
+                            keys
+                        }, deltaTime);
+                    }
+                }
+            }
+            
+            // Check current player's abilities for collisions
+            if (currentPlayer && currentPlayer.abilities) {
+                // Check Bone Prison ability if applicable
+                if (currentPlayer.abilities.r instanceof BonePrison) {
+                    currentPlayer.abilities.r.checkProjectileCollisions({
+                        players, 
+                        currentPlayer, 
+                        currentLobby,
+                        isBotsGame,
+                        database
+                    });
+                }
+                
+                // Check Burst Blast ability if applicable
+                if (currentPlayer.abilities.q instanceof BurstBlast) {
+                    currentPlayer.abilities.q.checkProjectileCollisions({
+                        players, 
+                        currentPlayer, 
+                        currentLobby,
+                        isBotsGame,
+                        database
+                    });
+                }
+
+                // Check Electric Ball collisions if applicable
+                if (currentPlayer.abilities.q instanceof ElectricBall) {
+                    currentPlayer.abilities.q.checkPlayerCollisions({
+                        players,
+                        currentPlayer,
+                        currentLobby,
+                        isBotsGame,
+                        database,
+                        mapRenderer
+                    });
+                }
+
+                // Update Electric Dash if applicable
+                if (currentPlayer.abilities.r instanceof ElectricDash && currentPlayer.abilities.r.isDashing) {
+                    currentPlayer.abilities.r.updateDash(currentPlayer, {
+                        players,
+                        currentPlayer,
+                        currentLobby,
+                        isBotsGame,
+                        database,
+                        mapRenderer,
+                        keys,
+                        mousePosition
+                    }, deltaTime);
+                }
+            }
+            
+            if (currentPlayer) {
+                currentPlayer.draw(ctx);
+            }
+            
+            for (const id in players) {
+                players[id].draw(ctx);
+            }
+            
+            // Render Shinnok's ability visual effects
+            for (const id in players) {
+                if (players[id].abilities) {
+                    // Render Bone Prison effects if it exists
+                    if (players[id].abilities.r instanceof BonePrison) {
+                        players[id].abilities.r.renderProjectiles(ctx, mapRenderer);
+                        players[id].abilities.r.renderPrisonEffects(ctx, mapRenderer);
+                        players[id].abilities.r.renderBlastEffects(ctx, mapRenderer); // Add this line
+                    }
+                    
+                    // Render Burst Blast effects if it exists
+                    if (players[id].abilities.q instanceof BurstBlast) {
+                        players[id].abilities.q.renderProjectiles(ctx, mapRenderer);
+                        players[id].abilities.q.renderBlastEffects(ctx, mapRenderer);
+                    }
+
+                    // Render Electric Ball effects if it exists
+                    if (players[id].abilities.q instanceof ElectricBall) {
+                        players[id].abilities.q.render(ctx, mapRenderer);
+                    }
+
+                    // Render Electric Dash effects if it exists
+                    if (players[id].abilities.r instanceof ElectricDash) {
+                        players[id].abilities.r.renderDashEffect(ctx, players[id], mapRenderer);
+                    }
+                }
+            }
+            
+            // Render current player's ability effects
+            if (currentPlayer && currentPlayer.abilities) {
+                // Render Bone Prison effects if applicable
+                if (currentPlayer.abilities.r instanceof BonePrison) {
+                    currentPlayer.abilities.r.renderProjectiles(ctx, mapRenderer);
+                    currentPlayer.abilities.r.renderPrisonEffects(ctx, mapRenderer);
+                    currentPlayer.abilities.r.renderBlastEffects(ctx, mapRenderer); // Add this line
+                }
+                
+                // Render Burst Blast effects if applicable
+                if (currentPlayer.abilities.q instanceof BurstBlast) {
+                    currentPlayer.abilities.q.renderProjectiles(ctx, mapRenderer);
+                    currentPlayer.abilities.q.renderBlastEffects(ctx, mapRenderer);
+                    
+                    // Render passive damage counter display
+                    currentPlayer.abilities.q.renderPassiveDisplay(ctx, currentPlayer);
+                }
+
+                // Render Electric Ball effects if applicable
+                if (currentPlayer.abilities.q instanceof ElectricBall) {
+                    currentPlayer.abilities.q.render(ctx, mapRenderer);
+                }
+
+                // Render Electric Dash effects if applicable
+                if (currentPlayer.abilities.r instanceof ElectricDash) {
+                    currentPlayer.abilities.r.renderDashEffect(ctx, currentPlayer, mapRenderer);
+                }
+                
+                // Render Mai's Fan Toss projectiles
+                if (currentPlayer.abilities.q instanceof FanToss) {
+                    currentPlayer.abilities.q.renderProjectiles(ctx, mapRenderer);
+                    currentPlayer.abilities.q.checkProjectileCollisions({
+                        players, 
+                        currentPlayer, 
+                        currentLobby,
+                        isBotsGame,
+                        database,
+                        mapRenderer
+                    });
+                }
+                
+                // Render Mai's Blazing Aura
+                if (currentPlayer.abilities.r instanceof BlazingAura) {
+                    currentPlayer.abilities.r.renderAura(ctx, currentPlayer, mapRenderer);
+                    currentPlayer.abilities.r.applyAuraEffects(currentPlayer, {
+                        players, 
+                        currentPlayer, 
+                        currentLobby,
+                        isBotsGame,
+                        database,
+                        mapRenderer
+                    });
+                }
+
+                // Render Zasalamel's Reap effects
+                if (currentPlayer.abilities.q instanceof Reap) {
+                    currentPlayer.abilities.q.renderEffects(ctx, mapRenderer);
+                }
+
+                // Render Zasalamel's Soul Aura
+                if (currentPlayer.abilities.r instanceof SoulAura) {
+                    currentPlayer.abilities.r.renderAura(ctx, currentPlayer, mapRenderer);
+                    currentPlayer.abilities.r.applyAuraEffects(currentPlayer, {
+                        players,
+                        currentPlayer,
+                        currentLobby,
+                        isBotsGame,
+                        database,
+                        mapRenderer
+                    });
+                }
+            }
+            
+            // Render other players' abilities (including Zasalamel's)
+            for (const id in players) {
+                if (players[id].abilities) {
+                    // Fan Toss ability
+                    if (players[id].abilities.q instanceof FanToss) {
+                        players[id].abilities.q.renderProjectiles(ctx, mapRenderer);
+                        players[id].abilities.q.checkProjectileCollisions({
+                            players, 
+                            currentPlayer, 
+                            currentLobby,
+                            isBotsGame,
+                            database,
+                            mapRenderer
+                        });
+                    }
+                    
+                    // Blazing Aura ability
+                    if (players[id].abilities.r instanceof BlazingAura) {
+                        players[id].abilities.r.renderAura(ctx, players[id], mapRenderer);
+                        if (players[id].abilities.r.isActive) {
+                            players[id].abilities.r.applyAuraEffects(players[id], {
+                                players, 
+                                currentPlayer, 
+                                currentLobby,
+                                isBotsGame,
+                                database,
+                                mapRenderer
+                            });
+                        }
+                    }
+
+                    // Reap ability
+                    if (players[id].abilities.q instanceof Reap) {
+                        players[id].abilities.q.renderEffects(ctx, mapRenderer);
+                    }
+
+                    // Soul Aura ability
+                    if (players[id].abilities.r instanceof SoulAura) {
+                        players[id].abilities.r.renderAura(ctx, players[id], mapRenderer);
+                        if (players[id].abilities.r.isActive) {
+                            players[id].abilities.r.applyAuraEffects(players[id], {
+                                players,
+                                currentPlayer,
+                                currentLobby,
+                                isBotsGame,
+                                database,
+                                mapRenderer
+                            });
+                        }
+                    }
+                }
+            }
+            
+            if (chestRenderer && currentPlayer) {
+                chestRenderer.renderInventoryUI(ctx, currentPlayer.inventory, currentPlayer);
+            }
+            
+            if (abilityRenderer && currentPlayer && currentPlayer.abilities) {
+                if (currentPlayer.abilities.q) {
+                    abilityRenderer.loadIconForAbility(currentPlayer.abilities.q, 'q');
+                }
+                if (currentPlayer.abilities.r) {
+                    abilityRenderer.loadIconForAbility(currentPlayer.abilities.r, 'r');
+                }
+                
+                abilityRenderer.renderAbilityUI(ctx, currentPlayer);
+                
+                // Render Julia's ability effects if player is using Julia
+                if (currentPlayer.abilities.q instanceof WindPush) {
+                    // Add players and current player to gameState for proper rendering
+                    currentPlayer.abilities.q.gameState = {
+                        players: players, 
+                        currentPlayer: currentPlayer
+                    };
+                    
+                    // Call the comprehensive rendering method with mapRenderer
+                    currentPlayer.abilities.q.renderWindPushEffects(ctx, mapRenderer);
+                } else {
+                    // For non-Julia players, still render stack visuals if needed
+                    if (currentPlayer.abilities.q && typeof currentPlayer.abilities.q.renderStackVisuals === 'function') {
+                        currentPlayer.abilities.q.renderStackVisuals(ctx, {
+                            players: players,
+                            mapRenderer: mapRenderer,
+                            currentPlayer: currentPlayer
+                        });
+                    }
+                }
+                
+                if (currentPlayer.abilities.r instanceof TeamHeal) {
+                    currentPlayer.abilities.r.renderHealEffects(ctx, {
+                        players: players,
+                        mapRenderer: mapRenderer,
+                        currentPlayer: currentPlayer
+                    });
+                }
+            }
+            
+            mapRenderer.renderMinimap(minimapCanvas, currentMap, players, currentPlayer);
+            
+            // Render storm on minimap
+            renderStormOnMinimap(minimapCtx, minimapCanvas, mapGenerator.width * mapGenerator.tileSize, mapGenerator.height * mapGenerator.tileSize);
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        function moveBotPlayer(bot) {
+            // If bot is rooted by Bone Prison, prevent movement
+            if (bot.isRooted) {
+                return;
+            }
+            
+            let speedMultiplier = 1.0;
+            if (mapGenerator && currentMap) {
+                speedMultiplier = mapGenerator.getMovementSpeedMultiplier(bot.x, bot.y);
+                bot.inWater = speedMultiplier < 1.0;
+            }
+            
+            const adjustedSpeed = bot.speed * speedMultiplier;
+
+            // Update bot abilities
+            if (bot.abilities) {
+                const now = Date.now();
+                if (bot.abilities.q) bot.abilities.q.update(16); // Update with 16ms deltaTime
+                if (bot.abilities.r) bot.abilities.r.update(16);
+
+                // Find closest player for targeting
+                let closestPlayer = null;
+                let closestDistance = Infinity;
+                for (const id in players) {
+                    if (id === bot.id) continue;
+                    const player = players[id];
+                    const dx = player.x - bot.x;
+                    const dy = player.y - bot.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestPlayer = player;
+                    }
+                }
+
+                // Also check current player
+                if (currentPlayer && currentPlayer.id !== bot.id) {
+                    const dx = currentPlayer.x - bot.x;
+                    const dy = currentPlayer.y - bot.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestPlayer = currentPlayer;
+                    }
+                }
+
+                // Use abilities if there's a target nearby
+                if (closestPlayer) {
+                    const abilityRange = 400; // General ability range
+                    if (closestDistance < abilityRange) {
+                        // Calculate direction to target
+                        const dirX = closestPlayer.x - bot.x;
+                        const dirY = closestPlayer.y - bot.y;
+                        const length = Math.sqrt(dirX * dirX + dirY * dirY);
+                        
+                        // Set bot's target position for abilities
+                        bot.targetX = closestPlayer.x;
+                        bot.targetY = closestPlayer.y;
+
+                        // Use Q ability if off cooldown (70% chance)
+                        if (bot.abilities.q && !bot.abilities.q.isOnCooldown && Math.random() < 0.7) {
+                            bot.abilities.q.use(bot, {
+                                players,
+                                currentPlayer,
+                                currentLobby,
+                                isBotsGame,
+                                database,
+                                mapGenerator,
+                                mapRenderer,
+                                mousePosition: {
+                                    x: closestPlayer.x,
+                                    y: closestPlayer.y
+                                }
+                            });
+                        }
+
+                        // Use R ability if off cooldown and very close (50% chance)
+                        if (bot.abilities.r && !bot.abilities.r.isOnCooldown && closestDistance < 200 && Math.random() < 0.5) {
+                            bot.abilities.r.use(bot, {
+                                players,
+                                currentPlayer,
+                                currentLobby,
+                                isBotsGame,
+                                database,
+                                mapGenerator,
+                                mapRenderer,
+                                mousePosition: {
+                                    x: closestPlayer.x,
+                                    y: closestPlayer.y
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            
+            // Check if bot is in storm and needs to move towards safe zone
+            if (stormSystem.active && bot.inStorm) {
+                // Calculate direction to storm center
+                const dx = stormSystem.center.x - bot.x;
+                const dy = stormSystem.center.y - bot.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                // Move towards storm center with some randomness
+                if (distance > 0) {
+                    bot.velocity.x = (dx / distance) * adjustedSpeed * (0.8 + Math.random() * 0.4);
+                    bot.velocity.y = (dy / distance) * adjustedSpeed * (0.8 + Math.random() * 0.4);
+                }
+            } 
+            // If not in storm but close to the edge, move toward next safe zone
+            else if (stormSystem.active && stormSystem.phase < stormSystem.maxPhase) {
+                const dx = bot.x - stormSystem.center.x;
+                const dy = bot.y - stormSystem.center.y;
+                const distanceFromCenter = Math.sqrt(dx * dx + dy * dy);
+                
+                // If bot is close to the storm edge (within 100 units)
+                if (distanceFromCenter > stormSystem.currentRadius - 100) {
+                    // Calculate direction to next storm center
+                    const nextDx = stormSystem.nextCenter.x - bot.x;
+                    const nextDy = stormSystem.nextCenter.y - bot.y;
+                    const nextDistance = Math.sqrt(nextDx * nextDx + nextDy * nextDy);
+                    
+                    // 70% chance to move toward next storm center
+                    if (Math.random() < 0.7 && nextDistance > 0) {
+                        bot.velocity.x = (nextDx / nextDistance) * adjustedSpeed * (0.6 + Math.random() * 0.4);
+                        bot.velocity.y = (nextDy / nextDistance) * adjustedSpeed * (0.6 + Math.random() * 0.4);
+                    } else {
+                        // 30% chance for random movement
+                        bot.velocity.x = (Math.random() - 0.5) * adjustedSpeed * 2;
+                        bot.velocity.y = (Math.random() - 0.5) * adjustedSpeed * 2;
+                    }
+                } 
+                // Normal random movement when safe
+                else if (Math.random() < 0.02) {
+                    bot.velocity.x = (Math.random() - 0.5) * adjustedSpeed * 2;
+                    bot.velocity.y = (Math.random() - 0.5) * adjustedSpeed * 2;
+                }
+            }
+            // Normal random movement
+            else if (Math.random() < 0.02) {
+                bot.velocity.x = (Math.random() - 0.5) * adjustedSpeed * 2;
+                bot.velocity.y = (Math.random() - 0.5) * adjustedSpeed * 2;
+            }
+            
+            const newX = bot.x + bot.velocity.x;
+            const newY = bot.y + bot.velocity.y;
+            
+            const mapBoundaryPadding = 20;
+            const minX = mapBoundaryPadding;
+            const minY = mapBoundaryPadding;
+            const maxX = (mapGenerator.width * mapGenerator.tileSize) - mapBoundaryPadding;
+            const maxY = (mapGenerator.height * mapGenerator.tileSize) - mapBoundaryPadding;
+            
+            if (newX < minX || newX > maxX || newY < minY || newY > maxY) {
+                bot.velocity.x = -bot.velocity.x;
+                bot.velocity.y = -bot.velocity.y;
+                return;
+            }
+            
+            if (mapGenerator.isWalkable(newX, newY)) {
+                bot.x = newX;
+                bot.y = newY;
+            } else {
+                // If path is blocked, try a different direction
+                bot.velocity.x = (Math.random() - 0.5) * adjustedSpeed * 2;
+                bot.velocity.y = (Math.random() - 0.5) * adjustedSpeed * 2;
+            }
+            
+            // Try to get out of water
+            if (bot.inWater && Math.random() < 0.3) {
+                const sampleDistance = 100;
+                let bestDirection = null;
+                let bestMultiplier = speedMultiplier;
+                
+                for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
+                    const testX = bot.x + Math.cos(angle) * sampleDistance;
+                    const testY = bot.y + Math.sin(angle) * sampleDistance;
+                    const testMultiplier = mapGenerator.getMovementSpeedMultiplier(testX, testY);
+                    
+                    if (testMultiplier > bestMultiplier && mapGenerator.isWalkable(testX, testY)) {
+                        bestDirection = angle;
+                        bestMultiplier = testMultiplier;
+                    }
+                }
+                
+                if (bestDirection !== null) {
+                    bot.velocity.x = Math.cos(bestDirection) * adjustedSpeed;
+                    bot.velocity.y = Math.sin(bestDirection) * adjustedSpeed;
+                }
+            }
+        }
+        
+        function placeChests() {
+            const chestCount = Math.min(50, Math.floor((mapGenerator.width * mapGenerator.height) / 500));
+
+            const mapBoundaryPadding = 50;
+            const minX = mapBoundaryPadding;
+            const minY = mapBoundaryPadding;
+            const maxX = (mapGenerator.width * mapGenerator.tileSize) - mapBoundaryPadding;
+            const maxY = (mapGenerator.height * mapGenerator.tileSize) - mapBoundaryPadding;
+            
+            for (let i = 0; i < chestCount; i++) {
+                let validPosition = false;
+                let x, y;
+                
+                for (let attempt = 0; attempt < 10; attempt++) {
+                    x = minX + Math.random() * (maxX - minX);
+                    y = minY + Math.random() * (maxY - minY);
+                    
+                    if (mapGenerator.isWalkable(x, y)) {
+                        let tooClose = false;
+                        for (const chest of chests) {
+                            const dx = chest.x - x;
+                            const dy = chest.y - y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            
+                            if (distance < 200) {
+                                tooClose = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!tooClose) {
+                            validPosition = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (validPosition) {
+                    chests.push(new Chest(x, y));
+                }
+            }
+            
+            console.log(`Placed ${chests.length} chests on the map`);
+        }
+        
+        function updateInteractions() {
+            if (!currentPlayer) return;
+            
+            for (const chest of chests) {
+                if (chest.isOpen) continue;
+                
+                const dx = chest.x - currentPlayer.x;
+                const dy = chest.y - currentPlayer.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance <= currentPlayer.interactRange && keys.e) {
+                    const items = chest.open();
+                    
+                    for (const item of items) {
+                        const offsetX = (Math.random() - 0.5) * 50;
+                        const offsetY = (Math.random() - 0.5) * 50;
+                        
+                        droppedItems.push({
+                            ...item,
+                            x: chest.x + offsetX,
+                            y: chest.y + offsetY,
+                            isClose: false
+                        });
+                    }
+                    
+                    keys.e = false;
+                }
+            }
+            
+            for (let i = easterEggs.length - 1; i >= 0; i--) {
+                const egg = easterEggs[i];
+                if (egg.collected) continue;
+                
+                const dx = egg.x - currentPlayer.x;
+                const dy = egg.y - currentPlayer.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance <= currentPlayer.interactRange && keys.e) {
+                    const eggItem = egg.collect();
+                    
+                    if (eggItem) {
+                        applyItemEffect(eggItem);
+                        
+                        egg.collected = true;
+                    }
+                    
+                    keys.e = false;
+                }
+            }
+            
+            for (let i = droppedItems.length - 1; i >= 0; i--) {
+                const item = droppedItems[i];
+                
+                // Skip invalid items
+                if (!item || typeof item !== 'object' || !item.hasOwnProperty('x') || !item.hasOwnProperty('y')) {
+                    console.error('Invalid item in droppedItems:', item);
+                    droppedItems.splice(i, 1);
+                    continue;
+                }
+                
+                const dx = item.x - currentPlayer.x;
+                const dy = item.y - currentPlayer.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                item.isClose = distance <= currentPlayer.interactRange;
+                
+                if (item.isClose && keys.e) {
+                    if (currentPlayer.inventory.addItem(item)) {
+                        droppedItems.splice(i, 1);
+                        
+                        // Show a hint for Easter eggs added to inventory
+                        if (item.id === 'easter_egg') {
+                            displayNotification("Press 1-6 keys to use Easter Eggs from inventory", "#FFD700");
+                        }
+                    } else {
+                        console.log("Inventory is full!");
+                    }
+                    
+                    keys.e = false;
+                }
+            }
+            
+            for (let i = 1; i <= 6; i++) {
+                if (keys[i.toString()]) {
+                    currentPlayer.inventory.startUseItem(i - 1);
+                    keys[i.toString()] = false;
+                }
+            }
+            
+            if (currentPlayer.inventory.isUsingItem) {
+                const itemComplete = currentPlayer.inventory.updateUseProgress();
+                
+                if (itemComplete) {
+                    const item = currentPlayer.inventory.completeUse();
+                    
+                    if (item) {
+                        applyItemEffect(item);
+                    }
+                }
+            }
+        }
+        
+        function applyItemEffect(item) {
+            if (!currentPlayer) return;
+            if (!item || typeof item !== 'object') {
+                console.error('Invalid item passed to applyItemEffect:', item);
+                return;
+            }
+            if (!item.effect || typeof item.effect !== 'object') {
+                console.error('Item missing effect property:', item);
+                return;
+            }
+            if (!item.effect.type) {
+                console.error('Item effect missing type property:', item.effect);
+                return;
+            }
+            
+            switch (item.effect.type) {
+                case 'heal':
+                    currentPlayer.health = Math.min(200, currentPlayer.health + (item.effect.amount || 0));
+                    break;
+                case 'shield':
+                    currentPlayer.shield = Math.min(200, currentPlayer.shield + (item.effect.amount || 0));
+                    break;
+                case 'easter_egg':
+                    currentPlayer.shield = Math.min(200, currentPlayer.shield + (item.effect.amount || 0));
+                    
+                    // Ensure eggStats exists
+                    if (!currentPlayer.eggStats) {
+                        currentPlayer.eggStats = {
+                            eggsCollected: 0,
+                            damageMultiplier: 1.0,
+                            lastEggTime: 0
+                        };
+                    }
+                    
+                    // Increment egg counter and update last egg time regardless of source
+                    currentPlayer.eggStats.eggsCollected++;
+                    currentPlayer.eggStats.lastEggTime = Date.now();
+                    
+                    // Apply damage multiplier boost every 10 eggs
+                    if (currentPlayer.eggStats.eggsCollected % 10 === 0) {
+                        currentPlayer.eggStats.damageMultiplier += 0.05;
+                        displayNotification("🥚 Damage boosted by 5%! 🥚", "#FFD700");
+                    } else {
+                        // Display smaller notification for every egg
+                        displayNotification(`🥚 Egg collected: ${currentPlayer.eggStats.eggsCollected}`, "#FFF59D");
+                    }
+                    break;
+                default:
+                    console.log(`Unknown item effect type: ${item.effect.type}`);
+            }
+        }
+
+        function displayNotification(message, color = "#FFFFFF") {
+            const notification = document.createElement("div");
+            notification.textContent = message;
+            notification.style.position = "absolute";
+            notification.style.top = "20%";
+            notification.style.left = "50%";
+            notification.style.transform = "translate(-50%, -50%)";
+            notification.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+            notification.style.color = color;
+            notification.style.padding = "10px 20px";
+            notification.style.borderRadius = "5px";
+            notification.style.fontFamily = "Arial, sans-serif";
+            notification.style.fontWeight = "bold";
+            notification.style.fontSize = "18px";
+            notification.style.zIndex = "1000";
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = "0";
+                notification.style.transition = "opacity 1s";
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 1000);
+            }, 3000);
+        }
+
+        function initStorm() {
+            if (!mapGenerator) return;
+            
+            // Check if storm is already initialized in Firebase for this lobby
+            if (currentLobby && !isBotsGame) {
+                database.ref(`battle-royale/lobbies/${currentLobby}/storm`).once('value').then(snapshot => {
+                    const stormData = snapshot.val();
+                    if (stormData && stormData.active) {
+                        console.log("Storm already initialized, skipping initialization");
+                        // Update local storm system with Firebase data
+                        stormSystem.center = stormData.center || stormSystem.center;
+                        stormSystem.nextCenter = stormData.nextCenter || stormSystem.nextCenter;
+                        stormSystem.currentRadius = stormData.currentRadius || stormSystem.currentRadius;
+                        stormSystem.nextRadius = stormData.nextRadius || stormSystem.nextRadius;
+                        stormSystem.phase = stormData.phase || stormSystem.phase;
+                        stormSystem.shrinkStartTime = stormData.shrinkStartTime || stormSystem.shrinkStartTime;
+                        stormSystem.phaseStartTime = stormData.phaseStartTime || stormSystem.phaseStartTime;
+                        stormSystem.active = true;
+                        stormSystem.gameStartTime = stormData.gameStartTime || stormSystem.gameStartTime;
+                        stormSystem.lastSyncTime = stormData.lastUpdate || Date.now();
+                        return;
+                    }
+                    
+                    // If no active storm exists, initialize it
+                    initializeNewStorm();
+                });
+            } else {
+                // For bot games, always initialize new storm
+                initializeNewStorm();
+            }
+        }
+
+        function initializeNewStorm() {
+            // Set initial storm circle to cover the entire map
+            const mapWidth = mapGenerator.width * mapGenerator.tileSize;
+            const mapHeight = mapGenerator.height * mapGenerator.tileSize;
+            
+            stormSystem.center = { 
+                x: mapWidth / 2, 
+                y: mapHeight / 2 
+            };
+            
+            // Initial circle is large enough to cover the entire map (3x larger)
+            stormSystem.currentRadius = Math.sqrt(mapWidth * mapWidth + mapHeight * mapHeight) / 2;
+            
+            // Set next circle (phase 1) to be 70% of the map (3x larger than original)
+            stormSystem.nextCenter = {
+                x: mapWidth / 2 + (Math.random() * 0.3 - 0.15) * mapWidth,
+                y: mapHeight / 2 + (Math.random() * 0.3 - 0.15) * mapHeight
+            };
+            
+            stormSystem.nextRadius = stormPhases[0].radius;
+            stormSystem.phase = 0;
+            stormSystem.active = true;
+            stormSystem.gameStartTime = Date.now();
+            stormSystem.phaseStartTime = Date.now();
+            stormSystem.shrinkStartTime = Date.now() + stormPhases[0].pauseTime;
+            stormSystem.lastSyncTime = Date.now();
+            
+            console.log("Storm initialized", stormSystem);
+            displayNotification("Storm will begin to form in 2 minutes!", "#3498db");
+            
+            // Store initial storm state in Firebase if game creator
+            if (currentLobby && !isBotsGame) {
+                const stormRef = database.ref(`battle-royale/lobbies/${currentLobby}/storm`);
+                stormRef.set({
+                    center: stormSystem.center,
+                    nextCenter: stormSystem.nextCenter,
+                    currentRadius: stormSystem.currentRadius,
+                    nextRadius: stormSystem.nextRadius,
+                    phase: stormSystem.phase,
+                    shrinkStartTime: stormSystem.shrinkStartTime,
+                    phaseStartTime: stormSystem.phaseStartTime,
+                    active: stormSystem.active,
+                    gameStartTime: stormSystem.gameStartTime,
+                    lastUpdate: Date.now()
+                });
+            }
+        }
+
+        function updateStorm(deltaTime) {
+            if (!stormSystem.active || !mapGenerator || !currentPlayer) return;
+            
+            const now = Date.now();
+            const timeSinceStart = now - stormSystem.gameStartTime;
+            const timeInPhase = now - stormSystem.phaseStartTime;
+            
+            // Update storm state
+            let stormUpdated = false;
+            
+            // Display time until storm movement starts
+            if (now < stormSystem.shrinkStartTime) {
+                const timeRemaining = Math.ceil((stormSystem.shrinkStartTime - now) / 1000);
+                if (timeRemaining % 30 === 0 || timeRemaining <= 10) { // Less frequent updates for longer storm phases
+                    document.getElementById('stormTimer').textContent = `Storm shrinks in: ${timeRemaining}s`;
+                }
+                
+                // Announce when 10 seconds left
+                if (timeRemaining === 10) {
+                    displayNotification("Storm will begin moving in 10 seconds!", "#3498db");
+                }
+            } else {
+                // Storm is shrinking
+                const shrinkProgress = Math.min(1, (now - stormSystem.shrinkStartTime) / stormPhases[stormSystem.phase].shrinkTime);
+                const remainingTime = Math.ceil((stormPhases[stormSystem.phase].shrinkTime - (now - stormSystem.shrinkStartTime)) / 1000);
+                
+                // Show remaining time if it's divisible by 60 (every minute) or less than 30
+                if (remainingTime % 60 === 0 || remainingTime <= 30) {
+                    updateStormTimerDisplay();
+                }
+                
+                // Interpolate current circle between starting and ending positions/sizes
+                const oldRadius = stormSystem.currentRadius;
+                const oldX = stormSystem.center.x;
+                const oldY = stormSystem.center.y;
+                
+                stormSystem.currentRadius = stormSystem.currentRadius - ((stormSystem.currentRadius - stormSystem.nextRadius) * shrinkProgress);
+                stormSystem.center.x = stormSystem.center.x - ((stormSystem.center.x - stormSystem.nextCenter.x) * shrinkProgress);
+                stormSystem.center.y = stormSystem.center.y - ((stormSystem.center.y - stormSystem.nextCenter.y) * shrinkProgress);
+                
+                // Check if values changed enough to sync
+                if (Math.abs(oldRadius - stormSystem.currentRadius) > 5 || 
+                    Math.abs(oldX - stormSystem.center.x) > 5 || 
+                    Math.abs(oldY - stormSystem.center.y) > 5) {
+                    stormUpdated = true;
+                }
+                
+                // Check if shrinking is complete
+                if (shrinkProgress >= 1) {
+                    // Move to next phase
+                    stormSystem.phase = Math.min(stormSystem.phase + 1, stormSystem.maxPhase);
+                    stormSystem.center = { ...stormSystem.nextCenter };
+                    stormSystem.currentRadius = stormSystem.nextRadius;
+                    stormSystem.phaseStartTime = now;
+                    
+                    // Set up next circle if not final phase
+                    if (stormSystem.phase < stormSystem.maxPhase) {
+                        // Choose a random position within the current circle for the next circle
+                        const angle = Math.random() * Math.PI * 2;
+                        const distance = Math.random() * stormSystem.currentRadius * 0.3; // Move up to 30% from center
+                        
+                        stormSystem.nextCenter = {
+                            x: stormSystem.center.x + Math.cos(angle) * distance,
+                            y: stormSystem.center.y + Math.sin(angle) * distance
+                        };
+                        
+                        stormSystem.nextRadius = stormPhases[stormSystem.phase].radius;
+                        stormSystem.shrinkStartTime = now + stormPhases[stormSystem.phase].pauseTime;
+                        
+                        displayNotification(`Storm phase ${stormSystem.phase} complete! Next shrink in ${Math.ceil(stormPhases[stormSystem.phase].pauseTime/1000)}s`, "#3498db");
+                    } else {
+                        // Final phase reached
+                        displayNotification("Final storm phase reached!", "#ff3636");
+                    }
+                    
+                    stormUpdated = true;
+                }
+            }
+            
+            // Sync storm state to Firebase if it's the host and there are significant changes
+            if (stormUpdated && currentLobby && !isBotsGame && now - stormSystem.lastSyncTime > 5000) {
+                const stormRef = database.ref(`battle-royale/lobbies/${currentLobby}/storm`);
+                stormRef.update({
+                    center: stormSystem.center,
+                    nextCenter: stormSystem.nextCenter,
+                    currentRadius: stormSystem.currentRadius,
+                    nextRadius: stormSystem.nextRadius,
+                    phase: stormSystem.phase,
+                    shrinkStartTime: stormSystem.shrinkStartTime,
+                    phaseStartTime: stormSystem.phaseStartTime,
+                    active: stormSystem.active,
+                    gameStartTime: stormSystem.gameStartTime,
+                    lastUpdate: Date.now()
+                });
+                
+                stormSystem.lastSyncTime = Date.now();
+            }
+            
+            // Check if player is in the storm and apply damage
+            const dx = currentPlayer.x - stormSystem.center.x;
+            const dy = currentPlayer.y - stormSystem.center.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance > stormSystem.currentRadius) {
+                // Player is in the storm - apply damage every second
+                if (!currentPlayer.lastStormDamageTime || now - currentPlayer.lastStormDamageTime >= 1000) {
+                    currentPlayer.lastStormDamageTime = now;
+                    
+                    // Apply damage (increases with each phase)
+                    const damage = stormSystem.damagePerSecond[Math.min(stormSystem.phase, stormSystem.damagePerSecond.length - 1)];
+                    
+                    // Apply damage using takeDamage function
+                    window.takeDamage(currentPlayer, damage, null);
+                    
+                    // Visual indicator
+                    currentPlayer.inStorm = true;
+                    
+                    // Create storm damage effect
+                    currentPlayer.stormHitEffect = {
+                        time: now,
+                        duration: 500
+                    };
+                    
+                    // Display storm damage when it changes phases
+                    if (currentPlayer.lastStormDamage !== damage) {
+                        currentPlayer.lastStormDamage = damage;
+                        displayNotification(`Storm damage: ${damage} per second`, "#3498db");
+                    }
+                }
+            } else {
+                currentPlayer.inStorm = false;
+            }
+            
+            // Apply storm damage to bots
+            if (isBotsGame) {
+                for (const id in players) {
+                    const player = players[id];
+                    if (!player) continue;
+                    
+                    const dx = player.x - stormSystem.center.x;
+                    const dy = player.y - stormSystem.center.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance > stormSystem.currentRadius) {
+                        // Bot is in storm - apply damage every second
+                        if (!player.lastStormDamageTime || now - player.lastStormDamageTime >= 1000) {
+                            player.lastStormDamageTime = now;
+                            
+                            // Apply damage (increases with each phase)
+                            const damage = stormSystem.damagePerSecond[Math.min(stormSystem.phase, stormSystem.damagePerSecond.length - 1)];
+                            
+                            // Apply damage using takeDamage function
+                            window.takeDamage(player, damage, null);
+                            
+                            // Visual indicator
+                            player.inStorm = true;
+                            
+                            // Create storm damage effect
+                            player.stormHitEffect = {
+                                time: now,
+                                duration: 500
+                            };
+                        }
+                    } else {
+                        player.inStorm = false;
+                    }
+                }
+            }
+        }
+
+        // Helper function to format time in MM:SS
+        function formatTime(timeInSeconds) {
+            const minutes = Math.floor(timeInSeconds / 60);
+            const seconds = timeInSeconds % 60;
+            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        // Update storm timer display with more information
+        function updateStormTimerDisplay() {
+            const now = Date.now();
+            
+            if (now < stormSystem.shrinkStartTime) {
+                const timeRemaining = Math.ceil((stormSystem.shrinkStartTime - now) / 1000);
+                document.getElementById('stormTimer').textContent = `Phase ${stormSystem.phase + 1} | Shrinks in: ${formatTime(timeRemaining)}`;
+            } else {
+                const remainingTime = Math.ceil((stormPhases[stormSystem.phase].shrinkTime - (now - stormSystem.shrinkStartTime)) / 1000);
+                if (remainingTime > 0) {
+                    document.getElementById('stormTimer').textContent = `Phase ${stormSystem.phase + 1} | Shrinking: ${formatTime(remainingTime)}`;
+                } else {
+                    document.getElementById('stormTimer').textContent = `Phase ${stormSystem.phase + 1} | Calculating next circle...`;
+                }
+            }
+        }
+
+        function renderStorm(ctx, mapRenderer) {
+            if (!stormSystem.active) return;
+            
+            // Render current storm circle
+            const screenCenter = mapRenderer.worldToScreen(stormSystem.center.x, stormSystem.center.y);
+            const radiusInPixels = stormSystem.currentRadius * mapRenderer.camera.zoom;
+            
+            // Draw the edge of the storm (blue electric circle)
+            ctx.save();
+            
+            // More prominent storm edge
+            ctx.strokeStyle = 'rgba(0, 149, 255, 0.9)';
+            ctx.lineWidth = 6;
+            
+            // Add electric effect to storm edge
+            const segments = 120; // More segments for smoother edge
+            const jitter = 8;     // More jitter for more electric-like effect
+            const time = Date.now() / 1000;
+            
+            ctx.beginPath();
+            for (let i = 0; i <= segments; i++) {
+                const angle = (i / segments) * Math.PI * 2;
+                // Dynamic jitter based on time for animated effect
+                const jitterAmount = Math.random() * jitter * (1 + 0.3 * Math.sin(time * 5 + i * 0.3));
+                const x = screenCenter.x + Math.cos(angle) * (radiusInPixels + jitterAmount);
+                const y = screenCenter.y + Math.sin(angle) * (radiusInPixels + jitterAmount);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.closePath();
+            ctx.stroke();
+            
+            // Add a glow effect to the edge
+            ctx.strokeStyle = 'rgba(0, 100, 255, 0.4)';
+            ctx.lineWidth = 12;
+            ctx.stroke();
+            
+            // Draw the storm fill (outside the circle)
+            const gradient = ctx.createRadialGradient(
+                screenCenter.x, screenCenter.y, radiusInPixels - 15,
+                screenCenter.x, screenCenter.y, radiusInPixels + 1000
+            );
+            
+            gradient.addColorStop(0, 'rgba(0, 100, 255, 0)');
+            gradient.addColorStop(0.05, 'rgba(0, 100, 255, 0.1)');
+            gradient.addColorStop(0.1, 'rgba(0, 100, 255, 0.3)');
+            gradient.addColorStop(1, 'rgba(0, 100, 255, 0.8)');
+            
+            ctx.fillStyle = gradient;
+            
+            // Create a path for the storm area (outside the circle)
+            ctx.beginPath();
+            // Draw a rectangle that covers the entire screen
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            // Cut out the circle
+            ctx.arc(screenCenter.x, screenCenter.y, radiusInPixels, 0, Math.PI * 2, true);
+            ctx.fill();
+            
+            // Draw next circle (if not final phase and storm is active)
+            if (stormSystem.phase < stormSystem.maxPhase) {
+                const nextScreenCenter = mapRenderer.worldToScreen(stormSystem.nextCenter.x, stormSystem.nextCenter.y);
+                const nextRadiusInPixels = stormSystem.nextRadius * mapRenderer.camera.zoom;
+                
+                ctx.setLineDash([5, 5]);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(nextScreenCenter.x, nextScreenCenter.y, nextRadiusInPixels, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // Add a subtle glow to the next safe zone
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.lineWidth = 6;
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            ctx.restore();
+        }
+
+        function renderStormOnMinimap(ctx, minimapCanvas, mapWidth, mapHeight) {
+            if (!stormSystem.active) return;
+            
+            const scale = minimapCanvas.width / mapWidth;
+            
+            // Draw the current storm circle
+            const centerX = stormSystem.center.x * scale;
+            const centerY = stormSystem.center.y * scale;
+            const radius = stormSystem.currentRadius * scale;
+            
+            ctx.save();
+            
+            // Draw the storm fill (outside the circle)
+            const gradient = ctx.createRadialGradient(
+                centerX, centerY, radius - 2,
+                centerX, centerY, radius + 100
+            );
+            
+            gradient.addColorStop(0, 'rgba(0, 100, 255, 0)');
+            gradient.addColorStop(0.1, 'rgba(0, 100, 255, 0.3)');
+            gradient.addColorStop(1, 'rgba(0, 100, 255, 0.8)');
+            
+            ctx.fillStyle = gradient;
+            
+            // Create a path for the storm area (outside the circle)
+            ctx.beginPath();
+            // Draw a rectangle that covers the entire minimap
+            ctx.rect(0, 0, minimapCanvas.width, minimapCanvas.height);
+            // Cut out the circle
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2, true);
+            ctx.fill();
+            
+            // Draw the edge of the storm (blue electric circle)
+            ctx.strokeStyle = 'rgba(0, 149, 255, 0.9)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Add glow effect
+            ctx.strokeStyle = 'rgba(0, 100, 255, 0.4)';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            // Draw next circle (if not final phase and storm is active)
+            if (stormSystem.phase < stormSystem.maxPhase) {
+                const nextCenterX = stormSystem.nextCenter.x * scale;
+                const nextCenterY = stormSystem.nextCenter.y * scale;
+                const nextRadius = stormSystem.nextRadius * scale;
+                
+                ctx.setLineDash([2, 2]);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(nextCenterX, nextCenterY, nextRadius, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // Add glow to next circle
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            ctx.restore();
+        }
+
+        function spawnEasterEggs(deltaTime) {
+            if (!isEasterEvent || !mapGenerator || !currentMap) return;
+            
+            if (Date.now() - lastEggSpawnTime > 20000) {
+                lastEggSpawnTime = Date.now();
+                
+                const eggCount = 1 + Math.floor(Math.random() * 3);
+                
+                const mapBoundaryPadding = 50;
+                const minX = mapBoundaryPadding;
+                const minY = mapBoundaryPadding;
+                const maxX = (mapGenerator.width * mapGenerator.tileSize) - mapBoundaryPadding;
+                const maxY = (mapGenerator.height * mapGenerator.tileSize) - mapBoundaryPadding;
+                
+                for (let i = 0; i < eggCount; i++) {
+                    if (Math.random() < 0.25) continue;
+                    
+                    let validPosition = false;
+                    let x, y;
+                    
+                    for (let attempt = 0; attempt < 10; attempt++) {
+                        if (currentPlayer) {
+                            const angle = Math.random() * Math.PI * 2;
+                            const distance = 300 + Math.random() * 500;
+                            
+                            x = currentPlayer.x + Math.cos(angle) * distance;
+                            y = currentPlayer.y + Math.sin(angle) * distance;
+                            
+                            x = Math.max(minX, Math.min(maxX, x));
+                            y = Math.max(minY, Math.min(maxY, y));
+                        } else {
+                            x = minX + Math.random() * (maxX - minX);
+                            y = minY + Math.random() * (maxY - minY);
+                        }
+                        
+                        if (mapGenerator.isWalkable(x, y)) {
+                            let tooClose = false;
+                            for (const egg of easterEggs) {
+                                if (egg.collected) continue;
+                                
+                                const dx = egg.x - x;
+                                const dy = egg.y - y;
+                                const distance = Math.sqrt(dx * dx + dy * dy);
+                                
+                                if (distance < 150) {
+                                    tooClose = true;
+                                    break;
+                                }
+                            }
+                            
+                            if (!tooClose) {
+                                validPosition = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (validPosition) {
+                        easterEggs.push(new EasterEgg(x, y));
+                    }
+                }
+            }
+            
+            for (let i = easterEggs.length - 1; i >= 0; i--) {
+                const shouldRemove = easterEggs[i].update(deltaTime);
+                if (shouldRemove || easterEggs[i].collected) {
+                    easterEggs.splice(i, 1);
+                }
+            }
+        }
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        document.getElementById('createLobby').addEventListener('click', createLobby);
+        document.getElementById('joinLobby').addEventListener('click', () => {
+            const lobbyId = prompt('Enter lobby code:');
+            if (lobbyId) {
+                joinLobby(lobbyId.toUpperCase());
+            }
+        });
+
+        document.getElementById('startGame').addEventListener('click', () => {
+            if (currentLobby) {
+                database.ref(`battle-royale/lobbies/${currentLobby}/status`).set('started');
+            }
+        });
+
+        document.getElementById('startWithBots').addEventListener('click', startWithBots);
+
+        window.addEventListener('load', function() {
+            if (isEasterEvent) {
+                setTimeout(() => {
+                    displayNotification("🥚 Easter Egg Hunt Event! 🥚", "#FFD700");
+                    setTimeout(() => {
+                        displayNotification("Collect eggs for shield and damage boosts!", "#FFD700");
+                        setTimeout(() => {
+                            displayNotification("Chests have 5% chance to drop Easter eggs too!", "#FFD700");
+                        }, 3500);
+                    }, 3500);
+                }, 1000);
+            }
+        });
+
+        // Remove the old takeDamage function and replace with global version
+        window.takeDamage = function(targetPlayer, damage, sourcePlayer) {
+            if (!targetPlayer) return;
+            
+            // Skip damage if player is immune
+            if (targetPlayer.isImmune) return;
+            
+            let actualDamage = damage;
+            
+            // Apply shield first
+            if (targetPlayer.shield > 0) {
+                if (targetPlayer.shield >= actualDamage) {
+                    targetPlayer.shield -= actualDamage;
+                    actualDamage = 0;
+                } else {
+                    actualDamage -= targetPlayer.shield;
+                    targetPlayer.shield = 0;
+                }
+            }
+            
+            // Apply remaining damage to health
+            if (actualDamage > 0) {
+                targetPlayer.health -= actualDamage;
+            }
+            
+            // Create hit effect
+            targetPlayer.hitEffect = {
+                time: Date.now(),
+                duration: 200
+            };
+            
+            // Check if player died
+            if (targetPlayer.health <= 0) {
+                handlePlayerDeath(targetPlayer, sourcePlayer);
+            }
+        };
+
+        // Function to handle player death
+        function handlePlayerDeath(deadPlayer, killerPlayer) {
+            if (!deadPlayer) return;
+            
+            console.log(`Player ${deadPlayer.id} has died.`);
+
+            // Drop player's loot
+            dropPlayerLoot(deadPlayer);
+            
+            // Update database if in multiplayer
+            if (currentLobby && !isBotsGame) {
+                // Update player state in database
+                database.ref(`battle-royale/lobbies/${currentLobby}/players/${deadPlayer.id}`).update({
+                    isDead: true,
+                    killedBy: killerPlayer ? killerPlayer.id : null,
+                    deathTime: Date.now()
+                });
+
+                // Update kill stats for killer if exists
+                if (killerPlayer) {
+                    database.ref(`battle-royale/lobbies/${currentLobby}/players/${killerPlayer.id}/kills`).transaction(kills => (kills || 0) + 1);
+                }
+            }
+            
+            // If this is the current player, handle game over
+            if (currentPlayer && deadPlayer.id === currentPlayer.id) {
+                handleGameOver(killerPlayer);
+            } else {
+                // Remove from local players object
+                if (players[deadPlayer.id]) {
+                    delete players[deadPlayer.id];
+                }
+                
+                // Show elimination message if current player is the killer
+                if (killerPlayer && killerPlayer.id === currentPlayer?.id) {
+                    displayNotification(`You eliminated ${deadPlayer.id.substring(0, 6)}!`, "#ff3636");
+                    
+                    // Play elimination sound if available
+                    if (window.playSound) {
+                        window.playSound('elimination');
+                    }
+                }
+            }
+        }
+
+        function dropPlayerLoot(deadPlayer) {
+            if (!deadPlayer) return;
+
+            // Drop inventory items
+            if (deadPlayer.inventory) {
+                for (const item of deadPlayer.inventory.items) {
+                    if (!item) continue;
+                    
+                    // Add random offset to spread items
+                    const offsetX = (Math.random() - 0.5) * 60;
+                    const offsetY = (Math.random() - 0.5) * 60;
+                    
+                    droppedItems.push({
+                        ...item,
+                        x: deadPlayer.x + offsetX,
+                        y: deadPlayer.y + offsetY,
+                        isClose: false
+                    });
+                }
+            }
+
+            // Drop shield as a shield potion if player had shield
+            if (deadPlayer.shield > 0) {
+                const shieldAmount = Math.min(deadPlayer.shield, 50);
+                droppedItems.push({
+                    id: 'shield_potion',
+                    name: 'Shield Potion',
+                    type: 'consumable',
+                    rarity: 'rare',
+                    effect: {
+                        type: 'shield',
+                        amount: shieldAmount
+                    },
+                    useTime: 3000,
+                    x: deadPlayer.x + (Math.random() - 0.5) * 40,
+                    y: deadPlayer.y + (Math.random() - 0.5) * 40,
+                    isClose: false
+                });
+            }
+
+            // Drop health potion with 50% chance
+            if (Math.random() < 0.5) {
+                droppedItems.push({
+                    id: 'health_potion',
+                    name: 'Health Potion',
+                    type: 'consumable',
+                    rarity: 'common',
+                    effect: {
+                        type: 'heal',
+                        amount: 50
+                    },
+                    useTime: 3000,
+                    x: deadPlayer.x + (Math.random() - 0.5) * 40,
+                    y: deadPlayer.y + (Math.random() - 0.5) * 40,
+                    isClose: false
+                });
+            }
+
+            // Drop Easter egg with 10% chance if Easter event is active
+            if (isEasterEvent && Math.random() < 0.1) {
+                droppedItems.push({
+                    id: 'easter_egg',
+                    name: 'Easter Egg',
+                    type: 'consumable',
+                    rarity: 'legendary',
+                    effect: {
+                        type: 'easter_egg',
+                        amount: 50
+                    },
+                    useTime: 2000,
+                    x: deadPlayer.x + (Math.random() - 0.5) * 40,
+                    y: deadPlayer.y + (Math.random() - 0.5) * 40,
+                    isClose: false
+                });
+            }
+        }
+
+        function handleGameOver(killerPlayer) {
+            // Create game over screen
+            const gameOverDiv = document.createElement('div');
+            gameOverDiv.style.position = 'absolute';
+            gameOverDiv.style.top = '50%';
+            gameOverDiv.style.left = '50%';
+            gameOverDiv.style.transform = 'translate(-50%, -50%)';
+            gameOverDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+            gameOverDiv.style.padding = '20px';
+            gameOverDiv.style.borderRadius = '10px';
+            gameOverDiv.style.color = 'white';
+            gameOverDiv.style.textAlign = 'center';
+            gameOverDiv.style.zIndex = '1000';
+
+            // Add game over text
+            const gameOverText = document.createElement('h2');
+            gameOverText.textContent = 'Game Over';
+            gameOverText.style.color = '#ff3636';
+            gameOverDiv.appendChild(gameOverText);
+
+            // Add killer info if exists
+            if (killerPlayer) {
+                const killerText = document.createElement('p');
+                killerText.textContent = `Eliminated by ${killerPlayer.id.substring(0, 6)}`;
+                killerText.style.color = '#ffffff';
+                gameOverDiv.appendChild(killerText);
+            }
+
+            // Add play again button
+            const playAgainBtn = document.createElement('button');
+            playAgainBtn.textContent = 'Play Again';
+            playAgainBtn.className = 'button';
+            playAgainBtn.onclick = () => {
+                location.reload();
+            };
+            gameOverDiv.appendChild(playAgainBtn);
+
+            document.body.appendChild(gameOverDiv);
+
+            // Remove player from database if in multiplayer
+            if (currentLobby && !isBotsGame) {
+                database.ref(`battle-royale/lobbies/${currentLobby}/players/${currentPlayer.id}`).remove();
+            }
+
+            // Stop game loop
+            gameStarted = false;
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html> 

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Fighters - Loading</title>
+    <link rel="icon" href="Icons/Profile/talim_desert.webp" type="image/webp">
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
@@ -546,6 +547,7 @@
         import { characters } from './characterskinref.js';
         import { roles } from './roles.js';
         import { Roles } from './roles-data.js';
+        import { updateQuestProgress } from './quests.js';
 
         // Firebase configuration
         const firebaseConfig = {
@@ -874,21 +876,33 @@
                 };
 
                 // Save match history
-                await saveMatchHistory(userId, matchData);
+                const matchId = await saveMatchHistory(userId, matchData);
 
                 // Update player character stats
                 if (playerCharacter) {
                     await saveSoloModeData(userId, playerCharacter, team1BaseCharacters, team2BaseCharacters, winner);
                 }
 
-                // Update player stats
+                // Update player stats (ranked win/loss)
                 await handleMatchResult(userId, isPlayerWinner);
 
-                // Save game data
+                // Save game data (global character stats)
                 await saveGlobalCharacterStats(team1BaseCharacters, team2BaseCharacters, winner);
 
-                // Update quests
-                await updateQuestsAfterGame(userId, isPlayerWinner, playerCharacter);
+                // Update quests using the shared function
+                if (matchId) {
+                    // Get the full match data saved previously to pass to quest function
+                    const savedMatchRef = ref(database, `users/${userId}/matchHistory/${matchId}`);
+                    const savedMatchSnap = await get(savedMatchRef);
+                    if (savedMatchSnap.exists()) {
+                        const savedMatchData = savedMatchSnap.val();
+                        await updateQuestProgress(userId, savedMatchData, database, ref, get, update);
+                    } else {
+                        console.error("Could not retrieve saved match data for quest update.");
+                    }
+                } else {
+                     console.error("Match history failed to save, cannot update quests.");
+                }
 
                 // Handle rewards and display
                 await rewardPlayer(winner);
@@ -901,6 +915,7 @@
 
                 // Clean up the queue data
                 try {
+                    const queueRef = ref(database, `Queue/${queueId}`);
                     await set(queueRef, null);
                     console.log('Queue data cleaned up successfully');
                 } catch (error) {
@@ -1219,230 +1234,6 @@
             }
         }
 
-        // Update updateQuestsAfterGame to handle player team
-        async function updateQuestsAfterGame(userId, isWin, selectedCharacter) {
-            try {
-                console.log('Starting updateQuestsAfterGame with character:', selectedCharacter);
-                const userRef = ref(database, `users/${userId}`);
-                const userSnapshot = await get(userRef);
-                const userData = userSnapshot.val();
-                
-                // Time variables used throughout the function
-                const currentTime = Date.now();
-                
-                // Get the selected role and team from the highlighted slot
-                const selectedSlot = document.querySelector('.player-slot.highlight');
-                console.log('Found selected slot in quests:', selectedSlot);
-                const playerTeam = selectedSlot?.id.startsWith('blue-') ? 'team1' : 'team2';
-                console.log('Found player team:', playerTeam);
-
-                if (!selectedCharacter) {
-                    console.error('Could not determine selected character');
-                    return;
-                }
-                
-                // Get KDA stats from the match
-                const matchHistoryRef = ref(database, `users/${userId}/matchHistory`);
-                const matchHistorySnap = await get(matchHistoryRef);
-                const matchHistory = matchHistorySnap.val();
-                
-                const matchIds = Object.keys(matchHistory || {}).sort();
-                const latestMatchId = matchIds.pop();
-                const latestMatch = matchHistory?.[latestMatchId];
-                const kdaStats = latestMatch?.kda || { kills: 0, deaths: 0, assists: 0 };
-
-                // Generate random damage for Territory Control quest
-                const damageDealt = Math.floor(Math.random() * 5000) + 3000;
-                const objectivesTaken = Math.random() < 0.7 ? Math.floor(Math.random() * 3) + 1 : 0;
-                const gotMultikill = Math.random() < 0.3 && kdaStats.kills >= 2;
-
-                // Daily Quest 1: Gang Warfare (Daily games played)
-                const gangWarfareRef = ref(database, `users/${userId}/quests/gang_warfare`);
-                const gangWarfareSnap = await get(gangWarfareRef);
-                const gangWarfareData = gangWarfareSnap.val() || { 
-                    progress: 0, 
-                    completed: false, 
-                    claimed: false,
-                    lastReset: currentTime 
-                };
-
-                const gangWarfareTimeSinceReset = currentTime - (gangWarfareData.lastReset || 0);
-                if (gangWarfareTimeSinceReset >= 64800000) { // 18 hours
-                    gangWarfareData.progress = 1;
-                    gangWarfareData.completed = false;
-                    gangWarfareData.claimed = false;
-                    gangWarfareData.lastReset = currentTime;
-                } else if (!gangWarfareData.completed) {
-                    gangWarfareData.progress = (gangWarfareData.progress || 0) + 1;
-                    gangWarfareData.completed = gangWarfareData.progress >= 3;
-                }
-                await set(gangWarfareRef, gangWarfareData);
-
-                // Daily Quest 2: Territory Control (Daily damage dealt)
-                const territoryControlRef = ref(database, `users/${userId}/quests/territory_control`);
-                const territoryControlSnap = await get(territoryControlRef);
-                let territoryControlData = territoryControlSnap.val() || {
-                    progress: 0,
-                    completed: false,
-                    claimed: false,
-                    lastReset: currentTime,
-                    totalDamage: 0
-                };
-
-                const territoryTimeSinceReset = currentTime - (territoryControlData.lastReset || 0);
-                if (territoryTimeSinceReset >= 64800000 || territoryControlData.claimed) {
-                    territoryControlData = {
-                        progress: damageDealt,
-                        completed: damageDealt >= 15000,
-                        claimed: false,
-                        lastReset: currentTime,
-                        totalDamage: damageDealt
-                    };
-                } else if (!territoryControlData.completed && !territoryControlData.claimed) {
-                    territoryControlData.totalDamage = (territoryControlData.totalDamage || 0) + damageDealt;
-                    territoryControlData.progress = territoryControlData.totalDamage;
-                    territoryControlData.completed = territoryControlData.progress >= 15000;
-                }
-                await set(territoryControlRef, territoryControlData);
-
-                // Repeatable Quest 1: Street Enforcer (Win streak)
-                const enforcerRef = ref(database, `users/${userId}/quests/street_enforcer`);
-                const enforcerSnap = await get(enforcerRef);
-                const enforcerData = enforcerSnap.val() || {
-                    progress: 0,
-                    completed: false,
-                    claimed: false,
-                    streak: 0,
-                    completionCount: 0
-                };
-
-                if (enforcerData.claimed) {
-                    enforcerData.progress = isWin ? 1 : 0;
-                    enforcerData.streak = isWin ? 1 : 0;
-                    enforcerData.completed = false;
-                    enforcerData.claimed = false;
-                    enforcerData.completionCount = (enforcerData.completionCount || 0) + 1;
-                } else {
-                    if (isWin) {
-                        enforcerData.streak = (enforcerData.streak || 0) + 1;
-                        enforcerData.progress = enforcerData.streak;
-                        enforcerData.completed = enforcerData.streak >= 3;
-                    } else {
-                        enforcerData.streak = 0;
-                        enforcerData.progress = 0;
-                        enforcerData.completed = false;
-                    }
-                }
-                await set(enforcerRef, enforcerData);
-
-                // Repeatable Quest 2: Gang Hitman (Multikills)
-                const hitmanRef = ref(database, `users/${userId}/quests/gang_hitman`);
-                const hitmanSnap = await get(hitmanRef);
-                let hitmanData = hitmanSnap.val() || {
-                    progress: 0,
-                    completed: false,
-                    claimed: false,
-                    multikills: 0,
-                    completionCount: 0
-                };
-
-                if (hitmanData.claimed) {
-                    hitmanData.progress = gotMultikill ? 1 : 0;
-                    hitmanData.multikills = gotMultikill ? 1 : 0;
-                    hitmanData.completed = false;
-                    hitmanData.claimed = false;
-                    hitmanData.completionCount = (hitmanData.completionCount || 0) + 1;
-                } else if (gotMultikill) {
-                    hitmanData.multikills = (hitmanData.multikills || 0) + 1;
-                    hitmanData.progress = hitmanData.multikills;
-                    hitmanData.completed = hitmanData.progress >= 2;
-                }
-                await set(hitmanRef, hitmanData);
-
-                // Repeatable Quest 3: Turf War (Objectives taken)
-                const turfWarRef = ref(database, `users/${userId}/quests/turf_war`);
-                const turfWarSnap = await get(turfWarRef);
-                let turfWarData = turfWarSnap.val() || {
-                    progress: 0,
-                    completed: false,
-                    claimed: false,
-                    objectives: 0,
-                    completionCount: 0
-                };
-
-                if (turfWarData.claimed) {
-                    turfWarData.progress = objectivesTaken;
-                    turfWarData.objectives = objectivesTaken;
-                    turfWarData.completed = objectivesTaken >= 8;
-                    turfWarData.claimed = false;
-                    turfWarData.completionCount = (turfWarData.completionCount || 0) + 1;
-                } else if (objectivesTaken > 0) {
-                    turfWarData.objectives = (turfWarData.objectives || 0) + objectivesTaken;
-                    turfWarData.progress = turfWarData.objectives;
-                    turfWarData.completed = turfWarData.progress >= 8;
-                }
-                await set(turfWarRef, turfWarData);
-
-                // Repeatable Quest 4: Gang Domination (High KDA)
-                const dominationRef = ref(database, `users/${userId}/quests/gang_domination`);
-                const dominationSnap = await get(dominationRef);
-                let dominationData = dominationSnap.val() || {
-                    progress: 0,
-                    completed: false,
-                    claimed: false,
-                    games: 0,
-                    completionCount: 0
-                };
-
-                const goodKDA = kdaStats.kills >= 8 && kdaStats.deaths <= 4;
-                if (dominationData.claimed) {
-                    dominationData.progress = goodKDA ? 1 : 0;
-                    dominationData.games = goodKDA ? 1 : 0;
-                    dominationData.completed = false;
-                    dominationData.claimed = false;
-                    dominationData.completionCount = (dominationData.completionCount || 0) + 1;
-                } else if (goodKDA) {
-                    dominationData.games = (dominationData.games || 0) + 1;
-                    dominationData.progress = dominationData.games;
-                    dominationData.completed = dominationData.progress >= 2;
-                }
-                await set(dominationRef, dominationData);
-
-                // Repeatable Quest 5: Gang Loyalty (Games with same character)
-                const loyaltyRef = ref(database, `users/${userId}/quests/gang_loyalty`);
-                const loyaltySnap = await get(loyaltyRef);
-                let loyaltyData = loyaltySnap.val() || {
-                    progress: 0,
-                    completed: false,
-                    claimed: false,
-                    champion: null,
-                    completionCount: 0
-                };
-
-                if (loyaltyData.claimed) {
-                    loyaltyData.progress = 1;
-                    loyaltyData.champion = selectedCharacter;
-                    loyaltyData.completed = false;
-                    loyaltyData.claimed = false;
-                    loyaltyData.completionCount = (loyaltyData.completionCount || 0) + 1;
-                } else {
-                    if (loyaltyData.champion === null || loyaltyData.champion === selectedCharacter) {
-                        loyaltyData.champion = selectedCharacter;
-                        loyaltyData.progress = (loyaltyData.progress || 0) + 1;
-                        loyaltyData.completed = loyaltyData.progress >= 4;
-                    } else {
-                        loyaltyData.champion = selectedCharacter;
-                        loyaltyData.progress = 1;
-                        loyaltyData.completed = false;
-                    }
-                }
-                await set(loyaltyRef, loyaltyData);
-
-            } catch (error) {
-                console.error('Error updating quests:', error);
-            }
-        }
-
         // Add function to generate random KDA stats
         function generateRandomKDA(isWin) {
             const generateNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -1533,13 +1324,11 @@
                     result: matchData.result
                 });
                 
-                // Update quest progress with match data
-                const { updateQuestProgress } = await import('./quests.js');
-                await updateQuestProgress(userId, { ...matchData, gameMode: '5v5' }, database, ref, get, update);
-                
                 console.log('Match history and quest progress saved successfully');
+                return matchId;
             } catch (error) {
                 console.error('Error saving match history:', error);
+                return null;
             }
         }
     </script>

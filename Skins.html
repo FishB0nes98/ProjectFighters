@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Champion Skins</title>
+    <link rel="icon" href="Icons/Profile/talim_desert.webp" type="image/webp">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
@@ -460,6 +461,14 @@
             50% { box-shadow: 0 0 20px rgba(255, 182, 193, 0.5); }
             100% { box-shadow: 0 0 10px rgba(255, 105, 180, 0.3); }
         }
+
+        /* Add Desert tag style */
+        .tag-desert {
+            background: linear-gradient(45deg, #D2B48C, #8B4513);
+            box-shadow: 0 0 10px rgba(210, 180, 140, 0.3);
+            color: #FFFFFF;
+            text-shadow: 0 0 3px rgba(0,0,0,0.8);
+        }
     </style>
 </head>
 <body>
@@ -532,11 +541,17 @@
         function initChampionsGrid() {
             const grid = document.getElementById('champions-grid');
             // Update new skins list for characters who received new skins in Patch 2.2
-            const newSkins = ["Julia", "Mai", "Raiden", "Shizumaru", "Talim", "Kuma"];
+            const newSkins = [];
             // Season 2 characters (including new Blossom Event characters)
-            const seasonTwoSkins = ["Zasalamel", "Talim", "Yugo", "Eagle", "Ayane", "Julia", "Mai", "Raiden", "Shizumaru", "Kuma"];
+            const seasonTwoSkins = ["Zasalamel", "Talim", "Yugo", "Eagle", "Ayane", "Julia", "Mai", "Raiden", "Shizumaru", "Kuma", "Peacock", "R.Mika", "Shinnok", "Alice", "Tanya", "Shao Kahn", "Kotal Kahn", "Juri", "Reptile"];
             // Characters with Blossom skins
-            const blossomSkins = ["Julia", "Mai", "Raiden", "Shizumaru", "Talim", "Kuma"];
+            const blossomSkins = [];
+            // Characters with New Desert/Sand Soldier skins (who also get NEW tag)
+            const desertSkins = ["Akuma", "Blanka", "Jun", "Kotal Kahn", "Scorpion", "Shoma"];
+            // Characters with existing Sand Soldier skins (desert tag but no new tag)
+            const oldDesertSkins = ["Astaroth", "Birdie", "Talim"];
+            // Add S2 tag to these Desert skin characters
+            const desertS2Characters = ["Akuma", "Blanka", "Jun", "Scorpion", "Shoma"];
             const freeSkins = ["Kuma"];
             
             const fileNameCorrections = {
@@ -546,7 +561,25 @@
                 "Sub Zero": "Sub Zero"
             };
             
+            // Custom order for champions
+            const customOrder = {};
+            // Set Tanya to appear after Shao Kahn
+            let counter = 0;
             Object.keys(skinReference).forEach(champion => {
+                if (champion === "Shao Kahn") {
+                    customOrder[champion] = counter++;
+                    customOrder["Tanya"] = counter++;
+                } else if (champion !== "Tanya") {
+                    customOrder[champion] = counter++;
+                }
+            });
+            
+            // Sort champions by custom order
+            const sortedChampions = Object.keys(skinReference).sort((a, b) => {
+                return customOrder[a] - customOrder[b];
+            });
+            
+            sortedChampions.forEach(champion => {
                 const card = document.createElement('div');
                 card.className = 'champion-card';
                 card.onclick = () => showSkins(champion);
@@ -574,18 +607,25 @@
                 const badgeRow3 = document.createElement('div');
                 badgeRow3.className = 'badge-row';
                 
-                if (newSkins.includes(champion)) {
+                if (newSkins.includes(champion) || desertSkins.includes(champion)) {
                     const newBadge = document.createElement('div');
                     newBadge.className = 'new-skin-badge';
                     newBadge.textContent = 'NEW';
                     badgeRow1.appendChild(newBadge);
                 }
                 
-                if (seasonTwoSkins.includes(champion)) {
+                if (seasonTwoSkins.includes(champion) || desertS2Characters.includes(champion)) {
                     const s2Badge = document.createElement('div');
                     s2Badge.className = 'skin-tag tag-s2';
                     s2Badge.textContent = 'S2';
                     badgeRow1.appendChild(s2Badge);
+                }
+                
+                if (desertSkins.includes(champion) || oldDesertSkins.includes(champion)) {
+                    const desertBadge = document.createElement('div');
+                    desertBadge.className = 'skin-tag tag-desert';
+                    desertBadge.textContent = 'DESERT';
+                    badgeRow2.appendChild(desertBadge);
                 }
 
                 if (blossomSkins.includes(champion)) {
@@ -646,24 +686,6 @@
                 const tagsContainer = document.createElement('div');
                 tagsContainer.className = 'skin-tags';
                 
-                // Add Blossom tag
-                if (skin.name.includes('Blossom')) {
-                    const blossomTag = document.createElement('div');
-                    blossomTag.className = 'skin-tag tag-blossom';
-                    blossomTag.textContent = 'BLOSSOM';
-                    tagsContainer.appendChild(blossomTag);
-                    
-                    const s2Tag = document.createElement('div');
-                    s2Tag.className = 'skin-tag tag-s2';
-                    s2Tag.textContent = 'S2';
-                    tagsContainer.appendChild(s2Tag);
-                    
-                    const newTag = document.createElement('div');
-                    newTag.className = 'skin-tag tag-new';
-                    newTag.textContent = 'NEW';
-                    tagsContainer.appendChild(newTag);
-                }
-
                 // Add Season 2 tag for appropriate characters
                 if (skin.name.includes('Battleborn')) {
                     const s2Tag = document.createElement('div');
@@ -707,8 +729,26 @@
                     tagsContainer.appendChild(newTag);
                 }
                 
+                // Add Desert tag for Sand Soldier skins and Cham Cham Desert
+                if (skin.name.includes('Sand Soldier') || skin.name === 'Cham Cham Desert') {
+                    const desertTag = document.createElement('div');
+                    desertTag.className = 'skin-tag tag-desert';
+                    desertTag.textContent = 'DESERT';
+                    tagsContainer.appendChild(desertTag);
+                    
+                    // Only add NEW tag if not one of the old Sand Soldier skins
+                    if (skin.name !== 'Sand Soldier Birdie' && 
+                        skin.name !== 'Sand Soldier Astaroth' && 
+                        skin.name !== 'Sand Soldier Talim') {
+                        const newTag = document.createElement('div');
+                        newTag.className = 'skin-tag tag-new';
+                        newTag.textContent = 'NEW';
+                        tagsContainer.appendChild(newTag);
+                    }
+                }
+                
                 // Add reward tag for specific skins
-                if (skin.name === "Infernal Julia" || skin.name === "Glorious Julia") {
+                if (skin.name === "Infernal Julia" || skin.name === "Glorious Julia" || skin.name === "Bunny Ayane") {
                     const rewardTag = document.createElement('div');
                     rewardTag.className = 'skin-tag tag-reward';
                     rewardTag.textContent = 'REWARD';

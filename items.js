@@ -596,7 +596,7 @@ export const items = {
         cost: 2700,
         tags: ["Anti-Tank", "Attack", "Movement"],
         stats: {
-            attackDamage: 40,
+            attackDamage: 32,
             armorPenetration: 6,
             movementSpeed: 10
         }
@@ -628,7 +628,7 @@ export const items = {
         },
         passive: {
             name: "Dance of Protection",
-            description: "Dashing grants 3% Damage Reduction and 10 Attack Damage, stacking up to 10 times"
+            description: "Dashing grants 2% Damage Reduction and 10 Attack Damage, stacking up to 10 times"
         }
     },
     icicle_spear: {
@@ -968,8 +968,8 @@ export const items = {
         },
         passive: {
             name: "Combat Rhythm",
-            description: "After hitting 3 basic attacks within 5 seconds, your spells deal bonus [25% AD] physical damage for 3s"
+            description: "After hitting 3 basic attacks within 5 seconds, your spells deal bonus [20% AD] physical damage for 3s"
         }
     }
     // More items will be added here
-}; 
+};

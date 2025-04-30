@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Lootbox</title>
+    <link rel="icon" href="Icons/Profile/talim_desert.webp" type="image/webp">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
@@ -307,7 +308,7 @@
             <img id="basicbox" src="res/img/basicbox.png" alt="Basic Lootbox" class="lootbox-image" onclick="selectBox('basicbox')">
         </div>
         <div class="lootbox-container">
-            <img id="blossombox" src="res/img/blossombox.png" alt="Blossom Lootbox" class="lootbox-image" onclick="selectBox('blossombox')">
+            <img id="blossombox" src="res/img/blossombox.png" alt="Blossom Lootbox" class="lootbox-image unavailable">
         </div>
         <div class="lootbox-container">
             <img id="pajamapartybox" src="res/img/pajamapartybox.png" alt="Pajama Party Lootbox" class="lootbox-image unavailable">
@@ -386,7 +387,7 @@ window.onload = function() {
 
         window.selectBox = function selectBox(boxType) {
             // Prevent selection of 'pajamapartybox' and 'halloweenbox'
-            if (boxType === 'pajamapartybox' || boxType === 'halloweenbox') return;
+            if (boxType === 'pajamapartybox' || boxType === 'halloweenbox' || boxType === 'blossombox') return;
 
             selectedBox = boxType;
             document.querySelectorAll('.lootbox-image').forEach(img => {

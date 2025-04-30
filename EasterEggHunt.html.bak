@@ -1,0 +1,2796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Fighters - Easter Egg Hunt</title>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    <link rel="stylesheet" href="styles_new.css">
+    <style>
+        :root {
+            --primary-color: #0A1428;
+            --secondary-color: #1E2328;
+            --accent-color: #C89B3C;
+            --text-color: #F0E6D2;
+            --border-color: #463714;
+            --hover-color: #785A28;
+            --easter-green: #4CAF50;
+            --easter-pink: #FF69B4;
+            --easter-purple: #9370DB;
+            --easter-yellow: #FFEB3B;
+            --easter-blue: #42A5F5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('Loading Screen/Easter Bunny Peacock.png') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #loading-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #loading-screen h1 {
+            font-size: 3rem;
+            color: var(--easter-yellow);
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px var(--easter-purple);
+        }
+
+        #loading-progress {
+            width: 50%;
+            height: 20px;
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, var(--easter-pink), var(--easter-purple));
+            transition: width 0.5s;
+        }
+
+        #loading-message {
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+
+        #skin-selection {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .skin-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .skin-card {
+            background-color: var(--secondary-color);
+            border: 2px solid var(--accent-color);
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .skin-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--easter-purple);
+        }
+
+        .skin-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .skin-info {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .skin-info h3 {
+            margin-bottom: 5px;
+            color: var(--accent-color);
+        }
+
+        #game-ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #player-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            pointer-events: auto;
+        }
+
+        #health-bar {
+            width: 200px;
+            height: 15px;
+            background-color: var(--secondary-color);
+            border-radius: 7px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        #health {
+            height: 100%;
+            width: 100%;
+            background-color: #FF5252;
+        }
+
+        #shield-bar {
+            width: 200px;
+            height: 15px;
+            background-color: var(--secondary-color);
+            border-radius: 7px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        #shield {
+            height: 100%;
+            width: 50%;
+            background-color: #2196F3;
+        }
+
+        #egg-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            pointer-events: auto;
+        }
+
+        #egg-counter img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+
+        #canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        #player-counter {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            pointer-events: auto;
+        }
+        
+        #player-counter i {
+            color: var(--easter-yellow);
+        }
+
+        #storm-timer {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            pointer-events: auto;
+            border: 2px solid var(--easter-purple);
+        }
+        
+        .timer-container, .phase-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .timer-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .phase-label, .timer-label {
+            color: var(--easter-yellow);
+        }
+        
+        .phase-value {
+            font-weight: bold;
+        }
+
+        .lobby-info {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 2px solid var(--easter-purple);
+        }
+        
+        .lobby-info h2 {
+            color: var(--easter-yellow);
+            margin-bottom: 10px;
+        }
+        
+        .lobby-id-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            gap: 10px;
+        }
+        
+        #lobby-id-input {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: 1px solid var(--accent-color);
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+        
+        #join-lobby-btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            background-color: var(--easter-purple);
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        #join-lobby-btn:hover {
+            background-color: var(--hover-color);
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="loading-screen">
+            <h1>Easter Egg Hunt</h1>
+            <div id="loading-progress">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="loading-message">Loading assets...</div>
+        </div>
+
+        <div id="skin-selection">
+            <h1 style="color: var(--easter-yellow); margin-bottom: 20px; text-shadow: 0 0 10px var(--easter-purple);">Choose Your Easter Fighter</h1>
+            <div class="skin-grid" id="skin-grid">
+                <!-- Skins will be dynamically added here -->
+            </div>
+        </div>
+
+        <canvas id="canvas"></canvas>
+
+        <div id="game-ui">
+            <div id="player-info">
+                <div id="player-name">Player</div>
+                <div id="health-bar">
+                    <div id="health"></div>
+                </div>
+                <div id="shield-bar">
+                    <div id="shield"></div>
+                </div>
+            </div>
+            <div id="egg-counter">
+                <img id="egg-counter-img" alt="Egg">
+                <span id="eggs-collected">0</span> collected
+            </div>
+            <div id="player-counter">
+                <i class="fas fa-users"></i> Players: <span id="player-count">1</span>/<span id="max-players">20</span>
+            </div>
+            <div id="storm-timer">
+                <div class="timer-container">
+                    <div class="timer-label">Storm:</div>
+                    <div class="timer-value" id="storm-time">00:00</div>
+                </div>
+                <div class="phase-indicator">
+                    <div class="phase-label">Phase:</div>
+                    <div class="phase-value" id="storm-phase">0/4</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, set, update as dbUpdate, onValue } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBYbixJx7LmVZvwZ8nilIY8HwLoRFFWHBM",
+            authDomain: "project-fighters.firebaseapp.com",
+            databaseURL: "https://project-fighters-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters",
+            storageBucket: "project-fighters.appspot.com",
+            messagingSenderId: "1065151143404",
+            appId: "1:1065151143404:web:4e0a3099614cca4d8b75d7",
+            measurementId: "G-S5QLVQE8XL"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth(app);
+        const dbUpdate = update;
+        
+        let currentUser = null;
+        let userData = {};
+        let selectedSkin = null;
+        let gameStarted = false;
+        let lastFrameTime = Date.now();
+        
+        // Global game variables
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        const MAP_WIDTH = 5000;  // Much larger map
+        const MAP_HEIGHT = 5000;
+        const MAX_PLAYERS = 20;  // Increased max players for the larger map
+        
+        let currentLobbyId = "";
+        let isNewLobby = false;
+        let players = {};
+        let walls = [];
+        let traps = [];
+        let eggs = [];
+        let pickups = [];
+        let serverPickups = {}; // Track server pickups by ID
+        let mapSeed = 0;
+        let frames = 0;
+        
+        // Camera/viewport variables
+        let camera = {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0
+        };
+        
+        // Environment elements
+        const environmentElements = [];
+
+        // Storm variables
+        const stormSettings = {
+            active: false,
+            currentPhase: 0,
+            damagePerSecond: 1,
+            startRadius: Math.sqrt(Math.pow(MAP_WIDTH, 2) + Math.pow(MAP_HEIGHT, 2)) / 2,
+            currentRadius: 0,
+            targetRadius: 0,
+            centerX: MAP_WIDTH / 2,
+            centerY: MAP_HEIGHT / 2,
+            phases: [
+                { startTime: 60, endTime: 90, targetRadius: MAP_WIDTH * 0.8 / 2 },
+                { startTime: 145, endTime: 180, targetRadius: MAP_WIDTH * 0.6 / 2 },
+                { startTime: 220, endTime: 260, targetRadius: MAP_WIDTH * 0.3 / 2 },
+                { startTime: 300, endTime: 360, targetRadius: MAP_WIDTH * 0.1 / 2 }
+            ],
+            startTime: 0,
+            gameTime: 0,
+            playerInStormWarning: false,
+            lastWarningTime: 0,
+            lastDamageTime: 0
+        };
+        
+        // Lobby variables
+        let currentLobbyId = "";
+        let isNewLobby = false;
+
+        // Set canvas size
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            camera.width = canvas.width;
+            camera.height = canvas.height;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Easter skin options
+        const easterSkins = [
+            { character: "Peacock", name: "Easter Bunny Peacock", image: "Loading Screen/Easter Bunny Peacock.png" },
+            { character: "R Mika", name: "Easter Bunny R Mika", image: "Loading Screen/Easter Bunny R Mika.png" },
+            { character: "Shinnok", name: "Easter Bunny Shinnok", image: "Loading Screen/Easter Bunny Shinnok.png" },
+            { character: "Ayane", name: "Bunny Ayane", image: "Loading Screen/Bunny Ayane.png" },
+            { character: "Alice", name: "Chocolate Bunny Alice", image: "Loading Screen/Chocolate Bunny Alice.png" }
+        ];
+
+        // Game assets
+        const assets = {
+            egg: null,
+            healthPickup: null,
+            shieldPickup: null,
+            trap: null,
+            wall: null,
+            floor: null
+        };
+
+        // Load assets
+        function loadAssets() {
+            document.getElementById('progress-bar').style.width = '30%';
+            document.getElementById('loading-message').textContent = "Creating game resources...";
+            
+            return createResources().then(() => {
+                document.getElementById('progress-bar').style.width = '100%';
+                document.getElementById('loading-message').textContent = "Assets loaded!";
+                return Promise.resolve();
+            });
+        }
+
+        // Initialize game
+        async function initGame() {
+            document.getElementById('loading-message').textContent = "Loading assets...";
+            await loadAssets();
+            
+            // Set the egg counter image from our generated egg asset
+            document.getElementById('egg-counter-img').src = assets.egg.src;
+            
+            // Set max players display
+            document.getElementById('max-players').textContent = MAX_PLAYERS;
+            
+            document.getElementById('loading-message').textContent = "Checking authentication...";
+            
+            // Check if user is logged in
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUser = user;
+                    document.getElementById('loading-message').textContent = "Loading user data...";
+                    
+                    // Get user data
+                    const userRef = ref(database, `users/${user.uid}`);
+                    const snapshot = await get(userRef);
+                    if (snapshot.exists()) {
+                        userData = snapshot.val();
+                        document.getElementById('player-name').textContent = userData.username || "Player";
+                    }
+                    
+                    // Check URL for lobby ID parameter
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.has('lobby')) {
+                        currentLobbyId = urlParams.get('lobby');
+                        // Check if lobby exists and isn't full
+                        await checkLobby(currentLobbyId);
+                    } else {
+                        // Generate new lobby ID
+                        createNewLobby();
+                    }
+                    
+                    document.getElementById('loading-message').textContent = "Ready to play!";
+                    setTimeout(() => {
+                        document.getElementById('loading-screen').style.display = "none";
+                        document.getElementById('skin-selection').style.display = "flex";
+                        loadSkinSelection();
+                    }, 1000);
+                } else {
+                    // Redirect to login page
+                    document.getElementById('loading-message').textContent = "Please login to play";
+                    setTimeout(() => {
+                        window.location.href = "home.html";
+                    }, 2000);
+                }
+            });
+        }
+        
+        // Create new lobby
+        function createNewLobby() {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            currentLobbyId = result;
+            isNewLobby = true;
+            
+            // Update URL with lobby ID without refreshing
+            const url = new URL(window.location);
+            url.searchParams.set('lobby', currentLobbyId);
+            window.history.pushState({}, '', url);
+        }
+        
+        // Check if lobby exists and isn't full
+        async function checkLobby(lobbyId) {
+            const playersRef = ref(database, `easterEggHunt/lobbies/${lobbyId}/players`);
+            const playersSnapshot = await get(playersRef);
+            
+            if (playersSnapshot.exists()) {
+                // Lobby exists, check if it's full
+                const playerCount = Object.keys(playersSnapshot.val()).length;
+                if (playerCount >= MAX_PLAYERS) {
+                    // Lobby is full, create a new one
+                    createNewLobby();
+                    showAnnouncement("The lobby was full. Created a new lobby: " + currentLobbyId, 5);
+                } else {
+                    isNewLobby = false;
+                }
+            } else {
+                // Lobby doesn't exist yet
+                isNewLobby = true;
+            }
+        }
+
+        // Load skin selection - update to show lobby ID
+        function loadSkinSelection() {
+            const skinGrid = document.getElementById('skin-grid');
+            skinGrid.innerHTML = '';
+            
+            // Add lobby info above skins
+            const lobbyInfo = document.createElement('div');
+            lobbyInfo.className = 'lobby-info';
+            lobbyInfo.innerHTML = `
+                <h2>Lobby ID: ${currentLobbyId}</h2>
+                <p>Share this code with friends to play together!</p>
+                <div class="lobby-id-container">
+                    <input type="text" id="lobby-id-input" placeholder="Enter Lobby ID">
+                    <button id="join-lobby-btn">Join</button>
+                </div>
+            `;
+            
+            document.querySelector('.skin-grid').before(lobbyInfo);
+            
+            // Add event listener for join button
+            document.getElementById('join-lobby-btn').addEventListener('click', () => {
+                const lobbyId = document.getElementById('lobby-id-input').value.toUpperCase();
+                if (lobbyId && lobbyId.length === 6) {
+                    window.location.href = `EasterEggHunt.html?lobby=${lobbyId}`;
+                } else {
+                    showAnnouncement("Invalid lobby ID. Please enter a 6-character code.", 3);
+                }
+            });
+            
+            easterSkins.forEach(skin => {
+                const skinCard = document.createElement('div');
+                skinCard.className = 'skin-card';
+                skinCard.innerHTML = `
+                    <img src="${skin.image}" alt="${skin.name}">
+                    <div class="skin-info">
+                        <h3>${skin.name}</h3>
+                    </div>
+                `;
+                
+                skinCard.addEventListener('click', () => {
+                    selectedSkin = skin;
+                    document.getElementById('skin-selection').style.display = "none";
+                    startGame();
+                });
+                
+                skinGrid.appendChild(skinCard);
+            });
+        }
+
+        // Generate map based on seed - updated for more connected walls
+        function generateMap(seed) {
+            // Reset game objects
+            walls = [];
+            traps = [];
+            eggs = [];
+            pickups = [];
+            environmentElements.length = 0;
+            
+            // Seed random number generator
+            const random = seedRandom(seed);
+            
+            // Generate walls and environment with better spacing
+            const gridSize = 100; // Increased grid size for much larger map
+            const cellWidth = MAP_WIDTH / gridSize;
+            const cellHeight = MAP_HEIGHT / gridSize;
+            
+            // Ensure wider passages between walls (at least 100px)
+            const minPassageWidth = 100;
+            const wallWidth = cellWidth * 0.7;
+            const wallHeight = cellHeight * 0.7;
+            
+            // Create environment clusters
+            createEnvironmentClusters(random, gridSize, cellWidth, cellHeight);
+            
+            // Generate walls with better spacing and more connections
+            for (let x = 0; x < gridSize; x++) {
+                for (let y = 0; y < gridSize; y++) {
+                    // Leave some space in the center
+                    const distanceFromCenter = Math.sqrt(
+                        Math.pow(x - gridSize/2, 2) + 
+                        Math.pow(y - gridSize/2, 2)
+                    );
+                    
+                    // Higher wall density further from center, but with better spacing
+                    const wallProbability = 0.07 + (distanceFromCenter / gridSize) * 0.25; // Increased probability
+                    
+                    if (random() < wallProbability) {
+                        // Create wall but ensure it's not blocking passage completely
+                        const wallX = x * cellWidth + (cellWidth - wallWidth) / 2;
+                        const wallY = y * cellHeight + (cellHeight - wallHeight) / 2;
+                        
+                        const wall = {
+                            x: wallX,
+                            y: wallY,
+                            width: wallWidth,
+                            height: wallHeight
+                        };
+                        
+                        // Check if this wall would make passage too narrow
+                        let tooNarrow = false;
+                        for (const existingWall of walls) {
+                            const horizontalDistance = Math.abs((existingWall.x + existingWall.width/2) - (wall.x + wall.width/2));
+                            const verticalDistance = Math.abs((existingWall.y + existingWall.height/2) - (wall.y + wall.height/2));
+                            
+                            if (horizontalDistance < minPassageWidth && verticalDistance < minPassageWidth) {
+                                tooNarrow = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!tooNarrow) {
+                            walls.push(wall);
+                            
+                            // 35% chance to create a connected wall if there's space (increased from 20%)
+                            if (random() < 0.35) {
+                                // Choose direction (0: right, 1: bottom, 2: left, 3: top)
+                                const direction = Math.floor(random() * 4);
+                                let connectedWall = null;
+                                
+                                switch (direction) {
+                                    case 0: // Right
+                                        connectedWall = {
+                                            x: wall.x + wall.width + 10, // Small gap
+                                            y: wall.y,
+                                            width: wallWidth,
+                                            height: wallHeight
+                                        };
+                                        break;
+                                    case 1: // Bottom
+                                        connectedWall = {
+                                            x: wall.x,
+                                            y: wall.y + wall.height + 10, // Small gap
+                                            width: wallWidth,
+                                            height: wallHeight
+                                        };
+                                        break;
+                                    case 2: // Left
+                                        connectedWall = {
+                                            x: wall.x - wallWidth - 10, // Small gap
+                                            y: wall.y,
+                                            width: wallWidth,
+                                            height: wallHeight
+                                        };
+                                        break;
+                                    case 3: // Top
+                                        connectedWall = {
+                                            x: wall.x,
+                                            y: wall.y - wallHeight - 10, // Small gap
+                                            width: wallWidth,
+                                            height: wallHeight
+                                        };
+                                        break;
+                                }
+                                
+                                // Check if the connected wall is within map bounds
+                                if (connectedWall && 
+                                    connectedWall.x >= 0 && 
+                                    connectedWall.x + connectedWall.width <= MAP_WIDTH &&
+                                    connectedWall.y >= 0 && 
+                                    connectedWall.y + connectedWall.height <= MAP_HEIGHT) {
+                                    
+                                    // Check if this wall would make passage too narrow
+                                    let connectedTooNarrow = false;
+                                    for (const existingWall of walls) {
+                                        const horizontalDistance = Math.abs((existingWall.x + existingWall.width/2) - (connectedWall.x + connectedWall.width/2));
+                                        const verticalDistance = Math.abs((existingWall.y + existingWall.height/2) - (connectedWall.y + connectedWall.height/2));
+                                        
+                                        if (horizontalDistance < minPassageWidth && verticalDistance < minPassageWidth) {
+                                            connectedTooNarrow = true;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    if (!connectedTooNarrow) {
+                                        walls.push(connectedWall);
+                                    }
+                                }
+                            }
+                            
+                            // 15% chance for trap near walls (but not inside them)
+                            if (random() < 0.15) {
+                                // Place trap adjacent to wall, not inside it
+                                const trapEdge = random() < 0.5 ? 'horizontal' : 'vertical';
+                                let trapX, trapY;
+                                
+                                if (trapEdge === 'horizontal') {
+                                    // Place on left or right edge of wall
+                                    trapX = wall.x + (random() < 0.5 ? -40 : wall.width + 10);
+                                    trapY = wall.y + random() * wall.height;
+                                } else {
+                                    // Place on top or bottom edge of wall
+                                    trapX = wall.x + random() * wall.width;
+                                    trapY = wall.y + (random() < 0.5 ? -40 : wall.height + 10);
+                                }
+                                
+                                traps.push({
+                                    x: trapX,
+                                    y: trapY,
+                                    width: 30,
+                                    height: 30,
+                                    active: true
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Add eggs and pickups in non-wall areas - fewer of them for balance
+            const eggCount = 100; // Fixed number of eggs across the map
+            const healthPickupCount = 30; // Fewer health pickups
+            const shieldPickupCount = 20; // Fewer shield pickups
+            
+            // Place eggs
+            for (let i = 0; i < eggCount; i++) {
+                const eggX = random() * MAP_WIDTH;
+                const eggY = random() * MAP_HEIGHT;
+                
+                // Check if position is clear from walls
+                let validPosition = true;
+                for (const wall of walls) {
+                    if (checkCollision({
+                        x: eggX - 15,
+                        y: eggY - 15,
+                        width: 30,
+                        height: 30
+                    }, wall)) {
+                        validPosition = false;
+                        break;
+                    }
+                }
+                
+                if (validPosition) {
+                    eggs.push({
+                        x: eggX,
+                        y: eggY,
+                        width: 30,
+                        height: 30,
+                        collected: false
+                    });
+                } else {
+                    i--; // Try again
+                }
+            }
+            
+            // Place health pickups
+            for (let i = 0; i < healthPickupCount; i++) {
+                placePickup('health', random);
+            }
+            
+            // Place shield pickups
+            for (let i = 0; i < shieldPickupCount; i++) {
+                placePickup('shield', random);
+            }
+        }
+
+        // Helper to place a pickup in a valid position
+        function placePickup(type, random) {
+            const pickupX = random() * MAP_WIDTH;
+            const pickupY = random() * MAP_HEIGHT;
+            
+            // Check if position is clear from walls
+            let validPosition = true;
+            for (const wall of walls) {
+                if (checkCollision({
+                    x: pickupX - 15,
+                    y: pickupY - 15,
+                    width: 30,
+                    height: 30
+                }, wall)) {
+                    validPosition = false;
+                    break;
+                }
+            }
+            
+            if (validPosition) {
+                const pickupId = `pickup_${Date.now()}_${Math.floor(random() * 1000000)}`;
+                
+                // If host, save to Firebase
+                if (isNewLobby) {
+                    set(ref(database, `easterEggHunt/lobbies/${currentLobbyId}/pickups/${pickupId}`), {
+                        x: pickupX,
+                        y: pickupY,
+                        type: type,
+                        collected: false
+                    });
+                }
+            } else {
+                // Try again (recursively)
+                placePickup(type, random);
+            }
+        }
+        
+        // Create environment clusters (trees, rocks, etc.)
+        function createEnvironmentClusters(random, gridSize, cellWidth, cellHeight) {
+            // Create several environment clusters
+            const clusterCount = 40; // Increased from 25
+            
+            // Types of environment elements
+            const elementTypes = [
+                { type: 'tree', width: 40, height: 60, color: '#2E7D32' },
+                { type: 'rock', width: 50, height: 30, color: '#757575' },
+                { type: 'bush', width: 30, height: 20, color: '#388E3C' },
+                { type: 'flower', width: 15, height: 30, color: '#FFD54F' },
+                { type: 'stone', width: 35, height: 35, color: '#607D8B' }, // New stone element
+                { type: 'bigRock', width: 60, height: 40, color: '#455A64' } // New big rock element
+            ];
+            
+            // Create forest clusters (lots of trees)
+            const forestCount = 25; // Increased from 15 for more forests
+            for (let i = 0; i < forestCount; i++) {
+                // Choose random forest center
+                const centerX = random() * MAP_WIDTH;
+                const centerY = random() * MAP_HEIGHT;
+                
+                // Place 15-30 trees in this forest
+                const treeCount = 15 + Math.floor(random() * 15);
+                
+                for (let j = 0; j < treeCount; j++) {
+                    // Place trees with tighter spread for forest feeling
+                    const spread = 150;
+                    const treeX = centerX + (random() * spread * 2 - spread);
+                    const treeY = centerY + (random() * spread * 2 - spread);
+                    
+                    // Ensure tree is within map boundaries
+                    if (treeX < 0 || treeX > MAP_WIDTH || treeY < 0 || treeY > MAP_HEIGHT) {
+                        continue;
+                    }
+                    
+                    // Slightly vary tree size for natural look
+                    const treeWidth = 35 + random() * 10;
+                    const treeHeight = 55 + random() * 15;
+                    
+                    // Add tree to environment
+                    environmentElements.push({
+                        x: treeX,
+                        y: treeY,
+                        width: treeWidth,
+                        height: treeHeight,
+                        type: 'tree',
+                        color: '#2E7D32'
+                    });
+                }
+            }
+            
+            // Create stone clusters
+            const stoneClusterCount = 15;
+            for (let i = 0; i < stoneClusterCount; i++) {
+                // Choose random stone center
+                const centerX = random() * MAP_WIDTH;
+                const centerY = random() * MAP_HEIGHT;
+                
+                // Place 5-12 stones in this cluster
+                const stoneCount = 5 + Math.floor(random() * 8);
+                
+                for (let j = 0; j < stoneCount; j++) {
+                    // Place stones with tight spread
+                    const spread = 100;
+                    const stoneX = centerX + (random() * spread * 2 - spread);
+                    const stoneY = centerY + (random() * spread * 2 - spread);
+                    
+                    // Ensure stone is within map boundaries
+                    if (stoneX < 0 || stoneX > MAP_WIDTH || stoneY < 0 || stoneY > MAP_HEIGHT) {
+                        continue;
+                    }
+                    
+                    // Randomly choose between stone and big rock
+                    const stoneType = random() < 0.7 ? 'stone' : 'bigRock';
+                    const stoneWidth = stoneType === 'stone' ? 35 + random() * 10 : 60 + random() * 15;
+                    const stoneHeight = stoneType === 'stone' ? 35 + random() * 10 : 40 + random() * 15;
+                    
+                    // Add stone to environment
+                    environmentElements.push({
+                        x: stoneX,
+                        y: stoneY,
+                        width: stoneWidth,
+                        height: stoneHeight,
+                        type: stoneType,
+                        color: stoneType === 'stone' ? '#607D8B' : '#455A64'
+                    });
+                }
+            }
+            
+            // Create river with bridge
+            createRiver(random);
+            
+            // Create hills (elevated areas)
+            createHills(random);
+            
+            // Create mixed element clusters
+            for (let i = 0; i < clusterCount; i++) {
+                // Choose random cluster center
+                const centerX = random() * MAP_WIDTH;
+                const centerY = random() * MAP_HEIGHT;
+                
+                // Place 5-15 elements in this cluster
+                const elementCount = 5 + Math.floor(random() * 10);
+                
+                for (let j = 0; j < elementCount; j++) {
+                    // Choose random element type with weights
+                    const r = random();
+                    let elementType;
+                    if (r < 0.25) elementType = elementTypes[0]; // tree
+                    else if (r < 0.45) elementType = elementTypes[1]; // rock
+                    else if (r < 0.65) elementType = elementTypes[2]; // bush
+                    else if (r < 0.8) elementType = elementTypes[3]; // flower
+                    else if (r < 0.9) elementType = elementTypes[4]; // stone
+                    else elementType = elementTypes[5]; // bigRock
+                    
+                    // Place element near cluster center (random spread)
+                    const spread = 200;
+                    const elementX = centerX + (random() * spread * 2 - spread);
+                    const elementY = centerY + (random() * spread * 2 - spread);
+                    
+                    // Ensure element is within map boundaries
+                    if (elementX < 0 || elementX > MAP_WIDTH || elementY < 0 || elementY > MAP_HEIGHT) {
+                        continue;
+                    }
+                    
+                    // Add environment element
+                    environmentElements.push({
+                        x: elementX,
+                        y: elementY,
+                        width: elementType.width,
+                        height: elementType.height,
+                        type: elementType.type,
+                        color: elementType.color
+                    });
+                }
+            }
+        }
+        
+        // Create a river with bridges
+        function createRiver(random) {
+            // Define river path (meandering across the map)
+            const riverSegments = [];
+            const riverWidth = 120;
+            
+            // Choose random starting point on map edge
+            const startSide = Math.floor(random() * 4); // 0: top, 1: right, 2: bottom, 3: left
+            let startX, startY;
+            
+            switch (startSide) {
+                case 0: // Top
+                    startX = random() * MAP_WIDTH;
+                    startY = 0;
+                    break;
+                case 1: // Right
+                    startX = MAP_WIDTH;
+                    startY = random() * MAP_HEIGHT;
+                    break;
+                case 2: // Bottom
+                    startX = random() * MAP_WIDTH;
+                    startY = MAP_HEIGHT;
+                    break;
+                case 3: // Left
+                    startX = 0;
+                    startY = random() * MAP_HEIGHT;
+                    break;
+            }
+            
+            // Create river segments
+            let currentX = startX;
+            let currentY = startY;
+            const segmentCount = 15; // Number of river bends
+            
+            // End at opposite side of the map
+            const endSide = (startSide + 2) % 4;
+            let targetX, targetY;
+            
+            switch (endSide) {
+                case 0: // Top
+                    targetX = MAP_WIDTH / 2 + (random() * MAP_WIDTH / 2 - MAP_WIDTH / 4);
+                    targetY = 0;
+                    break;
+                case 1: // Right
+                    targetX = MAP_WIDTH;
+                    targetY = MAP_HEIGHT / 2 + (random() * MAP_HEIGHT / 2 - MAP_HEIGHT / 4);
+                    break;
+                case 2: // Bottom
+                    targetX = MAP_WIDTH / 2 + (random() * MAP_WIDTH / 2 - MAP_WIDTH / 4);
+                    targetY = MAP_HEIGHT;
+                    break;
+                case 3: // Left
+                    targetX = 0;
+                    targetY = MAP_HEIGHT / 2 + (random() * MAP_HEIGHT / 2 - MAP_HEIGHT / 4);
+                    break;
+            }
+            
+            // Create meandering river path
+            for (let i = 0; i < segmentCount; i++) {
+                // Calculate progress (0 to 1)
+                const progress = i / (segmentCount - 1);
+                
+                // Move towards target with some randomness
+                const moveX = (targetX - startX) * (progress) + (random() * 600 - 300);
+                const moveY = (targetY - startY) * (progress) + (random() * 600 - 300);
+                
+                // Keep within map bounds
+                const nextX = Math.max(0, Math.min(MAP_WIDTH, startX + moveX));
+                const nextY = Math.max(0, Math.min(MAP_HEIGHT, startY + moveY));
+                
+                // Add river segment
+                riverSegments.push({
+                    x1: currentX,
+                    y1: currentY,
+                    x2: nextX,
+                    y2: nextY,
+                    width: riverWidth
+                });
+                
+                currentX = nextX;
+                currentY = nextY;
+            }
+            
+            // Add final segment to edge
+            riverSegments.push({
+                x1: currentX,
+                y1: currentY,
+                x2: targetX,
+                y2: targetY,
+                width: riverWidth
+            });
+            
+            // Add river segments to environment
+            for (const segment of riverSegments) {
+                // Create rectangular representation of river segment
+                const angle = Math.atan2(segment.y2 - segment.y1, segment.x2 - segment.x1);
+                const length = Math.sqrt(Math.pow(segment.x2 - segment.x1, 2) + Math.pow(segment.y2 - segment.y1, 2));
+                
+                environmentElements.push({
+                    x: segment.x1,
+                    y: segment.y1,
+                    width: length,
+                    height: segment.width,
+                    angle: angle,
+                    type: 'river',
+                    color: '#42A5F5'
+                });
+                
+                // 40% chance to add bridge at river segment (except first and last)
+                if (random() < 0.4 && riverSegments.indexOf(segment) > 0 && riverSegments.indexOf(segment) < riverSegments.length - 1) {
+                    // Place bridge perpendicular to river
+                    const bridgeX = (segment.x1 + segment.x2) / 2 - 20;
+                    const bridgeY = (segment.y1 + segment.y2) / 2 - 40;
+                    const bridgeWidth = segment.width + 60;
+                    const bridgeHeight = 40;
+                    
+                    // Add bridge to walls array (so it's solid)
+                    walls.push({
+                        x: bridgeX,
+                        y: bridgeY,
+                        width: bridgeWidth,
+                        height: bridgeHeight,
+                        type: 'bridge',
+                        angle: angle + Math.PI/2
+                    });
+                }
+            }
+        }
+        
+        // Create hills (elevated areas)
+        function createHills(random) {
+            const hillCount = 10;
+            
+            for (let i = 0; i < hillCount; i++) {
+                // Create hill
+                const hillX = random() * MAP_WIDTH;
+                const hillY = random() * MAP_HEIGHT;
+                const hillSize = 300 + random() * 300;
+                
+                // Add hill to environment
+                environmentElements.push({
+                    x: hillX,
+                    y: hillY,
+                    width: hillSize,
+                    height: hillSize,
+                    type: 'hill',
+                    color: '#8D6E63',
+                    elevation: 20 + random() * 30
+                });
+            }
+        }
+
+        // Seed random function
+        function seedRandom(seed) {
+            function mulberry32(a) {
+                return function() {
+                    let t = a += 0x6D2B79F5;
+                    t = Math.imul(t ^ t >>> 15, t | 1);
+                    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+                    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+                };
+            }
+            return mulberry32(seed);
+        }
+
+        // Get current hourly map seed
+        function getCurrentMapSeed() {
+            const now = new Date();
+            // Use the current hour as the seed
+            return now.getFullYear() * 10000 + 
+                   (now.getMonth() + 1) * 100 + 
+                   now.getDate() + now.getHours();
+        }
+
+        // Start game
+        function startGame() {
+            mapSeed = getCurrentMapSeed();
+            
+            // If we're joining an existing lobby, get the seed from there
+            if (!isNewLobby) {
+                const seedRef = ref(database, `easterEggHunt/lobbies/${currentLobbyId}/seed`);
+                get(seedRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        mapSeed = snapshot.val();
+                    }
+                    generateMap(mapSeed);
+                    initializePlayer();
+                    
+                    // Start listening for pickups
+                    listenForPickups();
+                });
+            } else {
+                // For new lobbies, save the seed
+                set(ref(database, `easterEggHunt/lobbies/${currentLobbyId}/seed`), mapSeed);
+                generateMap(mapSeed);
+                initializePlayer();
+                
+                // Start listening for pickups
+                listenForPickups();
+            }
+        }
+        
+        // Listen for pickups from Firebase
+        function listenForPickups() {
+            const pickupsRef = ref(database, `easterEggHunt/lobbies/${currentLobbyId}/pickups`);
+            onValue(pickupsRef, (snapshot) => {
+                const data = snapshot.val();
+                
+                // Clear local pickups
+                pickups = [];
+                
+                // Update local pickups from server data
+                if (data) {
+                    // Convert to array for local use
+                    Object.keys(data).forEach(id => {
+                        const serverPickup = data[id];
+                        if (!serverPickup.collected) {
+                            pickups.push({
+                                id: id,
+                                x: serverPickup.x,
+                                y: serverPickup.y,
+                                width: 30,
+                                height: 30,
+                                type: serverPickup.type
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        
+        // Initialize player
+        function initializePlayer() {
+            // Find a safe spawn location for player
+            const spawnPosition = findSafeSpawnLocation();
+            
+            players[currentUser.uid] = {
+                x: spawnPosition.x,
+                y: spawnPosition.y,
+                width: 50,
+                height: 50,
+                speed: 7, // Slightly faster for larger map
+                health: 100,
+                shield: 50,
+                eggsCollected: 0,
+                skin: selectedSkin,
+                image: new Image(),
+                lastUpdateTime: Date.now(),
+                lastPosition: { x: spawnPosition.x, y: spawnPosition.y } // Track last position for interpolation
+            };
+            
+            // Set player character image
+            players[currentUser.uid].image.src = selectedSkin.image;
+            
+            // Reset storm settings
+            resetStorm();
+            
+            // Center camera on player
+            centerCameraOnPlayer();
+            
+            // Listen for other players in same lobby
+            const playersRef = ref(database, `easterEggHunt/lobbies/${currentLobbyId}/players`);
+            onValue(playersRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    // Count active players
+                    let activePlayers = 0;
+                    const MAX_INACTIVE_TIME = 60000; // 60 seconds
+                    const now = Date.now();
+                    
+                    Object.keys(data).forEach(uid => {
+                        // Skip self
+                        if (uid === currentUser.uid) return;
+                        
+                        // Check if player is active (has updated recently)
+                        if (data[uid].lastUpdateTime && now - data[uid].lastUpdateTime > MAX_INACTIVE_TIME) {
+                            // Remove inactive player
+                            if (players[uid]) {
+                                delete players[uid];
+                            }
+                            return;
+                        }
+                        
+                        activePlayers++;
+                        
+                        if (!players[uid]) {
+                            // New player joined
+                            players[uid] = data[uid];
+                            // Create image for other player
+                            if (players[uid].skin) {
+                                players[uid].image = new Image();
+                                players[uid].image.src = players[uid].skin.image;
+                            }
+                            
+                            // Track last position for interpolation
+                            players[uid].lastPosition = { 
+                                x: players[uid].x, 
+                                y: players[uid].y 
+                            };
+                            
+                            // Announce new player joined
+                            showAnnouncement(`${data[uid].username || "Player"} joined the game!`, 3);
+                        } else {
+                            // Save last position for interpolation
+                            players[uid].lastPosition = { 
+                                x: players[uid].x, 
+                                y: players[uid].y 
+                            };
+                            
+                            // Update existing player data but keep the image
+                            const image = players[uid].image;
+                            players[uid] = data[uid];
+                            players[uid].image = image;
+                            
+                            // Restore interpolation data
+                            if (!players[uid].lastPosition) {
+                                players[uid].lastPosition = { 
+                                    x: players[uid].x, 
+                                    y: players[uid].y 
+                                };
+                            }
+                        }
+                    });
+                    
+                    // Update player count UI
+                    document.getElementById('player-count').textContent = activePlayers + 1; // +1 for self
+                }
+            });
+            
+            // Remove player when disconnected
+            window.addEventListener('beforeunload', () => {
+                if (currentUser) {
+                    set(ref(database, `easterEggHunt/lobbies/${currentLobbyId}/players/${currentUser.uid}`), null);
+                }
+            });
+            
+            // Immediate update player in Firebase
+            updatePlayerInFirebase();
+            
+            // Start game loop
+            gameStarted = true;
+            lastFrameTime = Date.now();
+            frames = 0;
+            gameLoop();
+        }
+
+        // Find a safe spawn location (no collisions with walls or objects)
+        function findSafeSpawnLocation() {
+            const maxAttempts = 100;
+            const playerSize = { width: 50, height: 50 };
+            
+            for (let attempt = 0; attempt < maxAttempts; attempt++) {
+                // Generate random position
+                const x = Math.random() * (MAP_WIDTH - playerSize.width);
+                const y = Math.random() * (MAP_HEIGHT - playerSize.height);
+                
+                // Create player rect at this position
+                const playerRect = {
+                    x: x,
+                    y: y,
+                    width: playerSize.width,
+                    height: playerSize.height
+                };
+                
+                // Check for collisions with walls
+                let collision = false;
+                
+                // Check walls
+                for (const wall of walls) {
+                    if (checkCollision(playerRect, wall)) {
+                        collision = true;
+                        break;
+                    }
+                }
+                
+                if (collision) continue;
+                
+                // Check environment elements
+                for (const element of environmentElements) {
+                    if (checkCollision(playerRect, element)) {
+                        collision = true;
+                        break;
+                    }
+                }
+                
+                if (collision) continue;
+                
+                // Check pickups
+                for (const pickup of pickups) {
+                    if (checkCollision(playerRect, pickup)) {
+                        collision = true;
+                        break;
+                    }
+                }
+                
+                if (collision) continue;
+                
+                // Check eggs
+                for (const egg of eggs) {
+                    if (checkCollision(playerRect, egg)) {
+                        collision = true;
+                        break;
+                    }
+                }
+                
+                if (collision) continue;
+                
+                // Check traps
+                for (const trap of traps) {
+                    if (checkCollision(playerRect, trap)) {
+                        collision = true;
+                        break;
+                    }
+                }
+                
+                // If we got here, position is safe
+                if (!collision) {
+                    return { x, y };
+                }
+            }
+            
+            // If we couldn't find a safe position after max attempts,
+            // return a position in the center area which should be relatively safe
+            return {
+                x: MAP_WIDTH / 2 + (Math.random() * 200 - 100),
+                y: MAP_HEIGHT / 2 + (Math.random() * 200 - 100)
+            };
+        }
+
+        // Reset storm
+        function resetStorm() {
+            stormSettings.active = false;
+            stormSettings.currentPhase = 0;
+            stormSettings.currentRadius = stormSettings.startRadius;
+            stormSettings.targetRadius = stormSettings.phases[0].targetRadius;
+            stormSettings.startTime = Date.now();
+            stormSettings.gameTime = 0;
+        }
+
+        // Update player data in Firebase - more frequent updates
+        function updatePlayerInFirebase() {
+            const player = players[currentUser.uid];
+            set(ref(database, `easterEggHunt/lobbies/${currentLobbyId}/players/${currentUser.uid}`), {
+                x: player.x,
+                y: player.y,
+                width: player.width,
+                height: player.height,
+                health: player.health,
+                shield: player.shield,
+                eggsCollected: player.eggsCollected,
+                skin: player.skin,
+                username: userData.username || "Player",
+                lastUpdateTime: Date.now()
+            });
+        }
+
+        // Announcements
+        const announcements = [];
+        
+        // Show announcement
+        function showAnnouncement(message, duration) {
+            // Check if this exact message is already being shown
+            for (const announcement of announcements) {
+                if (announcement.message === message) {
+                    // Update the existing announcement's time instead of creating a duplicate
+                    announcement.startTime = Date.now();
+                    announcement.opacity = 0;
+                    announcement.fadeIn = true;
+                    announcement.fadeOut = false;
+                    return;
+                }
+            }
+            
+            // If not already showing, add the announcement
+            announcements.push({
+                message: message,
+                duration: duration,
+                startTime: Date.now(),
+                opacity: 0,
+                fadeIn: true,
+                fadeOut: false
+            });
+        }
+        
+        // Update and render announcements
+        function updateAnnouncements() {
+            for (let i = announcements.length - 1; i >= 0; i--) {
+                const announcement = announcements[i];
+                const elapsed = (Date.now() - announcement.startTime) / 1000;
+                
+                // Handle fade in
+                if (announcement.fadeIn) {
+                    announcement.opacity = Math.min(1, elapsed * 2);
+                    if (announcement.opacity >= 1) {
+                        announcement.fadeIn = false;
+                    }
+                } 
+                // Handle fade out
+                else if (elapsed >= announcement.duration - 0.5) {
+                    announcement.fadeOut = true;
+                    announcement.opacity = Math.max(0, 1 - (elapsed - (announcement.duration - 0.5)) * 2);
+                }
+                
+                // Remove if expired
+                if (elapsed >= announcement.duration) {
+                    announcements.splice(i, 1);
+                }
+            }
+        }
+        
+        // Render announcements
+        function renderAnnouncements() {
+            if (announcements.length === 0) return;
+            
+            ctx.save();
+            
+            for (let i = 0; i < announcements.length; i++) {
+                const announcement = announcements[i];
+                
+                // Set text style
+                ctx.font = "bold 24px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                
+                // Add shadow/glow effect
+                ctx.shadowColor = "rgba(0, 0, 0, 0.7)";
+                ctx.shadowBlur = 10;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 2;
+                
+                // Draw text with fade effect
+                ctx.fillStyle = `rgba(255, 255, 255, ${announcement.opacity})`;
+                ctx.fillText(announcement.message, canvas.width / 2, 100 + i * 40);
+            }
+            
+            ctx.restore();
+        }
+        
+        // Game loop with timing improvements
+        function gameLoop() {
+            if (!gameStarted) return;
+            
+            const currentTime = Date.now();
+            const deltaTime = currentTime - lastFrameTime;
+            lastFrameTime = currentTime;
+            
+            update();
+            updateEffects();
+            updateStormTimer();
+            updateAnnouncements();
+            
+            render();
+            renderEffects();
+            renderAnnouncements();
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Key state tracking
+        const keys = {};
+        window.addEventListener('keydown', e => keys[e.key] = true);
+        window.addEventListener('keyup', e => keys[e.key] = false);
+
+        // Update game state
+        function update() {
+            const player = players[currentUser.uid];
+            if (!player) return;
+            
+            // Update game time
+            stormSettings.gameTime = (Date.now() - stormSettings.startTime) / 1000;
+            
+            // Update storm
+            updateStorm();
+            
+            // Player movement
+            let dx = 0;
+            let dy = 0;
+            
+            if (keys['ArrowUp'] || keys['w']) dy -= player.speed;
+            if (keys['ArrowDown'] || keys['s']) dy += player.speed;
+            if (keys['ArrowLeft'] || keys['a']) dx -= player.speed;
+            if (keys['ArrowRight'] || keys['d']) dx += player.speed;
+            
+            let playerMoved = false;
+            
+            // Normalize diagonal movement
+            if (dx !== 0 && dy !== 0) {
+                const factor = 1 / Math.sqrt(2);
+                dx *= factor;
+                dy *= factor;
+                playerMoved = true;
+            } else if (dx !== 0 || dy !== 0) {
+                playerMoved = true;
+            }
+            
+            // Calculate new position
+            let newX = player.x + dx;
+            let newY = player.y + dy;
+            
+            // Wall collision detection
+            const playerRect = {
+                x: newX,
+                y: newY,
+                width: player.width,
+                height: player.height
+            };
+            
+            let collisionWithWall = false;
+            for (const wall of walls) {
+                // Only check walls that are visible in the viewport plus a buffer
+                if (isInViewport(wall, 200)) {
+                    if (checkCollision(playerRect, wall)) {
+                        collisionWithWall = true;
+                        break;
+                    }
+                }
+            }
+            
+            // Environment collision detection
+            for (const element of environmentElements) {
+                if (isInViewport(element, 200)) {
+                    if (checkCollision(playerRect, element)) {
+                        collisionWithWall = true;
+                        break;
+                    }
+                }
+            }
+            
+            // Update position if no collision
+            if (!collisionWithWall) {
+                // Save old position to check if player actually moved
+                const oldX = player.x;
+                const oldY = player.y;
+                
+                player.x = newX;
+                player.y = newY;
+                
+                // If player changed position
+                if (oldX !== player.x || oldY !== player.y) {
+                    playerMoved = true;
+                }
+            }
+            
+            // Keep player in bounds of the map
+            const oldX = player.x;
+            const oldY = player.y;
+            player.x = Math.max(0, Math.min(MAP_WIDTH - player.width, player.x));
+            player.y = Math.max(0, Math.min(MAP_HEIGHT - player.height, player.y));
+            
+            // If player was constrained by map bounds
+            if (oldX !== player.x || oldY !== player.y) {
+                playerMoved = true;
+            }
+            
+            // Update camera position to follow player
+            centerCameraOnPlayer();
+            
+            // Check for egg collection (only check visible eggs)
+            for (let i = 0; i < eggs.length; i++) {
+                const egg = eggs[i];
+                if (!egg.collected && isInViewport(egg) && checkCollision(playerRect, egg)) {
+                    egg.collected = true;
+                    player.eggsCollected++;
+                    document.getElementById('eggs-collected').textContent = player.eggsCollected;
+                    
+                    // Give player a small shield bonus for collecting eggs
+                    player.shield = Math.min(100, player.shield + 5);
+                    updatePlayerUI();
+                    
+                    // Force update on pickup
+                    playerMoved = true;
+                }
+            }
+            
+            // Check for pickup collection (only check visible pickups)
+            for (let i = 0; i < pickups.length; i++) {
+                const pickup = pickups[i];
+                if (isInViewport(pickup) && checkCollision(playerRect, pickup)) {
+                    if (pickup.type === 'health') {
+                        player.health = Math.min(100, player.health + 25);
+                    } else if (pickup.type === 'shield') {
+                        player.shield = Math.min(100, player.shield + 25);
+                    }
+                    
+                    // Mark pickup as collected on the server
+                    update(ref(database, `easterEggHunt/lobbies/${currentLobbyId}/pickups/${pickup.id}`), {
+                        collected: true,
+                        collectedBy: currentUser.uid
+                    });
+                    
+                    // Remove pickup from local array
+                    pickups.splice(i, 1);
+                    i--;
+                    
+                    // Update UI
+                    updatePlayerUI();
+                    
+                    // Force update on pickup
+                    playerMoved = true;
+                }
+            }
+            
+            // Check for trap activation (only check visible traps)
+            for (let i = 0; i < traps.length; i++) {
+                const trap = traps[i];
+                if (trap.active && isInViewport(trap) && checkCollision(playerRect, trap)) {
+                    // Trap damage
+                    if (player.shield > 0) {
+                        player.shield = Math.max(0, player.shield - 30);
+                    } else {
+                        player.health = Math.max(0, player.health - 30);
+                    }
+                    
+                    // Deactivate trap
+                    trap.active = false;
+                    
+                    // Update UI
+                    updatePlayerUI();
+                    
+                    // Force update on trap hit
+                    playerMoved = true;
+                    
+                    // Check for player death
+                    if (player.health <= 0) {
+                        gameOver("You were eliminated by a trap!");
+                    }
+                }
+            }
+            
+            // Handle combat
+            handleCombat();
+            
+            // More frequent Firebase updates when player moves or every 30 frames
+            // This ensures smooth movement while avoiding unnecessary writes
+            if (playerMoved || frames % 30 === 0) {
+                updatePlayerInFirebase();
+            }
+            
+            // Increment frame counter
+            frames++;
+        }
+
+        // Handle combat between players
+        function handleCombat() {
+            const player = players[currentUser.uid];
+            
+            // Handle attack input (mouse click)
+            if (mouseState.clicked) {
+                mouseState.clicked = false;
+                
+                // Calculate attack range and direction
+                const attackRange = 100; // Range in pixels
+                const attackAngle = Math.atan2(
+                    mouseState.y - canvas.height/2,
+                    mouseState.x - canvas.width/2
+                );
+                
+                // Attack point (in front of player in the direction of mouse)
+                const attackX = player.x + Math.cos(attackAngle) * attackRange;
+                const attackY = player.y + Math.sin(attackAngle) * attackRange;
+                
+                // Check for hits on other players
+                for (const playerId in players) {
+                    if (playerId === currentUser.uid) continue; // Skip self
+                    
+                    const targetPlayer = players[playerId];
+                    
+                    // Calculate distance to target
+                    const distance = Math.sqrt(
+                        Math.pow(targetPlayer.x - attackX, 2) +
+                        Math.pow(targetPlayer.y - attackY, 2)
+                    );
+                    
+                    // Check if target is within attack range
+                    if (distance < attackRange) {
+                        // Apply damage to target
+                        const damage = 10; // Base damage
+                        
+                        // Apply damage first to shield, then to health
+                        if (targetPlayer.shield > 0) {
+                            targetPlayer.shield = Math.max(0, targetPlayer.shield - damage);
+                        } else {
+                            targetPlayer.health = Math.max(0, targetPlayer.health - damage);
+                        }
+                        
+                        // Show attack effect
+                        createAttackEffect(attackX, attackY);
+                        
+                        // If target is eliminated, increment player's score
+                        if (targetPlayer.health <= 0) {
+                            player.eliminations = (player.eliminations || 0) + 1;
+                            // Remove defeated player
+                            set(ref(database, `easterEggHunt/lobbies/${currentLobbyId}/players/${playerId}`), null);
+                        } else {
+                            // Update damaged player in Firebase
+                            set(ref(database, `easterEggHunt/lobbies/${currentLobbyId}/players/${playerId}`), targetPlayer);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Create visual attack effect
+        function createAttackEffect(x, y) {
+            const effect = {
+                x: x,
+                y: y,
+                radius: 30,
+                alpha: 1.0,
+                update: function() {
+                    this.radius += 2;
+                    this.alpha -= 0.05;
+                    return this.alpha > 0;
+                },
+                render: function() {
+                    ctx.beginPath();
+                    ctx.arc(this.x - camera.x, this.y - camera.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 0, 0, ${this.alpha})`;
+                    ctx.fill();
+                }
+            };
+            
+            effects.push(effect);
+        }
+        
+        // Mouse state tracking
+        const mouseState = {
+            x: 0,
+            y: 0,
+            clicked: false
+        };
+        
+        // Visual effects array
+        const effects = [];
+        
+        // Setup mouse listeners
+        canvas.addEventListener('mousemove', (e) => {
+            mouseState.x = e.clientX;
+            mouseState.y = e.clientY;
+        });
+        
+        canvas.addEventListener('mousedown', () => {
+            mouseState.clicked = true;
+        });
+        
+        // Update effects
+        function updateEffects() {
+            for (let i = effects.length - 1; i >= 0; i--) {
+                if (!effects[i].update()) {
+                    effects.splice(i, 1);
+                }
+            }
+        }
+        
+        // Render effects
+        function renderEffects() {
+            effects.forEach(effect => effect.render());
+        }
+        
+        // Center camera on player
+        function centerCameraOnPlayer() {
+            const player = players[currentUser.uid];
+            if (!player) return;
+            
+            // Center camera on player
+            camera.x = player.x - camera.width / 2;
+            camera.y = player.y - camera.height / 2;
+            
+            // Clamp camera to map boundaries
+            camera.x = Math.max(0, Math.min(MAP_WIDTH - camera.width, camera.x));
+            camera.y = Math.max(0, Math.min(MAP_HEIGHT - camera.height, camera.y));
+        }
+        
+        // Check if object is in the viewport
+        function isInViewport(obj, buffer = 0) {
+            return obj.x + obj.width + buffer >= camera.x && 
+                   obj.x - buffer <= camera.x + camera.width &&
+                   obj.y + obj.height + buffer >= camera.y && 
+                   obj.y - buffer <= camera.y + camera.height;
+        }
+
+        // Check collision between two rectangles
+        function checkCollision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+
+        // Update player UI
+        function updatePlayerUI() {
+            const player = players[currentUser.uid];
+            document.getElementById('health').style.width = `${player.health}%`;
+            document.getElementById('shield').style.width = `${player.shield}%`;
+        }
+
+        // Update storm
+        function updateStorm() {
+            // Check for storm phase changes
+            if (stormSettings.currentPhase < stormSettings.phases.length) {
+                const currentPhase = stormSettings.phases[stormSettings.currentPhase];
+                
+                // Announce upcoming storm (only once)
+                if (Math.floor(stormSettings.gameTime) === currentPhase.startTime - 10) {
+                    showAnnouncement("Storm approaching in 10 seconds!", 5);
+                }
+                
+                // Announce storm is moving (only once)
+                if (Math.floor(stormSettings.gameTime) === currentPhase.startTime) {
+                    showAnnouncement(`Storm is moving! (Phase ${stormSettings.currentPhase + 1})`, 5);
+                }
+                
+                // Start storm shrinking
+                if (stormSettings.gameTime >= currentPhase.startTime && !stormSettings.active) {
+                    stormSettings.active = true;
+                    stormSettings.targetRadius = currentPhase.targetRadius;
+                }
+                
+                // Update storm radius during active phase
+                if (stormSettings.active) {
+                    const phaseProgress = (stormSettings.gameTime - currentPhase.startTime) / 
+                                         (currentPhase.endTime - currentPhase.startTime);
+                    
+                    if (phaseProgress <= 1) {
+                        // Shrink the storm gradually
+                        const prevRadius = stormSettings.currentPhase === 0 
+                            ? stormSettings.startRadius 
+                            : stormSettings.phases[stormSettings.currentPhase - 1].targetRadius;
+                        
+                        stormSettings.currentRadius = prevRadius - 
+                            (prevRadius - currentPhase.targetRadius) * phaseProgress;
+                    } else {
+                        // Move to next phase
+                        stormSettings.active = false;
+                        stormSettings.currentPhase++;
+                        
+                        // Announce storm has settled (only once)
+                        if (stormSettings.currentPhase < stormSettings.phases.length) {
+                            showAnnouncement("Storm has settled.", 3);
+                        } else {
+                            showAnnouncement("Final circle! Fight to survive!", 5);
+                        }
+                    }
+                }
+            }
+            
+            // Apply storm damage if player is outside the safe zone
+            const player = players[currentUser.uid];
+            if (player) {
+                const distanceFromCenter = Math.sqrt(
+                    Math.pow(player.x - stormSettings.centerX, 2) + 
+                    Math.pow(player.y - stormSettings.centerY, 2)
+                );
+                
+                // Check if player is outside the safe zone
+                if (distanceFromCenter > stormSettings.currentRadius) {
+                    // Apply storm damage every ~0.5 seconds (adjusted from random to time-based)
+                    const now = Date.now();
+                    if (!stormSettings.lastDamageTime || now - stormSettings.lastDamageTime > 500) {
+                        // Apply more damage in later phases
+                        const stormDamage = (stormSettings.currentPhase + 1) * stormSettings.damagePerSecond;
+                        
+                        if (player.shield > 0) {
+                            player.shield = Math.max(0, player.shield - stormDamage);
+                        } else {
+                            player.health = Math.max(0, player.health - stormDamage);
+                            
+                            // Check for player death
+                            if (player.health <= 0) {
+                                gameOver("You were eliminated by the storm!");
+                            }
+                        }
+                        
+                        // Update UI
+                        updatePlayerUI();
+                        stormSettings.lastDamageTime = now;
+                        
+                        // Show warning if health is getting low - with blinking effect
+                        if (player.health < 30 && player.shield === 0) {
+                            // Only show warning every 2 seconds
+                            if (!stormSettings.playerInStormWarning || now - stormSettings.lastWarningTime > 2000) {
+                                showAnnouncement("WARNING! GET TO THE SAFE ZONE!", 2);
+                                stormSettings.playerInStormWarning = true;
+                                stormSettings.lastWarningTime = now;
+                            }
+                        } else {
+                            stormSettings.playerInStormWarning = false;
+                        }
+                    }
+                } else {
+                    stormSettings.playerInStormWarning = false;
+                }
+            }
+        }
+
+        // Update storm timer
+        function updateStormTimer() {
+            const stormTimeElement = document.getElementById('storm-time');
+            const stormPhaseElement = document.getElementById('storm-phase');
+            
+            if (stormTimeElement && stormPhaseElement) {
+                // Update current phase
+                stormPhaseElement.textContent = `${stormSettings.currentPhase + 1}/4`;
+                
+                // Calculate time until next phase or during current phase
+                let timeDisplay = "";
+                
+                if (stormSettings.currentPhase < stormSettings.phases.length) {
+                    const currentPhase = stormSettings.phases[stormSettings.currentPhase];
+                    
+                    if (stormSettings.gameTime < currentPhase.startTime) {
+                        // Time until storm starts
+                        const timeUntilStorm = Math.ceil(currentPhase.startTime - stormSettings.gameTime);
+                        timeDisplay = formatTime(timeUntilStorm);
+                        stormTimeElement.style.color = 'white';
+                    } else if (stormSettings.gameTime < currentPhase.endTime) {
+                        // Time until storm completes shrinking
+                        const timeUntilComplete = Math.ceil(currentPhase.endTime - stormSettings.gameTime);
+                        timeDisplay = formatTime(timeUntilComplete);
+                        stormTimeElement.style.color = '#FF69B4'; // Pink during active storm
+                    } else {
+                        // Time until next phase
+                        if (stormSettings.currentPhase + 1 < stormSettings.phases.length) {
+                            const nextPhase = stormSettings.phases[stormSettings.currentPhase + 1];
+                            const timeUntilNextPhase = Math.ceil(nextPhase.startTime - stormSettings.gameTime);
+                            timeDisplay = formatTime(timeUntilNextPhase);
+                            stormTimeElement.style.color = 'white';
+                        } else {
+                            timeDisplay = "00:00";
+                            stormTimeElement.style.color = '#FF69B4';
+                        }
+                    }
+                } else {
+                    timeDisplay = "00:00";
+                    stormTimeElement.style.color = '#FF69B4';
+                }
+                
+                stormTimeElement.textContent = timeDisplay;
+            }
+        }
+        
+        // Format time (seconds) to MM:SS
+        function formatTime(timeInSeconds) {
+            const minutes = Math.floor(timeInSeconds / 60);
+            const seconds = timeInSeconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Helper function for creating image assets
+        function createImageAsset(src) {
+            const img = new Image();
+            img.src = src;
+            return img;
+        }
+
+        // Create floor image
+        function createFloorImage() {
+            const floorCanvas = document.createElement('canvas');
+            floorCanvas.width = 64;
+            floorCanvas.height = 64;
+            const floorCtx = floorCanvas.getContext('2d');
+            
+            // Softer green for grass
+            floorCtx.fillStyle = '#5D8C4F'; // More natural, less bright green
+            floorCtx.fillRect(0, 0, 64, 64);
+            
+            // Add grass texture with softer accent color
+            floorCtx.fillStyle = '#6A9259'; // Slightly different green for texture
+            for (let i = 0; i < 20; i++) {
+                const x = Math.random() * 64;
+                const y = Math.random() * 64;
+                const size = 2 + Math.random() * 4;
+                floorCtx.fillRect(x, y, size, size);
+            }
+            
+            assets.floor = new Image();
+            assets.floor.src = floorCanvas.toDataURL();
+        }
+
+        // Create resource folder and assets
+        function createResources() {
+            // Create simple canvas-generated images for assets
+            
+            // Create egg image
+            const eggCanvas = document.createElement('canvas');
+            eggCanvas.width = 30;
+            eggCanvas.height = 30;
+            const eggCtx = eggCanvas.getContext('2d');
+            
+            // Draw egg
+            eggCtx.fillStyle = 'white';
+            eggCtx.beginPath();
+            eggCtx.ellipse(15, 15, 10, 15, 0, 0, Math.PI * 2);
+            eggCtx.fill();
+            
+            // Add easter colors
+            eggCtx.strokeStyle = '#FF69B4';
+            eggCtx.lineWidth = 2;
+            eggCtx.beginPath();
+            eggCtx.moveTo(10, 8);
+            eggCtx.lineTo(20, 8);
+            eggCtx.stroke();
+            
+            eggCtx.strokeStyle = '#9370DB';
+            eggCtx.beginPath();
+            eggCtx.moveTo(10, 15);
+            eggCtx.lineTo(20, 15);
+            eggCtx.stroke();
+            
+            eggCtx.strokeStyle = '#FFEB3B';
+            eggCtx.beginPath();
+            eggCtx.moveTo(10, 22);
+            eggCtx.lineTo(20, 22);
+            eggCtx.stroke();
+            
+            assets.egg = new Image();
+            assets.egg.src = eggCanvas.toDataURL();
+            
+            // Create health pickup
+            const healthCanvas = document.createElement('canvas');
+            healthCanvas.width = 30;
+            healthCanvas.height = 30;
+            const healthCtx = healthCanvas.getContext('2d');
+            
+            healthCtx.fillStyle = 'red';
+            healthCtx.fillRect(5, 12, 20, 6);
+            healthCtx.fillRect(12, 5, 6, 20);
+            
+            assets.healthPickup = new Image();
+            assets.healthPickup.src = healthCanvas.toDataURL();
+            
+            // Create shield pickup
+            const shieldCanvas = document.createElement('canvas');
+            shieldCanvas.width = 30;
+            shieldCanvas.height = 30;
+            const shieldCtx = shieldCanvas.getContext('2d');
+            
+            shieldCtx.fillStyle = 'blue';
+            shieldCtx.beginPath();
+            shieldCtx.moveTo(15, 5);
+            shieldCtx.lineTo(25, 10);
+            shieldCtx.lineTo(25, 20);
+            shieldCtx.lineTo(15, 25);
+            shieldCtx.lineTo(5, 20);
+            shieldCtx.lineTo(5, 10);
+            shieldCtx.closePath();
+            shieldCtx.fill();
+            
+            assets.shieldPickup = new Image();
+            assets.shieldPickup.src = shieldCanvas.toDataURL();
+            
+            // Create trap image
+            const trapCanvas = document.createElement('canvas');
+            trapCanvas.width = 30;
+            trapCanvas.height = 30;
+            const trapCtx = trapCanvas.getContext('2d');
+            
+            trapCtx.fillStyle = 'red';
+            trapCtx.fillRect(5, 10, 20, 15);
+            
+            trapCtx.fillStyle = 'black';
+            trapCtx.font = 'bold 10px Arial';
+            trapCtx.textAlign = 'center';
+            trapCtx.fillText('TNT', 15, 20);
+            
+            assets.trap = new Image();
+            assets.trap.src = trapCanvas.toDataURL();
+            
+            // Create wall image
+            const wallCanvas = document.createElement('canvas');
+            wallCanvas.width = 64;
+            wallCanvas.height = 64;
+            const wallCtx = wallCanvas.getContext('2d');
+            
+            wallCtx.fillStyle = '#8B4513';
+            wallCtx.fillRect(0, 0, 64, 64);
+            
+            // Add brick pattern
+            wallCtx.fillStyle = '#A0522D';
+            for (let y = 0; y < 64; y += 16) {
+                for (let x = y % 32 === 0 ? 0 : 16; x < 64; x += 32) {
+                    wallCtx.fillRect(x, y, 16, 8);
+                }
+            }
+            
+            assets.wall = new Image();
+            assets.wall.src = wallCanvas.toDataURL();
+            
+            // Create floor image with softer green
+            createFloorImage();
+            
+            return Promise.resolve();
+        }
+
+        // Add entry to Game Modes page
+        function addGameModeEntry() {
+            // Check if we're already on the Easter Egg Hunt page
+            if (window.location.pathname.includes('EasterEggHunt.html')) {
+                return;
+            }
+            
+            // If on Game Modes page, add our entry
+            if (window.location.pathname.includes('Game Modes.html')) {
+                const container = document.querySelector('.container');
+                if (container) {
+                    const easterMode = document.createElement('div');
+                    easterMode.className = 'game-mode';
+                    easterMode.style.animation = 'gameModeFadeIn 0.8s ease-out forwards';
+                    easterMode.style.animationDelay = '0.4s';
+                    easterMode.innerHTML = `
+                        <i class="fas fa-gift" style="font-size: 64px; color: var(--easter-purple); margin-bottom: 20px;"></i>
+                        <span>Easter Egg Hunt</span>
+                    `;
+                    easterMode.addEventListener('click', () => {
+                        window.location.href = 'EasterEggHunt.html';
+                    });
+                    container.appendChild(easterMode);
+                }
+            }
+        }
+
+        // Add game mode entry if on the Game Modes page
+        if (window.location.pathname.includes('Game Modes.html')) {
+            window.addEventListener('load', addGameModeEntry);
+        }
+
+        // Initialize the game when the page loads
+        window.addEventListener('load', initGame);
+
+        // Draw storm
+        function drawStorm() {
+            // Draw storm boundary
+            ctx.beginPath();
+            ctx.arc(
+                stormSettings.centerX - camera.x, 
+                stormSettings.centerY - camera.y, 
+                stormSettings.currentRadius, 
+                0, 
+                Math.PI * 2
+            );
+            
+            // Fill outside the safe zone with storm effect
+            ctx.save();
+            ctx.globalCompositeOperation = 'source-over';
+            
+            // Create gradient for storm effect - Easter themed colors
+            const gradient = ctx.createRadialGradient(
+                stormSettings.centerX - camera.x,
+                stormSettings.centerY - camera.y,
+                stormSettings.currentRadius - 50,
+                stormSettings.centerX - camera.x,
+                stormSettings.centerY - camera.y,
+                stormSettings.currentRadius + 50
+            );
+            
+            // Easter-themed storm colors (pastel purple/pink)
+            gradient.addColorStop(0, 'rgba(221, 160, 221, 0.6)'); // Plum
+            gradient.addColorStop(0.5, 'rgba(255, 182, 193, 0.8)'); // Light pink
+            gradient.addColorStop(1, 'rgba(186, 85, 211, 0.9)'); // Medium orchid
+            
+            // Create storm path (everything outside the circle)
+            ctx.rect(-10000, -10000, 20000, 20000);
+            ctx.arc(
+                stormSettings.centerX - camera.x, 
+                stormSettings.centerY - camera.y, 
+                stormSettings.currentRadius, 
+                0, 
+                Math.PI * 2, 
+                true
+            );
+            
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // Game over
+        function gameOver(message = "Game Over") {
+            gameStarted = false;
+            
+            // Update user's rewards in Firebase
+            dbUpdate(ref(database, `users/${currentUser.uid}/easterEvent`), {
+                eggsCollected: userData.easterEvent?.eggsCollected + players[currentUser.uid].eggsCollected || players[currentUser.uid].eggsCollected,
+                gamesPlayed: userData.easterEvent?.gamesPlayed + 1 || 1,
+                lastPlayed: new Date().toISOString()
+            });
+            
+            // Display game over message
+            const gameOverScreen = document.createElement('div');
+            gameOverScreen.style.position = 'absolute';
+            gameOverScreen.style.top = '0';
+            gameOverScreen.style.left = '0';
+            gameOverScreen.style.width = '100%';
+            gameOverScreen.style.height = '100%';
+            gameOverScreen.style.backgroundColor = 'rgba(0,0,0,0.8)';
+            gameOverScreen.style.display = 'flex';
+            gameOverScreen.style.flexDirection = 'column';
+            gameOverScreen.style.justifyContent = 'center';
+            gameOverScreen.style.alignItems = 'center';
+            gameOverScreen.style.zIndex = '1000';
+            
+            gameOverScreen.innerHTML = `
+                <h1 style="color: red; font-size: 3rem; margin-bottom: 20px;">${message}</h1>
+                <p style="color: white; font-size: 1.5rem; margin-bottom: 20px;">You collected ${players[currentUser.uid].eggsCollected} eggs</p>
+                <button id="play-again" style="padding: 15px 30px; background-color: var(--easter-purple); color: white; border: none; border-radius: 5px; font-size: 1.2rem; cursor: pointer;">Play Again</button>
+                <button id="return-home" style="margin-top: 10px; padding: 15px 30px; background-color: var(--secondary-color); color: white; border: none; border-radius: 5px; font-size: 1.2rem; cursor: pointer;">Return to Home</button>
+            `;
+            
+            document.body.appendChild(gameOverScreen);
+            
+            document.getElementById('play-again').addEventListener('click', () => {
+                document.body.removeChild(gameOverScreen);
+                startGame();
+            });
+            
+            document.getElementById('return-home').addEventListener('click', () => {
+                window.location.href = 'home.html';
+            });
+        }
+
+        // Render game
+        function render() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw floor tiles (only visible ones)
+            const tileSize = 64;
+            const startX = Math.floor(camera.x / tileSize) * tileSize;
+            const startY = Math.floor(camera.y / tileSize) * tileSize;
+            const endX = Math.ceil((camera.x + camera.width) / tileSize) * tileSize;
+            const endY = Math.ceil((camera.y + camera.height) / tileSize) * tileSize;
+            
+            for (let x = startX; x < endX; x += tileSize) {
+                for (let y = startY; y < endY; y += tileSize) {
+                    ctx.drawImage(assets.floor, x - camera.x, y - camera.y, tileSize, tileSize);
+                }
+            }
+            
+            // Draw storm
+            drawStorm();
+            
+            // Draw environment elements (only visible ones)
+            environmentElements.forEach(element => {
+                if (isInViewport(element)) {
+                    // Draw environment element based on type
+                    if (element.type === 'tree') {
+                        drawTree(element.x - camera.x, element.y - camera.y, element.width, element.height);
+                    } else if (element.type === 'rock') {
+                        drawRock(element.x - camera.x, element.y - camera.y, element.width, element.height);
+                    } else if (element.type === 'bush') {
+                        drawBush(element.x - camera.x, element.y - camera.y, element.width, element.height);
+                    } else if (element.type === 'flower') {
+                        drawFlower(element.x - camera.x, element.y - camera.y, element.width, element.height);
+                    } else if (element.type === 'stone') {
+                        drawStone(element.x - camera.x, element.y - camera.y, element.width, element.height);
+                    } else if (element.type === 'bigRock') {
+                        drawBigRock(element.x - camera.x, element.y - camera.y, element.width, element.height);
+                    } else if (element.type === 'river') {
+                        drawRiver(element.x - camera.x, element.y - camera.y, element.width, element.height, element.angle);
+                    } else if (element.type === 'hill') {
+                        drawHill(element.x - camera.x, element.y - camera.y, element.width, element.height, element.elevation);
+                    }
+                }
+            });
+            
+            // Draw walls (only visible ones)
+            walls.forEach(wall => {
+                if (isInViewport(wall)) {
+                    if (wall.type === 'bridge') {
+                        drawBridge(wall.x - camera.x, wall.y - camera.y, wall.width, wall.height, wall.angle);
+                    } else {
+                        ctx.drawImage(assets.wall, 
+                                    wall.x - camera.x, 
+                                    wall.y - camera.y, 
+                                    wall.width, 
+                                    wall.height);
+                    }
+                }
+            });
+            
+            // Draw eggs (only visible ones)
+            eggs.forEach(egg => {
+                if (!egg.collected && isInViewport(egg)) {
+                    ctx.drawImage(assets.egg, 
+                                 egg.x - egg.width/2 - camera.x, 
+                                 egg.y - egg.height/2 - camera.y, 
+                                 egg.width, 
+                                 egg.height);
+                }
+            });
+            
+            // Draw pickups (only visible ones)
+            pickups.forEach(pickup => {
+                if (isInViewport(pickup)) {
+                    const img = pickup.type === 'health' ? assets.healthPickup : assets.shieldPickup;
+                    ctx.drawImage(img, 
+                                 pickup.x - pickup.width/2 - camera.x, 
+                                 pickup.y - pickup.height/2 - camera.y, 
+                                 pickup.width, 
+                                 pickup.height);
+                }
+            });
+            
+            // Draw traps (only visible ones)
+            traps.forEach(trap => {
+                if (trap.active && isInViewport(trap)) {
+                    ctx.drawImage(assets.trap, 
+                                 trap.x - trap.width/2 - camera.x, 
+                                 trap.y - trap.height/2 - camera.y, 
+                                 trap.width, 
+                                 trap.height);
+                }
+            });
+            
+            // Draw all players (current player and others)
+            drawPlayers();
+            
+            // Draw map boundary
+            ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+            ctx.lineWidth = 5;
+            ctx.strokeRect(-camera.x, -camera.y, MAP_WIDTH, MAP_HEIGHT);
+            
+            // Draw mini-map
+            drawMiniMap();
+        }
+        
+        // Draw mini-map
+        function drawMiniMap() {
+            const miniMapSize = 150;
+            const miniMapX = canvas.width - miniMapSize - 10;
+            const miniMapY = 10;
+            const scaleFactor = miniMapSize / MAP_WIDTH;
+            
+            // Draw mini-map background
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(miniMapX, miniMapY, miniMapSize, miniMapSize);
+            
+            // Draw storm circle on mini-map
+            ctx.beginPath();
+            ctx.arc(
+                miniMapX + stormSettings.centerX * scaleFactor,
+                miniMapY + stormSettings.centerY * scaleFactor,
+                stormSettings.currentRadius * scaleFactor,
+                0,
+                Math.PI * 2
+            );
+            
+            // Create pink/purple gradient for the storm edge
+            const miniMapGradient = ctx.createRadialGradient(
+                miniMapX + stormSettings.centerX * scaleFactor,
+                miniMapY + stormSettings.centerY * scaleFactor,
+                stormSettings.currentRadius * scaleFactor - 2,
+                miniMapX + stormSettings.centerX * scaleFactor,
+                miniMapY + stormSettings.centerY * scaleFactor,
+                stormSettings.currentRadius * scaleFactor + 2
+            );
+            
+            miniMapGradient.addColorStop(0, 'rgba(255, 182, 193, 0.8)'); // Light pink
+            miniMapGradient.addColorStop(1, 'rgba(186, 85, 211, 0.9)'); // Medium orchid
+            
+            ctx.strokeStyle = miniMapGradient;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Show next storm circle if we're between phases
+            if (stormSettings.currentPhase < stormSettings.phases.length && !stormSettings.active) {
+                const nextRadius = stormSettings.phases[stormSettings.currentPhase].targetRadius;
+                
+                ctx.beginPath();
+                ctx.arc(
+                    miniMapX + stormSettings.centerX * scaleFactor,
+                    miniMapY + stormSettings.centerY * scaleFactor,
+                    nextRadius * scaleFactor,
+                    0,
+                    Math.PI * 2
+                );
+                
+                // Dashed line for next circle
+                ctx.setLineDash([3, 3]);
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                ctx.setLineDash([]); // Reset dash
+            }
+            
+            // Draw player positions
+            for (const playerId in players) {
+                const player = players[playerId];
+                const playerX = miniMapX + player.x * scaleFactor;
+                const playerY = miniMapY + player.y * scaleFactor;
+                
+                // Draw as dot
+                ctx.fillStyle = playerId === currentUser.uid ? '#00FF00' : '#FF0000';
+                ctx.beginPath();
+                ctx.arc(playerX, playerY, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Draw camera viewport
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(
+                miniMapX + camera.x * scaleFactor,
+                miniMapY + camera.y * scaleFactor,
+                camera.width * scaleFactor,
+                camera.height * scaleFactor
+            );
+        }
+        
+        // Environment rendering functions
+        function drawTree(x, y, width, height) {
+            // Draw tree trunk
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(x + width/3, y + height/2, width/3, height/2);
+            
+            // Draw foliage
+            ctx.fillStyle = '#2E7D32';
+            ctx.beginPath();
+            ctx.moveTo(x, y + height/2);
+            ctx.lineTo(x + width/2, y);
+            ctx.lineTo(x + width, y + height/2);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Add second layer of foliage
+            ctx.beginPath();
+            ctx.moveTo(x + width*0.1, y + height*0.4);
+            ctx.lineTo(x + width/2, y + height*0.1);
+            ctx.lineTo(x + width*0.9, y + height*0.4);
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        function drawRock(x, y, width, height) {
+            ctx.fillStyle = '#757575';
+            ctx.beginPath();
+            ctx.ellipse(x + width/2, y + height/2, width/2, height/2, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Add details
+            ctx.fillStyle = '#616161';
+            ctx.beginPath();
+            ctx.ellipse(x + width*0.3, y + height*0.3, width*0.1, height*0.1, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        function drawBush(x, y, width, height) {
+            ctx.fillStyle = '#388E3C';
+            
+            // Draw three overlapping circles
+            ctx.beginPath();
+            ctx.arc(x + width*0.3, y + height*0.5, width*0.3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(x + width*0.7, y + height*0.4, width*0.3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(x + width*0.5, y + height*0.6, width*0.3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        function drawFlower(x, y, width, height) {
+            // Draw stem
+            ctx.fillStyle = '#4CAF50';
+            ctx.fillRect(x + width/2 - 2, y + height/3, 4, height*2/3);
+            
+            // Draw petals
+            ctx.fillStyle = '#FFD54F';
+            for (let i = 0; i < 6; i++) {
+                const angle = i * Math.PI/3;
+                const petalX = x + width/2 + Math.cos(angle) * width/3;
+                const petalY = y + height/3 + Math.sin(angle) * width/3;
+                
+                ctx.beginPath();
+                ctx.arc(petalX, petalY, width/6, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Draw center
+            ctx.fillStyle = '#FFA000';
+            ctx.beginPath();
+            ctx.arc(x + width/2, y + height/3, width/8, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Draw current player and other players with improved health bars
+        function drawPlayers() {
+            // Draw other players
+            for (const playerId in players) {
+                if (playerId === currentUser.uid) continue; // Skip current player (drawn last)
+                
+                const otherPlayer = players[playerId];
+                if (!isInViewport(otherPlayer)) continue; // Skip if not in viewport
+                
+                // Draw the player
+                drawPlayerWithDetails(otherPlayer, playerId === currentUser.uid);
+            }
+            
+            // Draw current player (on top)
+            const player = players[currentUser.uid];
+            if (player) {
+                drawPlayerWithDetails(player, true);
+            }
+        }
+        
+        // Helper function to draw player with health bars and username
+        function drawPlayerWithDetails(player, isCurrentPlayer) {
+            // For other players, apply position interpolation for smoother movement
+            let drawX, drawY;
+            
+            if (!isCurrentPlayer && player.lastPosition) {
+                // Calculate interpolation based on time since last update
+                const timeSinceUpdate = Date.now() - player.lastUpdateTime;
+                const interpolationFactor = Math.min(1, timeSinceUpdate / 100); // 100ms for full transition
+                
+                // Linear interpolation between last and current position
+                drawX = player.lastPosition.x + (player.x - player.lastPosition.x) * interpolationFactor - camera.x;
+                drawY = player.lastPosition.y + (player.y - player.lastPosition.y) * interpolationFactor - camera.y;
+            } else {
+                // Current player positions don't need interpolation
+                drawX = player.x - camera.x;
+                drawY = player.y - camera.y;
+            }
+            
+            // Draw player character
+            if (player.image && player.image.complete) {
+                // Draw player image if loaded
+                ctx.drawImage(player.image, drawX, drawY, player.width, player.height);
+            } else {
+                // Fallback to colored rectangle
+                ctx.fillStyle = isCurrentPlayer ? 'rgba(100, 200, 100, 0.8)' : 'rgba(200, 100, 100, 0.8)';
+                ctx.fillRect(drawX, drawY, player.width, player.height);
+            }
+            
+            // Draw player health and shield bars
+            if (player.health !== undefined) {
+                // Health and shield bar background (black semi-transparent)
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(drawX, drawY - 15, player.width, 10);
+                
+                // Health bar (red)
+                ctx.fillStyle = '#FF5252';
+                ctx.fillRect(drawX, drawY - 15, player.width * (player.health / 100), 5);
+                
+                // Shield bar (blue)
+                if (player.shield !== undefined) {
+                    ctx.fillStyle = '#2196F3';
+                    ctx.fillRect(drawX, drawY - 10, player.width * (player.shield / 100), 5);
+                }
+            }
+            
+            // Draw username (and egg count for other players)
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            
+            if (isCurrentPlayer) {
+                ctx.fillText(userData.username || "Player", drawX + player.width/2, drawY - 20);
+            } else {
+                ctx.fillText(
+                    `${player.username || "Player"} (${player.eggsCollected || 0})`, 
+                    drawX + player.width/2, 
+                    drawY - 20
+                );
+            }
+        }
+
+        // Helper functions to draw new environment elements
+        function drawStone(x, y, width, height) {
+            ctx.fillStyle = '#607D8B';
+            ctx.beginPath();
+            ctx.ellipse(x + width/2, y + height/2, width/2, height/2, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Add some texture/details
+            ctx.fillStyle = '#546E7A';
+            ctx.beginPath();
+            ctx.ellipse(x + width/3, y + height/3, width/6, height/6, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        function drawBigRock(x, y, width, height) {
+            ctx.fillStyle = '#455A64';
+            ctx.beginPath();
+            ctx.moveTo(x, y + height);
+            ctx.lineTo(x + width/4, y + height/3);
+            ctx.lineTo(x + width/2, y);
+            ctx.lineTo(x + 3*width/4, y + height/4);
+            ctx.lineTo(x + width, y + height);
+            ctx.fill();
+            
+            // Add texture/shading
+            ctx.fillStyle = '#37474F';
+            ctx.beginPath();
+            ctx.moveTo(x + width/2, y);
+            ctx.lineTo(x + 2*width/3, y + height/2);
+            ctx.lineTo(x + width/2, y + 2*height/3);
+            ctx.fill();
+        }
+        
+        function drawRiver(x, y, width, height, angle) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            
+            // Draw river
+            ctx.fillStyle = '#42A5F5';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Add water effect/ripples
+            ctx.fillStyle = '#64B5F6';
+            for (let i = 0; i < width/20; i++) {
+                const rippleX = Math.random() * width;
+                const rippleY = Math.random() * height;
+                const rippleSize = 5 + Math.random() * 10;
+                ctx.beginPath();
+                ctx.arc(rippleX, rippleY, rippleSize, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            ctx.restore();
+        }
+        
+        function drawBridge(x, y, width, height, angle) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            
+            // Draw wooden bridge
+            ctx.fillStyle = '#8D6E63';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Add wooden planks
+            ctx.fillStyle = '#795548';
+            for (let i = 0; i < width; i += 20) {
+                ctx.fillRect(i, 0, 10, height);
+            }
+            
+            // Add railing
+            ctx.fillStyle = '#A1887F';
+            ctx.fillRect(0, 0, width, 5);
+            ctx.fillRect(0, height-5, width, 5);
+            
+            // Add support posts
+            ctx.fillStyle = '#5D4037';
+            ctx.fillRect(10, -10, 10, height + 20);
+            ctx.fillRect(width - 20, -10, 10, height + 20);
+            
+            ctx.restore();
+        }
+        
+        function drawHill(x, y, width, height, elevation) {
+            // Draw hill gradient to represent elevation
+            const gradient = ctx.createRadialGradient(
+                x + width/2, y + height/2, 10,
+                x + width/2, y + height/2, width/2
+            );
+            
+            gradient.addColorStop(0, '#8D6E63');
+            gradient.addColorStop(0.7, '#A1887F');
+            gradient.addColorStop(1, '#BCAAA4');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.ellipse(x + width/2, y + height/2, width/2, height/2, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Add elevation indicator text (only visible when debugging)
+            if (window.debugMode) {
+                ctx.font = '14px Arial';
+                ctx.fillStyle = 'white';
+                ctx.fillText(`+${Math.floor(elevation)}m`, x + width/2, y + height/2);
+            }
+        }
+    </script>
+</body>
+</html> 

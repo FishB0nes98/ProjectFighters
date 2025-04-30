@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favicon Creator</title>
+    <link rel="icon" href="Icons/Profile/talim_desert.webp" type="image/webp">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .container {
+            background: #1f1f1f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+        }
+        .preview {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .preview img {
+            max-width: 200px;
+            border: 2px solid #444;
+            border-radius: 8px;
+        }
+        button {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: linear-gradient(45deg, #ff4b2b, #ff416c);
+        }
+        .status {
+            margin-top: 20px;
+            font-style: italic;
+        }
+        .actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .instructions {
+            background: #333;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <h1>Set Talim Desert as Website Favicon</h1>
+    
+    <div class="container">
+        <div class="preview">
+            <img src="Icons/Profile/talim_desert.webp" alt="Talim Desert Icon" id="previewImage">
+        </div>
+        
+        <div class="actions">
+            <button id="downloadButton">Download Favicon</button>
+            <div class="status" id="status"></div>
+        </div>
+        
+        <div class="instructions">
+            <h3>How to use:</h3>
+            <ol>
+                <li>Click the "Download Favicon" button above to get the favicon.ico file.</li>
+                <li>Place the downloaded favicon.ico file in your website's root directory.</li>
+                <li>Add the following line in the &lt;head&gt; section of all your HTML files:
+                    <pre>&lt;link rel="icon" href="favicon.ico"&gt;</pre>
+                </li>
+                <li>Refresh your website to see the new favicon.</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('downloadButton').addEventListener('click', function() {
+            const statusElement = document.getElementById('status');
+            statusElement.textContent = "Processing...";
+            
+            // Create a canvas to draw the image
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 32;
+            canvas.height = 32;
+            
+            // Create an image element to load the source
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.src = "Icons/Profile/talim_desert.webp";
+            
+            img.onload = function() {
+                // Draw the image on the canvas
+                ctx.drawImage(img, 0, 0, 32, 32);
+                
+                // Convert canvas to data URL
+                const dataURL = canvas.toDataURL('image/png');
+                
+                // Create a download link
+                const link = document.createElement('a');
+                link.download = 'favicon.ico';
+                link.href = dataURL;
+                link.click();
+                
+                statusElement.textContent = "Favicon downloaded successfully!";
+            };
+            
+            img.onerror = function() {
+                statusElement.textContent = "Error loading the image. Please make sure the file exists.";
+            };
+        });
+    </script>
+</body>
+</html> 

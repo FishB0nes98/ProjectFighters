@@ -1,0 +1,348 @@
+/* Reset default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background-color: #0a0014; /* Dark time realm background */
+    color: white;
+}
+
+/* Canvas styles */
+#gameCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Game Container */
+#gameContainer {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* Lobby UI */
+#lobbyUI {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(15, 0, 30, 0.85); /* Dark purple time realm */
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 2;
+    min-width: 300px;
+    border: 2px solid rgba(100, 50, 200, 0.5);
+    box-shadow: 0 0 15px rgba(100, 50, 200, 0.5);
+}
+
+#lobbyUI h1 {
+    color: #c080ff;
+    text-shadow: 0 0 10px rgba(150, 50, 255, 0.8);
+    margin-bottom: 1rem;
+}
+
+#lobbyUI p {
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+.warning {
+    color: #ff80ff;
+    font-style: italic;
+    margin: 15px 0;
+    padding: 8px;
+    border: 1px solid rgba(255, 0, 255, 0.3);
+    border-radius: 5px;
+    background-color: rgba(100, 0, 100, 0.2);
+    text-shadow: 0 0 8px rgba(255, 100, 255, 0.6);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+}
+
+.button {
+    background-color: #5000a0; /* Purple theme button */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+    box-shadow: 0 0 8px rgba(128, 0, 255, 0.5);
+}
+
+.button:hover {
+    background-color: #6000c0;
+    box-shadow: 0 0 12px rgba(150, 50, 255, 0.8);
+}
+
+/* Character selection */
+#characterSelect {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(15, 0, 30, 0.85);
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 2;
+    min-width: 600px;
+    border: 2px solid rgba(100, 50, 200, 0.5);
+    box-shadow: 0 0 15px rgba(100, 50, 200, 0.5);
+}
+
+#characterSelect h2 {
+    color: #c080ff;
+    text-shadow: 0 0 10px rgba(150, 50, 255, 0.8);
+    margin-bottom: 0.5rem;
+}
+
+#characterOptions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.character-option {
+    width: 100px;
+    height: 100px;
+    border: 2px solid #6030a0;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    overflow: hidden;
+    box-shadow: 0 0 8px rgba(100, 0, 200, 0.4);
+}
+
+.character-option:hover {
+    border-color: #8050c0;
+    box-shadow: 0 0 12px rgba(128, 0, 255, 0.6);
+    transform: scale(1.05);
+}
+
+.character-option.selected {
+    border-color: #a060e0;
+    box-shadow: 0 0 15px rgba(160, 100, 255, 0.8);
+}
+
+.character-option img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#selectedTeam {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.team-slot {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed #6030a0;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 8px rgba(100, 0, 200, 0.2);
+}
+
+.team-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#startRaidButton {
+    background-color: #5000a0;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 20px 0;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+    box-shadow: 0 0 8px rgba(128, 0, 255, 0.5);
+}
+
+#startRaidButton:disabled {
+    background-color: #3a2a4a;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+#startRaidButton:hover:not(:disabled) {
+    background-color: #6000c0;
+    box-shadow: 0 0 12px rgba(150, 50, 255, 0.8);
+}
+
+/* Game UI */
+#gameUI {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+#playerHealthBars {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.player-health-bar {
+    width: 200px;
+    height: 20px;
+    border: 2px solid #8050c0;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 0 8px rgba(150, 80, 255, 0.4);
+}
+
+.player-health-fill {
+    height: 100%;
+    background: linear-gradient(to right, #4010a0, #8050e0);
+    transition: width 0.3s;
+}
+
+.player-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.player-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #6030a0;
+    box-shadow: 0 0 8px rgba(150, 80, 255, 0.4);
+}
+
+#bossHealthBar {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 30px;
+    border: 3px solid #9000f0;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 0 12px rgba(150, 0, 255, 0.6);
+}
+
+.boss-health-fill {
+    height: 100%;
+    background: linear-gradient(to right, #6000b0, #a040f0);
+    transition: width 0.3s;
+}
+
+.boss-name {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 8px rgba(150, 50, 255, 0.8);
+    top: -25px;
+}
+
+#abilityBar {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    pointer-events: auto;
+}
+
+.ability-button {
+    width: 60px;
+    height: 60px;
+    border: 2px solid #8050c0;
+    border-radius: 5px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    box-shadow: 0 0 8px rgba(150, 80, 255, 0.4);
+    transition: all 0.2s;
+}
+
+.ability-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(170, 100, 255, 0.6);
+}
+
+.ability-button img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ability-button span {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: rgba(80, 0, 150, 0.7);
+    color: white;
+    font-weight: bold;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+.ability-cooldown {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+} 
