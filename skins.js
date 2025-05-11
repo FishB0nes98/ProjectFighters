@@ -1,5 +1,6 @@
 const skinReference = {
     Julia: [
+        { name: "Tokyo Mew Mew Julia", price: 2500, imagePath: "Skins/Tokyo Mew Mew Julia.png" },
         { name: "Blossom Julia", price: 2000, imagePath: "Skins/Blossom Julia.jpg" },
         { name: "Glorious Julia", price: "UNAVAILABLE", imagePath: "Skins/Glorious Julia.jpg" },
         { name: "Sacred Ceremony Julia", price: 1000, imagePath: "Skins/Sacred Ceremony Julia.jpeg" },
@@ -42,6 +43,7 @@ const skinReference = {
         { name: "Blossom Jun", price: 1000, imagePath: "Skins/Blossom Jun.png" }
     ],
     "Cham Cham": [
+        { name: "Tokyo Mew Mew Cham Cham", price: 2500, imagePath: "Skins/Tokyo Mew Mew Cham Cham.png" },
         { name: "Celestial Protector Cham Cham", price: 2000, imagePath: "Skins/Celestial Protector Cham Cham.jpeg" },
         { name: "Farmer Cham Cham", price: 2000, imagePath: "Skins/Farmer Cham Cham.jpeg" },
         { name: "Pajama Party Cham Cham", price: 2000, imagePath: "Skins/Pajama Party Cham Cham.jpg" },
@@ -93,7 +95,7 @@ const skinReference = {
         { name: "Infernal Scorpion", price: 2000, imagePath: "Skins/Infernal Scorpion.png" }
     ],
     Peacock: [
-        { name: "Easter Bunny Peacock", price: 2000, imagePath: "Skins/Easter Bunny Peacock.jpg" },
+        { name: "Easter Bunny Peacock", price: "UNAVAILABLE", imagePath: "Skins/Easter Bunny Peacock.jpg" },
         { name: "Gangster Peacock", price: 1000, imagePath: "Skins/Gangster Peacock.jfif" },
         { name: "Voidborn Peacock", price: 2000, imagePath: "Skins/Voidborn Peacock.jfif" },
         { name: "Captain Peacock", price: 3000, imagePath: "Skins/Captain Peacock.png" },
@@ -126,7 +128,7 @@ const skinReference = {
         { name: "Lady Deadpool Ibuki", price: "UNAVAILABLE", imagePath: "Skins/Lady Deadpool Ibuki.jpeg" }
     ],
     "R.Mika": [
-        { name: "Easter Bunny R Mika", price: 2000, imagePath: "Skins/Easter Bunny R Mika.jpg" },
+        { name: "Easter Bunny R Mika", price: "UNAVAILABLE", imagePath: "Skins/Easter Bunny R Mika.jpg" },
         { name: "Celestial Protector R Mika", price: 2000, imagePath: "Skins/Celestial Protector R Mika.jpeg" },
         { name: "Rainy Day R Mika", price: 2000, imagePath: "Skins/Rainy Day R Mika.jpeg" },
         { name: "Goth R Mika", price: 1000, imagePath: "Skins/Goth R Mika.png" },
@@ -173,7 +175,7 @@ const skinReference = {
         { name: "Officer Noel", price: 1000, imagePath: "Skins/Officer Noel.jpeg" }
     ],
     Blanka: [
-        { name: "Sand Soldier Blanka", price: 1000, imagePath: "Skins/Sand Soldier Blanka.jpeg" },
+        { name: "Sand Soldier Blanka", price: 1000, imagePath: "Skins/Sand Soldier Blanka.png" },
         { name: "Gangster Blanka", price: 1000, imagePath: "Skins/Gangster Blanka.jpg" },
         { name: "Jack O Blanka", price: "UNAVAILABLE", imagePath: "Skins/Jack O Blanka.jpeg" },
         { name: "Voidborn Blanka", price: 2000, imagePath: "Skins/Voidborn Blanka.jfif" },
@@ -189,6 +191,7 @@ const skinReference = {
         { name: "Farmer Nina", price: 1000, imagePath: "Skins/Farmer Nina.png" }
     ],
     Ayane: [
+        { name: "Tokyo Mew Mew Ayane", price: 5000, imagePath: "Skins/Tokyo Mew Mew Ayane.png" },
         { name: "Bunny Ayane", price: "UNAVAILABLE", imagePath: "Skins/Bunny Ayane.jpg" },
         { name: "Battleborn Ayane", price: 2000, imagePath: "Skins/Battleborn Ayane.jpeg" },
         { name: "Jade Ayane", price: 2000, imagePath: "Skins/Jade Ayane.png" },
@@ -224,7 +227,8 @@ const skinReference = {
     "Sub Zero": [
         { name: "Atlantean Sub Zero", price: 2000, imagePath: "Skins/Atlantean Sub Zero.jpeg" },
         { name: "Neon Core Sub Zero", price: 1000, imagePath: "Skins/Neon Core Sub Zero.png" },
-        { name: "Arcane Sorcerer Sub Zero", price: 2000, imagePath: "Skins/Arcane Sorcerer Sub Zero.png" }
+        { name: "Arcane Sorcerer Sub Zero", price: 2000, imagePath: "Skins/Arcane Sorcerer Sub Zero.png" },
+        { name: "Samurai Shizumaru", price: 1000, imagePath: "Skins/Samurai Shizumaru.jpeg" }
     ],
     Christie: [
         { name: "Atlantean Christie", price: 2000, imagePath: "Skins/Atlantean Christie.jpeg" },
@@ -259,6 +263,7 @@ const skinReference = {
         { name: "Samurai Shizumaru", price: 1000, imagePath: "Skins/Samurai Shizumaru.jpeg" }
     ],
     Kagome: [
+        { name: "Tokyo Mew Mew Kagome", price: 2500, imagePath: "Skins/Tokyo Mew Mew Kagome.jpg" },
         { name: "Lovely Kagome", price: "UNAVAILABLE", imagePath: "Skins/Lovely Kagome.jpeg" },
         { name: "Atlantean Kagome", price: 2000, imagePath: "Skins/Atlantean Kagome.jpeg" },
         { name: "Primal Huntress Kagome", price: 1000, imagePath: "Skins/Primal Huntress Kagome.jpeg" },
@@ -279,7 +284,7 @@ const skinReference = {
         { name: "Panda", price: 0, imagePath: "Skins/Panda.jpeg" }
     ],
     Alice: [
-        { name: "Chocolate Bunny Alice", price: 3000, imagePath: "Skins/Chocolate Bunny Alice.png" },
+        { name: "Chocolate Bunny Alice", price: "UNAVAILABLE", imagePath: "Skins/Chocolate Bunny Alice.png" },
         { name: "Farmer Alice", price: 2000, imagePath: "Skins/Farmer Alice.jpeg" },
         { name: "Mythic Sentinel Alice", price: 1000, imagePath: "Skins/Mythic Sentinel Alice.jpeg" }
     ],
@@ -288,6 +293,7 @@ const skinReference = {
         { name: "Voidborn FANG", price: 2000, imagePath: "Skins/Voidborn FANG.jpeg" }
     ],
     Lili: [
+        { name: "Tokyo Mew Mew Lili", price: 2500, imagePath: "Skins/Tokyo Mew Mew Lili.png" },
         { name: "Celestial Protector Lili", price: 2000, imagePath: "Skins/Celestial Protector Lili.jpeg" },
         { name: "Lunar Festival Lili", price: "UNAVAILABLE", imagePath: "Skins/Lunar Festival Lili.jpg" },
         { name: "Winter Festival Lili", price: "UNAVAILABLE", imagePath: "Skins/Winter Festival Lili.jpg" },
@@ -304,7 +310,7 @@ const skinReference = {
         { name: "Feather Dancer Mai", price: 1000, imagePath: "Skins/Feather Dancer Mai.jpeg" }
     ],
     Shinnok: [
-        { name: "Easter Bunny Shinnok", price: 2000, imagePath: "Skins/Easter Bunny Shinnok.jpeg" },
+        { name: "Easter Bunny Shinnok", price: "UNAVAILABLE", imagePath: "Skins/Easter Bunny Shinnok.jpeg" },
         { name: "Bandito Shinnok", price: 1000, imagePath: "Skins/Bandito Shinnok.jpg" },
         { name: "Atlantean Shinnok", price: 2000, imagePath: "Skins/Atlantean Shinnok.jpeg" },
         { name: "Rainy Day Shinnok", price: 2000, imagePath: "Skins/Rainy Day Shinnok.jpeg" }

@@ -1,24 +1,24 @@
 // Quest Types and their configurations
 export const questTypes = {
     daily: {
-        title: 'Daily Desert Wars Quests',
+        title: 'Tokyo Mew Mew Daily Quests',
         resetInterval: 64800000, // 18 hours in milliseconds
         maxActive: 3
     },
     special: {
-        title: 'Desert Wars Challenges',
-        maxActive: 6
+        title: 'Tokyo Mew Mew Special Challenges',
+        maxActive: 4
     }
 };
 
-// Desert Wars themed quest templates
+// Tokyo Mew Mew themed quest templates
 export const questTemplates = {
     daily: [
         {
-            id: 'desert_daily_games',
-            icon: 'fa-play',
-            title: 'Desert Patrol',
-            description: 'Play 2 games (any mode).',
+            id: 'mew_daily_patrol',
+            icon: 'fa-paw',
+            title: 'Mew Daily Patrol',
+            description: 'Play 2 games to help the team!',
             requirements: {
                 count: 2,
                 type: 'play_games'
@@ -26,14 +26,14 @@ export const questTemplates = {
             rewards: [
                 { type: 'questPoints', icon: 'res/img/qp.png', amount: 100 }
             ],
-            resetInterval: 64800000, // 18 hours
+            resetInterval: 64800000,
             defaultData: { progress: 0, completed: false, claimed: false, lastReset: null }
         },
         {
-            id: 'desert_daily_wins',
-            icon: 'fa-trophy',
-            title: 'Oasis Victory',
-            description: 'Win 1 game (any mode).',
+            id: 'mew_daily_win',
+            icon: 'fa-magic',
+            title: 'Magical Girl Victory',
+            description: 'Win 1 game with flair!',
             requirements: {
                 count: 1,
                 type: 'win_games'
@@ -41,90 +41,92 @@ export const questTemplates = {
             rewards: [
                 { type: 'questPoints', icon: 'res/img/qp.png', amount: 150 }
             ],
-            resetInterval: 64800000, // 18 hours
+            resetInterval: 64800000,
             defaultData: { progress: 0, completed: false, claimed: false, lastReset: null }
         },
         {
-            id: 'dune_skirmisher',
-            icon: 'fa-crosshairs',
-            title: 'Dune Skirmisher',
-            description: 'Get 10 Kills or Assists across any games today.',
+            id: 'mew_team_play',
+            icon: 'fa-users',
+            title: 'Mew Team Up!',
+            description: 'Play 1 game using any Tokyo Mew Mew skin.',
             requirements: {
-                count: 10,
-                type: 'kills_assists'
+                count: 1,
+                type: 'play_character_theme_skin',
+                skins: ['Tokyo Mew Mew Ayane', 'Tokyo Mew Mew Julia', 'Tokyo Mew Mew Kagome', 'Tokyo Mew Mew Lili', 'Tokyo Mew Mew Cham Cham']
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 120 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 120 },
+                { type: 'championMoney', icon: 'res/img/cm.png', amount: 200 }
             ],
-            resetInterval: 64800000, // 18 hours
-            defaultData: { progress: 0, completed: false, claimed: false, lastReset: null, totalKillsAssists: 0 }
+            resetInterval: 64800000,
+            defaultData: { progress: 0, completed: false, claimed: false, lastReset: null }
         }
     ],
     special: [
         {
-            id: 'sandstorm_victor',
-            icon: 'fa-wind',
-            title: 'Sandstorm Victor',
-            description: 'Win 3 games in a row (any mode).',
+            id: 'mew_spell_slinging',
+            icon: 'fa-magic',
+            title: 'Magical Barrage',
+            description: 'Land 10 abilities on enemy champions in a single game.',
+            requirements: {
+                count: 10,
+                type: 'land_abilities_on_enemies_in_match'
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 200 },
+                { type: 'championMoney', icon: 'res/img/cm.png', amount: 300 }
+            ],
+            repeatable: true,
+            defaultData: { progress: 0, completed: false, claimed: false, completionCount: 0 }
+        },
+        {
+            id: 'ichigos_valor',
+            icon: 'fa-heart',
+            title: "Ichigo's Valor",
+            description: 'Accumulate 3 Kills or Assists while playing as Tokyo Mew Mew Ayane.',
             requirements: {
                 count: 3,
-                type: 'win_streak'
+                type: 'kills_assists_as_character_skin',
+                skin: 'Tokyo Mew Mew Ayane'
             },
             rewards: [
                 { type: 'questPoints', icon: 'res/img/qp.png', amount: 250 },
-                { type: 'championMoney', icon: 'res/img/cm.png', amount: 500 }
+                { type: 'sticker', name: 'tokyo_ayane_ribbon', icon: 'Stickers/tokyo_ayane_ribbon.png' }
             ],
             repeatable: true,
-            defaultData: { progress: 0, completed: false, claimed: false, streak: 0, completionCount: 0 }
+            defaultData: { progress: 0, completed: false, claimed: false, completionCount: 0 }
         },
         {
-            id: 'nomads_trial',
-            icon: 'fa-hiking',
-            title: 'Nomad\'s Trial',
-            description: 'Play 5 games using Desert characters (Talim, Shizumaru, Scorpion).',
+            id: 'earth_defenders',
+            icon: 'fa-shield-alt',
+            title: 'Defenders of Earth',
+            description: 'Win 5 games during the Tokyo Mew Mew Event.',
             requirements: {
                 count: 5,
-                type: 'play_character_theme',
-                characters: ['Talim', 'Shizumaru', 'Scorpion']
-            },
-            rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 300 }
-            ],
-            repeatable: true,
-            defaultData: { progress: 0, completed: false, claimed: false, gamesWithTheme: 0, completionCount: 0 }
-        },
-        {
-            id: 'treasure_hunter',
-            icon: 'fa-gem',
-            title: 'Treasure Hunter',
-            description: 'Achieve a KDA of 4.0 or higher in a single game (min 3 kills, any mode).',
-            requirements: {
-                count: 1,
-                type: 'high_kda',
-                minKills: 3,
-                kdaThreshold: 4.0
-            },
-            rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 200 }
-            ],
-            repeatable: true,
-            defaultData: { progress: 0, completed: false, claimed: false, gamesWithHighKDA: 0, completionCount: 0 }
-        },
-        {
-            id: 'conqueror_of_sands',
-            icon: 'fa-crown',
-            title: 'Conqueror of Sands',
-            description: 'Win 10 games during the Desert Wars event (any mode).',
-            requirements: {
-                count: 10,
                 type: 'win_games_event'
             },
             rewards: [
-                { type: 'title', name: 'Desert Conqueror', icon: 'fa-id-badge' },
-                { type: 'championMoney', icon: 'res/img/cm.png', amount: 1000 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 400 },
+                { type: 'title', name: 'Mew Guardian', icon: 'fa-id-badge' }
             ],
             repeatable: false,
             defaultData: { progress: 0, completed: false, claimed: false, winsDuringEvent: 0 }
+        },
+        {
+            id: 'mew_aqua_aid',
+            icon: 'fa-tint',
+            title: 'Mew Aqua Aid',
+            description: 'Heal or Shield allies for 5000 health in total. (Across multiple games)',
+            requirements: {
+                count: 5000,
+                type: 'heal_shield_allies_total'
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 300 },
+                { type: 'championMoney', icon: 'res/img/cm.png', amount: 750 }
+            ],
+            repeatable: true,
+            defaultData: { progress: 0, completed: false, claimed: false, completionCount: 0 }
         }
     ]
 };
@@ -206,7 +208,7 @@ export function generateDailyQuests(userLevel) {
 }
 
 export function generateSpecialQuests(userLevel, activeEvents) {
-    // Always include all special quests since they're all repeatable
+    // Always include all special quests
     return questTemplates.special;
 }
 
@@ -225,7 +227,7 @@ export async function updateQuestProgress(userId, matchData, database, ref, get,
     const currentTime = Date.now();
     const updates = {};
 
-    const { result, kda, character: playedCharacter, gameMode } = matchData;
+    const { result, kda, character: playedCharacter, skin: playedSkin, gameMode, abilitiesLandedOnEnemies, healingDoneToAllies, shieldingDoneToAllies } = matchData;
     const isWin = result === 'Victory';
     const kills = kda?.kills ?? 0;
     const deaths = kda?.deaths ?? 0;
@@ -245,12 +247,10 @@ export async function updateQuestProgress(userId, matchData, database, ref, get,
     for (const type in questTemplates) {
         for (const template of questTemplates[type]) {
             const questId = template.id;
-            const questRef = ref(database, `users/${userId}/quests/${questId}`);
-            let questData = userQuests[questId] || { ...template.defaultData }; // Get current data or use default
+            let questData = userQuests[questId] || { ...template.defaultData };
 
             console.log(`Processing quest: ${questId}`, questData);
 
-            // --- Reset Logic ---
             let needsReset = false;
             if (template.resetInterval) {
                 const timeSinceReset = currentTime - (questData.lastReset || 0);
@@ -262,11 +262,10 @@ export async function updateQuestProgress(userId, matchData, database, ref, get,
             if (template.repeatable && questData.claimed) {
                  console.log(`Quest ${questId} needs reset after claim (repeatable).`);
                  needsReset = true;
-                 questData.completionCount = (questData.completionCount || 0) + 1; // Increment completion count for repeatable quests
+                 questData.completionCount = (questData.completionCount || 0) + 1;
             }
 
             if (needsReset) {
-                // Reset quest data, keeping completionCount if repeatable
                 const completionCount = questData.completionCount;
                 questData = { ...template.defaultData, lastReset: currentTime };
                  if (template.repeatable) {
@@ -274,19 +273,18 @@ export async function updateQuestProgress(userId, matchData, database, ref, get,
                  }
             }
 
-            // Skip already claimed non-repeatable quests
             if (!template.repeatable && questData.claimed) {
                  console.log(`Skipping ${questId}: Non-repeatable and claimed.`);
+                 updates[`users/${userId}/quests/${questId}`] = questData;
                  continue;
             }
 
-            // Skip already completed quests (unless it was just reset)
             if (questData.completed && !needsReset) {
                  console.log(`Skipping ${questId}: Already completed.`);
+                 updates[`users/${userId}/quests/${questId}`] = questData;
                  continue;
             }
 
-            // --- Progress Update Logic ---
             let progressMade = false;
 
             switch (template.requirements.type) {
@@ -296,11 +294,10 @@ export async function updateQuestProgress(userId, matchData, database, ref, get,
                     break;
 
                 case 'win_games':
-                case 'win_games_event': // Handles event wins too
+                case 'win_games_event':
                     if (isWin) {
                         questData.progress = (questData.progress || 0) + 1;
-                         // Specific tracking for event quest
-                         if (template.id === 'conqueror_of_sands') {
+                         if (template.id === 'earth_defenders') {
                             questData.winsDuringEvent = (questData.winsDuringEvent || 0) + 1;
                             questData.progress = questData.winsDuringEvent;
                          }
@@ -308,62 +305,77 @@ export async function updateQuestProgress(userId, matchData, database, ref, get,
                     }
                     break;
 
-                case 'kills_assists':
-                    const currentKillsAssists = kills + assists;
-                    questData.totalKillsAssists = (questData.totalKillsAssists || 0) + currentKillsAssists;
-                    questData.progress = questData.totalKillsAssists;
-                    progressMade = currentKillsAssists > 0;
+                case 'play_character_theme_skin':
+                    if (template.requirements.skins && template.requirements.skins.includes(playedSkin)) {
+                        questData.progress = (questData.progress || 0) + 1;
+                        progressMade = true;
+                    }
+                    break;
+
+                case 'land_abilities_on_enemies_in_match':
+                    if ((abilitiesLandedOnEnemies || 0) >= template.requirements.count) {
+                        questData.progress = template.requirements.count;
+                        progressMade = true;
+                    } else {
+                        if (template.repeatable) questData.progress = 0;
+                    }
+                    break;
+
+                case 'kills_assists_as_character_skin':
+                    if (playedSkin === template.requirements.skin) {
+                        const kAThisMatch = kills + assists;
+                        if (kAThisMatch > 0) {
+                            questData.progress = (questData.progress || 0) + kAThisMatch;
+                            progressMade = true;
+                        }
+                    }
+                    break;
+                
+                case 'heal_shield_allies_total':
+                    const healingShieldingDoneThisMatch = (healingDoneToAllies || 0) + (shieldingDoneToAllies || 0);
+                    if (healingShieldingDoneThisMatch > 0) {
+                        questData.progress = (questData.progress || 0) + healingShieldingDoneThisMatch;
+                        progressMade = true;
+                    }
                     break;
 
                 case 'win_streak':
                     if (isWin) {
                         questData.streak = (questData.streak || 0) + 1;
                     } else {
-                        questData.streak = 0; // Reset streak on loss
+                        questData.streak = 0;
                     }
                     questData.progress = questData.streak;
-                    progressMade = true; // Progress updates even on loss (streak reset)
-                    break;
-
-                case 'play_character_theme':
-                    if (template.requirements.characters.includes(playedCharacter)) {
-                        questData.gamesWithTheme = (questData.gamesWithTheme || 0) + 1;
-                        questData.progress = questData.gamesWithTheme;
-                        progressMade = true;
-                    }
+                    progressMade = true;
                     break;
 
                 case 'high_kda':
-                    if (kills >= template.requirements.minKills && calculatedKda >= template.requirements.kdaThreshold) {
-                        questData.gamesWithHighKDA = (questData.gamesWithHighKDA || 0) + 1;
-                        questData.progress = questData.gamesWithHighKDA;
+                    if (kills >= (template.requirements.minKills || 0) && calculatedKda >= (template.requirements.kdaThreshold || 0)) {
+                        questData.progress = (questData.progress || 0) + 1;
                         progressMade = true;
                     }
                     break;
 
-                // Add cases for other quest types if needed (e.g., damage, healing)
-                // case 'damage':
-                //     questData.totalDamage = (questData.totalDamage || 0) + (matchData.damageDealt || 0);
-                //     questData.progress = questData.totalDamage;
-                //     progressMade = (matchData.damageDealt || 0) > 0;
-                //     break;
+                case 'play_character_theme':
+                    if (template.requirements.characters && template.requirements.characters.includes(playedCharacter)) {
+                        questData.progress = (questData.progress || 0) + 1;
+                        progressMade = true;
+                    }
+                    break;
 
                 default:
-                    console.warn(`Unknown quest requirement type: ${template.requirements.type} for quest ${questId}`);
+                    break;
             }
 
-            // --- Completion Check ---
             if (progressMade && !questData.completed) {
                 questData.completed = (questData.progress || 0) >= template.requirements.count;
                 console.log(`Quest ${questId} progress: ${questData.progress}/${template.requirements.count}, Completed: ${questData.completed}`);
             }
-
-            // Add updated quest data to the updates object
-             updates[`users/${userId}/quests/${questId}`] = questData;
+            
+            updates[`users/${userId}/quests/${questId}`] = questData;
         }
     }
 
-    // Apply all updates to Firebase
     if (Object.keys(updates).length > 0) {
         try {
             await update(ref(database), updates);
@@ -372,6 +384,6 @@ export async function updateQuestProgress(userId, matchData, database, ref, get,
             console.error('Error updating quest progress in Firebase:', error);
         }
     } else {
-        console.log('No quest progress updates to apply.');
+        console.log('No quest progress updates to apply for this match.');
     }
 } 

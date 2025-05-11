@@ -1,6 +1,18 @@
 // Export the sticker data for use in other files
 export const stickers = {
     // New Stickers
+    "tokyo_lili_cry": {
+        name: "Tokyo Lili Cry",
+        image: "Stickers/tokyo_lili_cry.png",
+        price: 350,
+        category: "regular"
+    },
+    "tokyo_julia_sgy": {
+        name: "Tokyo Julia Shy",
+        image: "Stickers/tokyo_julia_sgy.png",
+        price: 350,
+        category: "regular"
+    },
     "jun_unbothered": {
         name: "Jun Unbothered",
         image: "Stickers/jun_unbothered.png",

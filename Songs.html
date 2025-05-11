@@ -11,7 +11,7 @@
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
-        import { getDatabase, ref, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { getDatabase, ref, set, get, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
         import songs from './songs.js';
         
         const firebaseConfig = {
@@ -42,6 +42,39 @@
                         window.userCM = userData.CM || 0;
                         window.userRef = userRef;
                         updateSongButtons(userData.Songs || {});
+                        
+                        // Check for openMusicPlayer flag
+                        const openMusicPlayer = sessionStorage.getItem('openMusicPlayer');
+                        if (openMusicPlayer === 'true') {
+                            // Find and play Tokyo Mew Mew song if it exists
+                            const tokyoMewMewSong = songs.find(song => song.path === 'Songs/team_up_tokyo_mew_mew.mp3');
+                            if (tokyoMewMewSong && userData.Songs && userData.Songs.team_up_tokyo_mew_mew) {
+                                // Scroll to the song in the grid
+                                const songItems = document.querySelectorAll('.song-item');
+                                songItems.forEach(item => {
+                                    if (item.dataset.songName === 'team_up_tokyo_mew_mew') {
+                                        item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        
+                                        // Highlight the song by adding a temporary glow effect
+                                        item.classList.add('highlight-song');
+                                        setTimeout(() => {
+                                            item.classList.remove('highlight-song');
+                                        }, 3000);
+                                        
+                                        // Play preview after a short delay
+                                        setTimeout(() => {
+                                            const previewButton = item.querySelector('.preview-button');
+                                            if (previewButton) {
+                                                previewButton.click();
+                                            }
+                                        }, 800);
+                                    }
+                                });
+                            }
+                            
+                            // Clear the flag so it doesn't autoplay next time
+                            sessionStorage.removeItem('openMusicPlayer');
+                        }
                     }
                 }
             });
@@ -418,6 +451,19 @@
             100% {
                 box-shadow: 0 0 20px rgba(144, 202, 249, 0.4);
             }
+        }
+        /* Add style for highlighted song */
+        .highlight-song {
+            animation: glow 3s ease-in-out;
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.8);
+        }
+        
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px rgba(255, 105, 180, 0.8); }
+            50% { box-shadow: 0 0 30px rgba(255, 105, 180, 1); }
+            100% { box-shadow: 0 0 20px rgba(255, 105, 180, 0.8); }
         }
     </style>
 </head>

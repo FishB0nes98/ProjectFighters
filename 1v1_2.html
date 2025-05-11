@@ -876,28 +876,47 @@
         async function showBuildSelection() {
             const modal = document.getElementById('buildSelectionModal');
             const buildGrid = document.getElementById('buildGrid');
-            buildGrid.innerHTML = '';
+            buildGrid.innerHTML = ''; // Clear previous builds
+
+            if (!selectedChampion) {
+                buildGrid.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--text-color);">Please select a champion first.</div>`;
+                modal.style.display = 'flex';
+                return;
+            }
 
             try {
-                const safePatchVersion = '2_1_1';
-                const buildsRef = ref(database, `builds/${safePatchVersion}`);
-                const snapshot = await get(buildsRef);
-                
-                if (snapshot.exists()) {
-                    const builds = [];
-                    snapshot.forEach(childSnapshot => {
-                        const build = childSnapshot.val();
-                        if (build.character === selectedChampion) {
-                            builds.push({
-                                id: childSnapshot.key,
-                                ...build
-                            });
-                        }
+                const allBuilds = [];
+                const allPatchesRef = ref(database, 'builds');
+                const patchesSnapshot = await get(allPatchesRef);
+
+                if (patchesSnapshot.exists()) {
+                    const patchPromises = [];
+                    patchesSnapshot.forEach(patchChild => {
+                        const patchKey = patchChild.key; // e.g., "2_1_1", "2_5"
+                        const buildsPerPatchRef = ref(database, `builds/${patchKey}`);
+                        patchPromises.push(get(buildsPerPatchRef).then(buildsSnapshot => {
+                            if (buildsSnapshot.exists()) {
+                                buildsSnapshot.forEach(childSnapshot => {
+                                    const build = childSnapshot.val();
+                                    if (build.character === selectedChampion) {
+                                        allBuilds.push({
+                                            id: childSnapshot.key,
+                                            patchForDisplay: patchKey.replace(/_/g, '.'),
+                                            // patchForDB: patchKey, // Not strictly needed here as no liking
+                                            ...build
+                                        });
+                                    }
+                                });
+                            }
+                        }));
                     });
+                    await Promise.all(patchPromises);
+                }
 
-                    builds.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+                if (allBuilds.length > 0) {
+                    allBuilds.sort((a, b) => (b.likes || 0) - (a.likes || 0));
 
-                    builds.forEach(build => {
+                    allBuilds.forEach(build => {
                         const card = document.createElement('div');
                         card.className = 'build-card';
 
@@ -907,7 +926,7 @@
                             <div class="build-title">${build.name || 'Unnamed Build'}</div>
                             <div class="build-info">
                                 <span>by ${build.creatorName || 'Anonymous'}</span>
-                                <span>• Patch ${safePatchVersion.replace(/_/g, '.')}</span>
+                                <span>• Patch ${build.patchForDisplay}</span>
                             </div>
                         `;
 
@@ -941,7 +960,7 @@
                         actions.className = 'build-actions';
                         
                         const selectButton = document.createElement('button');
-                        selectButton.className = 'copy-build';
+                        selectButton.className = 'copy-build'; // Assuming copy-build class is appropriate
                         selectButton.innerHTML = '<i class="fas fa-check"></i> Select Build';
                         selectButton.onclick = () => {
                             selectBuild(build);
@@ -949,13 +968,12 @@
                         };
 
                         actions.appendChild(selectButton);
+
                         card.appendChild(header);
                         card.appendChild(items);
                         card.appendChild(actions);
                         buildGrid.appendChild(card);
                     });
-
-                    modal.style.display = 'flex';
                 } else {
                     buildGrid.innerHTML = `
                         <div style="text-align: center; padding: 20px; color: var(--text-color);">
@@ -966,13 +984,13 @@
                             </button>
                         </div>
                     `;
-                    modal.style.display = 'flex';
                 }
+                modal.style.display = 'flex';
             } catch (error) {
                 console.error('Error loading builds:', error);
-                buildGrid.innerHTML = `
+                buildGrid.innerHTML = ` 
                     <div style="text-align: center; padding: 20px; color: var(--text-color);">
-                        Error loading builds. Please try again later.
+                        Error loading builds. Please try again later. (${error.message})
                     </div>
                 `;
                 modal.style.display = 'flex';

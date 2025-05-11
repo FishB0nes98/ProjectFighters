@@ -502,4 +502,9 @@ export const skinToBaseCharacterMap = {
     'Voidborn Angel': 'Angel',
     'Yugo': 'Yugo',
     'Talim': 'Talim',
+    'Tokyo Mew Mew Ayane': 'Ayane',
+    'Tokyo Mew Mew Julia': 'Julia',
+    'Tokyo Mew Mew Kagome': 'Kagome',
+    'Tokyo Mew Mew Lili': 'Lili',
+    'Tokyo Mew Mew Cham Cham': 'Cham Cham',
 };

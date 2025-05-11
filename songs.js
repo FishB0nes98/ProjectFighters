@@ -1,6 +1,26 @@
 const songs = [
     {
-        id: 1,
+        id: 17,
+        title: "Team Up",
+        artist: "Tokyo Mew Mew",
+        path: "Songs/team_up_tokyo_mew_mew.mp3",
+        cover: "Event/Tokyo Mew Mew Event 2.png",
+        category: "Event Theme",
+        duration: "3:32",
+        isFavorite: false
+    },
+    {
+        id: 18,
+        title: "Animal Instinct",
+        artist: "Tokyo Mew Mew",
+        path: "Songs/animal_instinct_tokyo_mew_mew.mp3",
+        cover: "Loading Screen/Tokyo Mew Mew Ayane.png",
+        category: "Event Theme",
+        duration: "3:32",
+        isFavorite: false
+    },
+    {
+        id: 19,
         title: "Born of Light",
         artist: "Celestial Protector Lili",
         path: "Songs/Born of Light (Celestial Protector Lili Theme).mp3",
@@ -158,7 +178,7 @@ const songs = [
         category: "Event Theme",
         duration: "3:55",
         isFavorite: false
-    }
+    },
 ];
 
 export default songs; 

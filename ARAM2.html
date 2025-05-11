@@ -127,6 +127,32 @@
             gap: 10px;
             max-height: calc(100vh - 180px);
             overflow: hidden;
+            position: relative;
+            border-radius: 8px;
+            background-image: url('Event/Tokyo Mew Mew Event 2.png');
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+        }
+
+        /* Add overlay for main content background */
+        .main-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 20, 40, 0.85);
+            z-index: 1;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        /* Ensure content inside main-content is above the overlay */
+        .main-content > * {
+            position: relative;
+            z-index: 2;
         }
 
         /* ARAM-specific styles */
@@ -135,8 +161,7 @@
             justify-content: center;
             gap: 20px;
             padding: 10px;
-            background-color: var(--secondary-color);
-            border: 1px solid var(--border-color);
+            background-color: transparent;
             margin-bottom: 10px;
         }
 
@@ -570,9 +595,10 @@
     </style>
 </head>
 <body>
+    <!-- Background Image -->
+    <!-- <img src="Event/Tokyo Mew Mew Event 2.png" alt="Background" class="background-image"> -->
+    
     <audio id="background-music" preload="auto" loop>
-        <source src="res/music/ranked.mp3" type="audio/mpeg">
-        <source src="res/music/ranked.ogg" type="audio/ogg">
         Your browser does not support the audio element.
     </audio>
 
@@ -721,6 +747,7 @@
         import { roles } from './roles.js';
         import { usernames } from './usernames.js';
         import { chatMessages, contextualResponses, timeBasedMessages } from './chat_messages.js';
+        import { CURRENT_PATCH } from './patch.js'; // Import CURRENT_PATCH
 
         // Firebase configuration
         const firebaseConfig = {
@@ -759,6 +786,10 @@
 
         // Set initial volume
         audio.volume = 0.2;
+
+        // Determine music path based on patch
+        const musicPath = CURRENT_PATCH === "2.5" ? "Songs/team_up_tokyo_mew_mew.mp3" : "res/music/ranked.mp3";
+        audio.src = musicPath;
 
         // Try to play audio and handle autoplay restrictions
         async function initializeAudio() {
@@ -1308,26 +1339,45 @@
             const buildGrid = document.getElementById('buildGrid');
             buildGrid.innerHTML = '';
 
+            if (!selectedChampion) {
+                buildGrid.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--text-color);">Please select a champion first.</div>`;
+                modal.style.display = 'flex';
+                return;
+            }
+            
             try {
-                const safePatchVersion = '2_1_1';
-                const buildsRef = ref(database, `builds/${safePatchVersion}`);
-                const snapshot = await get(buildsRef);
-                
-                if (snapshot.exists()) {
-                    const builds = [];
-                    snapshot.forEach(childSnapshot => {
-                        const build = childSnapshot.val();
-                        if (build.character === selectedChampion) {
-                            builds.push({
-                                id: childSnapshot.key,
-                                ...build
-                            });
-                        }
+                const allBuilds = [];
+                const allPatchesRef = ref(database, 'builds');
+                const patchesSnapshot = await get(allPatchesRef);
+
+                if (patchesSnapshot.exists()) {
+                    const patchPromises = [];
+                    patchesSnapshot.forEach(patchChild => {
+                        const patchKey = patchChild.key; // e.g., "2_1_1", "2_5"
+                        const buildsPerPatchRef = ref(database, `builds/${patchKey}`);
+                        patchPromises.push(get(buildsPerPatchRef).then(buildsSnapshot => {
+                            if (buildsSnapshot.exists()) {
+                                buildsSnapshot.forEach(childSnapshot => {
+                                    const build = childSnapshot.val();
+                                    if (build.character === selectedChampion) {
+                                        allBuilds.push({
+                                            id: childSnapshot.key,
+                                            patchForDisplay: patchKey.replace(/_/g, '.'),
+                                            patchForDB: patchKey,
+                                            ...build
+                                        });
+                                    }
+                                });
+                            }
+                        }));
                     });
+                    await Promise.all(patchPromises);
+                }
 
-                    builds.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+                if (allBuilds.length > 0) {
+                    allBuilds.sort((a, b) => (b.likes || 0) - (a.likes || 0));
 
-                    builds.forEach(build => {
+                    allBuilds.forEach(build => {
                         const card = document.createElement('div');
                         card.className = 'build-card';
 
@@ -1337,7 +1387,7 @@
                             <div class="build-title">${build.name || 'Unnamed Build'}</div>
                             <div class="build-info">
                                 <span>by ${build.creatorName || 'Anonymous'}</span>
-                                <span>• Patch ${safePatchVersion.replace(/_/g, '.')}</span>
+                                <span>• Patch ${build.patchForDisplay}</span>
                             </div>
                         `;
 
@@ -1371,12 +1421,12 @@
                         actions.className = 'build-actions';
                         
                         const likeButton = document.createElement('button');
-                        likeButton.className = `rating-button ${build.liked ? 'liked' : ''}`;
+                        likeButton.className = `rating-button ${build.likedByCurrentUser ? 'liked' : ''}`;
                         likeButton.innerHTML = `
                             <i class="fas fa-thumbs-up"></i>
                             <span>${build.likes || 0}</span>
                         `;
-                        likeButton.onclick = () => likeBuild(build.id);
+                        likeButton.onclick = () => likeBuild(build.id, build.patchForDB);
 
                         const loadButton = document.createElement('button');
                         loadButton.className = 'copy-build';
@@ -1394,8 +1444,6 @@
                         card.appendChild(actions);
                         buildGrid.appendChild(card);
                     });
-
-                    modal.style.display = 'flex';
                 } else {
                     buildGrid.innerHTML = `
                         <div style="text-align: center; padding: 20px; color: var(--text-color);">
@@ -1406,13 +1454,13 @@
                             </button>
                         </div>
                     `;
-                    modal.style.display = 'flex';
                 }
+                modal.style.display = 'flex';
             } catch (error) {
                 console.error('Error loading builds:', error);
-                buildGrid.innerHTML = `
+                buildGrid.innerHTML = ` 
                     <div style="text-align: center; padding: 20px; color: var(--text-color);">
-                        Error loading builds. Please try again later.
+                        Error loading builds. Please try again later. (${error.message})
                     </div>
                 `;
                 modal.style.display = 'flex';
@@ -1420,31 +1468,31 @@
         });
 
         // Add like build functionality
-        async function likeBuild(buildId) {
+        async function likeBuild(buildId, buildPatchVersion) {
             try {
                 const user = auth.currentUser;
                 if (!user) return;
 
-                const safePatchVersion = '2_1_1';
-                const buildRef = ref(database, `builds/${safePatchVersion}/${buildId}`);
+                const buildRef = ref(database, `builds/${buildPatchVersion}/${buildId}`);
                 const snapshot = await get(buildRef);
                 
                 if (snapshot.exists()) {
                     const build = snapshot.val();
                     const likes = (build.likes || 0) + 1;
-                    const liked = true;
-                    await set(buildRef, { ...build, likes, liked });
+                    await update(buildRef, { likes });
                     
-                    // Update UI
                     const modal = document.getElementById('buildSelectionModal');
-                    const likeButton = modal.querySelector(`button[onclick="likeBuild('${buildId}')"]`);
-                    if (likeButton) {
-                        likeButton.classList.add('liked');
-                        const likesSpan = likeButton.querySelector('span');
-                        if (likesSpan) {
-                            likesSpan.textContent = likes;
+                    const allLikeButtons = modal.querySelectorAll(`.build-card button.rating-button`);
+                    allLikeButtons.forEach(btn => {
+                        const onclickAttr = btn.getAttribute('onclick');
+                        if (onclickAttr && onclickAttr.includes(`likeBuild('${buildId}'`) && onclickAttr.includes(`'${buildPatchVersion}'`)) {
+                            btn.classList.add('liked');
+                            const likesSpan = btn.querySelector('span');
+                            if (likesSpan) {
+                                likesSpan.textContent = likes;
+                            }
                         }
-                    }
+                    });
                 }
             } catch (error) {
                 console.error('Error liking build:', error);

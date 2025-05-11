@@ -16,6 +16,12 @@
             --text-color: #F0E6D2;
             --border-color: #463714;
             --hover-color: #785A28;
+            --mew-pink: #FF69B4;
+            --mew-light-pink: #FFC0CB;
+            --mew-blue: #87CEFA;
+            --mew-green: #98FB98;
+            --mew-yellow: #FFFF99;
+            --mew-purple: #DDA0DD;
         }
 
         * {
@@ -34,7 +40,14 @@
             grid-template-rows: 60px 1fr 180px; /* Increased the footer row height */
             gap: 10px;
             padding: 10px;
+            /* position: relative; - Removed */
         }
+
+        /* Background image styles - REMOVED */
+        /* .background-image { ... } */
+
+        /* body::before overlay - REMOVED */
+        /* body::before { ... } */
 
         /* Header Section */
         .header {
@@ -241,14 +254,40 @@
             gap: 10px;
             max-height: calc(100vh - 180px); /* Adjust for header and footer */
             overflow: hidden;
+            position: relative; /* Needed for overlay */
+            border-radius: 8px; /* Optional: rounds corners */
+            background-image: url('Event/Tokyo Mew Mew Event 2.png');
+            background-size: cover;
+            background-position: center;
+            z-index: 0; /* Ensure it's behind content */
+        }
+
+        /* Add overlay for main content background */
+        .main-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 20, 40, 0.85); /* Adjust opacity as needed */
+            z-index: 1; /* Overlay is above the background image */
+            border-radius: 8px; /* Match parent */
+            pointer-events: none; /* Allow clicks through overlay */
+        }
+
+        /* Ensure content inside main-content is above the overlay */
+        .main-content > * {
+            position: relative;
+            z-index: 2;
         }
 
         .champion-search {
             display: flex;
             gap: 10px;
             padding: 10px;
-            background-color: var(--secondary-color);
-            border: 1px solid var(--border-color);
+            background-color: transparent; /* Make transparent */
+            /* border: 1px solid var(--border-color); - Optionally remove border */
             position: sticky;
             top: 0;
             z-index: 10;
@@ -268,8 +307,8 @@
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             gap: 10px;
             padding: 15px;
-            background-color: var(--secondary-color);
-            border: 1px solid var(--border-color);
+            background-color: transparent; /* Make transparent */
+            /* border: 1px solid var(--border-color); - Optionally remove border */
             overflow-y: auto;
             max-height: 100%;
             align-content: start;
@@ -305,6 +344,49 @@
             object-fit: cover;
             border: 2px solid var(--border-color);
             border-radius: 4px;
+        }
+
+        /* Add winrate and tier display styles */
+        .champion-meta {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--text-color);
+            padding: 2px 4px;
+            font-size: 10px;
+            border-radius: 0 4px 0 4px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .champion-tier {
+            font-weight: bold;
+        }
+
+        .tier-sp {
+            color: #FF9900; /* Gold/orange for S+ tier */
+        }
+
+        .tier-s {
+            color: #FF5588; /* Pink/red for S tier */
+        }
+
+        .tier-a {
+            color: #AA99FF; /* Purple for A tier */
+        }
+
+        .tier-b {
+            color: #77CCFF; /* Light blue for B tier */
+        }
+
+        .tier-c {
+            color: #77DD77; /* Green for C tier */
+        }
+
+        .tier-d {
+            color: #AAAAAA; /* Gray for D tier */
         }
 
         /* Add custom scrollbar */
@@ -987,6 +1069,36 @@
             border-radius: 4px;
         }
 
+        /* Add ban-card meta info styles */
+        .ban-card .champion-meta {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--text-color);
+            padding: 2px 4px;
+            font-size: 10px;
+            border-radius: 0 4px 0 4px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .ban-card .champion-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--text-color);
+            font-size: 12px;
+            padding: 4px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         .banned-champion {
             opacity: 0.5;
             pointer-events: none;
@@ -1036,13 +1148,176 @@
         .ban-portrait.empty {
             background-color: var(--primary-color);
         }
+
+        /* Add styles for the meta legend */
+        .meta-legend {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(10, 20, 40, 0.9);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            color: var(--text-color);
+            font-size: 12px;
+            z-index: 5;
+            max-width: 180px;
+        }
+
+        .meta-legend h4 {
+            color: var(--accent-color);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .meta-legend .tier-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .meta-legend .tier-name {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* Tokyo Mew Mew Transition Animation Styles */
+        .mew-mew-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(255, 105, 180, 0.2);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .mew-mew-transition.active {
+            display: flex;
+            animation: bg-fade 3s forwards;
+        }
+
+        @keyframes bg-fade {
+            0% { background-color: rgba(255, 105, 180, 0.2); }
+            50% { background-color: rgba(255, 105, 180, 0.6); }
+            100% { background-color: rgba(255, 255, 255, 1); }
+        }
+
+        .sparkle-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23FF69B4" d="M12,1L9,9L1,12L9,15L12,23L15,15L23,12L15,9L12,1Z"/></svg>');
+            background-size: contain;
+            animation: sparkle-float 2s linear forwards;
+            opacity: 0;
+        }
+
+        @keyframes sparkle-float {
+            0% { transform: translate(0, 0) rotate(0deg) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 0.8; }
+            100% { transform: translate(var(--tx), var(--ty)) rotate(360deg) scale(1.5); opacity: 0; }
+        }
+
+        .heart {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23FF69B4" d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/></svg>');
+            background-size: contain;
+            animation: heart-float 2.5s linear forwards;
+            opacity: 0;
+        }
+
+        @keyframes heart-float {
+            0% { transform: translate(0, 0) scale(0); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(1.2); opacity: 0; }
+        }
+
+        .mew-logo {
+            width: 300px;
+            height: 300px;
+            background-image: url('Event/Tokyo Mew Mew Logo.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            animation: pulse-grow 2.5s ease-in-out forwards;
+            position: relative;
+            z-index: 10;
+            opacity: 0;
+        }
+
+        @keyframes pulse-grow {
+            0% { transform: scale(0.5); opacity: 0; }
+            40% { transform: scale(1.2); opacity: 1; }
+            60% { transform: scale(1.1); opacity: 1; }
+            80% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        .ring {
+            position: absolute;
+            border: 4px solid var(--mew-pink);
+            border-radius: 50%;
+            animation: ring-expand 2s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes ring-expand {
+            0% { width: 0; height: 0; opacity: 0; }
+            20% { opacity: 0.8; }
+            100% { width: 600px; height: 600px; opacity: 0; }
+        }
+
+        .flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            animation: flash-animation 3s ease-out forwards;
+        }
+
+        @keyframes flash-animation {
+            0% { opacity: 0; }
+            80% { opacity: 0; }
+            85% { opacity: 0.9; }
+            100% { opacity: 0; }
+        }
     </style>
 </head>
 <body>
+    <!-- Background Image - REMOVED -->
+    <!-- <img src="Event/Tokyo Mew Mew Event 2.png" alt="Background" class="background-image"> -->
+    
     <audio id="background-music" loop>
-        <source src="res/music/ranked.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
+
+    <!-- Tokyo Mew Mew Transition -->
+    <div class="mew-mew-transition" id="mewMewTransition">
+        <div class="sparkle-container" id="sparkleContainer"></div>
+        <div class="ring"></div>
+        <div class="mew-logo"></div>
+        <div class="flash"></div>
+    </div>
 
     <!-- Add Volume Control -->
     <div class="volume-control-container">
@@ -1249,6 +1524,10 @@
         // Set initial volume
         audio.volume = 0.2;
 
+        // Determine music path based on patch
+        const musicPath = CURRENT_PATCH === "2.5" ? "Songs/team_up_tokyo_mew_mew.mp3" : "res/music/ranked.mp3";
+        audio.src = musicPath;
+
         // Try to play audio and handle autoplay restrictions
         async function initializeAudio() {
             try {
@@ -1323,6 +1602,7 @@
         import { roles } from './roles.js';
         import { usernames } from './usernames.js';
         import { chatMessages, contextualResponses, timeBasedMessages, roleMessages } from './chat_messages.js';
+        import { CURRENT_PATCH } from './patch.js'; // Import CURRENT_PATCH
 
         // Firebase configuration
         const firebaseConfig = {
@@ -1701,7 +1981,7 @@
         async function makeAIPick() {
             const currentPick = pickOrder[currentPickIndex];
             const currentRole = roleAssignments[currentPick.team][currentPick.slot];
-            const availableChampions = roles[currentRole].filter(champ => !pickedChampions.has(champ) && !bannedChampions.has(champ));
+            const availableChampions = roles[currentRole].filter(champ => !pickedChampions.has(champ) && !bannedChampions.has(champ)); // Corrected variable name
             
             if (availableChampions.length > 0) {
                 const randomChampion = availableChampions[Math.floor(Math.random() * availableChampions.length)];
@@ -1944,42 +2224,132 @@
             // Convert Set to Array and sort alphabetically
             const sortedChampions = Array.from(allChampions).sort((a, b) => a.localeCompare(b));
 
-            sortedChampions.forEach(champion => {
-                const card = document.createElement('div');
-                card.className = 'champion-card';
-                card.title = champion;
-                
-                const img = document.createElement('img');
-                img.src = `Icons/${champion}.png`;
-                img.alt = champion;
-                
-                // Add champion name display
-                const nameDiv = document.createElement('div');
-                nameDiv.className = 'champion-name';
-                nameDiv.textContent = champion;
-                
-                card.appendChild(img);
-                card.appendChild(nameDiv);
-                championGrid.appendChild(card);
+            // Load meta data for winrates and tiers
+            fetch('meta.json')
+                .then(response => response.json())
+                .then(metaData => {
+                    sortedChampions.forEach(champion => {
+                        const card = document.createElement('div');
+                        card.className = 'champion-card';
+                        card.title = champion;
+                        
+                        const img = document.createElement('img');
+                        img.src = `Icons/${champion}.png`;
+                        img.alt = champion;
+                        
+                        // Add champion name display
+                        const nameDiv = document.createElement('div');
+                        nameDiv.className = 'champion-name';
+                        nameDiv.textContent = champion;
+                        
+                        // Add winrate and tier display
+                        const metaInfo = document.createElement('div');
+                        metaInfo.className = 'champion-meta';
+                        
+                        // Get winrate from meta data (or default to 0)
+                        const winrate = metaData[champion] || 0;
+                        
+                        // Determine tier based on winrate
+                        let tier, tierClass;
+                        if (winrate >= 53) {
+                            tier = 'S+';
+                            tierClass = 'tier-sp';
+                        } else if (winrate >= 51) {
+                            tier = 'S';
+                            tierClass = 'tier-s';
+                        } else if (winrate >= 49) {
+                            tier = 'A';
+                            tierClass = 'tier-a';
+                        } else if (winrate >= 47) {
+                            tier = 'B';
+                            tierClass = 'tier-b';
+                        } else if (winrate >= 45) {
+                            tier = 'C';
+                            tierClass = 'tier-c';
+                        } else {
+                            tier = 'D';
+                            tierClass = 'tier-d';
+                        }
+                        
+                        // Create tier element
+                        const tierSpan = document.createElement('span');
+                        tierSpan.className = `champion-tier ${tierClass}`;
+                        tierSpan.textContent = tier;
+                        
+                        // Create winrate element
+                        const winrateSpan = document.createElement('span');
+                        winrateSpan.className = 'champion-winrate';
+                        winrateSpan.textContent = `${winrate}%`;
+                        
+                        metaInfo.appendChild(tierSpan);
+                        metaInfo.appendChild(winrateSpan);
+                        
+                        card.appendChild(img);
+                        card.appendChild(nameDiv);
+                        card.appendChild(metaInfo);
+                        championGrid.appendChild(card);
 
-                // Check if champion is banned
-                if (bannedChampions.has(champion)) {
-                    card.classList.add('banned-champion');
-                    return;
-                }
+                        // Check if champion is banned
+                        if (bannedChampions.has(champion)) {
+                            card.classList.add('banned-champion');
+                            return;
+                        }
 
-                // Check if champion is available for current role
-                const isAvailableForRole = roles[selectedRole]?.includes(champion);
-                if (!isAvailableForRole) {
-                    card.classList.add('unavailable');
-                }
+                        // Check if champion is available for current role
+                        const isAvailableForRole = roles[selectedRole]?.includes(champion);
+                        if (!isAvailableForRole) {
+                            card.classList.add('unavailable');
+                        }
 
-                card.addEventListener('click', () => {
-                    if (isPlayerTurn() && card.classList.contains('available') && isAvailableForRole && !bannedChampions.has(champion)) {
-                        selectChampion(champion);
-                    }
+                        card.addEventListener('click', () => {
+                            if (isPlayerTurn() && card.classList.contains('available') && isAvailableForRole && !bannedChampions.has(champion)) {
+                                selectChampion(champion);
+                            }
+                        });
+                    });
+                    
+                    // Update available champions after loading
+                    updateAvailableChampions();
+                })
+                .catch(error => {
+                    console.error('Error loading meta data:', error);
+                    // Fallback to initialize grid without meta data
+                    sortedChampions.forEach(champion => {
+                        const card = document.createElement('div');
+                        card.className = 'champion-card';
+                        card.title = champion;
+                        
+                        const img = document.createElement('img');
+                        img.src = `Icons/${champion}.png`;
+                        img.alt = champion;
+                        
+                        const nameDiv = document.createElement('div');
+                        nameDiv.className = 'champion-name';
+                        nameDiv.textContent = champion;
+                        
+                        card.appendChild(img);
+                        card.appendChild(nameDiv);
+                        championGrid.appendChild(card);
+
+                        if (bannedChampions.has(champion)) {
+                            card.classList.add('banned-champion');
+                            return;
+                        }
+
+                        const isAvailableForRole = roles[selectedRole]?.includes(champion);
+                        if (!isAvailableForRole) {
+                            card.classList.add('unavailable');
+                        }
+
+                        card.addEventListener('click', () => {
+                            if (isPlayerTurn() && card.classList.contains('available') && isAvailableForRole && !bannedChampions.has(champion)) {
+                                selectChampion(champion);
+                            }
+                        });
+                    });
+                    
+                    updateAvailableChampions();
                 });
-            });
         }
 
         // Role selection handling
@@ -2047,7 +2417,7 @@
         function startAIChat() {
             // Initial greetings from 1-2 team AI players
             setTimeout(() => {
-                const numGreetings = 1 + Math.floor(Math.random() * 2);
+                const numGreetings = 1 + Math.floor(Math.random() * 2); // 1 or 2 players
                 for (let i = 0; i < numGreetings; i++) {
                     // Only pick from player's team slots (excluding player's slot)
                     let slot;
@@ -2060,23 +2430,24 @@
                 }
             }, 1000);
 
-            // Role preferences discussion
+            // Role preferences discussion (1-2 players)
             setTimeout(() => {
-                // Only pick from player's team slots (excluding player's slot)
-                let slot;
-                do {
-                    slot = 1 + Math.floor(Math.random() * 5);
-                } while (slot === playerSlot);
+                const numRolePref = 1 + Math.floor(Math.random() * 2); // 1 or 2 players
+                for (let i = 0; i < numRolePref; i++) {
+                    let slot;
+                    do {
+                        slot = 1 + Math.floor(Math.random() * 5);
+                    } while (slot === playerSlot);
 
-                const aiName = document.querySelector(`#${playerTeam}-${slot} .player-name`).textContent;
-                addChatMessage(aiName, getRandomMessage(chatMessages.rolePreferences), playerTeam);
+                    const aiName = document.querySelector(`#${playerTeam}-${slot} .player-name`).textContent;
+                    addChatMessage(aiName, getRandomMessage(chatMessages.rolePreferences), playerTeam);
+                }
             }, 3000);
 
             // Regular AI chat during champion select
             let chatInterval = setInterval(() => {
-                // 30% chance to send a message
-                if (Math.random() < 0.3) {
-                    // Only pick from player's team slots (excluding player's slot)
+                // Increased chance to send a message (e.g., 70%)
+                if (Math.random() < 0.7) { 
                     let slot;
                     do {
                         slot = 1 + Math.floor(Math.random() * 5);
@@ -2084,35 +2455,36 @@
 
                     const aiName = document.querySelector(`#${playerTeam}-${slot} .player-name`).textContent;
                     
-                    // Select message category based on game state
-                    let messageCategory;
-                    if (currentPickIndex < 3) {
-                        messageCategory = timeBasedMessages.early;
-                    } else if (currentPickIndex < 7) {
-                        messageCategory = timeBasedMessages.middle;
-                    } else {
-                        messageCategory = timeBasedMessages.late;
-                    }
+                    // Select message category more broadly
+                    const messageCategories = [
+                        chatMessages.teamComp, 
+                        chatMessages.strategy, 
+                        chatMessages.metaDiscussion,
+                        chatMessages.skinComments,
+                        chatMessages.banterTrashTalk,
+                        chatMessages.eventChat, // Added event chat
+                        contextualResponses.goodComp, 
+                        contextualResponses.badComp,
+                        timeBasedMessages.early, 
+                        timeBasedMessages.middle, 
+                        timeBasedMessages.late
+                    ];
 
-                    // Mix in some composition-based messages
-                    if (Math.random() < 0.3) {
-                        messageCategory = chatMessages.teamComp;
+                    // Add role-specific banter from the AI's assigned role
+                    const aiRole = roleAssignments[playerTeam][slot];
+                    if (aiRole && chatMessages.roleSpecificBanter[aiRole.toLowerCase()] && Math.random() < 0.3) {
+                        messageCategories.push(chatMessages.roleSpecificBanter[aiRole.toLowerCase()]);
                     }
-
-                    // Add role-specific comments
-                    const currentRole = roleAssignments[playerTeam][slot];
-                    if (currentRole && Math.random() < 0.2) {
-                        messageCategory = roleMessages[currentRole.toLowerCase()];
-                    }
-
-                    addChatMessage(aiName, getRandomMessage(messageCategory), playerTeam);
+                    
+                    const randomCategory = messageCategories[Math.floor(Math.random() * messageCategories.length)];
+                    addChatMessage(aiName, getRandomMessage(randomCategory), playerTeam);
                 }
-            }, 5000);
+            }, 4000); // Reduced interval to 4 seconds for more frequent messages
 
             // Reaction to picks
             document.addEventListener('championPicked', (event) => {
-                if (Math.random() < 0.4) { // 40% chance to comment on picks
-                    // Only pick from player's team slots (excluding player's slot)
+                // Increased chance to comment on picks (e.g., 60%)
+                if (Math.random() < 0.6) { 
                     let slot;
                     do {
                         slot = 1 + Math.floor(Math.random() * 5);
@@ -2120,12 +2492,13 @@
 
                     const aiName = document.querySelector(`#${playerTeam}-${slot} .player-name`).textContent;
                     
-                    const isPositive = Math.random() < 0.7; // 70% chance for positive reaction
-                    const message = getRandomMessage(isPositive ? chatMessages.championReactions.positive : chatMessages.championReactions.negative);
+                    const isPositive = Math.random() < 0.6; // 60% chance for positive reaction
+                    const reactionType = isPositive ? chatMessages.championReactions.positive : chatMessages.championReactions.negative;
+                    const message = getRandomMessage(reactionType);
                     
                     setTimeout(() => {
                         addChatMessage(aiName, message, playerTeam);
-                    }, 1000);
+                    }, 750); // Reduced delay
                 }
             });
         }
@@ -2137,10 +2510,9 @@
                 addChatMessage(playerName, chatInput.value.trim(), playerTeam);
                 chatInput.value = '';
 
-                // Trigger AI response with 50% chance
-                if (Math.random() < 0.5) {
+                // Trigger AI response with higher chance (e.g., 75%)
+                if (Math.random() < 0.75) { 
                     setTimeout(() => {
-                        // Only pick from player's team slots (excluding player's slot)
                         let slot;
                         do {
                             slot = 1 + Math.floor(Math.random() * 5);
@@ -2148,17 +2520,29 @@
 
                         const aiName = document.querySelector(`#${playerTeam}-${slot} .player-name`).textContent;
                         
-                        // Mix of general responses and contextual ones
+                        // Broader categories for response
                         const messageCategories = [
                             chatMessages.teamComp,
                             chatMessages.strategy,
                             chatMessages.encouragement,
+                            chatMessages.metaDiscussion,
+                            chatMessages.skinComments,
+                            chatMessages.banterTrashTalk,
+                            chatMessages.eventChat, // Added event chat
                             contextualResponses.goodComp,
+                            contextualResponses.needsAP, // Added more contextual options
+                            contextualResponses.needsAD,
+                            contextualResponses.needsCC,
+                            contextualResponses.needsTank,
                             timeBasedMessages.middle
                         ];
+                        const aiRole = roleAssignments[playerTeam][slot];
+                        if (aiRole && chatMessages.roleSpecificBanter[aiRole.toLowerCase()] && Math.random() < 0.3) {
+                        messageCategories.push(chatMessages.roleSpecificBanter[aiRole.toLowerCase()]);
+                    }
                         
                         addChatMessage(aiName, getRandomMessage(messageCategories[Math.floor(Math.random() * messageCategories.length)]), playerTeam);
-                    }, 1000 + Math.random() * 2000);
+                    }, 1000 + Math.random() * 1000); // Slightly reduced random delay
                 }
             }
         });
@@ -2318,25 +2702,8 @@
                     const queueRef = ref(database, `Queue/${queueId}`);
                     await set(queueRef, gameInfo);
 
-                    // Start countdown
-                    const timerElement = document.querySelector('.timer');
-                    let countdown = 10;
-                    
-                    // Disable the start match button during countdown
-                    this.disabled = true;
-                    this.textContent = 'STARTING...';
-                    
-                    const countdownInterval = setInterval(() => {
-                        countdown--;
-                        timerElement.textContent = countdown;
-                        
-                        if (countdown <= 0) {
-                            clearInterval(countdownInterval);
-                            // Store queue ID in sessionStorage for Game.html to access
-                            sessionStorage.setItem('currentQueueId', queueId);
-                            window.location.href = 'Game.html';
-                        }
-                    }, 1000);
+                    // Play Tokyo Mew Mew transition animation
+                    playMewMewTransition(queueId);
 
                 } catch (error) {
                     console.error('Error starting game:', error);
@@ -2348,32 +2715,143 @@
             }
         });
 
+        // Tokyo Mew Mew Transition Animation
+        function playMewMewTransition(queueId) {
+            const transition = document.getElementById('mewMewTransition');
+            const sparkleContainer = document.getElementById('sparkleContainer');
+            
+            // Create Tokyo Mew Mew transformation sound
+            const transformSound = new Audio('Songs/mew_mew_transform.mp3');
+            transformSound.volume = audio.volume; // Match current volume
+            transformSound.play().catch(err => console.log('Could not play transformation sound:', err));
+            
+            // Activate transition
+            transition.classList.add('active');
+            
+            // Generate sparkles
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    createSparkle(sparkleContainer);
+                }, i * 40);
+            }
+            
+            // Generate hearts
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    createHeart(sparkleContainer);
+                }, 500 + i * 100);
+            }
+            
+            // Redirect after animation completes
+            setTimeout(() => {
+                // Store queue ID in sessionStorage for Game.html to access
+                sessionStorage.setItem('currentQueueId', queueId);
+                window.location.href = 'Game.html';
+            }, 3000);
+        }
+        
+        function createSparkle(container) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            
+            // Random position
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            sparkle.style.left = `${x}px`;
+            sparkle.style.top = `${y}px`;
+            
+            // Random movement direction
+            const tx = (Math.random() - 0.5) * 300;
+            const ty = (Math.random() - 0.5) * 300;
+            sparkle.style.setProperty('--tx', `${tx}px`);
+            sparkle.style.setProperty('--ty', `${ty}px`);
+            
+            // Random color - cycle through Mew Mew colors
+            const colors = ['var(--mew-pink)', 'var(--mew-light-pink)', 'var(--mew-blue)', 
+                           'var(--mew-green)', 'var(--mew-yellow)', 'var(--mew-purple)'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            sparkle.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
+            
+            // Random size
+            const size = 10 + Math.random() * 20;
+            sparkle.style.width = `${size}px`;
+            sparkle.style.height = `${size}px`;
+            
+            // Random delay
+            sparkle.style.animationDelay = `${Math.random() * 0.5}s`;
+            
+            container.appendChild(sparkle);
+            
+            // Remove element after animation
+            setTimeout(() => {
+                sparkle.remove();
+            }, 2500);
+        }
+        
+        function createHeart(container) {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            
+            // Random position
+            const x = window.innerWidth / 2 + (Math.random() - 0.5) * 300;
+            const y = window.innerHeight / 2 + (Math.random() - 0.5) * 300;
+            heart.style.left = `${x}px`;
+            heart.style.top = `${y}px`;
+            
+            // Random movement direction
+            const tx = (Math.random() - 0.5) * 400;
+            const ty = (Math.random() - 0.5) * 400;
+            heart.style.setProperty('--tx', `${tx}px`);
+            heart.style.setProperty('--ty', `${ty}px`);
+            
+            // Random size
+            const size = 15 + Math.random() * 25;
+            heart.style.width = `${size}px`;
+            heart.style.height = `${size}px`;
+            
+            // Random rotation
+            heart.style.transform = `rotate(${Math.random() * 360}deg)`;
+            
+            // Random color - pink/red variations
+            heart.style.filter = `hue-rotate(${Math.random() * 60 - 30}deg) saturate(${1 + Math.random()}`;
+            
+            // Random delay
+            heart.style.animationDelay = `${Math.random() * 0.5}s`;
+            
+            container.appendChild(heart);
+            
+            // Remove element after animation
+            setTimeout(() => {
+                heart.remove();
+            }, 3000);
+        }
+
         // Add like build functionality
-        async function likeBuild(buildId) {
+        async function likeBuild(buildId, buildPatchVersion) { // Added buildPatchVersion parameter
             try {
                 const user = auth.currentUser;
                 if (!user) return;
 
-                const safePatchVersion = '2_1_1';
-                const buildRef = ref(database, `builds/${safePatchVersion}/${buildId}`);
+                const buildRef = ref(database, `builds/${buildPatchVersion}/${buildId}`); // USE buildPatchVersion
                 const snapshot = await get(buildRef);
                 
                 if (snapshot.exists()) {
                     const build = snapshot.val();
                     const likes = (build.likes || 0) + 1;
-                    const liked = true;
-                    await set(buildRef, { ...build, likes, liked });
+                    await update(buildRef, { likes }); 
                     
-                    // Update UI
                     const modal = document.getElementById('buildSelectionModal');
-                    const likeButton = modal.querySelector(`button[onclick="likeBuild('${buildId}')"]`);
-                    if (likeButton) {
-                        likeButton.classList.add('liked');
-                        const likesSpan = likeButton.querySelector('span');
-                        if (likesSpan) {
-                            likesSpan.textContent = likes;
+                    const allLikeButtons = modal.querySelectorAll(`.build-card button.rating-button`);
+                    allLikeButtons.forEach(btn => {
+                        const onclickAttr = btn.getAttribute('onclick');
+                        if (onclickAttr && onclickAttr.includes(`likeBuild('${buildId}'`) && onclickAttr.includes(`'${buildPatchVersion}'`)) {
+                            btn.classList.add('liked');
+                            const likesSpan = btn.querySelector('span');
+                            if (likesSpan) {
+                                likesSpan.textContent = likes;
+                            }
                         }
-                    }
+                    });
                 }
             } catch (error) {
                 console.error('Error liking build:', error);
@@ -2384,28 +2862,41 @@
         document.getElementById('loadBuildButton').addEventListener('click', async () => {
             const modal = document.getElementById('buildSelectionModal');
             const buildGrid = document.getElementById('buildGrid');
-            buildGrid.innerHTML = '';
+            buildGrid.innerHTML = ''; // Clear previous builds
 
             try {
-                const safePatchVersion = '2_1_1';
-                const buildsRef = ref(database, `builds/${safePatchVersion}`);
-                const snapshot = await get(buildsRef);
-                
-                if (snapshot.exists()) {
-                    const builds = [];
-                    snapshot.forEach(childSnapshot => {
-                        const build = childSnapshot.val();
-                        if (build.character === selectedChampion) {
-                            builds.push({
-                                id: childSnapshot.key,
-                                ...build
-                            });
-                        }
+                const allBuilds = [];
+                const allPatchesRef = ref(database, 'builds');
+                const patchesSnapshot = await get(allPatchesRef);
+
+                if (patchesSnapshot.exists()) {
+                    const patchPromises = [];
+                    patchesSnapshot.forEach(patchChild => {
+                        const patchKey = patchChild.key; // e.g., "2_1_1", "2_5"
+                        const buildsPerPatchRef = ref(database, `builds/${patchKey}`);
+                        patchPromises.push(get(buildsPerPatchRef).then(buildsSnapshot => {
+                            if (buildsSnapshot.exists()) {
+                                buildsSnapshot.forEach(childSnapshot => {
+                                    const build = childSnapshot.val();
+                                    if (build.character === selectedChampion) {
+                                        allBuilds.push({
+                                            id: childSnapshot.key,
+                                            patchForDisplay: patchKey.replace(/_/g, '.'), // For displaying "Patch X.Y"
+                                            patchForDB: patchKey, // For internal use like liking "2_1_1"
+                                            ...build
+                                        });
+                                    }
+                                });
+                            }
+                        }));
                     });
+                    await Promise.all(patchPromises);
+                }
 
-                    builds.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+                if (allBuilds.length > 0) {
+                    allBuilds.sort((a, b) => (b.likes || 0) - (a.likes || 0));
 
-                    builds.forEach(build => {
+                    allBuilds.forEach(build => {
                         const card = document.createElement('div');
                         card.className = 'build-card';
 
@@ -2415,7 +2906,7 @@
                             <div class="build-title">${build.name || 'Unnamed Build'}</div>
                             <div class="build-info">
                                 <span>by ${build.creatorName || 'Anonymous'}</span>
-                                <span>• Patch ${safePatchVersion.replace(/_/g, '.')}</span>
+                                <span>• Patch ${build.patchForDisplay}</span>
                             </div>
                         `;
 
@@ -2449,18 +2940,18 @@
                         actions.className = 'build-actions';
                         
                         const likeButton = document.createElement('button');
-                        likeButton.className = `rating-button ${build.liked ? 'liked' : ''}`;
+                        likeButton.className = `rating-button ${build.likedByCurrentUser ? 'liked' : ''}`; 
                         likeButton.innerHTML = `
                             <i class="fas fa-thumbs-up"></i>
                             <span>${build.likes || 0}</span>
                         `;
-                        likeButton.onclick = () => likeBuild(build.id);
+                        likeButton.onclick = () => likeBuild(build.id, build.patchForDB);
 
                         const loadButton = document.createElement('button');
                         loadButton.className = 'copy-build';
                         loadButton.innerHTML = '<i class="fas fa-check"></i> Select Build';
                         loadButton.onclick = () => {
-                            selectBuild(build);
+                            selectBuild(build); 
                             modal.style.display = 'none';
                         };
 
@@ -2472,8 +2963,6 @@
                         card.appendChild(actions);
                         buildGrid.appendChild(card);
                     });
-
-                    modal.style.display = 'flex';
                 } else {
                     buildGrid.innerHTML = `
                         <div style="text-align: center; padding: 20px; color: var(--text-color);">
@@ -2484,13 +2973,14 @@
                             </button>
                         </div>
                     `;
-                    modal.style.display = 'flex';
                 }
+                modal.style.display = 'flex';
             } catch (error) {
                 console.error('Error loading builds:', error);
-                buildGrid.innerHTML = `
+                // Corrected template literal for error message
+                buildGrid.innerHTML = ` 
                     <div style="text-align: center; padding: 20px; color: var(--text-color);">
-                        Error loading builds. Please try again later.
+                        Error loading builds. Please try again later. (${error.message})
                     </div>
                 `;
                 modal.style.display = 'flex';
@@ -2542,39 +3032,136 @@
             const phaseInfo = document.querySelector('.ban-phase-info p');
             banGrid.innerHTML = '';
             
-            // Create champion cards for banning
-            const allChampions = new Set();
-            Object.values(roles).forEach(roleChamps => {
-                roleChamps.forEach(champ => allChampions.add(champ));
-            });
-
-            // Convert Set to Array and sort alphabetically
-            const sortedChampions = Array.from(allChampions).sort((a, b) => a.localeCompare(b));
-
-            sortedChampions.forEach(champion => {
-                const card = document.createElement('div');
-                card.className = 'ban-card';
-                card.title = champion;
+            try {
+                // Load meta data
+                const response = await fetch('meta.json');
+                const metaData = await response.json();
                 
-                const img = document.createElement('img');
-                img.src = `Icons/${champion}.png`;
-                img.alt = champion;
+                // Create champion cards for banning
+                const allChampions = new Set();
+                Object.values(roles).forEach(roleChamps => {
+                    roleChamps.forEach(champ => allChampions.add(champ));
+                });
+
+                // Convert Set to Array and sort alphabetically
+                const sortedChampions = Array.from(allChampions).sort((a, b) => a.localeCompare(b));
+
+                sortedChampions.forEach(champion => {
+                    const card = document.createElement('div');
+                    card.className = 'ban-card';
+                    card.title = champion;
+                    
+                    const img = document.createElement('img');
+                    img.src = `Icons/${champion}.png`;
+                    img.alt = champion;
+                    
+                    // Add champion name display
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = 'champion-name';
+                    nameDiv.textContent = champion;
+                    
+                    // Add winrate and tier display
+                    const metaInfo = document.createElement('div');
+                    metaInfo.className = 'champion-meta';
+                    
+                    // Get winrate from meta data (or default to 0)
+                    const winrate = metaData[champion] || 0;
+                    
+                    // Determine tier based on winrate
+                    let tier, tierClass;
+                    if (winrate >= 53) {
+                        tier = 'S+';
+                        tierClass = 'tier-sp';
+                    } else if (winrate >= 51) {
+                        tier = 'S';
+                        tierClass = 'tier-s';
+                    } else if (winrate >= 49) {
+                        tier = 'A';
+                        tierClass = 'tier-a';
+                    } else if (winrate >= 47) {
+                        tier = 'B';
+                        tierClass = 'tier-b';
+                    } else if (winrate >= 45) {
+                        tier = 'C';
+                        tierClass = 'tier-c';
+                    } else {
+                        tier = 'D';
+                        tierClass = 'tier-d';
+                    }
+                    
+                    // Create tier element
+                    const tierSpan = document.createElement('span');
+                    tierSpan.className = `champion-tier ${tierClass}`;
+                    tierSpan.textContent = tier;
+                    
+                    // Create winrate element
+                    const winrateSpan = document.createElement('span');
+                    winrateSpan.className = 'champion-winrate';
+                    winrateSpan.textContent = `${winrate}%`;
+                    
+                    metaInfo.appendChild(tierSpan);
+                    metaInfo.appendChild(winrateSpan);
+                    
+                    card.appendChild(img);
+                    card.appendChild(nameDiv);
+                    card.appendChild(metaInfo);
+                    banGrid.appendChild(card);
+
+                    card.addEventListener('click', () => handleBanSelection(champion));
+                });
+
+                // Update phase info text
+                phaseInfo.textContent = `${currentBanTeam.toUpperCase()} Team Ban Phase`;
+
+                // Show modal if it's player's turn to ban
+                if (isPlayerFirstPick()) {
+                    modal.style.display = 'flex';
+                    phaseInfo.textContent = `Your turn to ban`;
+                } else {
+                    await makeAIBan();
+                }
+            } catch (error) {
+                console.error('Error loading meta data:', error);
                 
-                card.appendChild(img);
-                banGrid.appendChild(card);
+                // Fallback if meta data loading fails
+                const allChampions = new Set();
+                Object.values(roles).forEach(roleChamps => {
+                    roleChamps.forEach(champ => allChampions.add(champ));
+                });
 
-                card.addEventListener('click', () => handleBanSelection(champion));
-            });
+                const sortedChampions = Array.from(allChampions).sort((a, b) => a.localeCompare(b));
 
-            // Update phase info text
-            phaseInfo.textContent = `${currentBanTeam.toUpperCase()} Team Ban Phase`;
+                sortedChampions.forEach(champion => {
+                    const card = document.createElement('div');
+                    card.className = 'ban-card';
+                    card.title = champion;
+                    
+                    const img = document.createElement('img');
+                    img.src = `Icons/${champion}.png`;
+                    img.alt = champion;
+                    
+                    // Add champion name display
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = 'champion-name';
+                    nameDiv.textContent = champion;
+                    
+                    card.appendChild(img);
+                    card.appendChild(nameDiv);
+                    banGrid.appendChild(card);
 
-            // Show modal if it's player's turn to ban
-            if (isPlayerFirstPick()) {
-                modal.style.display = 'flex';
-                phaseInfo.textContent = `Your turn to ban`;
-            } else {
-                await makeAIBan();
+                    card.addEventListener('click', () => handleBanSelection(champion));
+                });
+
+                // Update phase info text
+                phaseInfo.textContent = `${currentBanTeam.toUpperCase()} Team Ban Phase`;
+
+                // Show modal if it's player's turn to ban
+                if (isPlayerFirstPick()) {
+                    modal.style.display = 'flex';
+                    phaseInfo.textContent = `Your turn to ban`;
+                } else {
+                    await makeAIBan();
+                }
             }
         }
 
@@ -2619,24 +3206,39 @@
                 if (availableChampions.length > 0) {
                     let championToBan;
 
-                    // 80% chance to ban a high winrate character
+                    // 80% chance to ban a high tier character
                     if (Math.random() < 0.8) {
-                        // Sort champions by their meta score
+                        // Sort champions by their meta score (winrate)
                         const sortedChampions = availableChampions
                             .map(champ => ({
                                 name: champ,
-                                score: meta[champ] || 0
+                                winrate: meta[champ] || 0,
+                                tier: getTierFromWinrate(meta[champ] || 0)
                             }))
-                            .sort((a, b) => b.score - a.score);
+                            .sort((a, b) => b.winrate - a.winrate);
 
-                        // Select one of the top 3 highest winrate champions
-                        const topIndex = Math.floor(Math.random() * Math.min(3, sortedChampions.length));
-                        championToBan = sortedChampions[topIndex].name;
-                        console.log('AI banning high winrate champion:', championToBan, 'with score:', sortedChampions[topIndex].score);
+                        // Prioritize S+ and S tier champions (if available)
+                        const highTierChampions = sortedChampions.filter(c => c.tier === 'S+' || c.tier === 'S');
+                        
+                        if (highTierChampions.length > 0) {
+                            // Select one of the highest tier champions randomly
+                            const randomIndex = Math.floor(Math.random() * Math.min(3, highTierChampions.length));
+                            championToBan = highTierChampions[randomIndex].name;
+                            console.log('AI banning high tier champion:', championToBan, 
+                                        'with winrate:', highTierChampions[randomIndex].winrate, 
+                                        'tier:', highTierChampions[randomIndex].tier);
+                        } else {
+                            // If no S+ or S tier, select from top 3 highest winrate
+                            const topIndex = Math.floor(Math.random() * Math.min(3, sortedChampions.length));
+                            championToBan = sortedChampions[topIndex].name;
+                            console.log('AI banning high winrate champion:', championToBan, 
+                                        'with winrate:', sortedChampions[topIndex].winrate,
+                                        'tier:', sortedChampions[topIndex].tier);
+                        }
                     } else {
-                        // 20% chance to ban a random champion
+                        // 20% chance to ban a random champion (could be strategic or unexpected)
                         championToBan = availableChampions[Math.floor(Math.random() * availableChampions.length)];
-                        console.log('AI banning random champion:', championToBan);
+                        console.log('AI banning random champion:', championToBan, 'with winrate:', meta[championToBan] || 0);
                     }
 
                     // Ban the selected champion
@@ -2662,9 +3264,23 @@
             } catch (error) {
                 console.error('Error in makeAIBan:', error);
                 // Fallback to random ban if there's an error
+                const availableChampions = Array.from(new Set(
+                    Object.values(roles).flat()
+                )).filter(champ => !bannedChampions.has(champ));
+                
                 const randomChampion = availableChampions[Math.floor(Math.random() * availableChampions.length)];
                 await banChampion(randomChampion);
             }
+        }
+
+        // Helper function to determine tier from winrate
+        function getTierFromWinrate(winrate) {
+            if (winrate >= 53) return 'S+';
+            if (winrate >= 51) return 'S';
+            if (winrate >= 49) return 'A';
+            if (winrate >= 47) return 'B';
+            if (winrate >= 45) return 'C';
+            return 'D';
         }
 
         async function banChampion(champion) {

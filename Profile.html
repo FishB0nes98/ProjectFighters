@@ -435,6 +435,7 @@
     <a href="Game Modes.html" class="play-button">Play</a>
 
     <video id="background-video" autoplay loop muted></video>
+    <img id="background-image" alt="Background Image" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
 
     <div class="profile-container">
         <div class="profile-sidebar">
@@ -460,8 +461,10 @@
                     <option value="Blossom Event 2025">Blossom Event 2025</option>
                     <option value="Bistro Event">Bistro Event</option>
                     <option value="Blossom Event">Blossom Event</option>
+                    <option value="Blossom Event 2025">Blossom Event 2025</option>
                     <option value="Cyber City Event">Cyber City Event</option>
                     <option value="Desert Wars Event">Desert Wars Event</option>
+                    <option value="Desert Wars Event 2025">Desert Wars Event 2025</option>
                     <option value="Dragonlands Event">Dragonlands Event</option>
                     <option value="Farm Event">Farm Event</option>
                     <option value="Goth Event">Goth Event</option>
@@ -485,6 +488,8 @@
                     <option value="Summer Event">Summer Event</option>
                     <option value="Void Event">Void Event</option>
                     <option value="Christmas 2024 Event">Christmas 2024 Event</option>
+                    <option value="Tokyo Mew Mew Event">Tokyo Mew Mew Event</option>
+                    <option value="Tokyo Mew Mew Event 2">Tokyo Mew Mew Event 2</option>
                 </select>
             </div>
             <div class="color-selection">
@@ -823,33 +828,54 @@
         }
 
         function updateBackgroundSelection() {
-            if (userProfile.background) {
-                const video = document.getElementById('background-video');
-                video.src = `Event/${userProfile.background}.mp4`;
-            }
-
             const backgroundSelect = document.getElementById('background-select');
-            backgroundSelect.addEventListener('change', () => {
-                const selectedBackground = backgroundSelect.value;
-                if (selectedBackground) {
-                    const video = document.getElementById('background-video');
-                    video.src = `Event/${selectedBackground}.mp4`;
-                    userProfile.background = selectedBackground;
+            const videoBackground = document.getElementById('background-video');
+            const imageBackground = document.getElementById('background-image');
 
-                    const userRef = ref(database, 'users/' + auth.currentUser.uid + '/background');
-                    set(userRef, selectedBackground).then(() => {
-                        console.log('Background updated in database');
-                    }).catch(error => {
-                        console.error('Error updating background:', error);
-                    });
+            // Function to set background based on selection
+            const setBackground = (backgroundName) => {
+                if (!backgroundName) {
+                    videoBackground.style.display = 'none';
+                    imageBackground.style.display = 'none';
+                    return;
                 }
-            });
+                
+                // Check if the selected background is an image or video
+                if (backgroundName.toLowerCase().includes('tokyo mew mew event 2')) { // Specific check for the image
+                    imageBackground.src = `Event/${backgroundName}.png`;
+                    imageBackground.style.display = 'block';
+                    videoBackground.style.display = 'none';
+                    videoBackground.src = ''; // Stop video playback
+                } else { // Assume video for others
+                    videoBackground.src = `Event/${backgroundName}.mp4`;
+                    videoBackground.style.display = 'block';
+                    imageBackground.style.display = 'none';
+                    imageBackground.src = ''; // Clear image source
+                }
+            };
 
+            // Initial load based on userProfile
             if (userProfile.background) {
+                setBackground(userProfile.background);
                 backgroundSelect.value = userProfile.background;
             }
+
+            // Event listener for changes
+            backgroundSelect.addEventListener('change', () => {
+                const selectedBackground = backgroundSelect.value;
+                setBackground(selectedBackground);
+                userProfile.background = selectedBackground;
+
+                const userRef = ref(database, 'users/' + auth.currentUser.uid + '/background');
+                set(userRef, selectedBackground).then(() => {
+                    console.log('Background updated in database');
+                }).catch(error => {
+                    console.error('Error updating background:', error);
+                });
+            });
         }
-		function updateProfileColor() {
+
+        function updateProfileColor() {
             const root = document.documentElement;
             const colorPicker = document.getElementById('color-picker');
             

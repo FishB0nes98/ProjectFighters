@@ -572,5 +572,45 @@ export const usernames = [
     // Add Hybrid References
     "Goku_x_Chief", "Naruto_Stark", "Luffy_Potter", "Eren_Witcher", "Saitama_Wick",
     "Deku_Spidey", "Levi_Snake", "Gojo_Strange", "Zoro_Geralt", "Tanjiro_Link",
-    "Sasuke_Cloud", "Ichigo_Dante", "Kirito_Neo", "Light_Vader", "JoJo_Kratos"
+    "Sasuke_Cloud", "Ichigo_Dante", "Kirito_Neo", "Light_Vader", "JoJo_Kratos",
+
+    // Tokyo Mew Mew Themed
+    "MewIchigo", "StrawberryBell", "MewMint", "MintoneArrow", "MewLettuce",
+    "LettuceCastanets", "MewPudding", "PuddingRing", "MewZakuro", "ZakuroWhip",
+    "MewAqua", "RibbonStrawberryCheck", "RibbonMintEcho", "RibbonLettuceRush",
+    "RibbonPuddingRingInferno", "RibbonZakuroSpear", "BlueKnight", "DeepBlue",
+    "MashaMew", "ChimeraAnima", "SaintRoseCrusaders", "MewBerry", "BerryRod",
+    "MewRingo", "RingoWand", "UchaStrawberry", "MintoAisu", "LettuceLocket",
+    "PurinPuwa", "ZakuroSparkle", "AquaDrops", "RedDataGuardian", "CafeMewMew",
+
+    // Modern Names
+    "GlitchMode", "AestheticVibes", "CloudGamer", "SynthWavePro", "NeoCyber",
+    "QuantumLeap", "ZenithPlayz", "EchoSphere", "NovaDrift", "FluxRyder",
+    "ApexWraith", "ChronoShift", "ByteRonin", "TerraFlex", "HydroPunk",
+
+    // Cringe Names
+    "xX_ShadowSlayer_Xx", "DankLord420", "NoobPwner69", "EpicGamerPro123", "Xx_KillerQueen_xX",
+    "SavageBeastMode", "AlphaWolfGamer", "MysticPandaX", "SugarKittenUwU", "Xx_DarkAngel_xX",
+    "EmoGurlRawrXD", "PotatoKingLOL", "BadBoyz4Lyfe", "SenpaiNoticeMe", "KawaiiDesuNe",
+
+    // Young Gamer Names
+    "NinjaKid", "RobloxPro", "FortniteMaster", "MinecraftHero", "AmongUsChamp",
+    "PoketrainerAsh", "SonicSpeed", "MarioFan", "ZeldaLink", "KirbyStar",
+    "PowerUpKid", "PixelPlayer", "JoyStickKid", "GameBoyPro", "LevelUpChamp",
+
+    // Average Gamer Names
+    "PlayerOne", "GamerTag", "TheDudeAbides", "AverageJoe", "JustPlaying",
+    "CasualGamer", "WeekendWarrior", "OnlineGamer", "GameNight", "ControllerPlayer",
+    "KeyboardWarrior", "MouseClicker", "HeadsetHero", "QuestSeeker", "LootCollector",
+
+    // Streamer/Youtuber Names
+    "StreamKing", "YTProGamer", "LiveGameplay", "SubToMyChannel", "DonationGoal",
+    "ShoutOutPlz", "ContentCreator", "VODReview", "HighlightsReel", "LetsPlayAllDay",
+    "IRLStreamer", "SpeedrunGod", "TutorialMaster", "ReviewGuru", "CommunityManager",
+
+    // OC Names
+    "Aetheria", "Zephyr", "Kael", "Lyra", "Seraphina",
+    "Orion", "Astrid", "Rylan", "Elara", "Jaxon",
+    "Nyx", "Caspian", "Willow", "Finnian", "Rowan",
+    "Lucian", "Aurora", "Jasper", "Skye", "Ezra"
 ]; 

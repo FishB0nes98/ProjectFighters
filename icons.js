@@ -26,6 +26,7 @@ export const profileIcons = {
         'Rainy_Day_Shinnok', 'Regal_Ayane_Emerald', 'Regal_Julia', 'Root', 'Schoolgirl_Julia',
         'Summertime_Nina', 'Summertime_Shoma', 'Void_Akuma', 'Void_Blanka', 'Panda',
         'battleborn_scythe', 'battleborn_yugo', 'battleborn_ayane',
-        'blossom_julia', 'blossom_mai', 'blossom_shizumaru', 'blossom_raiden'
+        'blossom_julia', 'blossom_mai', 'blossom_shizumaru', 'blossom_raiden',
+        'tokyo_ayane', 'tokyo_lili', 'tokyo_julia', 'tokyo_cham_cham', 'tokyo_kagome'
     ]
 }; 

@@ -10,7 +10,12 @@ export const chatMessages = {
         "ready for a good game",
         "let's make this a good one",
         "hey all, let's win",
-        "good luck have fun"
+        "good luck have fun",
+        "Yo.",
+        "Sup team.",
+        "Let's get this bread.",
+        "Time to climb!",
+        "May the odds be ever in our favor."
     ],
 
     // Role preferences
@@ -24,7 +29,12 @@ export const chatMessages = {
         "best at support",
         "mid/jungle player",
         "top lane main",
-        "experienced jungler here"
+        "experienced jungler here",
+        "I'll take whatever is left.",
+        "Not support please.",
+        "Hoping for ADC.",
+        "Can I get top this game?",
+        "Jungle or feed."
     ],
 
     // Champion suggestions
@@ -38,7 +48,17 @@ export const chatMessages = {
         "pick something tanky",
         "need frontline",
         "some poke would be good",
-        "we need disengage"
+        "we need disengage",
+        "Siegfried on their team? We'll need anti-heal.",
+        "An Akuma could really dominate mid for us.",
+        "Talim's mobility could give us an edge.",
+        "Thinking Morrigan for some strong zone control.",
+        "If their Juri gets fed, it's game over. Let's counter-pick.",
+        "How about a global ult champ?",
+        "Someone pick a hypercarry.",
+        "We're lacking peel for our ADC.",
+        "Could use a split pusher.",
+        "Let's get some AoE damage."
     ],
 
     // Team composition comments
@@ -62,7 +82,12 @@ export const chatMessages = {
         "team of monkeys fr",
         "lobby diff",
         "team gap is huge",
-        "unplayable comp tbh"
+        "unplayable comp tbh",
+        "This comp is S+ tier!",
+        "Are we even trying with this draft?",
+        "Perfect synergy, let's go!",
+        "Looks like a 15 min surrender with these picks.",
+        "Enemy team just out-drafted us hard."
     ],
 
     // Specific champion reactions
@@ -77,7 +102,14 @@ export const chatMessages = {
             "solid pick",
             "that'll work well",
             "good counter pick",
-            "perfect for our comp"
+            "perfect for our comp",
+            "Good ban, that champ is a menace.",
+            "Nice! That new Tokyo Mew Mew skin looks great on them.",
+            "Yes! That's a comfort pick for sure.",
+            "Ooh, spicy pick, I like it!",
+            "That champ is so underrated.",
+            "Meta slave, but a good one!",
+            "Finally, someone who knows how to draft."
         ],
         negative: [
             "hmm interesting choice",
@@ -99,7 +131,22 @@ export const chatMessages = {
             "nice iron pick",
             "dodge penalty looking good rn",
             "thx for ruining draft",
-            "lobby terrorist spotted"
+            "lobby terrorist spotted",
+            "Picking a D-tier like Raiden? Enjoy the L.",
+            "Oh, another Shinnok abuser. How original.",
+            "First-timing Angel in ranked? Big yikes.",
+            "Imagine picking Blanka unironically. Cringe.",
+            "Ugh, another weeb event. Hard pass.",
+            "Using the default skin? Broke.",
+            "This draft is already chalked.",
+            "FF15 if you lock that in.",
+            "My cat has better game sense than this team.",
+            "Wow, the legendary Tokyo Mew Mew Ayane skin. Must be nice to be a whale.",
+            "Are you griefing or just bad?",
+            "That pick is reportable.",
+            "Someone needs to uninstall.",
+            "Did you buy your account?",
+            "Enjoy your LP loss with that pick."
         ]
     },
 
@@ -124,7 +171,12 @@ export const chatMessages = {
         "gap too big already",
         "dodge or lose simple",
         "unwinnable strat",
-        "team gap = ff15"
+        "team gap = ff15",
+        "Let's invade their jungle level 1.",
+        "We should 4-man gank bot early.",
+        "Play for picks, avoid full teamfights.",
+        "Starve their jungler, take all camps.",
+        "If we don't win by 20 mins, we lose."
     ],
 
     // Lane matchup comments
@@ -148,7 +200,12 @@ export const chatMessages = {
         "lane gap incoming",
         "enjoy getting farmed",
         "ff lane already",
-        "0/10 powerspike inc"
+        "0/10 powerspike inc",
+        "Their top laner is a one-trick, easy camp.",
+        "Our bot lane counters theirs hard.",
+        "Mid is a skill matchup, GL.",
+        "Jungle difference will decide this.",
+        "Support matchup looks tough for us."
     ],
 
     // Win conditions
@@ -218,7 +275,17 @@ export const chatMessages = {
         "meta pick solid",
         "creative pick",
         "following the meta",
-        "meta is meta for a reason"
+        "meta is meta for a reason",
+        "Shinnok is S+ tier? Nerf incoming for sure.",
+        "Raiden is still D tier... those 2.5 buffs better be good.",
+        "Kabal at 54% winrate? That's pretty strong.",
+        "Seeing a lot of FANG lately, that 51% WR is solid.",
+        "Kagome still at 40%... rough.",
+        "This patch made [insert champ] completely broken.",
+        "Remember when [insert champ] was actually good? Good times.",
+        "The current item meta really favors [insert class].",
+        "Is anyone else tired of seeing [insert champ] every game?",
+        "They need to buff [insert champ], totally unplayable right now."
     ],
 
     // Skin appreciation
@@ -232,7 +299,19 @@ export const chatMessages = {
         "showing off the skins",
         "fancy skin",
         "great skin choice",
-        "skin flex nice"
+        "skin flex nice",
+        "That Voidborn Akuma is one of the best skins, ngl.",
+        "Infernal Birdie? Classic choice, love it.",
+        "Tokyo Mew Mew Julia for 2500 FM is a steal!",
+        "Anyone know if Glorious Julia will be available again?",
+        "Sand Soldier Kotal Kahn... that's a choice.",
+        "The Tokyo Mew Mew Ayane skin looks amazing, must be legendary.",
+        "OMG, that Tokyo Mew Mew Kagome skin is too cute!",
+        "That skin must have cost a fortune!",
+        "Wish I had that skin.",
+        "Is that the new event skin? Looks sick!",
+        "Paying for pixels LUL.",
+        "Default skin Andy over here."
     ],
 
     // Game plan discussion
@@ -397,7 +476,93 @@ export const chatMessages = {
         "roam potential",
         "good roams",
         "roaming comp"
-    ]
+    ],
+
+    // Event-specific chat
+    eventChat: [
+        "Hyped for the Tokyo Mew Mew event!",
+        "Saving all my FM for the Tokyo Mew Mew skins!",
+        "Which Tokyo Mew Mew character skin are you aiming for?",
+        "Imagine a full team rocking those Mew Mew skins!",
+        "The pink theme for the Tokyo Mew Mew event page is perfect.",
+        "Mew Mew Power! Let's get these event rewards.",
+        "Is the Tokyo Mew Mew event pass worth it?",
+        "Grinding for that Legendary Ayane skin.",
+        "Strawberry Bell Blast 'em!",
+        "Ribbon Mint Echo for the win!"
+    ],
+
+    // General Banter/Trash Talk
+    banterTrashTalk: [
+        "Easy game, easy life.",
+        "Get ready to be farmed.",
+        "Prepare for a stomping.",
+        "Are you guys even trying?",
+        "This is gonna be quick.",
+        "My grandma plays better than you.",
+        "Report my team if we lose.",
+        "Uninstall the game, please.",
+        "Is this Bronze elo?",
+        "Too easy.",
+        "You're about to get diffed.",
+        "Can't wait to see you rage quit.",
+        "GL, you'll need it.",
+        "Try not to feed too hard.",
+        "I smell fear."
+    ],
+
+    // AFK/Disconnect Comments
+    afkDisconnect: [
+        "Did someone DC?",
+        "We have an AFK?",
+        "Great, someone left. GG.",
+        "Remake incoming?",
+        "Hope they come back soon.",
+        "Player disconnected. Fantastic.",
+        "Can we pause?",
+        "Report AFK.",
+        "Always get an AFK on my team.",
+        "This is why I hate solo queue."
+    ],
+
+    // Role-Specific Banter
+    roleSpecificBanter: {
+        top: [
+            "Welcome to Top Island!",
+            "Time to 1v9 from top lane.",
+            "Hope my jungler knows top exists.",
+            "Just gonna split push all game.",
+            "Darius go brrrr."
+        ],
+        jungle: [
+            "Jungle diff incoming.",
+            "Time to gank bot 24/7.",
+            "Securing all objectives.",
+            "My laners better not feed before my first clear.",
+            "Ganking jungler reporting for duty."
+        ],
+        mid: [
+            "Mid or feed, and I got mid.",
+            "Time for some flashy outplays.",
+            "Roaming to a lane near you soon.",
+            "Control mages for the win.",
+            "Assassin mid, let's go!"
+        ],
+        adc: [
+            "Just farm and scale, boys.",
+            "Peel for me and we win.",
+            "Late game hypercarry online.",
+            "My support better be good.",
+            "Time to kite these fools."
+        ],
+        support: [
+            "Vision score is everything.",
+            "Saving my ADC's life, one stun at a time.",
+            "Roaming support incoming.",
+            "Enchanters OP.",
+            "Time to make some plays."
+        ]
+    }
 };
 
 // Contextual responses based on game state

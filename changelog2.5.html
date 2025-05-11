@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patch 2.5: Tokyo Mew Mew Collaboration - Changelog</title>
+    <link rel="icon" href="Icons/Profile/tokyo_ayane.png" type="image/png">
+    <link rel="stylesheet" href="styles_new.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Specific styles for changelog */
+        body {
+            background-color: var(--bg-dark);
+            overflow-x: hidden;
+            position: relative; /* Needed for z-indexing context of pseudo-elements */
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 50% black overlay */
+            z-index: 0; 
+        }
+
+        /* Override to remove the filter from the video background on this page */
+        #video-background {
+            filter: none !important;
+            position: fixed; /* Ensure it stays in background */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1; /* Behind the body::before overlay */
+        }
+
+        .changelog-container, .main-nav { /* Ensure content is above overlay */
+            position: relative;
+            z-index: 1;
+        }
+
+        .changelog-container {
+            max-width: 1200px;
+            margin: 80px auto 40px;
+            padding: 20px;
+        }
+
+        .changelog-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .patch-badge {
+            background: linear-gradient(135deg, #FF69B4, #8A2BE2); /* Pink to Purple gradient */
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .changelog-title {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #FF69B4, #8A2BE2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .changelog-subtitle {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #FF69B4;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .changelog-section {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: var(--radius-lg);
+            margin-bottom: 30px;
+            padding: 30px;
+            border: 1px solid #FF69B4;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .changelog-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius-lg);
+            padding: 2px;
+            background: linear-gradient(135deg, #FF69B4, #8A2BE2);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            position: relative;
+            color: #FF69B4;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(135deg, #FF69B4, #8A2BE2);
+            bottom: -8px;
+            left: 0;
+            border-radius: 2px;
+        }
+
+        .champion-card {
+            display: flex;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: var(--radius-lg);
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .champion-card:hover {
+            transform: translateY(-5px);
+            border-color: #FF69B4;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .champion-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 20px;
+            border: 3px solid #FF69B4;
+        }
+
+        .champion-info {
+            padding: 20px 20px 20px 0;
+            flex: 1;
+        }
+
+        .champion-name {
+            font-size: 1.6rem;
+            margin-bottom: 5px;
+            color: #FF69B4;
+        }
+        
+        .champion-title {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+        
+        .change-list {
+            list-style: none;
+            padding-left: 0; /* Remove default padding */
+        }
+        
+        .change-item {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .change-item::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #FF69B4;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .item-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-md);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .item-card:hover {
+            transform: translateX(5px);
+            background: rgba(0, 0, 0, 0.4);
+            border-color: #FF69B4;
+        }
+
+        .item-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 1px solid #FF69B4;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #FF69B4;
+        }
+
+        .event-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .event-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 100%;
+            position: relative; /* Needed for absolute positioning of badges */
+        }
+
+        .event-card .legendary, .event-card .collab {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #FF69B4, #8A2BE2);
+            color: var(--text-color);
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 2;
+            border: 1px solid #FFC0CB;
+        }
+
+        .event-card .collab {
+            left: 10px;
+            right: auto;
+            background: linear-gradient(135deg, #8A2BE2, #FF69B4);
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            border-color: #FF69B4;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .event-image {
+            height: 200px;
+            overflow: hidden;
+            position: relative; /* Ensure badges are positioned relative to this */
+        }
+
+        .event-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .event-card:hover .event-image img {
+            transform: scale(1.1);
+        }
+
+        .event-details {
+            padding: 20px;
+        }
+
+        .event-name {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #FF69B4;
+        }
+
+        .event-price {
+            display: inline-block;
+            background: linear-gradient(135deg, #FF69B4, #8A2BE2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .collab-description {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .collab-description p {
+            margin-bottom: 15px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            margin-top: 80px;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .champion-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .champion-info {
+                padding: 0 20px 20px;
+            }
+            .champion-icon {
+                margin-bottom: 0;
+            }
+            .changelog-title {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <video id="video-background" autoplay muted loop playsinline>
+        <source src="Event/Eventvideo.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Navigation Menu -->
+    <nav class="main-nav">
+        <div class="nav-content">
+            <a href="Game Modes.html" class="play-button">
+                <i class="fas fa-play play-icon"></i>
+                <span class="play-text">Play</span>
+            </a>
+            <a href="home.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <span class="nav-text">Home</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="Store.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <span class="nav-text">Store</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="event.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-calendar"></i>
+                </div>
+                <span class="nav-text">Event</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="#" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-hammer"></i>
+                </div>
+                <span class="nav-text">Build</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="Team Builder.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <span class="nav-text">Team Builder</span>
+                <div class="nav-indicator"></div>
+            </a>
+            <a href="statistics.html" class="nav-link">
+                <div class="nav-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <span class="nav-text">Statistics</span>
+                <div class="nav-indicator"></div>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Changelog Content -->
+    <div class="changelog-container">
+        <div class="changelog-header">
+            <div class="patch-badge">PATCH 2.5</div>
+            <h1 class="changelog-title">Tokyo Mew Mew Collaboration</h1>
+            <h2 class="changelog-subtitle">Special Collaboration Event</h2>
+        </div>
+
+        <!-- Collaboration Description -->
+        <div class="changelog-section">
+            <h2 class="section-title">Tokyo Mew Mew Collaboration</h2>
+            
+            <div class="collab-description">
+                <p>Get ready for a magical transformation as Project Fighters joins forces with the iconic magical girl series Tokyo Mew Mew! This enchanting collaboration brings the vibrant world of Tokyo Mew Mew to the battlefield with stunning new skins that blend kawaii aesthetics with fierce combat prowess.</p>
+                
+                <p>Experience the thrill of becoming a Mew Mew as your favorite fighters adopt the powers of Earth's defenders, complete with animal DNA enhancements and dazzling transformation sequences. The legendary Tokyo Mew Mew Ayane skin leads the collection with completely reimagined abilities and visual effects that channel the power of the original series.</p>
+                
+                <p>Team up with friends to form your own Mew Mew squad and protect the Earth with style! Whether you're a longtime fan of the anime or discovering these magical heroines for the first time, this collaboration offers an exciting fusion of two beloved universes you won't want to miss!</p>
+            </div>
+        </div>
+        
+        <div class="changelog-section">
+            <h2 class="section-title">Tokyo Mew Mew Event Skins</h2>
+            
+            <div class="event-grid">
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Tokyo Mew Mew Ayane.png" alt="Tokyo Mew Mew Ayane">
+                        <div class="legendary">Legendary</div>
+                        <div class="collab">Collab</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Tokyo Mew Mew Ayane</h3>
+                        <span class="event-price">5000 FM</span>
+                    </div>
+                </div>
+                
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Tokyo Mew Mew Julia.png" alt="Tokyo Mew Mew Julia">
+                        <div class="collab">Collab</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Tokyo Mew Mew Julia</h3>
+                        <span class="event-price">2500 FM</span>
+                    </div>
+                </div>
+                
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Tokyo Mew Mew Kagome.jpg" alt="Tokyo Mew Mew Kagome">
+                        <div class="collab">Collab</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Tokyo Mew Mew Kagome</h3>
+                        <span class="event-price">2500 FM</span>
+                    </div>
+                </div>
+                
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Tokyo Mew Mew Lili.png" alt="Tokyo Mew Mew Lili">
+                        <div class="collab">Collab</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Tokyo Mew Mew Lili</h3>
+                        <span class="event-price">2500 FM</span>
+                    </div>
+                </div>
+                
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Tokyo Mew Mew Cham Cham.png" alt="Tokyo Mew Mew Cham Cham">
+                        <div class="collab">Collab</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Tokyo Mew Mew Cham Cham</h3>
+                        <span class="event-price">2500 FM</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Battle Pass Section -->
+        <div class="changelog-section">
+            <h2 class="section-title">Tokyo Mew Mew Battle Pass</h2>
+            
+            <div class="collab-description">
+                <p>Transform your gameplay experience with the Tokyo Mew Mew Battle Pass! Packed with exclusive rewards themed around the magical world of Tokyo Mew Mew, this Battle Pass offers incredible value for all players.</p>
+                
+                <p>The Battle Pass can be purchased for <strong>4,000 FM</strong> or 150,000 CM and includes 50 reward tiers to unlock as you earn Battle Pass experience through matches and missions.</p>
+            </div>
+            
+            <h3 style="color: #FF69B4; margin: 20px 0 10px;">Key Rewards:</h3>
+            
+            <div class="event-grid">
+                <!-- Tier 1 -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Tokyo Mew Mew Cham Cham.png" alt="Tokyo Mew Mew Cham Cham">
+                        <div class="collab">Tier 1</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Tokyo Mew Mew Cham Cham Skin</h3>
+                        <span class="event-price">Unlocked Immediately</span>
+                    </div>
+                </div>
+                
+                <!-- Tier 2 -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Loading Screen/Tokyo Mew Mew Ayane.png" alt="Animal Instinct Song">
+                        <div class="collab">Tier 2</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Animal Instinct (Song)</h3>
+                        <span class="event-price">70 BP EXP</span>
+                    </div>
+                </div>
+                
+                <!-- Tier 6 -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Icons/Profile/tokyo_cham_cham.png" alt="Tokyo Cham Cham Icon">
+                        <div class="collab">Tier 6</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Tokyo Cham Cham Icon</h3>
+                        <span class="event-price">440 BP EXP</span>
+                    </div>
+                </div>
+                
+                <!-- Tier 13 -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="titles/titleimage.jpeg" alt="Mew Mew Power Title">
+                        <div class="collab">Tier 13</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Mew Mew Power Title</h3>
+                        <span class="event-price">1434 BP EXP</span>
+                    </div>
+                </div>
+                
+                <!-- Tier 15 -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Skins/Tokyo Mew Mew Julia.png" alt="Tokyo Mew Mew Julia">
+                        <div class="collab">Tier 15</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Tokyo Mew Mew Julia Skin</h3>
+                        <span class="event-price">1799 BP EXP</span>
+                    </div>
+                </div>
+                
+                <!-- Tier 20 -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="titles/titleimage.jpeg" alt="Mew Ichigo Title">
+                        <div class="collab">Tier 20</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Mew Ichigo Title (+100 FM)</h3>
+                        <span class="event-price">2869 BP EXP</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px;">
+                <p>...and many more rewards, including FM, CM, Lootboxes, and Stickers!</p>
+                <a href="battlepass.html" style="display: inline-block; background: linear-gradient(135deg, #FF69B4, #8A2BE2); padding: 12px 30px; border-radius: 30px; text-decoration: none; color: white; font-weight: bold; margin-top: 15px; transition: all 0.3s ease;">
+                    <i class="fas fa-crown" style="margin-right: 8px;"></i>View Battle Pass
+                </a>
+            </div>
+        </div>
+        
+        <!-- Quest Point Store Updates Section -->
+        <div class="changelog-section">
+            <h2 class="section-title">Quest Point Store Updates</h2>
+            
+            <div class="collab-description">
+                <p>The Quest Point Store has been refreshed with exclusive Tokyo Mew Mew themed rewards! Exchange your hard-earned Quest Points for these magical items before they disappear!</p>
+            </div>
+            
+            <div class="event-grid">
+                <!-- Tokyo Ayane Icon -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Icons/Profile/tokyo_ayane.png" alt="Tokyo Ayane Icon">
+                        <div class="collab">Icon</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Tokyo Ayane Icon</h3>
+                        <span class="event-price">1500 QP</span>
+                    </div>
+                </div>
+                
+                <!-- Tokyo Lili Icon -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Icons/Profile/tokyo_lili.png" alt="Tokyo Lili Icon">
+                        <div class="collab">Icon</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Tokyo Lili Icon</h3>
+                        <span class="event-price">1500 QP</span>
+                    </div>
+                </div>
+                
+                <!-- Tokyo Julia Icon -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Icons/Profile/tokyo_julia.png" alt="Tokyo Julia Icon">
+                        <div class="collab">Icon</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Tokyo Julia Icon</h3>
+                        <span class="event-price">1500 QP</span>
+                    </div>
+                </div>
+                
+                <!-- Tokyo Cham Cham Icon -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Icons/Profile/tokyo_cham_cham.png" alt="Tokyo Cham Cham Icon">
+                        <div class="collab">Icon</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Tokyo Cham Cham Icon</h3>
+                        <span class="event-price">1500 QP</span>
+                    </div>
+                </div>
+                
+                <!-- Tokyo Kagome Icon -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="Icons/Profile/tokyo_kagome.png" alt="Tokyo Kagome Icon">
+                        <div class="collab">Icon</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Tokyo Kagome Icon</h3>
+                        <span class="event-price">1500 QP</span>
+                    </div>
+                </div>
+                
+                <!-- Friend of the Mews Title -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="titles/titleimage.jpeg" alt="Friend of the Mews Title">
+                        <div class="collab">Title</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">Friend of the Mews Title</h3>
+                        <span class="event-price">550 QP</span>
+                    </div>
+                </div>
+                
+                <!-- Fight Money -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="res/img/fm.png" alt="Fight Money">
+                        <div class="collab">Currency</div>
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-name">250 Fight Money</h3>
+                        <span class="event-price">2000 QP</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="home.html" style="display: inline-block; background: linear-gradient(135deg, #FF69B4, #8A2BE2); padding: 12px 30px; border-radius: 30px; text-decoration: none; color: white; font-weight: bold; margin-top: 15px; transition: all 0.3s ease;">
+                    <i class="fas fa-store" style="margin-right: 8px;"></i>Visit Quest Point Store
+                </a>
+            </div>
+        </div>
+        
+        <!-- Tokyo Mew Mew Quests Section -->
+        <div class="changelog-section">
+            <h2 class="section-title">Tokyo Mew Mew Event Quests</h2>
+            
+            <div class="collab-description">
+                <p>New quests have arrived! Complete special Tokyo Mew Mew themed challenges to earn Quest Points, Champion Money, and exclusive rewards. The quest system has been completely revamped with magical girl flair!</p>
+            </div>
+            
+            <h3 style="color: #FF69B4; margin: 20px 0 10px;">Daily Quests:</h3>
+            
+            <div class="item-card">
+                <i class="fas fa-paw item-icon" style="color: #FF69B4; font-size: 30px; display: flex; align-items: center; justify-content: center;"></i>
+                <div class="item-info">
+                    <h4 class="item-name">Mew Daily Patrol</h4>
+                    <p>Play 2 games to help the team!</p>
+                    <div style="margin-top: 8px;">
+                        <span style="background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 10px; font-size: 0.8em;">
+                            <img src="res/img/qp.png" alt="QP" style="height: 14px; vertical-align: middle;"> 100 QP
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="item-card">
+                <i class="fas fa-magic item-icon" style="color: #FF69B4; font-size: 30px; display: flex; align-items: center; justify-content: center;"></i>
+                <div class="item-info">
+                    <h4 class="item-name">Magical Girl Victory</h4>
+                    <p>Win 1 game with flair!</p>
+                    <div style="margin-top: 8px;">
+                        <span style="background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 10px; font-size: 0.8em;">
+                            <img src="res/img/qp.png" alt="QP" style="height: 14px; vertical-align: middle;"> 150 QP
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="item-card">
+                <i class="fas fa-users item-icon" style="color: #FF69B4; font-size: 30px; display: flex; align-items: center; justify-content: center;"></i>
+                <div class="item-info">
+                    <h4 class="item-name">Mew Team Up!</h4>
+                    <p>Play 1 game using any Tokyo Mew Mew skin.</p>
+                    <div style="margin-top: 8px;">
+                        <span style="background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 10px; font-size: 0.8em; margin-right: 5px;">
+                            <img src="res/img/qp.png" alt="QP" style="height: 14px; vertical-align: middle;"> 120 QP
+                        </span>
+                        <span style="background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 10px; font-size: 0.8em;">
+                            <img src="res/img/cm.png" alt="CM" style="height: 14px; vertical-align: middle;"> 200 CM
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 style="color: #FF69B4; margin: 30px 0 10px;">Special Quests:</h3>
+            
+            <div class="item-card">
+                <i class="fas fa-magic item-icon" style="color: #FF69B4; font-size: 30px; display: flex; align-items: center; justify-content: center;"></i>
+                <div class="item-info">
+                    <h4 class="item-name">Magical Barrage <span style="font-size: 0.7em; background: rgba(255,105,180,0.2); padding: 2px 5px; border-radius: 5px; vertical-align: middle;">Repeatable</span></h4>
+                    <p>Land 10 abilities on enemy champions in a single game.</p>
+                    <div style="margin-top: 8px;">
+                        <span style="background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 10px; font-size: 0.8em; margin-right: 5px;">
+                            <img src="res/img/qp.png" alt="QP" style="height: 14px; vertical-align: middle;"> 200 QP
+                        </span>
+                        <span style="background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 10px; font-size: 0.8em;">
+                            <img src="res/img/cm.png" alt="CM" style="height: 14px; vertical-align: middle;"> 300 CM
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="item-card">
+                <i class="fas fa-heart item-icon" style="color: #FF69B4; font-size: 30px; display: flex; align-items: center; justify-content: center;"></i>
+                <div class="item-info">
+                    <h4 class="item-name">Ichigo's Valor <span style="font-size: 0.7em; background: rgba(255,105,180,0.2); padding: 2px 5px; border-radius: 5px; vertical-align: middle;">Repeatable</span></h4>
+                    <p>Accumulate 3 Kills or Assists while playing as Tokyo Mew Mew Ayane.</p>
+                    <div style="margin-top: 8px;">
+                        <span style="background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 10px; font-size: 0.8em; margin-right: 5px;">
+                            <img src="res/img/qp.png" alt="QP" style="height: 14px; vertical-align: middle;"> 250 QP
+                        </span>
+                        <span style="background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 10px; font-size: 0.8em;">
+                            <img src="Stickers/tokyo_ayane_ribbon.png" alt="Sticker" style="height: 14px; vertical-align: middle;"> Tokyo Ayane Ribbon Sticker
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="item-card">
+                <i class="fas fa-shield-alt item-icon" style="color: #FF69B4; font-size: 30px; display: flex; align-items: center; justify-content: center;"></i>
+                <div class="item-info">
+                    <h4 class="item-name">Defenders of Earth</h4>
+                    <p>Win 5 games during the Tokyo Mew Mew Event.</p>
+                    <div style="margin-top: 8px;">
+                        <span style="background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 10px; font-size: 0.8em; margin-right: 5px;">
+                            <img src="res/img/qp.png" alt="QP" style="height: 14px; vertical-align: middle;"> 400 QP
+                        </span>
+                        <span style="background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 10px; font-size: 0.8em;">
+                            <i class="fas fa-id-badge" style="color: #FF69B4;"></i> "Mew Guardian" Title
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="item-card">
+                <i class="fas fa-tint item-icon" style="color: #FF69B4; font-size: 30px; display: flex; align-items: center; justify-content: center;"></i>
+                <div class="item-info">
+                    <h4 class="item-name">Mew Aqua Aid <span style="font-size: 0.7em; background: rgba(255,105,180,0.2); padding: 2px 5px; border-radius: 5px; vertical-align: middle;">Repeatable</span></h4>
+                    <p>Heal or Shield allies for 5000 health in total. (Across multiple games)</p>
+                    <div style="margin-top: 8px;">
+                        <span style="background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 10px; font-size: 0.8em; margin-right: 5px;">
+                            <img src="res/img/qp.png" alt="QP" style="height: 14px; vertical-align: middle;"> 300 QP
+                        </span>
+                        <span style="background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 10px; font-size: 0.8em;">
+                            <img src="res/img/cm.png" alt="CM" style="height: 14px; vertical-align: middle;"> 750 CM
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="home.html" style="display: inline-block; background: linear-gradient(135deg, #FF69B4, #8A2BE2); padding: 12px 30px; border-radius: 30px; text-decoration: none; color: white; font-weight: bold; margin-top: 15px; transition: all 0.3s ease;">
+                    <i class="fas fa-ribbon" style="margin-right: 8px;"></i>View Quests
+                </a>
+            </div>
+        </div>
+        
+        <!-- Balance Changes Section -->
+        <div class="changelog-section">
+            <h2 class="section-title">Balance Changes</h2>
+            
+            <!-- Champions Subsection -->
+            <h3 style="color: #FF69B4; margin: 30px 0 15px; border-bottom: 1px solid rgba(255,105,180,0.3); padding-bottom: 10px;">Champions</h3>
+            
+            <!-- Kotal Kahn -->
+            <div class="champion-card" style="border-color: rgba(255,105,180,0.5);">
+                <img src="Icons/Kotal Kahn.png" alt="Kotal Kahn" class="champion-icon">
+                <div class="champion-info">
+                    <h4 class="champion-name">Kotal Kahn</h4>
+                    <p class="champion-title">The Sun God</p>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <strong>Q - Sunlight:</strong>
+                            <ul>
+                                <li style="list-style-type: disc; margin-left: 20px;">Healing per stack multiplier decreased to [2/4/7/10/12/15] from [3/6/10/13/15/20].</li>
+                            </ul>
+                        </li>
+                        <li class="change-item">
+                            <strong>W - Unbreakable Skin:</strong>
+                            <ul>
+                                <li style="list-style-type: disc; margin-left: 20px;">Damage block decreased to 72% from 80%.</li>
+                                <li style="list-style-type: disc; margin-left: 20px;">No longer heals Kotal Kahn after the duration ends.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: rgba(255,255,255,0.7);"><em>Developer Comment: Kotal Kahn's ability to sustain himself and his team was significantly outperforming other supports, especially given his inherent tankiness and damage potential as a jungle/support hybrid. These changes aim to reduce his raw healing output from Sunlight and lessen his personal survivability from Unbreakable Skin, requiring more tactical usage and reliance on teammates.</em></p>
+                </div>
+            </div>
+            
+            <!-- Kagome -->
+            <div class="champion-card" style="border-color: rgba(255,105,180,0.5); margin-top: 20px;">
+                <img src="Icons/Kagome.png" alt="Kagome" class="champion-icon">
+                <div class="champion-info">
+                    <h4 class="champion-name">Kagome</h4>
+                    <p class="champion-title">The Spiritual Archer</p>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <strong>Stats:</strong>
+                            <ul>
+                                <li style="list-style-type: disc; margin-left: 20px;">AD Growth increased to 12 from 10.</li>
+                                <li style="list-style-type: disc; margin-left: 20px;">Attack Speed Growth increased to 0.041 from 0.032.</li>
+                            </ul>
+                        </li>
+                        <li class="change-item">
+                            <strong>W - Soul Arrows:</strong>
+                            <ul>
+                                <li style="list-style-type: disc; margin-left: 20px;">Damage adjusted to 45/90/170/340/430 from 65/110/170/300/390.</li>
+                                <li style="list-style-type: disc; margin-left: 20px;">Cooldown reduced to 7/6/5/5/4 seconds from 9/8/7/7/6 seconds.</li>
+                                <li style="list-style-type: disc; margin-left: 20px;">Damage now ignores armor.</li>
+                            </ul>
+                        </li>
+                        <li class="change-item">
+                            <strong>R - Anima Scream:</strong>
+                            <ul>
+                                <li style="list-style-type: disc; margin-left: 20px;">Now has a 150% AP scaling on its damage.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: rgba(255,255,255,0.7);"><em>Developer Comment: Kagome has been struggling to find her place, especially against tankier compositions. These changes aim to bolster her scaling and sustained damage. Increasing her AD and Attack Speed growth will help her late-game auto-attack presence. Soul Arrows now provides more reliable damage by ignoring armor and having a lower cooldown, though its early-game base damage is slightly reduced to compensate. Adding AP scaling to Anima Scream opens up potential for alternative builds or enhances its impact if she incidentally gets AP from support items or unique builds, though her primary build path is still expected to be AD-focused.</em></p>
+                </div>
+            </div>
+            
+            <!-- Shinnok -->
+            <div class="champion-card" style="border-color: rgba(255,105,180,0.5); margin-top: 20px;">
+                <img src="Icons/Shinnok.png" alt="Shinnok" class="champion-icon">
+                <div class="champion-info">
+                    <h4 class="champion-name">Shinnok</h4>
+                    <p class="champion-title">The Fallen Elder God</p>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <strong>Passive - The Power of the Amulet:</strong>
+                            <ul>
+                                <li style="list-style-type: disc; margin-left: 20px;">AP granted per kill decreased to [30] from [40].</li>
+                            </ul>
+                        </li>
+                        <li class="change-item">
+                            <strong>E - Bone Grasp:</strong>
+                            <ul>
+                                <li style="list-style-type: disc; margin-left: 20px;">Cooldown increased to [11s/10s/9s/8s/7s] from [7s].</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: rgba(255,255,255,0.7);"><em>Developer Comment: Shinnok's early game control, especially with Bone Grasp, was too oppressive against assassins. Additionally, his late-game scaling from AP stacking made him overly dominant against melee-heavy compositions, which are prevalent in the current meta. These changes aim to provide more counterplay in the early stages and slightly temper his late-game power spike without fundamentally altering his kit.</em></p>
+                </div>
+            </div>
+            
+            <!-- Raiden -->
+            <div class="champion-card" style="border-color: rgba(255,105,180,0.5); margin-top: 20px;">
+                <img src="Icons/Raiden.png" alt="Raiden" class="champion-icon">
+                <div class="champion-info">
+                    <h4 class="champion-name">Raiden</h4>
+                    <p class="champion-title">The Thunder God</p>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <strong>Q - Lightning Bolt:</strong>
+                            <ul>
+                                <li style="list-style-type: disc; margin-left: 20px;">Base damage increased to [85/170/310/455/700] from [75/160/300/445/700].</li>
+                            </ul>
+                        </li>
+                        <li class="change-item">
+                            <strong>E - Electric Dash:</strong>
+                            <ul>
+                                <li style="list-style-type: disc; margin-left: 20px;">Shield gain now based on [200%] of damage dealt (was [100%]).</li>
+                                <li style="list-style-type: disc; margin-left: 20px;">Shield duration increased to [2.5s] from [2s].</li>
+                            </ul>
+                        </li>
+                        <li class="change-item">
+                            <strong>R - Storm's Fury:</strong>
+                            <ul>
+                                <li style="list-style-type: disc; margin-left: 20px;">Damage reduction during channel increased to [55%] from [40%].</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: rgba(255,255,255,0.7);"><em>Developer Comment: Raiden has been underperforming across all stages of the game, particularly in the current high-damage meta where his need for precise positioning is heavily punished by assassins. These buffs aim to increase his early lane presence with more potent poke, enhance his survivability when using Electric Dash, and make his ultimate, Storm's Fury, a less risky commitment by increasing its damage reduction.</em></p>
+                </div>
+            </div>
+
+            <!-- Siegfried -->
+            <div class="champion-card" style="border-color: rgba(255,105,180,0.5); margin-top: 20px;">
+                <img src="Icons/Siegfried.png" alt="Siegfried" class="champion-icon">
+                <div class="champion-info">
+                    <h4 class="champion-name">Siegfried</h4>
+                    <p class="champion-title">The Brave Knight</p>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <strong>Passive - Enhanced Healing:</strong>
+                            <ul>
+                                <li style="list-style-type: disc; margin-left: 20px;">Effectiveness reduced to [12%] from [14%].</li>
+                            </ul>
+                        </li>
+                        <li class="change-item">
+                            <strong>W - Knight's Resolve:</strong>
+                            <ul>
+                                <li style="list-style-type: disc; margin-left: 20px;">Missing HP heal portion increased to [20%] from [17%].</li>
+                            </ul>
+                        </li>
+                        <li class="change-item">
+                            <strong>R - Blessed Blade:</strong>
+                            <ul>
+                                <li style="list-style-type: disc; margin-left: 20px;">Lifesteal granted increased to [19%] from [10%].</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: rgba(255,255,255,0.7);"><em>Developer Comment: To reduce Siegfried's reliance on enchanter supports, we're increasing the self-sustain in his kit directly through Knight's Resolve and Blessed Blade. The slight reduction to his passive healing amplification is to balance these direct buffs, shifting his power towards his own abilities rather than external healing sources.</em></p>
+                </div>
+            </div>
+            
+            <!-- Add other champion changes here if any -->
+            
+            <!-- Items Subsection -->
+            <h3 style="color: #FF69B4; margin: 40px 0 15px; border-bottom: 1px solid rgba(255,105,180,0.3); padding-bottom: 10px;">Items</h3>
+
+            <!-- Venomous Blade -->
+            <div class="item-card" style="border-color: rgba(255,105,180,0.5);">
+                <img src="items/venomous_blade.webp" alt="Venomous Blade" class="item-icon">
+                <div class="item-info">
+                    <h4 class="item-name">Venomous Blade</h4>
+                    <ul class="change-list" style="padding-left: 0;">
+                        <li class="change-item">Cost decreased to [2650] from [2900].</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Zasalamel's Scythe -->
+            <div class="item-card" style="border-color: rgba(255,105,180,0.5);">
+                <img src="items/zasalamels_scythe.webp" alt="Zasalamel's Scythe" class="item-icon">
+                <div class="item-info">
+                    <h4 class="item-name">Zasalamel's Scythe</h4>
+                    <ul class="change-list" style="padding-left: 0;">
+                        <li class="change-item">Attack Damage decreased to [44] from [50].</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Golden Arrow -->
+            <div class="item-card" style="border-color: rgba(255,105,180,0.5);">
+                <img src="items/golden_arrow.webp" alt="Golden Arrow" class="item-icon">
+                <div class="item-info">
+                    <h4 class="item-name">Golden Arrow</h4>
+                    <ul class="change-list" style="padding-left: 0;">
+                        <li class="change-item">Attack Damage increased to [42] from [30].</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Leviathan's Fang -->
+            <div class="item-card" style="border-color: rgba(255,105,180,0.5);">
+                <img src="items/leviathans_fang.webp" alt="Leviathan's Fang" class="item-icon">
+                <div class="item-info">
+                    <h4 class="item-name">Leviathan's Fang</h4>
+                    <ul class="change-list" style="padding-left: 0;">
+                        <li class="change-item">Lifesteal increased to [10] from [8].</li>
+                        <li class="change-item">Cost increased to [3000] from [2850].</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Trident's Vow -->
+            <div class="item-card" style="border-color: rgba(255,105,180,0.5);">
+                <img src="items/tridents_vow.webp" alt="Trident's Vow" class="item-icon">
+                <div class="item-info">
+                    <h4 class="item-name">Trident's Vow</h4>
+                    <ul class="change-list" style="padding-left: 0;">
+                        <li class="change-item">Attack Damage increased to [25] from [15].</li>
+                        <li class="change-item">Cost increased to [2600] from [2300].</li>
+                        <li class="change-item">Healing Reduction stat and tag removed.</li>
+                        <li class="change-item"><strong>New Passive - Combat Cadence:</strong> Grants 0.2 Attack Speed if you are in combat for at least 2.75s.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cactus Staff -->
+            <div class="item-card" style="border-color: rgba(255,105,180,0.5);">
+                <img src="items/cactus_staff.webp" alt="Cactus Staff" class="item-icon">
+                <div class="item-info">
+                    <h4 class="item-name">Cactus Staff</h4>
+                    <ul class="change-list" style="padding-left: 0;">
+                        <li class="change-item"><strong>Passive - Desert Thorns:</strong> AP scaling increased to [20% AP] from [10% AP].</li>
+                        <li class="change-item"><strong>Passive - Desert Thorns:</strong> Cooldown increased to [35s] from [20s].</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Atlantean Crown -->
+            <div class="item-card" style="border-color: rgba(255,105,180,0.5);">
+                <img src="items/atlantean_crown.webp" alt="Atlantean Crown" class="item-icon">
+                <div class="item-info">
+                    <h4 class="item-name">Atlantean Crown</h4>
+                    <ul class="change-list" style="padding-left: 0;">
+                        <li class="change-item">Now grants [15 Attack Damage].</li>
+                        <li class="change-item">Damage Reduction stat removed.</li>
+                        <li class="change-item"><strong>Passive - Royal Recovery:</strong> Healing increase effect reduced to [12%] from [20%].</li>
+                        <li class="change-item">Cost increased to [2750] from [2500].</li>
+                    </ul>
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>
+    <footer class="footer">
+        <p>Patch 2.5: Tokyo Mew Mew Collaboration - Released 11.05.2025</p>
+    </footer>
+    
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Add parallax effect
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.pageYOffset;
+            const videoBackground = document.getElementById('video-background');
+            if (videoBackground) {
+                 videoBackground.style.transform = `translateY(${scrollPosition * 0.1}px)`;
+            }
+        });
+    </script>
+</body>
+</html> 

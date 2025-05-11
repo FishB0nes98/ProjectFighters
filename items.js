@@ -47,7 +47,7 @@ export const items = {
         id: "venomous_blade",
         name: "Venomous Blade",
         image: "items/venomous_blade.webp",
-        cost: 2900,
+        cost: 2650,
         tags: ["Attack", "Magic"],
         stats: {
             attackDamage: 24,
@@ -165,7 +165,7 @@ export const items = {
         },
         passive: {
             name: "Desert Thorns",
-            description: "Occasionally, your spells shoot thorns when hit around the first target, dealing [10% AP] damage to all targets hit by the thorns (20s cooldown)"
+            description: "Occasionally, your spells shoot thorns when hit around the first target, dealing [20% AP] damage to all targets hit by the thorns (35s cooldown)"
         }
     },
     thorny_shield: {
@@ -264,7 +264,7 @@ export const items = {
         cost: 2400,
         tags: ["Attack", "Cooldown Reduction"],
         stats: {
-            attackDamage: 50,
+            attackDamage: 44,
             cooldownReduction: 1
         },
         passive: {
@@ -438,7 +438,7 @@ export const items = {
         cost: 2900,
         tags: ["Attack", "Magic", "Attack Speed"],
         stats: {
-            attackDamage: 30,
+            attackDamage: 42,
             attackSpeed: 0.4
         },
         passive: {
@@ -450,11 +450,11 @@ export const items = {
         id: "leviathans_fang",
         name: "Leviathan's Fang",
         image: "items/leviathans_fang.webp",
-        cost: 2850,
+        cost: 3000,
         tags: ["Attack", "Magic"],
         stats: {
             attackDamage: 20,
-            lifeSteal: 8
+            lifeSteal: 10
         },
         passive: {
             name: "Combat Frenzy",
@@ -529,17 +529,17 @@ export const items = {
         id: "atlantean_crown",
         name: "Atlantean Crown",
         image: "items/atlantean_crown.webp",
-        cost: 2500,
-        tags: ["Defense"],
+        cost: 2750,
+        tags: ["Defense", "Attack"],
         stats: {
             health: 350,
-            damageReduction: 5,
             spellVamp: 5,
-            lifeSteal: 5
+            lifeSteal: 5,
+            attackDamage: 15
         },
         passive: {
             name: "Royal Recovery",
-            description: "All healing effects on you are increased by 20%"
+            description: "All healing effects on you are increased by 12%"
         }
     },
     fish_scale_shoulderplate: {
@@ -698,12 +698,15 @@ export const items = {
         id: "tridents_vow",
         name: "Trident's Vow",
         image: "items/tridents_vow.webp",
-        cost: 2300,
-        tags: ["Attack Speed", "Attack", "Healing Reduction"],
+        cost: 2600,
+        tags: ["Attack Speed", "Attack"],
         stats: {
             attackSpeed: 0.25,
-            attackDamage: 15,
-            healingReduction: 20
+            attackDamage: 25
+        },
+        passive: {
+            name: "Combat Cadence",
+            description: "Grants 0.2 Attack Speed if you are in combat for at least 2.75s"
         }
     },
     abyssal_anchor: {

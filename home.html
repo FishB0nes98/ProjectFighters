@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Project Fighters</title>
-    <link rel="icon" href="Icons/Profile/talim_desert.webp" type="image/webp">
+    <link rel="icon" href="Icons/Profile/tokyo_ayane.png" type="image/png">
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
@@ -13,6 +13,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Custom styles -->
     <link rel="stylesheet" href="styles_new.css">
+    <style>
+        #video-background {
+            filter: none !important;
+        }
+    </style>
 </head>
 <body>
     <!-- Video Background -->
@@ -94,8 +99,8 @@
         <!-- Side Buttons -->
         <div class="side-buttons">
             <!-- Changelog Button -->
-            <div class="side-button" onclick="window.location.href='Changelog2.html'">
-                <img src="Default Splash/Erron Black.png" alt="Changelog">
+            <div class="side-button" onclick="window.location.href='Changelog2.5.html'">
+                <img src="Default Splash/Kotal Kahn.png" alt="Changelog">
                 <div class="button-content">
                     <h3 class="button-title">Changelog</h3>
                 </div>
@@ -116,7 +121,7 @@
             </div>
             <!-- Battlepass Button -->
             <div class="side-button" onclick="window.location.href='battlepass.html'">
-                <img src="Event/Desert Wars Event 2025.webp" alt="Battlepass">
+                <img src="Event/Tokyo Mew Mew Event 2.png" alt="Battlepass">
                 <div class="button-content">
                     <h3 class="button-title">Battlepass</h3>
                 </div>
@@ -333,8 +338,8 @@
             <div class="quest-modal-content">
                 <div class="quest-header">
                     <h2>
-                        <i class="fas fa-sun"></i>
-                        Desert Wars Quests
+                        <i class="fas fa-ribbon"></i> <!-- Updated Icon -->
+                        Tokyo Mew Mew Quests <!-- Updated Title -->
                     </h2>
                     <div class="quest-tabs">
                         <button class="quest-tab active" onclick="switchQuestTab('daily')">Daily</button>
@@ -350,6 +355,39 @@
             </div>
         </div>
 
+        <!-- Tokyo Mew Mew Song Popup -->
+        <div id="song-popup" class="song-popup">
+            <div class="song-popup-content">
+                <div class="song-popup-header">
+                    <h2>New Song Unlocked!</h2>
+                    <button class="song-popup-close" onclick="closeSongPopup()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="song-popup-body">
+                    <div class="song-image">
+                        <img src="Event/Tokyo Mew Mew Event 2.png" alt="Tokyo Mew Mew">
+                    </div>
+                    <div class="song-info">
+                        <h3>Team Up</h3>
+                        <p>Tokyo Mew Mew Event Theme</p>
+                        <button class="song-play-btn" onclick="playSongPreview()">
+                            <i class="fas fa-play"></i> Preview
+                        </button>
+                    </div>
+                </div>
+                <div class="song-popup-footer">
+                    <p>The song has been added to your collection!</p>
+                    <button class="song-popup-btn" onclick="goToMusicPlayer()">
+                        Open Music Player
+                    </button>
+                    <button class="song-popup-btn secondary" onclick="closeSongPopup()">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- QP Store Modal -->
         <div id="qp-store-window" class="qp-store-modal">
             <div class="qp-store-content">
@@ -359,7 +397,7 @@
                             <i class="fas fa-store"></i>
                             Quest Points Store
                         </h2>
-                        <p class="qp-store-subtitle">Exchange your hard-earned Quest Points for exclusive Desert Wars rewards</p>
+                        <p class="qp-store-subtitle">Exchange your hard-earned Quest Points for Tokyo Mew Mew rewards</p>
                     </div>
                     <div class="qp-store-controls">
                         <div class="qp-store-balance">
@@ -373,16 +411,16 @@
                 </div>
                 
                 <div class="qp-store-grid">
-                    <!-- Blanka Fierce Sticker (Replaces Desert Wars Box) -->
-                    <div class="qp-store-item" data-item-name="blanka_fierce" data-item-type="sticker">
+                    <!-- Tokyo Ayane Icon -->
+                    <div class="qp-store-item" data-item-name="tokyo_ayane" data-item-type="icon">
                         <div class="item-preview">
-                            <img src="Stickers/blanka_fierce.png" alt="Blanka Fierce Sticker"> <!-- Placeholder image -->
+                            <img src="Icons/Profile/tokyo_ayane.png" alt="Tokyo Ayane Icon">
                         </div>
                         <div class="item-details">
-                            <h3 class="item-name">Blanka Fierce Sticker</h3>
+                            <h3 class="item-name">Tokyo Ayane Icon</h3>
                             <div class="item-price">
                                 <img src="res/img/qp.png" alt="QP">
-                                <span>1500</span> <!-- New price -->
+                                <span>1500</span>
                             </div>
                             <button class="purchase-btn" onclick="purchaseItem(this)">
                                 <span>Purchase</span>
@@ -391,18 +429,16 @@
                         </div>
                     </div>
 
-                    <!-- Scorpion Desert Skin - REMOVED -->
-
-                    <!-- Desert Wanderer Title -->
-                    <div class="qp-store-item" data-item-name="desert_wanderer" data-item-type="title">
+                    <!-- Tokyo Lili Icon -->
+                    <div class="qp-store-item" data-item-name="tokyo_lili" data-item-type="icon">
                         <div class="item-preview">
-                            <img src="titles/titleimage.jpeg" alt="Desert Wanderer Title">
+                            <img src="Icons/Profile/tokyo_lili.png" alt="Tokyo Lili Icon">
                         </div>
                         <div class="item-details">
-                            <h3 class="item-name">Desert Wanderer Title</h3>
+                            <h3 class="item-name">Tokyo Lili Icon</h3>
                             <div class="item-price">
                                 <img src="res/img/qp.png" alt="QP">
-                                <span>1000</span>
+                                <span>1500</span>
                             </div>
                             <button class="purchase-btn" onclick="purchaseItem(this)">
                                 <span>Purchase</span>
@@ -411,7 +447,81 @@
                         </div>
                     </div>
 
-                    <!-- Repeatable CM -->
+                    <!-- Tokyo Julia Icon -->
+                    <div class="qp-store-item" data-item-name="tokyo_julia" data-item-type="icon">
+                        <div class="item-preview">
+                            <img src="Icons/Profile/tokyo_julia.png" alt="Tokyo Julia Icon">
+                        </div>
+                        <div class="item-details">
+                            <h3 class="item-name">Tokyo Julia Icon</h3>
+                            <div class="item-price">
+                                <img src="res/img/qp.png" alt="QP">
+                                <span>1500</span>
+                            </div>
+                            <button class="purchase-btn" onclick="purchaseItem(this)">
+                                <span>Purchase</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tokyo Cham Cham Icon -->
+                    <div class="qp-store-item" data-item-name="tokyo_cham_cham" data-item-type="icon">
+                        <div class="item-preview">
+                            <img src="Icons/Profile/tokyo_cham_cham.png" alt="Tokyo Cham Cham Icon">
+                        </div>
+                        <div class="item-details">
+                            <h3 class="item-name">Tokyo Cham Cham Icon</h3>
+                            <div class="item-price">
+                                <img src="res/img/qp.png" alt="QP">
+                                <span>1500</span>
+                            </div>
+                            <button class="purchase-btn" onclick="purchaseItem(this)">
+                                <span>Purchase</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tokyo Kagome Icon -->
+                    <div class="qp-store-item" data-item-name="tokyo_kagome" data-item-type="icon">
+                        <div class="item-preview">
+                            <img src="Icons/Profile/tokyo_kagome.png" alt="Tokyo Kagome Icon">
+                        </div>
+                        <div class="item-details">
+                            <h3 class="item-name">Tokyo Kagome Icon</h3>
+                            <div class="item-price">
+                                <img src="res/img/qp.png" alt="QP">
+                                <span>1500</span>
+                            </div>
+                            <button class="purchase-btn" onclick="purchaseItem(this)">
+                                <span>Purchase</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Friend of the Mews Title -->
+                    <div class="qp-store-item" data-item-name="friend_of_the_mews" data-item-type="title">
+                        <div class="item-preview">
+                            <img src="titles/titleimage.jpeg" alt="Friend of the Mews Title">
+                        </div>
+                        <div class="item-details">
+                            <h3 class="item-name">Friend of the Mews</h3>
+                            <div class="item-price">
+                                <img src="res/img/qp.png" alt="QP">
+                                <span>550</span>
+                            </div>
+                            <button class="purchase-btn" onclick="purchaseItem(this)">
+                                <span>Purchase</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+
+
+                    <!-- Repeatable CM (Existing) -->
                     <div class="qp-store-item" data-item-name="cm_reward" data-item-type="cm" data-repeatable="true">
                         <div class="item-badge repeatable">
                             <i class="fas fa-sync-alt"></i>
@@ -433,26 +543,10 @@
                         </div>
                     </div>
 
-                    <!-- Blanka Desert Icon (Replaces Desert Warrior Shizumaru Icon) -->
-                    <div class="qp-store-item" data-item-name="blanka_desert" data-item-type="icon">
-                        <div class="item-preview">
-                            <img src="Icons/Profile/blanka_desert.webp" alt="Blanka Desert Icon"> <!-- New icon image -->
-                        </div>
-                        <div class="item-details">
-                            <h3 class="item-name">Blanka Desert Icon</h3>
-                            <div class="item-price">
-                                <img src="res/img/qp.png" alt="QP">
-                                <span>1850</span> <!-- Same price as previous icon -->
-                            </div>
-                            <button class="purchase-btn" onclick="purchaseItem(this)">
-                                <span>Purchase</span>
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
 
-                    <!-- Fight Money -->
-                    <div class="qp-store-item" data-item-name="fm_reward" data-item-type="fm">
+
+                    <!-- Fight Money (Existing and now also new FM item) -->
+                    <div class="qp-store-item" data-item-name="fm_reward_250" data-item-type="fm"> <!-- Ensure unique data-item-name if another FM item exists -->
                         <div class="item-preview">
                             <img src="res/img/fm.png" alt="Fight Money">
                         </div>
@@ -1172,60 +1266,381 @@
                 background-repeat: no-repeat;
                 background-position: center 30%;
             }
+
+            /* Additional Tokyo Mew Mew styles */
+            /* Cherry blossom animation */
+            @keyframes falling {
+                0% {
+                    transform: translateY(-5vh) rotate(0deg);
+                    opacity: 0.8;
+                }
+                100% {
+                    transform: translateY(100vh) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+            
+            .cherry-blossom {
+                position: fixed;
+                z-index: 99;
+                color: #ff69b4;
+                pointer-events: none;
+                animation: falling linear infinite;
+            }
+            
+            /* Event Banner */
+            .event-banner {
+                position: absolute;
+                top: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+                max-width: 90%;
+                width: 1000px;
+                z-index: 5;
+                border-radius: 16px;
+                box-shadow: 0 8px 32px rgba(255, 20, 147, 0.4);
+                overflow: hidden;
+                border: 2px solid #ff69b4;
+            }
+            
+            .event-banner img {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
+            
+            /* Special QP Store Styles for Tokyo Mew Mew */
+            .qp-store-header {
+                background-image: url('Event/tm_store_header.png');
+                background-size: cover;
+                background-position: center;
+            }
+            
+            .qp-store-title h2 {
+                text-shadow: 0 2px 10px rgba(255, 20, 147, 0.5);
+            }
+            
+            /* Style the quest window header for Tokyo Mew Mew */
+            .quest-header {
+                background-image: url('Event/tm_quest_header.png');
+                background-size: cover;
+                background-position: center;
+            }
+            
+            .quest-header h2 {
+                text-shadow: 0 2px 10px rgba(255, 20, 147, 0.5);
+            }
+            
+            /* Add a special animation for the play button */
+            @keyframes glowing {
+                0% { box-shadow: 0 0 5px #ff69b4; }
+                50% { box-shadow: 0 0 20px #ff69b4, 0 0 30px #ff1493; }
+                100% { box-shadow: 0 0 5px #ff69b4; }
+            }
+            
+            .play-button {
+                animation: glowing 2s infinite;
+            }
+
+            /* Tokyo Mew Mew Song Popup Styles */
+            .song-popup {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.85);
+                backdrop-filter: blur(10px);
+                z-index: 3000;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .song-popup.show {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .song-popup-content {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.95);
+                width: 90%;
+                max-width: 600px;
+                background: rgba(20, 20, 35, 0.95);
+                border-radius: 24px;
+                overflow: hidden;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                border: 2px solid rgba(255, 105, 180, 0.7);
+                box-shadow: 0 8px 32px rgba(255, 105, 180, 0.4);
+            }
+
+            .song-popup.show .song-popup-content {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            .song-popup-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 20px;
+                background: linear-gradient(to right, rgba(255, 105, 180, 0.8), rgba(148, 0, 211, 0.8));
+                color: white;
+            }
+
+            .song-popup-header h2 {
+                font-size: 1.8em;
+                margin: 0;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .song-popup-close {
+                background: none;
+                border: none;
+                color: white;
+                font-size: 1.5em;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .song-popup-close:hover {
+                transform: rotate(90deg);
+            }
+
+            .song-popup-body {
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .song-image {
+                width: 100%;
+                max-width: 350px;
+                height: auto;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            }
+
+            .song-image img {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
+
+            .song-info {
+                text-align: center;
+            }
+
+            .song-info h3 {
+                font-size: 1.8em;
+                margin-bottom: 5px;
+                background: linear-gradient(135deg, #ff69b4, #9370db);
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+            }
+
+            .song-info p {
+                color: rgba(255, 255, 255, 0.7);
+                margin-bottom: 15px;
+            }
+
+            .song-play-btn {
+                background: linear-gradient(135deg, #ff69b4, #9370db);
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 50px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s;
+                box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+            }
+
+            .song-play-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(255, 105, 180, 0.5);
+            }
+
+            .song-popup-footer {
+                padding: 20px;
+                text-align: center;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                background: rgba(0, 0, 0, 0.2);
+            }
+
+            .song-popup-footer p {
+                margin-bottom: 15px;
+                color: rgba(255, 255, 255, 0.8);
+            }
+
+            .song-popup-btn {
+                background: linear-gradient(135deg, #ff69b4, #9370db);
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 50px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s;
+                margin: 0 5px;
+                box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+            }
+
+            .song-popup-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(255, 105, 180, 0.5);
+            }
+
+            .song-popup-btn.secondary {
+                background: rgba(255, 255, 255, 0.1);
+                color: white;
+                box-shadow: none;
+            }
+
+            .song-popup-btn.secondary:hover {
+                background: rgba(255, 255, 255, 0.2);
+                box-shadow: none;
+            }
+
+            @media (max-width: 768px) {
+                .song-popup-body {
+                    flex-direction: column;
+                }
+
+                .song-image {
+                    max-width: 80%;
+                }
+            }
         </style>
 
-    <script type="module">
-        // Firebase imports
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
-        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
-        import { getDatabase, ref, get, update, set } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
-        import { roles } from './roles.js';
+        <script type="module">
+            // Firebase imports
+            import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+            import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
+            import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+            import { getDatabase, ref, get, update, set } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+            import { roles } from './roles.js';
+            import { CURRENT_PATCH } from './patch.js';
 
-        // Make toggleQPStoreWindow globally available
-        window.toggleQPStoreWindow = function(event) {
-            event.stopPropagation();
-            const storeWindow = document.getElementById('qp-store-window');
-            if (!storeWindow.classList.contains('show')) {
-                storeWindow.style.display = 'block';
-                // Trigger reflow
-                storeWindow.offsetHeight;
-                storeWindow.classList.add('show');
-                updateStoreDisplay();
-            } else {
-                closeQPStoreWindow();
+            // Make toggleQPStoreWindow globally available
+            window.toggleQPStoreWindow = function(event) {
+                event.stopPropagation();
+                const storeWindow = document.getElementById('qp-store-window');
+                if (!storeWindow.classList.contains('show')) {
+                    storeWindow.style.display = 'block';
+                    // Trigger reflow
+                    storeWindow.offsetHeight;
+                    storeWindow.classList.add('show');
+                    updateStoreDisplay();
+                } else {
+                    closeQPStoreWindow();
+                }
+            };
+
+            window.closeQPStoreWindow = function() {
+                const storeWindow = document.getElementById('qp-store-window');
+                storeWindow.classList.remove('show');
+                // Wait for animation to complete before hiding
+                setTimeout(() => {
+                    storeWindow.style.display = 'none';
+                }, 300);
+            };
+
+            async function updateStoreDisplay() {
+                const user = auth.currentUser;
+                if (!user) return;
+
+                try {
+                    const userRef = ref(database, `users/${user.uid}`);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+
+                    // Update QP display
+                    document.getElementById('store-qp-amount').textContent = userData.questPoints || 0;
+
+                    // Update item states
+                    const items = document.querySelectorAll('.qp-store-item');
+                    items.forEach(async item => {
+                        const button = item.querySelector('.purchase-btn');
+                        const itemName = item.dataset.itemName;
+                        const itemType = item.dataset.itemType;
+                        const isRepeatable = item.dataset.repeatable === 'true';
+
+                        if (!isRepeatable) {
+                            let isOwned = false;
+                            if (itemType === 'sticker' && userData.Stickers && userData.Stickers[itemName]) {
+                                isOwned = true;
+                            } else if (itemType === 'title' && userData.titles && userData.titles[itemName]) {
+                                isOwned = true;
+                            } else if (itemType === 'skin' && userData.skins && userData.skins[itemName]) {
+                                isOwned = true;
+                            } else if (itemType === 'icon' && userData.Icons && userData.Icons[itemName]) {
+                                isOwned = true;
+                            } else if (itemType === 'lootbox' && userData.freelootbox && userData.freelootbox[itemName]) {
+                                isOwned = true;
+                            } else if (itemType === 'character' && userData.characters && userData.characters[itemName]) {
+                                isOwned = true;
+                            }
+
+                            if (isOwned) {
+                                button.disabled = true;
+                                button.innerHTML = '<i class="fas fa-check"></i> Owned';
+                                if (!item.querySelector('.item-badge.owned')) {
+                                    const badge = document.createElement('div');
+                                    badge.className = 'item-badge owned';
+                                    badge.innerHTML = '<i class="fas fa-check"></i> Owned';
+                                    item.appendChild(badge);
+                                }
+                            }
+                        }
+
+                        // Check if user has enough QP
+                        const price = parseInt(item.querySelector('.item-price span').textContent);
+                        if ((userData.questPoints || 0) < price) {
+                            button.disabled = true;
+                            button.innerHTML = '<i class="fas fa-lock"></i> Insufficient QP';
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error updating store display:', error);
+                }
             }
-        };
 
-        window.closeQPStoreWindow = function() {
-            const storeWindow = document.getElementById('qp-store-window');
-            storeWindow.classList.remove('show');
-            // Wait for animation to complete before hiding
-            setTimeout(() => {
-                storeWindow.style.display = 'none';
-            }, 300);
-        };
+            window.purchaseItem = async function(button) {
+                const user = auth.currentUser;
+                if (!user) return;
 
-        async function updateStoreDisplay() {
-            const user = auth.currentUser;
-            if (!user) return;
+                const item = button.closest('.qp-store-item');
+                const itemName = item.dataset.itemName;
+                const itemType = item.dataset.itemType;
+                const isRepeatable = item.dataset.repeatable === 'true';
+                
+                try {
+                    const userRef = ref(database, `users/${user.uid}`);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val() || {};
+                    
+                    let price;
+                    let updates = {};
 
-            try {
-                const userRef = ref(database, `users/${user.uid}`);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val();
+                    // Get the price from the HTML element first
+                    const priceElement = item.querySelector('.item-price span');
+                    if (priceElement) {
+                        price = parseInt(priceElement.textContent);
+                    } else {
+                        console.error('Could not find price for item:', itemName);
+                        alert('Error processing item price.');
+                        return;
+                    }
 
-                // Update QP display
-                document.getElementById('store-qp-amount').textContent = userData.questPoints || 0;
-
-                // Update item states
-                const items = document.querySelectorAll('.qp-store-item');
-                items.forEach(async item => {
-                    const button = item.querySelector('.purchase-btn');
-                    const itemName = item.dataset.itemName;
-                    const itemType = item.dataset.itemType;
-                    const isRepeatable = item.dataset.repeatable === 'true';
-
+                    // Check ownership for non-repeatable items
                     if (!isRepeatable) {
                         let isOwned = false;
                         if (itemType === 'sticker' && userData.Stickers && userData.Stickers[itemName]) {
@@ -1241,557 +1656,459 @@
                         } else if (itemType === 'character' && userData.characters && userData.characters[itemName]) {
                             isOwned = true;
                         }
+                        // Add checks for other non-repeatable types like 'fm' if needed
+                        // else if (itemType === 'fm' && some_condition_for_fm_ownership) {
+                        //    isOwned = true;
+                        // }
 
                         if (isOwned) {
-                            button.disabled = true;
-                            button.innerHTML = '<i class="fas fa-check"></i> Owned';
-                            if (!item.querySelector('.item-badge.owned')) {
-                                const badge = document.createElement('div');
-                                badge.className = 'item-badge owned';
-                                badge.innerHTML = '<i class="fas fa-check"></i> Owned';
-                                item.appendChild(badge);
-                            }
-                        }
-                    }
-
-                    // Check if user has enough QP
-                    const price = parseInt(item.querySelector('.item-price span').textContent);
-                    if ((userData.questPoints || 0) < price) {
-                        button.disabled = true;
-                        button.innerHTML = '<i class="fas fa-lock"></i> Insufficient QP';
-                    }
-                });
-            } catch (error) {
-                console.error('Error updating store display:', error);
-            }
-        }
-
-        window.purchaseItem = async function(button) {
-            const user = auth.currentUser;
-            if (!user) return;
-
-            const item = button.closest('.qp-store-item');
-            const itemName = item.dataset.itemName;
-            const itemType = item.dataset.itemType;
-            const isRepeatable = item.dataset.repeatable === 'true';
-            
-            try {
-                const userRef = ref(database, `users/${user.uid}`);
-                const snapshot = await get(userRef);
-                const userData = snapshot.val() || {};
-                
-                let price;
-                let updates = {};
-
-                // Get the price from the HTML element first
-                const priceElement = item.querySelector('.item-price span');
-                if (priceElement) {
-                    price = parseInt(priceElement.textContent);
-                } else {
-                    console.error('Could not find price for item:', itemName);
-                    alert('Error processing item price.');
-                    return;
-                }
-
-                // Check ownership for non-repeatable items
-                if (!isRepeatable) {
-                    let isOwned = false;
-                    if (itemType === 'sticker' && userData.Stickers && userData.Stickers[itemName]) {
-                        isOwned = true;
-                    } else if (itemType === 'title' && userData.titles && userData.titles[itemName]) {
-                        isOwned = true;
-                    } else if (itemType === 'skin' && userData.skins && userData.skins[itemName]) {
-                        isOwned = true;
-                    } else if (itemType === 'icon' && userData.Icons && userData.Icons[itemName]) {
-                        isOwned = true;
-                    } else if (itemType === 'lootbox' && userData.freelootbox && userData.freelootbox[itemName]) {
-                        isOwned = true;
-                    } else if (itemType === 'character' && userData.characters && userData.characters[itemName]) {
-                        isOwned = true;
-                    }
-                    // Add checks for other non-repeatable types like 'fm' if needed
-                    // else if (itemType === 'fm' && some_condition_for_fm_ownership) {
-                    //    isOwned = true;
-                    // }
-
-                    if (isOwned) {
-                        alert(`You already own this ${itemType}!`);
-                        return;
-                    }
-                }
-
-                // Validate price and check QP balance
-                if (isNaN(price) || price <= 0) {
-                    console.error('Invalid price for item:', itemName, price);
-                    alert('Error processing item price.');
-                    return;
-                }
-
-                if ((userData.questPoints || 0) < price) {
-                    alert('Not enough Quest Points!');
-                    return;
-                }
-
-                // Update quest points
-                updates['questPoints'] = (userData.questPoints || 0) - price;
-
-                // Add rewards based on item type
-                switch(itemType) {
-                    case 'lootbox':
-                        updates[`freelootbox/${itemName}`] = 1;
-                        break;
-                    case 'title':
-                        updates[`titles/${itemName}`] = true;
-                        break;
-                    case 'icon':
-                        updates[`Icons/${itemName}`] = 1;
-                        break;
-                    case 'character':
-                        updates[`characters/${itemName}`] = true;
-                        break;
-                    case 'sticker':
-                        updates[`Stickers/${itemName}`] = 1;
-                        break;
-                    case 'skin':
-                        updates[`skins/${itemName}`] = itemName;
-                        break;
-                    case 'fm':
-                        updates['FM'] = (userData.FM || 0) + 250; // Awarding 250 FM as per HTML
-                        break;
-                    case 'cm':
-                        updates['CM'] = (userData.CM || 0) + 1000; // Awarding 1000 CM as per HTML
-                        break;
-                    default:
-                        console.error('Unknown item type for purchase:', itemType);
-                        alert('Cannot process this item type.');
-                        return;
-                }
-
-                await update(userRef, updates);
-                
-                // Update displays
-                document.getElementById('store-qp-amount').textContent = updates['questPoints'];
-                document.getElementById('qp-amount').textContent = updates['questPoints'];
-                if (itemType === 'cm') {
-                    document.getElementById('cm-amount').textContent = updates['CM'];
-                }
-                if (itemType === 'fm') {
-                    document.getElementById('currency-amount').textContent = updates['FM'];
-                }
-                
-                if (!isRepeatable) {
-                    button.disabled = true;
-                    button.innerHTML = '<i class="fas fa-check"></i> Owned';
-                    const badge = document.createElement('div');
-                    badge.className = 'item-badge owned';
-                    badge.innerHTML = '<i class="fas fa-check"></i> Owned';
-                    if (!item.querySelector('.item-badge.owned')) {
-                        item.appendChild(badge);
-                    }
-                }
-                
-                // Show success message with animation
-                const successMsg = document.createElement('div');
-                successMsg.className = 'purchase-success';
-                successMsg.innerHTML = `
-                    <i class="fas fa-check-circle"></i>
-                    Purchase successful!
-                `;
-                document.body.appendChild(successMsg);
-                
-                setTimeout(() => {
-                    successMsg.remove();
-                }, 2000);
-                
-            } catch (error) {
-                console.error('Error making purchase:', error);
-                alert('Failed to make purchase. Please try again.');
-            }
-        };
-
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
-            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
-            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "project-fighters-by-fishb0nes",
-            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
-            messagingSenderId: "867339299995",
-            appId: "1:867339299995:web:99c379940014b9c05cea3e",
-            measurementId: "G-LNEM6HR842"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const auth = getAuth(app);
-        const database = getDatabase(app);
-
-        // Make Firebase instances globally available
-        window.firebaseApp = app;
-        window.firebaseAuth = auth;
-        window.firebaseDatabase = database;
-
-        // Helper function to capitalize titles
-        function capitalizeTitle(title) {
-            if (!title) return '';
-            return title.split(' ')
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                .join(' ');
-        }
-
-        // Initialize auth state
-        function initializeAuthState() {
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    try {
-                        const userId = user.uid;
-                        const userRef = ref(database, `users/${userId}`);
-                        const snapshot = await get(userRef);
-                        const userData = snapshot.val();
-                        
-                        if (userData) {
-                            // Update username and title
-                            const usernameContainer = document.querySelector('.username-title-container');
-                            if (usernameContainer) {
-                                const usernameDisplay = usernameContainer.querySelector('#username-display');
-                                if (usernameDisplay) {
-                                    usernameDisplay.textContent = userData.username || user.email.split('@')[0];
-                                }
-
-                                // Update title if it exists
-                                let titleDisplay = usernameContainer.querySelector('#title-display');
-                                if (userData.activeTitle) {
-                                    if (!titleDisplay) {
-                                        titleDisplay = document.createElement('div');
-                                        titleDisplay.id = 'title-display';
-                                        usernameContainer.appendChild(titleDisplay);
-                                    }
-                                    titleDisplay.textContent = `(${capitalizeTitle(userData.activeTitle)})`;
-                                } else if (titleDisplay) {
-                                    titleDisplay.remove();
-                                }
-                            }
-
-                            // Update profile image
-                            const profileImage = document.getElementById('profile-image');
-                            if (profileImage) {
-                                setProfileImage(`Icons/${userData.icon || 'Birdie.png'}`, `Icons/Profile/${userData.icon || 'Birdie.png'}`);
-                            }
-
-                            // Update currency displays
-                            const currencyAmount = document.getElementById('currency-amount');
-                            const cmAmount = document.getElementById('cm-amount');
-                            const qpAmount = document.getElementById('qp-amount');
-                            if (currencyAmount) currencyAmount.textContent = userData.FM || 0;
-                            if (cmAmount) cmAmount.textContent = userData.CM || 0;
-                            if (qpAmount) qpAmount.textContent = userData.questPoints || 0;
-
-                            // Store currency values globally for other functions
-                            window.userFM = userData.FM || 0;
-                            window.userCM = userData.CM || 0;
-                            window.userQP = userData.questPoints || 0;
-                        }
-                    } catch (error) {
-                        console.error('Error initializing user data:', error);
-                    }
-                } else {
-                    window.location.href = 'index.html';
-                }
-            });
-        }
-
-        // Profile image helper function
-        function setProfileImage(primaryPath, fallbackPath) {
-            const img = document.getElementById('profile-image');
-            if (img) {
-                // Extract the base name without extension
-                const getBasePath = (path) => {
-                    const lastDot = path.lastIndexOf('.');
-                    const lastSlash = path.lastIndexOf('/');
-                    if (lastDot > lastSlash) {
-                        return path.substring(0, lastDot);
-                    }
-                    return path;
-                };
-                
-                const primaryBasePath = getBasePath(primaryPath);
-                const fallbackBasePath = getBasePath(fallbackPath);
-                const extensions = ['webp', 'png', 'jpg', 'jpeg', 'jfif'];
-                
-                // Try loading with different extensions
-                let extensionIndex = 0;
-                const tryNextExtension = () => {
-                    if (extensionIndex < extensions.length) {
-                        img.src = `${primaryBasePath}.${extensions[extensionIndex]}`;
-                        extensionIndex++;
-                    } else {
-                        // If all primary extensions fail, try fallback path with different extensions
-                        extensionIndex = 0;
-                        img.onerror = () => {
-                            if (extensionIndex < extensions.length) {
-                                img.src = `${fallbackBasePath}.${extensions[extensionIndex]}`;
-                                extensionIndex++;
-                            } else {
-                                // If all fallback extensions fail, use default icon
-                                img.src = 'Icons/default-icon.jpg';
-                                img.onerror = null;
-                            }
-                        };
-                        img.src = `${fallbackBasePath}.${extensions[0]}`;
-                    }
-                };
-                
-                img.onerror = tryNextExtension;
-                tryNextExtension();
-            }
-        }
-
-        // Logout function
-        window.logOut = function() {
-            signOut(auth).then(() => {
-                console.log('User signed out successfully');
-                window.location.href = 'index.html';
-            }).catch((error) => {
-                console.error('Error signing out:', error);
-            });
-        };
-
-        // Profile menu toggle
-        window.toggleProfileMenu = function(event) {
-            if (event) {
-                event.stopPropagation();
-            }
-            const profileMenu = document.getElementById('profile-menu');
-            if (profileMenu) {
-                profileMenu.classList.toggle('show');
-            }
-        };
-
-        // Icon Selector Modal Functions
-        window.openChangeIconModal = async function() {
-            const modal = document.getElementById('icon-selector-modal');
-            modal.style.display = 'block';
-            // Add show class after a small delay to trigger animation
-            setTimeout(() => {
-                modal.classList.add('show');
-            }, 10);
-            await loadIcons('default'); // Load default icons first
-        };
-
-        window.closeIconSelector = function() {
-            const modal = document.getElementById('icon-selector-modal');
-            modal.classList.remove('show');
-            // Remove display none after animation completes
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
-        };
-
-        window.switchIconCategory = function(category) {
-            const buttons = document.querySelectorAll('.icon-category-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.closest('.icon-category-btn').classList.add('active');
-            loadIcons(category);
-        };
-
-        async function loadIcons(category) {
-            const iconGrid = document.getElementById('icon-grid');
-            iconGrid.innerHTML = '';
-
-            const defaultIcons = [
-                'Julia.png', 'Birdie.png', 'Erron Black.png', 'Cham Cham.png', 'Morrigan.png',
-                'Jun.png', 'Reptile.png', 'Akuma.png', 'Elphelt.png', 'Kotal Kahn.png',
-                'Scorpion.png', 'Peacock.png', 'Angel.png', 'Astaroth.png', 'Ibuki.png',
-                'R.Mika.png', 'Raiden.png', 'Yugo.png', 'Talim.png', 'Noel.png',
-                'Blanka.png', 'Nina.png', 'Ayane.png', 'Siegfried.png', 'Shoma.png', 
-                'Juri.png', 'Sub Zero.png', 'Christie.png', 'Kokoro.png', 'Eagle.png',
-                'Sophitia.png', 'Shizumaru.png', 'Kagome.png', 'Kabal.png', 'Kuma.png',
-                'Alice.png', 'Shinnok.png', 'FANG.png', 'Lili.png', 'Mega Man.png', 'Mai.png',
-                'Zasalamel.png', 'Shao Kahn.png', 'Tanya.png'
-            
-            ];
-
-            const user = auth.currentUser;
-            const userRef = ref(database, `users/${user.uid}`);
-            const snapshot = await get(userRef);
-            const userData = snapshot.val();
-            const currentIcon = userData.icon;
-
-            if (category === 'default') {
-                defaultIcons.forEach(icon => {
-                    createIconElement(icon, icon === currentIcon, false);
-                });
-            } else if (category === 'owned' && user) {
-                const userIconsRef = ref(database, `users/${user.uid}/Icons`);
-                const iconSnapshot = await get(userIconsRef);
-                if (iconSnapshot.exists()) {
-                    const userIcons = iconSnapshot.val();
-                    Object.entries(userIcons).forEach(([iconName, owned]) => {
-                        if (owned === 1) {
-                            // Try to find the icon with different extensions
-                            const extensions = ['webp', 'png', 'jpg', 'jpeg', 'jfif'];
-                            let iconFound = false;
-                            
-                            // First try to check if the file exists in the Profile directory
-                            for (const ext of extensions) {
-                                const img = new Image();
-                                img.onload = function() {
-                                    if (!iconFound) {
-                                        iconFound = true;
-                                        createIconElement(`${iconName}.${ext}`, `${iconName}.${ext}` === currentIcon, true);
-                                    }
-                                };
-                                img.src = `Icons/Profile/${iconName}.${ext}`;
-                            }
-                            
-                            // If no icon is found after a short delay, use a default extension
-                            setTimeout(() => {
-                                if (!iconFound) {
-                                    createIconElement(`${iconName}.png`, `${iconName}.png` === currentIcon, true);
-                                }
-                            }, 300);
-                        }
-                    });
-                }
-            }
-        }
-
-        function createIconElement(icon, isSelected, isSpecial) {
-            const iconGrid = document.getElementById('icon-grid');
-            const iconItem = document.createElement('div');
-            iconItem.className = `icon-item${isSelected ? ' selected' : ''}`;
-            iconItem.dataset.name = icon.toLowerCase();
-
-            const iconPreview = document.createElement('div');
-            iconPreview.className = 'icon-preview';
-
-            const img = document.createElement('img');
-            // Try to determine the file extension from the icon name
-            const fileExtension = icon.split('.').pop().toLowerCase();
-            const iconName = icon.replace(/\.(png|jpg|jpeg|webp|jfif)$/i, '');
-            
-            // Set initial source based on category and detected extension
-            img.src = isSpecial ? `Icons/Profile/${icon}` : `Icons/${icon}`;
-            img.alt = iconName;
-            
-            // Handle image loading errors by trying different extensions
-            img.onerror = function() {
-                // Try different paths and extensions if the image fails to load
-                if (this.src.includes('/Profile/')) {
-                    // If we're already looking in Profile folder, try the main Icons folder
-                    this.src = `Icons/${icon}`;
-                } else {
-                    // If we're in the main Icons folder, try Profile with different extensions
-                    const extensions = ['webp', 'png', 'jpg', 'jpeg', 'jfif'];
-                    for (const ext of extensions) {
-                        if (!this.src.endsWith(`.${ext}`)) {
-                            this.src = `Icons/Profile/${iconName}.${ext}`;
+                            alert(`You already own this ${itemType}!`);
                             return;
                         }
                     }
+
+                    // Validate price and check QP balance
+                    if (isNaN(price) || price <= 0) {
+                        console.error('Invalid price for item:', itemName, price);
+                        alert('Error processing item price.');
+                        return;
+                    }
+
+                    if ((userData.questPoints || 0) < price) {
+                        alert('Not enough Quest Points!');
+                        return;
+                    }
+
+                    // Update quest points
+                    updates['questPoints'] = (userData.questPoints || 0) - price;
+
+                    // Add rewards based on item type
+                    switch(itemType) {
+                        case 'lootbox':
+                            updates[`freelootbox/${itemName}`] = 1;
+                            break;
+                        case 'title':
+                            updates[`titles/${itemName}`] = true;
+                            break;
+                        case 'icon':
+                            updates[`Icons/${itemName}`] = 1;
+                            break;
+                        case 'character':
+                            updates[`characters/${itemName}`] = true;
+                            break;
+                        case 'sticker':
+                            updates[`Stickers/${itemName}`] = 1;
+                            break;
+                        case 'skin':
+                            updates[`skins/${itemName}`] = itemName;
+                            break;
+                        case 'fm':
+                            updates['FM'] = (userData.FM || 0) + 250; // Awarding 250 FM as per HTML
+                            break;
+                        case 'cm':
+                            updates['CM'] = (userData.CM || 0) + 1000; // Awarding 1000 CM as per HTML
+                            break;
+                        default:
+                            console.error('Unknown item type for purchase:', itemType);
+                            alert('Cannot process this item type.');
+                            return;
+                    }
+
+                    await update(userRef, updates);
+                    
+                    // Update displays
+                    document.getElementById('store-qp-amount').textContent = updates['questPoints'];
+                    document.getElementById('qp-amount').textContent = updates['questPoints'];
+                    if (itemType === 'cm') {
+                        document.getElementById('cm-amount').textContent = updates['CM'];
+                    }
+                    if (itemType === 'fm') {
+                        document.getElementById('currency-amount').textContent = updates['FM'];
+                    }
+                    
+                    if (!isRepeatable) {
+                        button.disabled = true;
+                        button.innerHTML = '<i class="fas fa-check"></i> Owned';
+                        const badge = document.createElement('div');
+                        badge.className = 'item-badge owned';
+                        badge.innerHTML = '<i class="fas fa-check"></i> Owned';
+                        if (!item.querySelector('.item-badge.owned')) {
+                            item.appendChild(badge);
+                        }
+                    }
+                    
+                    // Show success message with animation
+                    const successMsg = document.createElement('div');
+                    successMsg.className = 'purchase-success';
+                    successMsg.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        Purchase successful!
+                    `;
+                    document.body.appendChild(successMsg);
+                    
+                    setTimeout(() => {
+                        successMsg.remove();
+                    }, 2000);
+                    
+                } catch (error) {
+                    console.error('Error making purchase:', error);
+                    alert('Failed to make purchase. Please try again.');
                 }
             };
 
-            const name = document.createElement('div');
-            name.className = 'icon-name';
-            name.textContent = iconName;
+            // Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+                authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+                databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+                projectId: "project-fighters-by-fishb0nes",
+                storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+                messagingSenderId: "867339299995",
+                appId: "1:867339299995:web:99c379940014b9c05cea3e",
+                measurementId: "G-LNEM6HR842"
+            };
 
-            if (isSpecial) {
-                const specialBadge = document.createElement('div');
-                specialBadge.className = 'icon-special-badge';
-                specialBadge.innerHTML = '<i class="fas fa-star"></i>';
-                iconItem.appendChild(specialBadge);
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+            const auth = getAuth(app);
+            const database = getDatabase(app);
+
+            // Make Firebase instances globally available
+            window.firebaseApp = app;
+            window.firebaseAuth = auth;
+            window.firebaseDatabase = database;
+
+            // Helper function to capitalize titles
+            function capitalizeTitle(title) {
+                if (!title) return '';
+                return title.split(' ')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                    .join(' ');
             }
 
-            iconPreview.appendChild(img);
-            iconItem.appendChild(iconPreview);
-            iconItem.appendChild(name);
-            
-            iconItem.onclick = () => selectIcon(icon, iconItem);
-            iconGrid.appendChild(iconItem);
-        }
+            // Initialize auth state
+            function initializeAuthState() {
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        try {
+                            const userId = user.uid;
+                            const userRef = ref(database, `users/${userId}`);
+                            const snapshot = await get(userRef);
+                            const userData = snapshot.val();
+                            
+                            if (userData) {
+                                // Check if user owns the Tokyo Mew Mew song
+                                checkAndAddTokyoMewMewSong(userId, userData);
 
-        async function selectIcon(icon, selectedItem) {
-            const user = auth.currentUser;
-            if (!user) return;
+                                // Update username and title
+                                const usernameContainer = document.querySelector('.username-title-container');
+                                if (usernameContainer) {
+                                    const usernameDisplay = usernameContainer.querySelector('#username-display');
+                                    if (usernameDisplay) {
+                                        usernameDisplay.textContent = userData.username || user.email.split('@')[0];
+                                    }
 
-            try {
+                                    // Update title if it exists
+                                    let titleDisplay = usernameContainer.querySelector('#title-display');
+                                    if (userData.activeTitle) {
+                                        if (!titleDisplay) {
+                                            titleDisplay = document.createElement('div');
+                                            titleDisplay.id = 'title-display';
+                                            usernameContainer.appendChild(titleDisplay);
+                                        }
+                                        titleDisplay.textContent = `(${capitalizeTitle(userData.activeTitle)})`;
+                                    } else if (titleDisplay) {
+                                        titleDisplay.remove();
+                                    }
+                                }
+
+                                // Update profile image
+                                const profileImage = document.getElementById('profile-image');
+                                if (profileImage) {
+                                    setProfileImage(`Icons/${userData.icon || 'Birdie.png'}`, `Icons/Profile/${userData.icon || 'Birdie.png'}`);
+                                }
+
+                                // Update currency displays
+                                const currencyAmount = document.getElementById('currency-amount');
+                                const cmAmount = document.getElementById('cm-amount');
+                                const qpAmount = document.getElementById('qp-amount');
+                                if (currencyAmount) currencyAmount.textContent = userData.FM || 0;
+                                if (cmAmount) cmAmount.textContent = userData.CM || 0;
+                                if (qpAmount) qpAmount.textContent = userData.questPoints || 0;
+
+                                // Store currency values globally for other functions
+                                window.userFM = userData.FM || 0;
+                                window.userCM = userData.CM || 0;
+                                window.userQP = userData.questPoints || 0;
+                            }
+                        } catch (error) {
+                            console.error('Error initializing user data:', error);
+                        }
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                });
+            }
+
+            // Profile image helper function
+            function setProfileImage(primaryPath, fallbackPath) {
+                const img = document.getElementById('profile-image');
+                if (img) {
+                    // Extract the base name without extension
+                    const getBasePath = (path) => {
+                        const lastDot = path.lastIndexOf('.');
+                        const lastSlash = path.lastIndexOf('/');
+                        if (lastDot > lastSlash) {
+                            return path.substring(0, lastDot);
+                        }
+                        return path;
+                    };
+                    
+                    const primaryBasePath = getBasePath(primaryPath);
+                    const fallbackBasePath = getBasePath(fallbackPath);
+                    const extensions = ['webp', 'png', 'jpg', 'jpeg', 'jfif'];
+                    
+                    // Try loading with different extensions
+                    let extensionIndex = 0;
+                    const tryNextExtension = () => {
+                        if (extensionIndex < extensions.length) {
+                            img.src = `${primaryBasePath}.${extensions[extensionIndex]}`;
+                            extensionIndex++;
+                        } else {
+                            // If all primary extensions fail, try fallback path with different extensions
+                            extensionIndex = 0;
+                            img.onerror = () => {
+                                if (extensionIndex < extensions.length) {
+                                    img.src = `${fallbackBasePath}.${extensions[extensionIndex]}`;
+                                    extensionIndex++;
+                                } else {
+                                    // If all fallback extensions fail, use default icon
+                                    img.src = 'Icons/default-icon.jpg';
+                                    img.onerror = null;
+                                }
+                            };
+                            img.src = `${fallbackBasePath}.${extensions[0]}`;
+                        }
+                    };
+                    
+                    img.onerror = tryNextExtension;
+                    tryNextExtension();
+                }
+            }
+
+            // Logout function
+            window.logOut = function() {
+                signOut(auth).then(() => {
+                    console.log('User signed out successfully');
+                    window.location.href = 'index.html';
+                }).catch((error) => {
+                    console.error('Error signing out:', error);
+                });
+            };
+
+            // Profile menu toggle
+            window.toggleProfileMenu = function(event) {
+                if (event) {
+                    event.stopPropagation();
+                }
+                const profileMenu = document.getElementById('profile-menu');
+                if (profileMenu) {
+                    profileMenu.classList.toggle('show');
+                }
+            };
+
+            // Icon Selector Modal Functions
+            window.openChangeIconModal = async function() {
+                const modal = document.getElementById('icon-selector-modal');
+                modal.style.display = 'block';
+                // Add show class after a small delay to trigger animation
+                setTimeout(() => {
+                    modal.classList.add('show');
+                }, 10);
+                await loadIcons('default'); // Load default icons first
+            };
+
+            window.closeIconSelector = function() {
+                const modal = document.getElementById('icon-selector-modal');
+                modal.classList.remove('show');
+                // Remove display none after animation completes
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            };
+
+            window.switchIconCategory = function(category) {
+                const buttons = document.querySelectorAll('.icon-category-btn');
+                buttons.forEach(btn => btn.classList.remove('active'));
+                event.target.closest('.icon-category-btn').classList.add('active');
+                loadIcons(category);
+            };
+
+            async function loadIcons(category) {
+                const iconGrid = document.getElementById('icon-grid');
+                iconGrid.innerHTML = '';
+
+                const defaultIcons = [
+                    'Julia.png', 'Birdie.png', 'Erron Black.png', 'Cham Cham.png', 'Morrigan.png',
+                    'Jun.png', 'Reptile.png', 'Akuma.png', 'Elphelt.png', 'Kotal Kahn.png',
+                    'Scorpion.png', 'Peacock.png', 'Angel.png', 'Astaroth.png', 'Ibuki.png',
+                    'R.Mika.png', 'Raiden.png', 'Yugo.png', 'Talim.png', 'Noel.png',
+                    'Blanka.png', 'Nina.png', 'Ayane.png', 'Siegfried.png', 'Shoma.png', 
+                    'Juri.png', 'Sub Zero.png', 'Christie.png', 'Kokoro.png', 'Eagle.png',
+                    'Sophitia.png', 'Shizumaru.png', 'Kagome.png', 'Kabal.png', 'Kuma.png',
+                    'Alice.png', 'Shinnok.png', 'FANG.png', 'Lili.png', 'Mega Man.png', 'Mai.png',
+                    'Zasalamel.png', 'Shao Kahn.png', 'Tanya.png'
+                
+                ];
+
+                const user = auth.currentUser;
                 const userRef = ref(database, `users/${user.uid}`);
                 const snapshot = await get(userRef);
-                if (snapshot.exists()) {
-                    const userData = snapshot.val();
-                    
-                    // Extract the base name and extension
-                    const fileExtension = icon.split('.').pop().toLowerCase();
-                    const iconName = icon.replace(/\.(png|jpg|jpeg|webp|jfif)$/i, '');
-                    
-                    // Store just the base name with extension in the database
-                    userData.icon = icon;
-                    await set(userRef, userData);
+                const userData = snapshot.val();
+                const currentIcon = userData.icon;
 
-                    // Update selected state in grid
-                    document.querySelectorAll('.icon-item').forEach(item => {
-                        item.classList.remove('selected');
+                if (category === 'default') {
+                    defaultIcons.forEach(icon => {
+                        createIconElement(icon, icon === currentIcon, false);
                     });
-                    selectedItem.classList.add('selected');
-
-                    // Update profile image with both possible paths
-                    setProfileImage(`Icons/${icon}`, `Icons/Profile/${icon}`);
-                    closeIconSelector();
-                    console.log('Icon updated successfully');
+                } else if (category === 'owned' && user) {
+                    const userIconsRef = ref(database, `users/${user.uid}/Icons`);
+                    const iconSnapshot = await get(userIconsRef);
+                    if (iconSnapshot.exists()) {
+                        const userIcons = iconSnapshot.val();
+                        Object.entries(userIcons).forEach(([iconName, owned]) => {
+                            if (owned === 1) {
+                                // Try to find the icon with different extensions
+                                const extensions = ['webp', 'png', 'jpg', 'jpeg', 'jfif'];
+                                let iconFound = false;
+                                
+                                // First try to check if the file exists in the Profile directory
+                                for (const ext of extensions) {
+                                    const img = new Image();
+                                    img.onload = function() {
+                                        if (!iconFound) {
+                                            iconFound = true;
+                                            createIconElement(`${iconName}.${ext}`, `${iconName}.${ext}` === currentIcon, true);
+                                        }
+                                    };
+                                    img.src = `Icons/Profile/${iconName}.${ext}`;
+                                }
+                                
+                                // If no icon is found after a short delay, use a default extension
+                                setTimeout(() => {
+                                    if (!iconFound) {
+                                        createIconElement(`${iconName}.png`, `${iconName}.png` === currentIcon, true);
+                                    }
+                                }, 300);
+                            }
+                        });
+                    }
                 }
-            } catch (error) {
-                console.error('Error updating icon:', error);
-            }
-        }
-
-        window.filterIcons = function() {
-            const searchText = document.querySelector('.icon-search').value.toLowerCase();
-            const items = document.querySelectorAll('.icon-item');
-            
-            items.forEach(item => {
-                const name = item.dataset.name;
-                if (name.includes(searchText)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        };
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('icon-selector-modal');
-            if (event.target === modal) {
-                closeIconSelector();
-            }
-        };
-
-        // Music Player Script
-        import { initMusicPlayer } from './music-player.js';
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeAuthState();
-            initMusicPlayer();
-            initializeQuestSystem(); // Initialize quest system
-
-            // Initialize profile menu click handlers
-            const profileInfo = document.getElementById('profile-info');
-            const profileMenu = document.getElementById('profile-menu');
-
-            if (profileInfo) {
-                profileInfo.addEventListener('click', toggleProfileMenu);
             }
 
-            // Close menu when clicking outside
-            document.addEventListener('click', function(event) {
-                if (profileMenu && profileMenu.classList.contains('show') && 
-                    !profileInfo.contains(event.target) &&
-                    !profileMenu.contains(event.target)) {
-                    profileMenu.classList.remove('show');
+            function createIconElement(icon, isSelected, isSpecial) {
+                const iconGrid = document.getElementById('icon-grid');
+                const iconItem = document.createElement('div');
+                iconItem.className = `icon-item${isSelected ? ' selected' : ''}`;
+                iconItem.dataset.name = icon.toLowerCase();
+
+                const iconPreview = document.createElement('div');
+                iconPreview.className = 'icon-preview';
+
+                const img = document.createElement('img');
+                // Try to determine the file extension from the icon name
+                const fileExtension = icon.split('.').pop().toLowerCase();
+                const iconName = icon.replace(/\.(png|jpg|jpeg|webp|jfif)$/i, '');
+                
+                // Set initial source based on category and detected extension
+                img.src = isSpecial ? `Icons/Profile/${icon}` : `Icons/${icon}`;
+                img.alt = iconName;
+                
+                // Handle image loading errors by trying different extensions
+                img.onerror = function() {
+                    // Try different paths and extensions if the image fails to load
+                    if (this.src.includes('/Profile/')) {
+                        // If we're already looking in Profile folder, try the main Icons folder
+                        this.src = `Icons/${icon}`;
+                    } else {
+                        // If we're in the main Icons folder, try Profile with different extensions
+                        const extensions = ['webp', 'png', 'jpg', 'jpeg', 'jfif'];
+                        for (const ext of extensions) {
+                            if (!this.src.endsWith(`.${ext}`)) {
+                                this.src = `Icons/Profile/${iconName}.${ext}`;
+                                return;
+                            }
+                        }
+                    }
+                };
+
+                const name = document.createElement('div');
+                name.className = 'icon-name';
+                name.textContent = iconName;
+
+                if (isSpecial) {
+                    const specialBadge = document.createElement('div');
+                    specialBadge.className = 'icon-special-badge';
+                    specialBadge.innerHTML = '<i class="fas fa-star"></i>';
+                    iconItem.appendChild(specialBadge);
                 }
-            });
+
+                iconPreview.appendChild(img);
+                iconItem.appendChild(iconPreview);
+                iconItem.appendChild(name);
+                
+                iconItem.onclick = () => selectIcon(icon, iconItem);
+                iconGrid.appendChild(iconItem);
+            }
+
+            async function selectIcon(icon, selectedItem) {
+                const user = auth.currentUser;
+                if (!user) return;
+
+                try {
+                    const userRef = ref(database, `users/${user.uid}`);
+                    const snapshot = await get(userRef);
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        
+                        // Extract the base name and extension
+                        const fileExtension = icon.split('.').pop().toLowerCase();
+                        const iconName = icon.replace(/\.(png|jpg|jpeg|webp|jfif)$/i, '');
+                        
+                        // Store just the base name with extension in the database
+                        userData.icon = icon;
+                        await set(userRef, userData);
+
+                        // Update selected state in grid
+                        document.querySelectorAll('.icon-item').forEach(item => {
+                            item.classList.remove('selected');
+                        });
+                        selectedItem.classList.add('selected');
+
+                        // Update profile image with both possible paths
+                        setProfileImage(`Icons/${icon}`, `Icons/Profile/${icon}`);
+                        closeIconSelector();
+                        console.log('Icon updated successfully');
+                    }
+                } catch (error) {
+                    console.error('Error updating icon:', error);
+                }
+            }
+
+            window.filterIcons = function() {
+                const searchText = document.querySelector('.icon-search').value.toLowerCase();
+                const items = document.querySelectorAll('.icon-item');
+                
+                items.forEach(item => {
+                    const name = item.dataset.name;
+                    if (name.includes(searchText)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            };
 
             // Close modal when clicking outside
             window.onclick = function(event) {
@@ -1801,738 +2118,880 @@
                 }
             };
 
-            // Add progress bar click handling
-            const progressContainer = document.querySelector('.progress-bar');
-            progressContainer.addEventListener('click', (e) => {
-                const width = progressContainer.clientWidth;
-                const clickX = e.offsetX;
-                const duration = audio.duration;
-                audio.currentTime = (clickX / width) * duration;
-            });
+            // Music Player Script
+            import { initMusicPlayer } from './music-player.js';
 
-            // Add volume slider handling
-            const volumeSlider = document.querySelector('.volume-slider');
-            volumeSlider.addEventListener('input', (e) => {
-                audio.volume = e.target.value / 100;
-            });
+            document.addEventListener('DOMContentLoaded', () => {
+                initializeAuthState();
+                initMusicPlayer();
+                initializeQuestSystem(); // Initialize quest system
 
-            // Initialize character grid with roles
-            function initializeCharacterGrid() {
-                const grid = document.querySelector('.character-grid');
-                const searchInput = document.getElementById('character-search');
-                const roleFilters = document.querySelectorAll('.role-filter');
-                let currentFilter = 'all';
+                // Initialize profile menu click handlers
+                const profileInfo = document.getElementById('profile-info');
+                const profileMenu = document.getElementById('profile-menu');
 
-                // Get all unique characters with their roles
-                const characters = new Set();
-                Object.entries(roles).forEach(([role, chars]) => {
-                    chars.forEach(char => {
-                        characters.add(char);
-                    });
+                if (profileInfo) {
+                    profileInfo.addEventListener('click', toggleProfileMenu);
+                }
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (profileMenu && profileMenu.classList.contains('show') && 
+                        !profileInfo.contains(event.target) &&
+                        !profileMenu.contains(event.target)) {
+                        profileMenu.classList.remove('show');
+                    }
                 });
 
-                // Create character array with roles and sort alphabetically
-                const characterData = Array.from(characters).sort().map(name => {
-                    const characterRoles = [];
+                // Close modal when clicking outside
+                window.onclick = function(event) {
+                    const modal = document.getElementById('icon-selector-modal');
+                    if (event.target === modal) {
+                        closeIconSelector();
+                    }
+                };
+
+                // Add progress bar click handling
+                const progressContainer = document.querySelector('.progress-bar');
+                progressContainer.addEventListener('click', (e) => {
+                    const width = progressContainer.clientWidth;
+                    const clickX = e.offsetX;
+                    const duration = audio.duration;
+                    audio.currentTime = (clickX / width) * duration;
+                });
+
+                // Add volume slider handling
+                const volumeSlider = document.querySelector('.volume-slider');
+                volumeSlider.addEventListener('input', (e) => {
+                    audio.volume = e.target.value / 100;
+                });
+
+                // Initialize character grid with roles
+                function initializeCharacterGrid() {
+                    const grid = document.querySelector('.character-grid');
+                    const searchInput = document.getElementById('character-search');
+                    const roleFilters = document.querySelectorAll('.role-filter');
+                    let currentFilter = 'all';
+
+                    // Get all unique characters with their roles
+                    const characters = new Set();
                     Object.entries(roles).forEach(([role, chars]) => {
-                        if (chars.includes(name)) {
-                            characterRoles.push(role.toLowerCase());
-                        }
+                        chars.forEach(char => {
+                            characters.add(char);
+                        });
                     });
-                    return {
-                        name,
-                        roles: characterRoles,
-                        image: `Icons/${name}.png`
-                    };
-                });
 
-                // Function to create character card
-                function createCharacterCard(character) {
-                    const card = document.createElement('a');
-                    card.href = `character.html?character=${encodeURIComponent(character.name)}`;
-                    card.className = `character-card ${character.roles.join(' ')}`;
-                    card.dataset.roles = character.roles.join(',');
-                    
-                    card.innerHTML = `
-                        <div class="character-image-container">
-                            <img src="${character.image}" alt="${character.name}">
-                            <div class="character-overlay">
-                                <div class="character-roles">
-                                    ${character.roles.map(role => `
-                                        <span class="role-icon">
-                                            <i class="fas ${getRoleIcon(role)}"></i>
-                                        </span>
-                                    `).join('')}
+                    // Create character array with roles and sort alphabetically
+                    const characterData = Array.from(characters).sort().map(name => {
+                        const characterRoles = [];
+                        Object.entries(roles).forEach(([role, chars]) => {
+                            if (chars.includes(name)) {
+                                characterRoles.push(role.toLowerCase());
+                            }
+                        });
+                        return {
+                            name,
+                            roles: characterRoles,
+                            image: `Icons/${name}.png`
+                        };
+                    });
+
+                    // Function to create character card
+                    function createCharacterCard(character) {
+                        const card = document.createElement('a');
+                        card.href = `character.html?character=${encodeURIComponent(character.name)}`;
+                        card.className = `character-card ${character.roles.join(' ')}`;
+                        card.dataset.roles = character.roles.join(',');
+                        
+                        card.innerHTML = `
+                            <div class="character-image-container">
+                                <img src="${character.image}" alt="${character.name}">
+                                <div class="character-overlay">
+                                    <div class="character-roles">
+                                        ${character.roles.map(role => `
+                                            <span class="role-icon">
+                                                <i class="fas ${getRoleIcon(role)}"></i>
+                                            </span>
+                                        `).join('')}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="character-info">
-                            <h3>${character.name}</h3>
-                        </div>
-                    `;
-                    
-                    return card;
-                }
+                            <div class="character-info">
+                                <h3>${character.name}</h3>
+                            </div>
+                        `;
+                        
+                        return card;
+                    }
 
-                // Function to get role icon
-                function getRoleIcon(role) {
-                    const icons = {
-                        top: 'fa-chevron-up',
-                        jungle: 'fa-tree',
-                        mid: 'fa-star',
-                        adc: 'fa-crosshairs',
-                        support: 'fa-heart'
-                    };
-                    return icons[role] || 'fa-user';
-                }
+                    // Function to get role icon
+                    function getRoleIcon(role) {
+                        const icons = {
+                            top: 'fa-chevron-up',
+                            jungle: 'fa-tree',
+                            mid: 'fa-star',
+                            adc: 'fa-crosshairs',
+                            support: 'fa-heart'
+                        };
+                        return icons[role] || 'fa-user';
+                    }
 
-                // Initial render
-                function renderCharacters() {
-                    grid.innerHTML = '';
-                    const searchTerm = searchInput.value.toLowerCase();
-                    
-                    characterData.forEach(character => {
-                        if ((currentFilter === 'all' || character.roles.includes(currentFilter)) &&
-                            character.name.toLowerCase().includes(searchTerm)) {
-                            grid.appendChild(createCharacterCard(character));
-                        }
+                    // Initial render
+                    function renderCharacters() {
+                        grid.innerHTML = '';
+                        const searchTerm = searchInput.value.toLowerCase();
+                        
+                        characterData.forEach(character => {
+                            if ((currentFilter === 'all' || character.roles.includes(currentFilter)) &&
+                                character.name.toLowerCase().includes(searchTerm)) {
+                                grid.appendChild(createCharacterCard(character));
+                            }
+                        });
+                    }
+
+                    // Event listeners
+                    searchInput.addEventListener('input', renderCharacters);
+
+                    roleFilters.forEach(button => {
+                        button.addEventListener('click', () => {
+                            roleFilters.forEach(btn => btn.classList.remove('active'));
+                            button.classList.add('active');
+                            currentFilter = button.dataset.role;
+                            renderCharacters();
+                        });
                     });
+
+                    // Initial render
+                    renderCharacters();
                 }
 
-                // Event listeners
-                searchInput.addEventListener('input', renderCharacters);
+                // Initialize when DOM is loaded
+                initializeCharacterGrid();
+            });
 
-                roleFilters.forEach(button => {
-                    button.addEventListener('click', () => {
-                        roleFilters.forEach(btn => btn.classList.remove('active'));
-                        button.classList.add('active');
-                        currentFilter = button.dataset.role;
-                        renderCharacters();
-                    });
-                });
-
-                // Initial render
-                renderCharacters();
-            }
-
-            // Initialize when DOM is loaded
-            initializeCharacterGrid();
-        });
-
-        // Quest System Functions
-        window.toggleQuestWindow = function(event) {
-            if (event) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            const questWindow = document.getElementById('quest-window');
-            if (!questWindow.classList.contains('show')) {
-                questWindow.style.display = 'block';
-                // Trigger reflow
-                questWindow.offsetHeight;
-                questWindow.classList.add('show');
-                loadQuestData('daily'); // Load daily quests by default
-            } else {
-                closeQuestWindow();
-            }
-        };
-
-        window.closeQuestWindow = function() {
-            const questWindow = document.getElementById('quest-window');
-            questWindow.classList.remove('show');
-            // Wait for animation to complete before hiding
-            setTimeout(() => {
-                questWindow.style.display = 'none';
-            }, 300);
-        };
-
-        window.switchQuestTab = function(tabName) {
-            // Update active tab
-            const tabs = document.querySelectorAll('.quest-tab');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
-
-            // Update header text
-            const header = document.querySelector('.quest-header h2');
-            header.innerHTML = `
-                <i class="fas fa-sun"></i>
-                Desert Wars Quests
-            `;
-
-            // Load quests for the selected tab
-            loadQuestData(tabName);
-        };
-
-        function initializeQuestSystem() {
-            // Close quest window when clicking outside
-            window.addEventListener('click', function(event) {
+            // Quest System Functions
+            window.toggleQuestWindow = function(event) {
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
                 const questWindow = document.getElementById('quest-window');
-                if (event.target === questWindow) {
+                if (!questWindow.classList.contains('show')) {
+                    questWindow.style.display = 'block';
+                    // Trigger reflow
+                    questWindow.offsetHeight;
+                    questWindow.classList.add('show');
+                    loadQuestData('daily'); // Load daily quests by default
+                } else {
                     closeQuestWindow();
                 }
+            };
+
+            window.closeQuestWindow = function() {
+                const questWindow = document.getElementById('quest-window');
+                questWindow.classList.remove('show');
+                // Wait for animation to complete before hiding
+                setTimeout(() => {
+                    questWindow.style.display = 'none';
+                }, 300);
+            };
+
+            window.switchQuestTab = function(tabName) {
+                // Update active tab
+                const tabs = document.querySelectorAll('.quest-tab');
+                tabs.forEach(tab => tab.classList.remove('active'));
+                event.target.classList.add('active');
+
+                // Update header text
+                const header = document.querySelector('.quest-header h2');
+                header.innerHTML = `
+                    <i class="fas fa-ribbon"></i> <!-- Updated Icon -->
+                    Tokyo Mew Mew Quests <!-- Updated Title -->
+                `;
+
+                // Load quests for the selected tab
+                loadQuestData(tabName);
+            };
+
+            function initializeQuestSystem() {
+                // Close quest window when clicking outside
+                window.addEventListener('click', function(event) {
+                    const questWindow = document.getElementById('quest-window');
+                    if (event.target === questWindow) {
+                        closeQuestWindow();
+                    }
+                });
+
+                // Initialize with sample quest data
+                loadQuestData('daily');
+            }
+
+            async function loadQuestData(questType) {
+                const questList = document.querySelector('.quest-list');
+                questList.innerHTML = ''; // Clear existing quests
+
+                const user = auth.currentUser;
+                if (!user) return;
+
+                try {
+                    // Get user's quests and games played from database
+                    const [userQuestsSnapshot, gamesPlayedSnapshot, lastRoleSnapshot] = await Promise.all([
+                        get(ref(database, `users/${user.uid}/quests`)),
+                        get(ref(database, `users/${user.uid}/gamesPlayed`)),
+                        get(ref(database, `users/${user.uid}/lastPlayedRole`))
+                    ]);
+                    
+                    const userQuests = userQuestsSnapshot.val() || {};
+                    const gamesPlayed = gamesPlayedSnapshot.val() || 0;
+                    const lastPlayedRole = lastRoleSnapshot.val();
+
+                    // Import quest templates
+                    const { questTemplates } = await import('./quests.js');
+                    const templates = questTemplates[questType] || [];
+
+                    // Process each quest template
+                    for (const template of templates) {
+                        let userQuestData = userQuests[template.id] || {
+                            progress: 0,
+                            completed: false,
+                            claimed: false,
+                            lastReset: Date.now()
+                        };
+
+                        // Check if quest needs reset (for daily quests)
+                        if (questType === 'daily' && template.resetInterval) {
+                            const currentTime = Date.now();
+                            const timeSinceReset = currentTime - (userQuestData.lastReset || 0);
+                            
+                            if (timeSinceReset >= template.resetInterval) {
+                                console.log('Resetting daily quest - 18 hours passed');
+                                userQuestData = {
+                                    progress: template.id === 'daily_games' ? 0 : 0,
+                                    completed: false,
+                                    claimed: false,
+                                    lastReset: currentTime
+                                };
+                                await set(ref(database, `users/${user.uid}/quests/${template.id}`), userQuestData);
+                            }
+                        }
+
+                        // Update progress based on games played for daily_games quest
+                        if (template.id === 'daily_games' && !userQuestData.claimed) {
+                            userQuestData.progress = gamesPlayed - (userQuestData.lastGameCount || 0);
+                            userQuestData.completed = userQuestData.progress >= template.requirements.count;
+                            userQuestData.lastGameCount = gamesPlayed;
+                            await set(ref(database, `users/${user.uid}/quests/${template.id}`), userQuestData);
+                        }
+
+                        // Update progress for character-specific quests
+                        if (template.requirements.type === 'play_character' && !userQuestData.claimed) {
+                            const lastPlayedRef = ref(database, `users/${user.uid}/lastPlayedCharacter`);
+                            const lastPlayedSnapshot = await get(lastPlayedRef);
+                            const lastPlayedCharacter = lastPlayedSnapshot.val();
+
+                            if (lastPlayedCharacter && template.requirements.characters.includes(lastPlayedCharacter)) {
+                                userQuestData.progress = 1;
+                                userQuestData.completed = true;
+                                await set(ref(database, `users/${user.uid}/quests/${template.id}`), userQuestData);
+                            }
+                        }
+
+                        // Update progress for role-specific quests
+                        if (template.requirements.type === 'play_role' && !userQuestData.claimed) {
+                            if (lastPlayedRole && template.requirements.roles.includes(lastPlayedRole.toLowerCase())) {
+                                userQuestData.progress = (userQuestData.progress || 0) + 1;
+                                userQuestData.completed = userQuestData.progress >= template.requirements.count;
+                                await set(ref(database, `users/${user.uid}/quests/${template.id}`), userQuestData);
+                            }
+                        }
+
+                        // Create quest element
+                        const questElement = createQuestElement({
+                            ...template,
+                            progress: userQuestData.progress,
+                            total: template.requirements.count,
+                            lastReset: userQuestData.lastReset,
+                            status: userQuestData.claimed ? 'completed' : 
+                                    userQuestData.completed ? 'claim-ready' : 
+                                    userQuestData.progress > 0 ? 'in-progress' : 'not-started'
+                        });
+
+                        questList.appendChild(questElement);
+                    }
+                } catch (error) {
+                    console.error('Error loading quests:', error);
+                }
+            }
+
+            function createQuestElement(quest) {
+                const questElement = document.createElement('div');
+                questElement.classList.add('quest-item');
+                
+                const progressPercentage = (quest.progress / quest.total) * 100;
+
+                // Determine time display text
+                let timeDisplay = '';
+                if (quest.id === 'win_streak' || quest.id === 'bot_lane_games' || quest.id === 'love_day_win' || quest.id === 'battleborn_champion') {
+                    timeDisplay = quest.id === 'battleborn_champion' ? 'One-time Quest' : 'Repeatable Quest';
+                } else if (quest.lastReset) {
+                    const resetTime = quest.lastReset + 64800000; // 18 hours in milliseconds
+                    const currentTime = Date.now();
+                    const remainingTime = resetTime - currentTime;
+                    
+                    if (remainingTime <= 0) {
+                        timeDisplay = 'Ready to reset';
+                    } else {
+                        const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+                        const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                        timeDisplay = `Resets in ${hours}h ${minutes}m`;
+                    }
+                }
+                
+                questElement.innerHTML = `
+                    <div class="quest-icon">
+                        <i class="fas ${quest.icon}"></i>
+                    </div>
+                    <div class="quest-info">
+                        <div class="quest-header">
+                            <div class="quest-title">${quest.title}</div>
+                            <div class="quest-reset-time">${timeDisplay}</div>
+                        </div>
+                        <div class="quest-description">${quest.description}</div>
+                        <div class="quest-progress">
+                            <div class="progress-text">${quest.progress}/${quest.total}</div>
+                            <div class="quest-progress-bar" style="width: ${progressPercentage}%"></div>
+                        </div>
+                        <div class="quest-rewards">
+                            ${quest.rewards.map(reward => `
+                                <div class="quest-reward" data-type="${reward.type}" ${reward.type === 'skin' ? `data-skin-name="${reward.name}"` : ''}>
+                                    ${reward.icon && reward.icon.startsWith('res/') ? 
+                                        `<img src="${reward.icon}" alt="${reward.type}" class="reward-icon">` :
+                                        reward.icon ? `<i class="fas ${reward.icon}"></i>` : `<i class="fas fa-gift"></i>`}
+                                    <span>${reward.type === 'skin' ? reward.name : reward.amount || reward.amounts?.[0]}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="quest-status ${quest.status}" onclick="${quest.status === 'claim-ready' ? 
+                        `claimQuest('${quest.id}')` : 
+                        `claimReward(event, '${quest.id}')`}">
+                        ${quest.status === 'claim-ready' ? 'Claim' : quest.status === 'completed' ? 'Completed' : 
+                          quest.status === 'in-progress' ? 'In Progress' : 'Not Started'}
+                    </div>
+                `;
+                
+                // Only start timer for daily quests
+                if (quest.lastReset) {
+                    const resetTimeElement = questElement.querySelector('.quest-reset-time');
+                    const resetTime = quest.lastReset + 64800000;
+                    const updateTimer = setInterval(() => {
+                        const now = Date.now();
+                        const timeRemaining = resetTime - now;
+                        
+                        if (timeRemaining > 0) {
+                            const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
+                            const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                            resetTimeElement.textContent = `Resets in ${hours}h ${minutes}m`;
+                        } else {
+                            clearInterval(updateTimer);
+                            resetTimeElement.textContent = 'Ready to reset';
+                            // Reload quest data when timer reaches zero
+                            loadQuestData('daily');
+                        }
+                    }, 60000); // Update every minute
+                }
+                
+                return questElement;
+            }
+
+            // Make claimReward globally available
+            window.claimReward = async function(event, questId) {
+                event.stopPropagation();
+                const user = auth.currentUser;
+                if (!user) return;
+
+                const userId = user.uid;
+                const questRef = ref(database, `users/${userId}/quests/${questId}`);
+                const userRef = ref(database, `users/${userId}`);
+                
+                try {
+                    const [questSnap, userSnap] = await Promise.all([
+                        get(questRef),
+                        get(userRef)
+                    ]);
+                    
+                    const questData = questSnap.val();
+                    const userData = userSnap.val();
+                    
+                    if (!questData || !questData.completed || questData.claimed) {
+                        console.log('Quest cannot be claimed:', { questData });
+                        return;
+                    }
+                    
+                    // Import quest templates to find the quest configuration
+                    const { questTemplates } = await import('./quests.js');
+                    
+                    // Find quest template in both daily and special quests
+                    const questTemplate = questTemplates.daily.find(q => q.id === questId) || 
+                                        questTemplates.special.find(q => q.id === questId);
+                    
+                    if (!questTemplate) {
+                        console.error('Quest template not found:', questId);
+                        return;
+                    }
+                    
+                    console.log('Found quest template:', questTemplate);
+                    
+                    const updates = {};
+                    
+                    // Process each reward
+                    for (const reward of questTemplate.rewards) {
+                        if (reward.type === 'questPoints') {
+                            const currentQP = userData.questPoints || 0;
+                            updates['questPoints'] = currentQP + reward.amount;
+                            console.log('Adding QP reward:', reward.amount);
+                        } else if (reward.type === 'championMoney') {
+                            const currentCM = userData.CM || 0;
+                            updates['CM'] = currentCM + reward.amount;
+                            console.log('Adding CM reward:', reward.amount);
+                        } else if (reward.type === 'skin' && reward.name) {
+                            // Add the skin to the user's collection
+                            updates[`skins/${reward.name}`] = reward.name;
+                            console.log('Adding skin reward:', reward.name);
+                            
+                            // Show a success message for the skin reward
+                            const successMsg = document.createElement('div');
+                            successMsg.className = 'purchase-success';
+                            successMsg.innerHTML = `
+                                <i class="fas fa-check-circle"></i>
+                                Unlocked skin: ${reward.name}!
+                            `;
+                            document.body.appendChild(successMsg);
+                            
+                            setTimeout(() => {
+                                successMsg.remove();
+                            }, 3000);
+                        }
+                    }
+                    
+                    // Mark quest as claimed
+                    updates[`quests/${questId}/claimed`] = true;
+                    
+                    // Handle repeatable quests - reset progress after claiming
+                    if (questTemplate.repeatable) {
+                        const completionCount = questData.completionCount || 0;
+                        updates[`quests/${questId}/progress`] = 0;
+                        updates[`quests/${questId}/completed`] = false;
+                        updates[`quests/${questId}/completionCount`] = completionCount + 1;
+                        
+                        // Reset quest-specific tracking fields
+                        if (questId.includes('blossom_devotee') || questId.includes('gang_loyalty')) {
+                            updates[`quests/${questId}/champion`] = null;
+                        }
+                    }
+                    // For daily quests, prepare for next reset
+                    else if (questTemplate.resetInterval) {
+                        updates[`quests/${questId}/progress`] = 0;
+                        updates[`quests/${questId}/completed`] = false;
+                        updates[`quests/${questId}/lastReset`] = Date.now();
+                        if (questId === 'celestial_kills') {
+                            updates[`quests/${questId}/totalKills`] = 0;
+                        }
+                    }
+                    
+                    console.log('Applying updates:', updates);
+                    
+                    // Apply all updates
+                    await update(userRef, updates);
+                    
+                    // Update UI
+                    const questElement = event.target.closest('.quest-item');
+                    if (questElement) {
+                        const statusElement = questElement.querySelector('.quest-status');
+                        if (statusElement) {
+                            statusElement.textContent = 'Completed';
+                            statusElement.className = 'quest-status completed';
+                        }
+                    }
+                    
+                    // Update currency displays
+                    updateCurrencyDisplays();
+                    
+                    // Refresh quest display
+                    await loadQuestData(questTemplate.resetInterval ? 'daily' : 'special');
+                    
+                    console.log('Quest claimed successfully');
+                } catch (error) {
+                    console.error('Error claiming quest reward:', error);
+                }
+            };
+
+            // Build Window Functions
+            window.toggleBuildWindow = function(event) {
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                const buildWindow = document.getElementById('build-window');
+                if (!buildWindow.classList.contains('show')) {
+                    buildWindow.style.display = 'block';
+                    // Trigger reflow
+                    buildWindow.offsetHeight;
+                    buildWindow.classList.add('show');
+                } else {
+                    closeBuildWindow();
+                }
+            };
+
+            window.closeBuildWindow = function() {
+                const buildWindow = document.getElementById('build-window');
+                buildWindow.classList.remove('show');
+                // Wait for animation to complete before hiding
+                setTimeout(() => {
+                    buildWindow.style.display = 'none';
+                }, 300);
+            };
+
+            // Close build window when clicking outside
+            window.addEventListener('click', function(event) {
+                const buildWindow = document.getElementById('build-window');
+                if (event.target === buildWindow) {
+                    closeBuildWindow();
+                }
             });
 
-            // Initialize with sample quest data
-            loadQuestData('daily');
-        }
-
-        async function loadQuestData(questType) {
-            const questList = document.querySelector('.quest-list');
-            questList.innerHTML = ''; // Clear existing quests
-
-            const user = auth.currentUser;
-            if (!user) return;
-
-            try {
-                // Get user's quests and games played from database
-                const [userQuestsSnapshot, gamesPlayedSnapshot, lastRoleSnapshot] = await Promise.all([
-                    get(ref(database, `users/${user.uid}/quests`)),
-                    get(ref(database, `users/${user.uid}/gamesPlayed`)),
-                    get(ref(database, `users/${user.uid}/lastPlayedRole`))
-                ]);
+            // Add this after initializeQuestSystem function
+            function initializeBlossomEvent() {
+                // Check if the Blossom event is active
+                const currentDate = new Date();
+                const eventStartDate = new Date('2023-05-01'); // Example start date
+                const eventEndDate = new Date('2023-06-15');   // Example end date
                 
-                const userQuests = userQuestsSnapshot.val() || {};
-                const gamesPlayed = gamesPlayedSnapshot.val() || 0;
-                const lastPlayedRole = lastRoleSnapshot.val();
-
-                // Import quest templates
-                const { questTemplates } = await import('./quests.js');
-                const templates = questTemplates[questType] || [];
-
-                // Process each quest template
-                for (const template of templates) {
-                    let userQuestData = userQuests[template.id] || {
-                        progress: 0,
-                        completed: false,
-                        claimed: false,
-                        lastReset: Date.now()
-                    };
-
-                    // Check if quest needs reset (for daily quests)
-                    if (questType === 'daily' && template.resetInterval) {
-                        const currentTime = Date.now();
-                        const timeSinceReset = currentTime - (userQuestData.lastReset || 0);
+                // Set event as active
+                window.blossomEventActive = true;
+                
+                // Update quest window title to reflect the event
+                document.querySelector('.quest-header h2').innerHTML = `
+                    <i class="fas fa-cherry-blossom"></i>
+                    Blossom Festival Quests
+                `;
+                
+                // Check if player has blossom petals currency, initialize if not
+                const user = auth.currentUser;
+                if (user) {
+                    get(ref(database, `users/${user.uid}/blossomPetals`)).then(snapshot => {
+                        if (!snapshot.exists()) {
+                            // Initialize blossom petals for the player
+                            set(ref(database, `users/${user.uid}/blossomPetals`), 0);
+                        }
                         
-                        if (timeSinceReset >= template.resetInterval) {
-                            console.log('Resetting daily quest - 18 hours passed');
-                            userQuestData = {
-                                progress: template.id === 'daily_games' ? 0 : 0,
-                                completed: false,
-                                claimed: false,
-                                lastReset: currentTime
-                            };
-                            await set(ref(database, `users/${user.uid}/quests/${template.id}`), userQuestData);
+                        // Update UI with blossom petals count
+                        const petalsCount = snapshot.val() || 0;
+                        
+                        // Add a blossom petals counter to the UI
+                        const currencyContainer = document.querySelector('.currency-container');
+                        if (currencyContainer) {
+                            const blossomPetalsElement = document.createElement('div');
+                            blossomPetalsElement.className = 'currency-item blossom-petals';
+                            blossomPetalsElement.innerHTML = `
+                                <img src="res/img/blossom_petal.png" alt="Blossom Petals">
+                                <span id="blossom-petals-amount">${petalsCount}</span>
+                            `;
+                            currencyContainer.appendChild(blossomPetalsElement);
                         }
-                    }
-
-                    // Update progress based on games played for daily_games quest
-                    if (template.id === 'daily_games' && !userQuestData.claimed) {
-                        userQuestData.progress = gamesPlayed - (userQuestData.lastGameCount || 0);
-                        userQuestData.completed = userQuestData.progress >= template.requirements.count;
-                        userQuestData.lastGameCount = gamesPlayed;
-                        await set(ref(database, `users/${user.uid}/quests/${template.id}`), userQuestData);
-                    }
-
-                    // Update progress for character-specific quests
-                    if (template.requirements.type === 'play_character' && !userQuestData.claimed) {
-                        const lastPlayedRef = ref(database, `users/${user.uid}/lastPlayedCharacter`);
-                        const lastPlayedSnapshot = await get(lastPlayedRef);
-                        const lastPlayedCharacter = lastPlayedSnapshot.val();
-
-                        if (lastPlayedCharacter && template.requirements.characters.includes(lastPlayedCharacter)) {
-                            userQuestData.progress = 1;
-                            userQuestData.completed = true;
-                            await set(ref(database, `users/${user.uid}/quests/${template.id}`), userQuestData);
-                        }
-                    }
-
-                    // Update progress for role-specific quests
-                    if (template.requirements.type === 'play_role' && !userQuestData.claimed) {
-                        if (lastPlayedRole && template.requirements.roles.includes(lastPlayedRole.toLowerCase())) {
-                            userQuestData.progress = (userQuestData.progress || 0) + 1;
-                            userQuestData.completed = userQuestData.progress >= template.requirements.count;
-                            await set(ref(database, `users/${user.uid}/quests/${template.id}`), userQuestData);
-                        }
-                    }
-
-                    // Create quest element
-                    const questElement = createQuestElement({
-                        ...template,
-                        progress: userQuestData.progress,
-                        total: template.requirements.count,
-                        lastReset: userQuestData.lastReset,
-                        status: userQuestData.claimed ? 'completed' : 
-                                userQuestData.completed ? 'claim-ready' : 
-                                userQuestData.progress > 0 ? 'in-progress' : 'not-started'
+                    }).catch(error => {
+                        console.error('Error checking blossom petals:', error);
                     });
-
-                    questList.appendChild(questElement);
                 }
-            } catch (error) {
-                console.error('Error loading quests:', error);
-            }
-        }
-
-        function createQuestElement(quest) {
-            const questElement = document.createElement('div');
-            questElement.classList.add('quest-item');
-            
-            const progressPercentage = (quest.progress / quest.total) * 100;
-
-            // Determine time display text
-            let timeDisplay = '';
-            if (quest.id === 'win_streak' || quest.id === 'bot_lane_games' || quest.id === 'love_day_win' || quest.id === 'battleborn_champion') {
-                timeDisplay = quest.id === 'battleborn_champion' ? 'One-time Quest' : 'Repeatable Quest';
-            } else if (quest.lastReset) {
-                const resetTime = quest.lastReset + 64800000; // 18 hours in milliseconds
-                const currentTime = Date.now();
-                const remainingTime = resetTime - currentTime;
                 
-                if (remainingTime <= 0) {
-                    timeDisplay = 'Ready to reset';
-                } else {
-                    const hours = Math.floor(remainingTime / (1000 * 60 * 60));
-                    const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-                    timeDisplay = `Resets in ${hours}h ${minutes}m`;
-                }
-            }
-            
-            questElement.innerHTML = `
-                <div class="quest-icon">
-                    <i class="fas ${quest.icon}"></i>
-                </div>
-                <div class="quest-info">
-                    <div class="quest-header">
-                        <div class="quest-title">${quest.title}</div>
-                        <div class="quest-reset-time">${timeDisplay}</div>
-                    </div>
-                    <div class="quest-description">${quest.description}</div>
-                    <div class="quest-progress">
-                        <div class="progress-text">${quest.progress}/${quest.total}</div>
-                        <div class="quest-progress-bar" style="width: ${progressPercentage}%"></div>
-                    </div>
-                    <div class="quest-rewards">
-                        ${quest.rewards.map(reward => `
-                            <div class="quest-reward" data-type="${reward.type}" ${reward.type === 'skin' ? `data-skin-name="${reward.name}"` : ''}>
-                                ${reward.icon && reward.icon.startsWith('res/') ? 
-                                    `<img src="${reward.icon}" alt="${reward.type}" class="reward-icon">` :
-                                    reward.icon ? `<i class="fas ${reward.icon}"></i>` : `<i class="fas fa-gift"></i>`}
-                                <span>${reward.type === 'skin' ? reward.name : reward.amount || reward.amounts?.[0]}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-                <div class="quest-status ${quest.status}" onclick="${quest.status === 'claim-ready' ? 
-                    `claimQuest('${quest.id}')` : 
-                    `claimReward(event, '${quest.id}')`}">
-                    ${quest.status === 'claim-ready' ? 'Claim' : quest.status === 'completed' ? 'Completed' : 
-                      quest.status === 'in-progress' ? 'In Progress' : 'Not Started'}
-                </div>
-            `;
-            
-            // Only start timer for daily quests
-            if (quest.lastReset) {
-                const resetTimeElement = questElement.querySelector('.quest-reset-time');
-                const resetTime = quest.lastReset + 64800000;
-                const updateTimer = setInterval(() => {
-                    const now = Date.now();
-                    const timeRemaining = resetTime - now;
-                    
-                    if (timeRemaining > 0) {
-                        const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
-                        const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-                        resetTimeElement.textContent = `Resets in ${hours}h ${minutes}m`;
-                    } else {
-                        clearInterval(updateTimer);
-                        resetTimeElement.textContent = 'Ready to reset';
-                        // Reload quest data when timer reaches zero
-                        loadQuestData('daily');
+                // Add Blossom event styling
+                const blossomStyle = document.createElement('style');
+                blossomStyle.textContent = `
+                    body {
+                        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                                    url('res/img/blossom_bg.jpeg') no-repeat center center fixed !important;
+                        background-size: cover !important;
                     }
-                }, 60000); // Update every minute
+                    
+                    .blossom-petals {
+                        display: flex;
+                        align-items: center;
+                        margin-left: 15px;
+                    }
+                    
+                    .blossom-petals img {
+                        width: 24px;
+                        height: 24px;
+                        margin-right: 5px;
+                    }
+                    
+                    /* Add cherry blossom animations */
+                    @keyframes falling {
+                        0% {
+                            transform: translateY(-5%) rotate(0deg);
+                            opacity: 1;
+                        }
+                        100% {
+                            transform: translateY(100vh) rotate(360deg);
+                            opacity: 0;
+                        }
+                    }
+                    
+                    .cherry-blossom {
+                        position: fixed;
+                        z-index: 999;
+                        animation: falling linear infinite;
+                        color: #ffb7c5;
+                        pointer-events: none;
+                    }
+                `;
+                document.head.appendChild(blossomStyle);
+                
+                // Add falling cherry blossoms
+                createCherryBlossoms();
             }
-            
-            return questElement;
-        }
 
-        // Make claimReward globally available
-        window.claimReward = async function(event, questId) {
-            event.stopPropagation();
-            const user = auth.currentUser;
-            if (!user) return;
+            function createCherryBlossoms() {
+                const container = document.getElementById('cherry-blossoms-container');
+                const blossomCount = 20;
+                const blossomTypes = ['❀', '✿', '❁', '✾'];
+                
+                for (let i = 0; i < blossomCount; i++) {
+                    const blossom = document.createElement('div');
+                    blossom.className = 'cherry-blossom';
+                    
+                    // Random blossom type
+                    const randomType = blossomTypes[Math.floor(Math.random() * blossomTypes.length)];
+                    blossom.textContent = randomType;
+                    
+                    // Random positioning and animation
+                    const left = Math.random() * 100;
+                    const size = Math.random() * 15 + 10;
+                    const duration = Math.random() * 10 + 8;
+                    const delay = Math.random() * 15;
+                    
+                    blossom.style.left = `${left}vw`;
+                    blossom.style.fontSize = `${size}px`;
+                    blossom.style.animationDuration = `${duration}s`;
+                    blossom.style.animationDelay = `${delay}s`;
+                    
+                    container.appendChild(blossom);
+                }
+            }
 
-            const userId = user.uid;
-            const questRef = ref(database, `users/${userId}/quests/${questId}`);
-            const userRef = ref(database, `users/${userId}`);
-            
-            try {
-                const [questSnap, userSnap] = await Promise.all([
-                    get(questRef),
-                    get(userRef)
-                ]);
+            // Update the claimQuest function to handle quest rewards
+            window.claimQuest = async function(questId) {
+                const user = auth.currentUser;
+                if (!user) return;
                 
-                const questData = questSnap.val();
-                const userData = userSnap.val();
-                
-                if (!questData || !questData.completed || questData.claimed) {
-                    console.log('Quest cannot be claimed:', { questData });
-                    return;
-                }
-                
-                // Import quest templates to find the quest configuration
-                const { questTemplates } = await import('./quests.js');
-                
-                // Find quest template in both daily and special quests
-                const questTemplate = questTemplates.daily.find(q => q.id === questId) || 
-                                    questTemplates.special.find(q => q.id === questId);
-                
-                if (!questTemplate) {
-                    console.error('Quest template not found:', questId);
-                    return;
-                }
-                
-                console.log('Found quest template:', questTemplate);
-                
-                const updates = {};
-                
-                // Process each reward
-                for (const reward of questTemplate.rewards) {
-                    if (reward.type === 'questPoints') {
-                        const currentQP = userData.questPoints || 0;
-                        updates['questPoints'] = currentQP + reward.amount;
-                        console.log('Adding QP reward:', reward.amount);
-                    } else if (reward.type === 'championMoney') {
-                        const currentCM = userData.CM || 0;
-                        updates['CM'] = currentCM + reward.amount;
-                        console.log('Adding CM reward:', reward.amount);
-                    } else if (reward.type === 'skin' && reward.name) {
-                        // Add the skin to the user's collection
-                        updates[`skins/${reward.name}`] = reward.name;
-                        console.log('Adding skin reward:', reward.name);
+                try {
+                    // Get the quest data
+                    const questRef = ref(database, `users/${user.uid}/quests/${questId}`);
+                    const questSnapshot = await get(questRef);
+                    const questData = questSnapshot.val();
+                    
+                    if (!questData || !questData.completed || questData.claimed) {
+                        console.log('Quest not completed or already claimed');
+                        return;
+                    }
+                    
+                    // Import quest templates to get rewards info
+                    const { questTemplates } = await import('./quests.js');
+                    let questTemplate = null;
+                    
+                    // Find the quest template
+                    for (const type in questTemplates) {
+                        questTemplate = questTemplates[type].find(q => q.id === questId);
+                        if (questTemplate) break;
+                    }
+                    
+                    if (!questTemplate) {
+                        console.error('Quest template not found:', questId);
+                        return;
+                    }
+                    
+                    // Prepare rewards update
+                    const updates = {};
+                    
+                    // Update quest as claimed
+                    updates[`users/${user.uid}/quests/${questId}/claimed`] = true;
+                    
+                    // Handle repeat logic if applicable
+                    if (questTemplate.repeatable) {
+                        const completionCount = questData.completionCount || 0;
                         
-                        // Show a success message for the skin reward
-                        const successMsg = document.createElement('div');
-                        successMsg.className = 'purchase-success';
-                        successMsg.innerHTML = `
-                            <i class="fas fa-check-circle"></i>
-                            Unlocked skin: ${reward.name}!
-                        `;
-                        document.body.appendChild(successMsg);
+                        // Reset progress for next completion
+                        updates[`users/${user.uid}/quests/${questId}/progress`] = 0;
+                        updates[`users/${user.uid}/quests/${questId}/completed`] = false;
+                        updates[`users/${user.uid}/quests/${questId}/completionCount`] = completionCount + 1;
                         
-                        setTimeout(() => {
-                            successMsg.remove();
-                        }, 3000);
-                    }
-                }
-                
-                // Mark quest as claimed
-                updates[`quests/${questId}/claimed`] = true;
-                
-                // Handle repeatable quests - reset progress after claiming
-                if (questTemplate.repeatable) {
-                    const completionCount = questData.completionCount || 0;
-                    updates[`quests/${questId}/progress`] = 0;
-                    updates[`quests/${questId}/completed`] = false;
-                    updates[`quests/${questId}/completionCount`] = completionCount + 1;
-                    
-                    // Reset quest-specific tracking fields
-                    if (questId.includes('blossom_devotee') || questId.includes('gang_loyalty')) {
-                        updates[`quests/${questId}/champion`] = null;
-                    }
-                }
-                // For daily quests, prepare for next reset
-                else if (questTemplate.resetInterval) {
-                    updates[`quests/${questId}/progress`] = 0;
-                    updates[`quests/${questId}/completed`] = false;
-                    updates[`quests/${questId}/lastReset`] = Date.now();
-                    if (questId === 'celestial_kills') {
-                        updates[`quests/${questId}/totalKills`] = 0;
-                    }
-                }
-                
-                console.log('Applying updates:', updates);
-                
-                // Apply all updates
-                await update(userRef, updates);
-                
-                // Update UI
-                const questElement = event.target.closest('.quest-item');
-                if (questElement) {
-                    const statusElement = questElement.querySelector('.quest-status');
-                    if (statusElement) {
-                        statusElement.textContent = 'Completed';
-                        statusElement.className = 'quest-status completed';
-                    }
-                }
-                
-                // Update currency displays
-                updateCurrencyDisplays();
-                
-                // Refresh quest display
-                await loadQuestData(questTemplate.resetInterval ? 'daily' : 'special');
-                
-                console.log('Quest claimed successfully');
-            } catch (error) {
-                console.error('Error claiming quest reward:', error);
-            }
-        };
-
-        // Build Window Functions
-        window.toggleBuildWindow = function(event) {
-            if (event) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            const buildWindow = document.getElementById('build-window');
-            if (!buildWindow.classList.contains('show')) {
-                buildWindow.style.display = 'block';
-                // Trigger reflow
-                buildWindow.offsetHeight;
-                buildWindow.classList.add('show');
-            } else {
-                closeBuildWindow();
-            }
-        };
-
-        window.closeBuildWindow = function() {
-            const buildWindow = document.getElementById('build-window');
-            buildWindow.classList.remove('show');
-            // Wait for animation to complete before hiding
-            setTimeout(() => {
-                buildWindow.style.display = 'none';
-            }, 300);
-        };
-
-        // Close build window when clicking outside
-        window.addEventListener('click', function(event) {
-            const buildWindow = document.getElementById('build-window');
-            if (event.target === buildWindow) {
-                closeBuildWindow();
-            }
-        });
-
-        // Add this after initializeQuestSystem function
-        function initializeBlossomEvent() {
-            // Check if the Blossom event is active
-            const currentDate = new Date();
-            const eventStartDate = new Date('2023-05-01'); // Example start date
-            const eventEndDate = new Date('2023-06-15');   // Example end date
-            
-            // Set event as active
-            window.blossomEventActive = true;
-            
-            // Update quest window title to reflect the event
-            document.querySelector('.quest-header h2').innerHTML = `
-                <i class="fas fa-cherry-blossom"></i>
-                Blossom Festival Quests
-            `;
-            
-            // Check if player has blossom petals currency, initialize if not
-            const user = auth.currentUser;
-            if (user) {
-                get(ref(database, `users/${user.uid}/blossomPetals`)).then(snapshot => {
-                    if (!snapshot.exists()) {
-                        // Initialize blossom petals for the player
-                        set(ref(database, `users/${user.uid}/blossomPetals`), 0);
+                        // Reset specific fields based on quest type
+                        if (questId.includes('blossom_devotee') || questId.includes('gang_loyalty')) {
+                            updates[`users/${user.uid}/quests/${questId}/champion`] = null;
+                        }
                     }
                     
-                    // Update UI with blossom petals count
-                    const petalsCount = snapshot.val() || 0;
-                    
-                    // Add a blossom petals counter to the UI
-                    const currencyContainer = document.querySelector('.currency-container');
-                    if (currencyContainer) {
-                        const blossomPetalsElement = document.createElement('div');
-                        blossomPetalsElement.className = 'currency-item blossom-petals';
-                        blossomPetalsElement.innerHTML = `
-                            <img src="res/img/blossom_petal.png" alt="Blossom Petals">
-                            <span id="blossom-petals-amount">${petalsCount}</span>
-                        `;
-                        currencyContainer.appendChild(blossomPetalsElement);
+                    // Apply rewards
+                    for (const reward of questTemplate.rewards) {
+                        if (reward.type === 'questPoints') {
+                            // Get current quest points
+                            const qpRef = ref(database, `users/${user.uid}/questPoints`);
+                            const qpSnapshot = await get(qpRef);
+                            const currentQP = qpSnapshot.val() || 0;
+                            
+                            // Update quest points
+                            updates[`users/${user.uid}/questPoints`] = currentQP + reward.amount;
+                        }
                     }
+                    
+                    // Apply all updates
+                    await update(ref(database), updates);
+                    
+                    // Refresh the quest display
+                    loadQuestData(document.querySelector('.quest-tab.active').textContent.toLowerCase() === 'daily' ? 'daily' : 'special');
+                    
+                    // Update currency displays
+                    updateCurrencyDisplays();
+                    
+                    console.log('Quest claimed successfully');
+                } catch (error) {
+                    console.error('Error claiming quest:', error);
+                }
+            };
+
+            // Add updateCurrencyDisplays function if it doesn't exist yet
+            function updateCurrencyDisplays() {
+                const user = auth.currentUser;
+                if (!user) return;
+                
+                // Get updated currency values
+                Promise.all([
+                    get(ref(database, `users/${user.uid}/questPoints`)),
+                    get(ref(database, `users/${user.uid}/CM`))
+                ]).then(([qpSnapshot, cmSnapshot]) => {
+                    const qpAmount = qpSnapshot.val() || 0;
+                    const cmAmount = cmSnapshot.val() || 0;
+                    
+                    // Update QP displays
+                    const qpDisplay = document.getElementById('qp-amount');
+                    if (qpDisplay) qpDisplay.textContent = qpAmount;
+                    
+                    const storeQpDisplay = document.getElementById('store-qp-amount');
+                    if (storeQpDisplay) storeQpDisplay.textContent = qpAmount;
+                    
+                    // Update Champion Money display if exists
+                    const cmDisplay = document.getElementById('cm-amount');
+                    if (cmDisplay) cmDisplay.textContent = cmAmount;
                 }).catch(error => {
-                    console.error('Error checking blossom petals:', error);
+                    console.error('Error updating currency displays:', error);
                 });
             }
-            
-            // Add Blossom event styling
-            const blossomStyle = document.createElement('style');
-            blossomStyle.textContent = `
-                body {
-                    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
-                                url('res/img/blossom_bg.jpeg') no-repeat center center fixed !important;
-                    background-size: cover !important;
-                }
-                
-                .blossom-petals {
-                    display: flex;
-                    align-items: center;
-                    margin-left: 15px;
-                }
-                
-                .blossom-petals img {
-                    width: 24px;
-                    height: 24px;
-                    margin-right: 5px;
-                }
-                
-                /* Add cherry blossom animations */
-                @keyframes falling {
-                    0% {
-                        transform: translateY(-5%) rotate(0deg);
-                        opacity: 1;
-                    }
-                    100% {
-                        transform: translateY(100vh) rotate(360deg);
-                        opacity: 0;
-                    }
-                }
-                
-                .cherry-blossom {
-                    position: fixed;
-                    z-index: 999;
-                    animation: falling linear infinite;
-                    color: #ffb7c5;
-                    pointer-events: none;
-                }
-            `;
-            document.head.appendChild(blossomStyle);
-            
-            // Add falling cherry blossoms
-            createCherryBlossoms();
-        }
 
-        function createCherryBlossoms() {
-            const container = document.body;
-            const blossomCount = 30;
-            
-            for (let i = 0; i < blossomCount; i++) {
-                const blossom = document.createElement('div');
-                blossom.className = 'cherry-blossom';
-                blossom.innerHTML = '<i class="fas fa-cherry-blossom"></i>';
-                
-                // Random positioning
-                const left = Math.random() * 100;
-                const size = Math.random() * 10 + 10;
-                const delay = Math.random() * 15;
-                const duration = Math.random() * 10 + 10;
-                
-                blossom.style.left = `${left}vw`;
-                blossom.style.fontSize = `${size}px`;
-                blossom.style.animationDelay = `${delay}s`;
-                blossom.style.animationDuration = `${duration}s`;
-                
-                container.appendChild(blossom);
-            }
-        }
+            // Song popup variables
+            let songAudio = null;
+            let isPlaying = false;
 
-        // Update the claimQuest function to handle quest rewards
-        window.claimQuest = async function(questId) {
-            const user = auth.currentUser;
-            if (!user) return;
-            
-            try {
-                // Get the quest data
-                const questRef = ref(database, `users/${user.uid}/quests/${questId}`);
-                const questSnapshot = await get(questRef);
-                const questData = questSnapshot.val();
-                
-                if (!questData || !questData.completed || questData.claimed) {
-                    console.log('Quest not completed or already claimed');
-                    return;
-                }
-                
-                // Import quest templates to get rewards info
-                const { questTemplates } = await import('./quests.js');
-                let questTemplate = null;
-                
-                // Find the quest template
-                for (const type in questTemplates) {
-                    questTemplate = questTemplates[type].find(q => q.id === questId);
-                    if (questTemplate) break;
-                }
-                
-                if (!questTemplate) {
-                    console.error('Quest template not found:', questId);
-                    return;
-                }
-                
-                // Prepare rewards update
-                const updates = {};
-                
-                // Update quest as claimed
-                updates[`users/${user.uid}/quests/${questId}/claimed`] = true;
-                
-                // Handle repeat logic if applicable
-                if (questTemplate.repeatable) {
-                    const completionCount = questData.completionCount || 0;
-                    
-                    // Reset progress for next completion
-                    updates[`users/${user.uid}/quests/${questId}/progress`] = 0;
-                    updates[`users/${user.uid}/quests/${questId}/completed`] = false;
-                    updates[`users/${user.uid}/quests/${questId}/completionCount`] = completionCount + 1;
-                    
-                    // Reset specific fields based on quest type
-                    if (questId.includes('blossom_devotee') || questId.includes('gang_loyalty')) {
-                        updates[`users/${user.uid}/quests/${questId}/champion`] = null;
-                    }
-                }
-                
-                // Apply rewards
-                for (const reward of questTemplate.rewards) {
-                    if (reward.type === 'questPoints') {
-                        // Get current quest points
-                        const qpRef = ref(database, `users/${user.uid}/questPoints`);
-                        const qpSnapshot = await get(qpRef);
-                        const currentQP = qpSnapshot.val() || 0;
+            // Function to check if user owns the Tokyo Mew Mew song
+            async function checkAndAddTokyoMewMewSong(userId, userData) {
+                try {
+                    // Only show the popup if we're on patch 2.5 or newer
+                    if (CURRENT_PATCH === "2.5") {
+                        // Check if user has the song
+                        const userSongs = userData.Songs || {};
                         
-                        // Update quest points
-                        updates[`users/${user.uid}/questPoints`] = currentQP + reward.amount;
+                        if (!userSongs["team_up_tokyo_mew_mew"]) {
+                            console.log("User doesn't own Tokyo Mew Mew song, adding it...");
+                            
+                            // Add the song to user's collection
+                            const updates = {};
+                            updates["Songs/team_up_tokyo_mew_mew"] = 1;
+                            
+                            await update(ref(database, `users/${userId}`), updates);
+                            
+                            // Show the popup
+                            const songPopup = document.getElementById('song-popup');
+                            if (songPopup) {
+                                songPopup.style.display = 'block';
+                                // Trigger reflow
+                                songPopup.offsetHeight;
+                                songPopup.classList.add('show');
+                            }
+                        }
                     }
+                } catch (error) {
+                    console.error("Error checking/adding Tokyo Mew Mew song:", error);
+                }
+            }
+
+            // Make song popup functions globally available
+            window.closeSongPopup = function() {
+                const songPopup = document.getElementById('song-popup');
+                if (songPopup) {
+                    songPopup.classList.remove('show');
+                    setTimeout(() => {
+                        songPopup.style.display = 'none';
+                        
+                        // Stop audio preview if playing
+                        if (songAudio && !songAudio.paused) {
+                            songAudio.pause();
+                            songAudio.currentTime = 0;
+                            isPlaying = false;
+                            
+                            // Update button icon
+                            const playBtn = document.querySelector('.song-play-btn i');
+                            if (playBtn) {
+                                playBtn.className = 'fas fa-play';
+                            }
+                        }
+                    }, 300);
+                }
+            };
+
+            window.playSongPreview = function() {
+                const playBtn = document.querySelector('.song-play-btn i');
+                
+                if (!songAudio) {
+                    songAudio = new Audio('Songs/team_up_tokyo_mew_mew.mp3');
+                    
+                    // Set audio to start at 40% of the duration when it's loaded
+                    songAudio.addEventListener('loadedmetadata', () => {
+                        songAudio.currentTime = songAudio.duration * 0.4;
+                    });
+                    
+                    // Add ended event to reset button
+                    songAudio.addEventListener('ended', () => {
+                        isPlaying = false;
+                        playBtn.className = 'fas fa-play';
+                    });
                 }
                 
-                // Apply all updates
-                await update(ref(database), updates);
-                
-                // Refresh the quest display
-                loadQuestData(document.querySelector('.quest-tab.active').textContent.toLowerCase() === 'daily' ? 'daily' : 'special');
-                
-                // Update currency displays
-                updateCurrencyDisplays();
-                
-                console.log('Quest claimed successfully');
-            } catch (error) {
-                console.error('Error claiming quest:', error);
-            }
-        };
+                if (!isPlaying) {
+                    songAudio.play();
+                    isPlaying = true;
+                    playBtn.className = 'fas fa-pause';
+                    
+                    // Set a timeout to stop preview after 15 seconds
+                    setTimeout(() => {
+                        if (songAudio && !songAudio.paused) {
+                            songAudio.pause();
+                            songAudio.currentTime = songAudio.duration * 0.4;
+                            isPlaying = false;
+                            playBtn.className = 'fas fa-play';
+                        }
+                    }, 15000);
+                } else {
+                    songAudio.pause();
+                    isPlaying = false;
+                    playBtn.className = 'fas fa-play';
+                }
+            };
 
-        // Add updateCurrencyDisplays function if it doesn't exist yet
-        function updateCurrencyDisplays() {
-            const user = auth.currentUser;
-            if (!user) return;
-            
-            // Get updated currency values
-            Promise.all([
-                get(ref(database, `users/${user.uid}/questPoints`)),
-                get(ref(database, `users/${user.uid}/CM`))
-            ]).then(([qpSnapshot, cmSnapshot]) => {
-                const qpAmount = qpSnapshot.val() || 0;
-                const cmAmount = cmSnapshot.val() || 0;
-                
-                // Update QP displays
-                const qpDisplay = document.getElementById('qp-amount');
-                if (qpDisplay) qpDisplay.textContent = qpAmount;
-                
-                const storeQpDisplay = document.getElementById('store-qp-amount');
-                if (storeQpDisplay) storeQpDisplay.textContent = qpAmount;
-                
-                // Update Champion Money display if exists
-                const cmDisplay = document.getElementById('cm-amount');
-                if (cmDisplay) cmDisplay.textContent = cmAmount;
-            }).catch(error => {
-                console.error('Error updating currency displays:', error);
-            });
-        }
-    </script>
+            window.goToMusicPlayer = function() {
+                // Store a flag to open the music player automatically in Songs.html
+                sessionStorage.setItem('openMusicPlayer', 'true');
+                window.location.href = 'Songs.html';
+            };
+        </script>
     </div>
 </body>
 </html> 
