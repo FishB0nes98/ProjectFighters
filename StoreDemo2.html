@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Monster Shop</title>
+    <link rel="icon" href="Icons/Profile/tokyo_ayane.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase config - initializes Firebase and sets globals -->
+    <script src='./firebase-config.js' type='module'></script>
+
+    <!-- Monster Tamers JS - Contains addMonsterToUserCollection -->
+    <script src="js/monster-tamers.js" type="module"></script>
+    
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .menu {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 0;
+        }
+
+        .menu-items {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 16px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #111;
+            transform: scale(1.1);
+        }
+        
+        .play-button-container {
+            display: flex;
+            justify-content: flex-start;
+            padding: 20px;
+            z-index: auto;
+            position: fixed;
+        }
+
+        .play-button {
+            background-color: #ffbb00;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 22px;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 15px 40px;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1;
+            top: 5px;
+            position: fixed;
+            left: 0px;
+        }
+
+        .play-button:hover {
+            background-color: #ff8800;
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        .currency {
+            position: fixed;
+            text-align: right;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            color: #e0e0e0;
+            right: 0;
+            top: 63px;
+        }
+        
+        .currency img {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+        
+        video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            filter: brightness(60%) contrast(120%);
+        }
+        
+        .buy-fm-container {
+            text-align: center;
+            margin: 15px;
+            z-index: 1000;
+        }
+
+        .buy-fm-button {
+            background-color: #ffbb00;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 22px;
+            font-weight: bold;
+            padding: 15px 40px;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .buy-fm-button:hover {            background-color: #ff8800;            transform: scale(1.05);            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);        }                .buy-fm-window {            display: none;            position: fixed;            z-index: 1000;            left: 50%;            top: 50%;            transform: translate(-50%, -50%);            width: 80%;            max-width: 600px;            height: auto;            overflow: auto;            background-color: rgba(30, 30, 30, 0.95);            border-radius: 15px;            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);            animation: fadeIn 0.5s;        }        .buy-fm-content {            padding: 30px;            background-image:                 linear-gradient(rgba(50, 50, 50, 0.8) 1px, transparent 1px),                linear-gradient(90deg, rgba(50, 50, 50, 0.8) 1px, transparent 1px);            background-size: 30px 30px;            border: 2px solid #444;            border-radius: 15px;        }        .close {            color: #FF69B4;            float: right;            font-size: 24px;            font-weight: bold;            cursor: pointer;            transition: all 0.3s ease;            position: absolute;            top: 10px;            right: 15px;            width: 25px;            height: 25px;            display: flex;            align-items: center;            justify-content: center;            border-radius: 50%;            background: rgba(255, 105, 180, 0.1);            z-index: 10;        }        .close:hover {            color: white;            background: rgba(255, 105, 180, 0.3);            transform: rotate(90deg);        }        .fm-options button {            display: block;            width: 100%;            margin: 15px 0;            padding: 15px;            background-color: #444;            color: #fff;            border: none;            border-radius: 8px;            font-size: 18px;            transition: background-color 0.3s, transform 0.3s;            cursor: pointer;            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);        }        .fm-options button:hover {            background-color: #555;            transform: scale(1.05);        }        @keyframes fadeIn {            from { opacity: 0; }            to { opacity: 1; }        }        .buy-fm-window h2 {            color: #fff;            text-align: center;            margin-bottom: 20px;            font-size: 24px;            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);        }
+
+        /* Monster shop specific styles */
+        .monster-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 120px 40px 40px 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .monster-card {
+            background: linear-gradient(145deg, rgba(40, 40, 40, 0.9), rgba(25, 25, 25, 0.95));
+            border: 2px solid rgba(75, 200, 75, 0.5);
+            border-radius: 15px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .monster-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(75, 200, 75, 0.3);
+            border-color: rgba(75, 200, 75, 0.8);
+        }
+
+        .monster-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(75, 200, 75, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+
+        .monster-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .monster-image {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            margin: 10px auto;
+            transition: transform 0.3s ease;
+        }
+
+        .monster-card:hover .monster-image {
+            transform: scale(1.1);
+        }
+
+        .monster-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: white;
+            margin: 10px 0 5px;
+            text-shadow: 0 0 8px rgba(75, 200, 75, 0.5);
+        }
+
+        .monster-type {
+            font-size: 0.9em;
+            color: #aaffaa;
+            margin-bottom: 10px;
+        }
+
+        .monster-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin: 10px 0;
+            width: 100%;
+        }
+
+        .stat {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 8px;
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: #dddddd;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .monster-price {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+            background: rgba(75, 200, 75, 0.1);
+            padding: 8px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(75, 200, 75, 0.3);
+        }
+
+        .monster-price img {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+
+        .monster-price span {
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .buy-monster-btn {
+            background: linear-gradient(45deg, #4BC84B, #3AA83A);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(75, 200, 75, 0.3);
+            width: 100%;
+        }
+
+        .buy-monster-btn:hover:not(:disabled) {
+            background: linear-gradient(45deg, #3AA83A, #4BC84B);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(75, 200, 75, 0.4);
+        }
+
+        .buy-monster-btn:disabled {
+            background: linear-gradient(45deg, #555, #444);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .monster-rarity {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .common {
+            background-color: #6c757d;
+        }
+
+        .uncommon {
+            background-color: #28a745;
+        }
+
+        .rare {
+            background-color: #007bff;
+        }
+
+        .epic {
+            background-color: #6f42c1;
+        }
+
+        .legendary {
+            background-color: #ffc107;
+            text-shadow: 0 0 5px #000;
+        }
+
+        .mythic {
+            background: linear-gradient(45deg, #ff6b6b, #ffa502, #70a1ff, #7bed9f);
+            text-shadow: 0 0 5px #000;
+        }
+
+        .shop-title {
+            text-align: center;
+            color: white;
+            font-size: 3em;
+            margin-top: 100px;
+            text-shadow: 0 0 15px rgba(75, 200, 75, 0.7);
+            position: relative;
+            z-index: 10;
+        }
+
+        .shop-subtitle {
+            text-align: center;
+            color: #aaffaa;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(75, 200, 75, 0.5);
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <video autoplay muted loop>
+            <source src="Event/Eventvideo.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+        <div class="menu">
+            <div class="menu-items">
+                <a href="home.html">Home</a>
+                <a href="Store.html">Store</a>
+                <a href="event.html">Event</a>
+                <a href="statistics.html">Statistics</a>
+            </div>
+        </div>
+        <div class="play-button-container">
+            <a href="Game Modes.html" class="play-button">Play</a>
+        </div>
+        <div class="buy-fm-container">
+            <button class="buy-fm-button" onclick="openBuyFMWindow()">Buy FM</button>
+        </div>
+
+        <!-- Buy FM Pop-up Window -->
+        <div id="buy-fm-window" class="buy-fm-window">
+            <div class="buy-fm-content">
+                <span class="close" onclick="closeBuyFMWindow()">&times;</span>
+                <h2>Buy FM</h2>
+                <div class="fm-options">
+                    <button onclick="purchaseFM(500)">500 <img src="res/img/fm.png" alt="FM" style="width: 15px; height: 15px; vertical-align: middle; margin-left: 5px;"></button>
+                    <button onclick="purchaseFM(1000)">1000 <img src="res/img/fm.png" alt="FM" style="width: 15px; height: 15px; vertical-align: middle; margin-left: 5px;"></button>
+                    <button onclick="purchaseFM(2000)">2000 <img src="res/img/fm.png" alt="FM" style="width: 15px; height: 15px; vertical-align: middle; margin-left: 5px;"></button>
+                    <button onclick="purchaseFM(5000)">5000 <img src="res/img/fm.png" alt="FM" style="width: 15px; height: 15px; vertical-align: middle; margin-left: 5px;"></button>
+                    <button onclick="purchaseFM(100000)">100000 <img src="res/img/fm.png" alt="FM" style="width: 15px; height: 15px; vertical-align: middle; margin-left: 5px;"></button>
+                </div>
+            </div>
+        </div>
+        <div class="currency">
+            <div>
+                <img src="res/img/cm.png" alt="CM">
+                <span id="cm-amount">0</span>
+            </div>
+            <div>
+                <img src="res/img/fm.png" alt="FM">
+                <span id="fm-amount">0</span>
+            </div>
+        </div>
+    </div>
+
+    <h1 class="shop-title">Monster Shop</h1>
+    <p class="shop-subtitle">Build your collection with powerful monsters!</p>
+    
+    <div class="monster-container" id="monster-container">
+        <!-- Monster cards will be dynamically added here -->
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+            authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+            databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "project-fighters-by-fishb0nes",
+            storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+            messagingSenderId: "867339299995",
+            appId: "1:867339299995:web:99c379940014b9c05cea3e",
+            measurementId: "G-LNEM6HR842"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+        
+        // Make Firebase available to monster-tamers.js
+        window.firebase = {
+            auth: () => auth,
+            database: () => database
+        };
+        window.firebaseDatabase = database;
+
+        // Global variables
+        window.userFM = 0;
+        window.userCM = 0;
+        window.userRef = null;
+        window.userMonsters = {};
+        window.monsterData = [];
+        window.currentUserID = null; // Store the current user ID
+
+        // Initialize user data
+        async function initializeUserData() {
+            try {
+                const user = auth.currentUser;
+                if (!user) {
+                    console.error('No user logged in');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                window.currentUserID = user.uid; // Store the user ID
+                window.userRef = ref(database, 'users/' + user.uid);
+                const snapshot = await get(window.userRef);
+                const userData = snapshot.val();
+
+                if (userData) {
+                    window.userFM = userData.FM || 0;
+                    window.userCM = userData.CM || 0;
+                    window.userMonsters = userData.monsters || {};
+                    
+                    // Update the display
+                    document.getElementById('fm-amount').textContent = window.userFM;
+                    document.getElementById('cm-amount').textContent = window.userCM;
+
+                    // Initialize monsters in the shop
+                    await loadMonsterData();
+                    displayMonsters();
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        // Auth state listener
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                window.currentUserID = user.uid; // Store the user ID
+                initializeUserData();
+                
+                // Ensure Monster Tamers knows about the user ID
+                if (window.MonsterTamers) {
+                    window.MonsterTamers.setUserID(user.uid);
+                }
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Load monster data from JSON files
+        async function loadMonsterData() {
+            try {
+                // List of monsters with JSON files in the Monsters directory
+                const monstersList = [
+                    "Pechac",
+                    "Bunburrow",
+                    "Frosetti",
+                    "Cynthraze",
+                    "Nerephal",
+                    "Cryorose",
+                    "Smouldimp",
+                    "Skarth",
+                    "Shiverion",
+                    "Nivoxis",
+                    "Hauntorch",
+                    "Furnacron",
+                    "Scorchlete",
+                    "Ratastrophe",
+                    "Puffsqueak",
+                    "Peepuff",
+                    "Nymaria",
+                    "Noctivy",
+                    "Mizuryon",
+                    "Lumillow",
+                    "Crymora",
+                    "Pyrochi",
+                    "Vexice"
+                ];
+
+                // Store monster data with defaults for monsters that don't have complete JSON files yet
+                window.monsterData = monstersList.map(name => {
+                    return {
+                        id: name.toLowerCase(),
+                        name: name,
+                        image: `Monsters/${name}.png`, // Use the existing PNG files
+                        type: determineType(name),
+                        price: determinePrice(name),
+                        stats: {
+                            hp: Math.floor(Math.random() * 50) + 60,  // Random stat between 60-110
+                            atk: Math.floor(Math.random() * 50) + 60,
+                            def: Math.floor(Math.random() * 50) + 60,
+                            speed: Math.floor(Math.random() * 50) + 60
+                        }
+                    };
+                });
+
+                // Try to load monster data from JSON files where available
+                for (const monster of window.monsterData) {
+                    try {
+                        const response = await fetch(`Monsters/${monster.name}.json`);
+                        if (response.ok) {
+                            const data = await response.json();
+                            // Merge JSON data with defaults, preferring JSON values
+                            monster.type = data.types ? data.types.join('/') : monster.type;
+                            monster.price = data.price || monster.price;
+                            monster.stats = {
+                                hp: data.stats.hp || monster.stats.hp,
+                                atk: data.stats.attack || monster.stats.atk,
+                                def: data.stats.defense || monster.stats.def,
+                                speed: data.stats.speed || monster.stats.speed
+                            };
+                            monster.description = data.description;
+                        }
+                    } catch (error) {
+                        console.log(`No JSON file found for ${monster.name}, using defaults`);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading monster data:', error);
+            }
+        }
+
+        // Helper function to determine monster type based on name
+        function determineType(name) {
+            const types = {
+                fire: ["Smouldimp", "Hauntorch", "Furnacron", "Scorchlete", "Pyrochi"],
+                water: ["Mizuryon", "Frosetti"],
+                ice: ["Cryorose", "Shiverion", "Vexice"],
+                earth: ["Bunburrow", "Pechac", "Skarth"],
+                light: ["Lumillow"],
+                dark: ["Nivoxis", "Noctivy"],
+                nature: ["Nymaria", "Peepuff", "Puffsqueak"],
+                electric: ["Cynthraze"],
+                psychic: ["Nerephal", "Crymora"],
+                poison: ["Ratastrophe"],
+                ghost: ["Hauntorch"],
+                grass: ["Cryorose"]
+            };
+
+            // Special cases for dual-type monsters
+            if (name === "Cryorose") return "Ice/Grass";
+            if (name === "Hauntorch") return "Ghost/Fire";
+            if (name === "Mizuryon") return "Water";
+            if (name === "Ratastrophe") return "Poison";
+
+            for (const [type, monsters] of Object.entries(types)) {
+                if (monsters.includes(name)) {
+                    return type.charAt(0).toUpperCase() + type.slice(1);
+                }
+            }
+            
+            // Default type based on name suffix patterns
+            if (name.endsWith("imp") || name.endsWith("torch") || name.endsWith("chi")) return "Fire";
+            if (name.endsWith("etti") || name.endsWith("ryon")) return "Water";
+            if (name.endsWith("ice") || name.endsWith("ion")) return "Ice";
+            if (name.endsWith("burrow") || name.endsWith("chac")) return "Earth";
+            if (name.endsWith("illow") || name.endsWith("ight")) return "Light";
+            if (name.endsWith("ivy") || name.endsWith("oxis")) return "Dark";
+            
+            return "Normal";
+        }
+
+        // Helper function to determine monster price based on name
+        function determinePrice(name) {
+            // Set prices based on monster stats or other criteria
+            const basePrice = 1000;
+            const nameLength = name.length;
+            
+            // Longer names generally mean more powerful monsters
+            return basePrice + (nameLength * 100);
+        }
+
+        // Display monsters in the shop
+        function displayMonsters() {
+            const container = document.getElementById('monster-container');
+            container.innerHTML = '';
+            
+            // Filter to only show the new monsters plus existing ones
+            const allowedMonsters = ["Bunburrow", "Pechac", "Cryorose", "Hauntorch", "Mizuryon", "Ratastrophe"];
+            const filteredMonsters = window.monsterData.filter(monster => 
+                allowedMonsters.includes(monster.name)
+            );
+
+            filteredMonsters.forEach(monster => {
+                // Check if the monster is already owned
+                const owned = Object.keys(window.userMonsters || {}).some(key => {
+                    const ownedMonster = window.userMonsters[key];
+                    return ownedMonster && ownedMonster.monsterId === monster.id;
+                });
+                
+                const monsterCard = document.createElement('div');
+                monsterCard.className = 'monster-card';
+                
+                // Add description tooltip if available
+                const descriptionAttr = monster.description ? 
+                    `title="${monster.description}"` : '';
+                
+                monsterCard.innerHTML = `
+                    <img class="monster-image" src="${monster.image}" alt="${monster.name}" ${descriptionAttr}>
+                    <h3 class="monster-name">${monster.name}</h3>
+                    <p class="monster-type">${monster.type} Type</p>
+                    <div class="monster-stats">
+                        <div class="stat"><span>HP:</span> <span>${monster.stats.hp}</span></div>
+                        <div class="stat"><span>ATK:</span> <span>${monster.stats.atk}</span></div>
+                        <div class="stat"><span>DEF:</span> <span>${monster.stats.def}</span></div>
+                        <div class="stat"><span>SPD:</span> <span>${monster.stats.speed}</span></div>
+                    </div>
+                    <div class="monster-price">
+                        <img src="res/img/fm.png" alt="FM">
+                        <span>${monster.price}</span>
+                    </div>
+                    <button class="buy-monster-btn" onclick="purchaseMonster('${monster.id}')" ${owned ? 'disabled' : ''}>
+                        ${owned ? 'Owned' : 'Buy Monster'}
+                    </button>
+                `;
+                
+                container.appendChild(monsterCard);
+            });
+        }
+
+        // Purchase monster function
+        window.purchaseMonster = async function(monsterId) {
+            const monster = window.monsterData.find(m => m.id === monsterId);
+            if (!monster) return;
+            
+            // Check if user already owns this monster
+            const alreadyOwned = Object.keys(window.userMonsters || {}).some(key => {
+                const ownedMonster = window.userMonsters[key];
+                return ownedMonster && ownedMonster.monsterId === monsterId;
+            });
+            
+            if (alreadyOwned) {
+                alert(`You already own a ${monster.name}!`);
+                return;
+            }
+            
+            if (window.userFM >= monster.price) {
+                const newFM = window.userFM - monster.price;
+                
+                try {
+                    // Update the user's FM first
+                    await update(window.userRef, { FM: newFM });
+                    
+                    // Then add the monster to the user's collection with a unique ID and random IVs
+                    if (window.MonsterTamers && window.MonsterTamers.addMonsterToUserCollection) {
+                        // Make sure we're passing the current user ID explicitly
+                        window.MonsterTamers.addMonsterToUserCollection(monsterId, window.currentUserID);
+                    } else {
+                        // Fallback if MonsterTamers is not available
+                        const updates = {};
+                        updates[`monsters/${Date.now()}`] = {
+                            monsterId: monsterId,
+                            dateAcquired: Date.now(),
+                            level: 5,
+                            experience: 0,
+                            uniqueId: `monster_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`,
+                            ivs: {
+                                hp: Math.floor(Math.random() * 32),
+                                attack: Math.floor(Math.random() * 32),
+                                defense: Math.floor(Math.random() * 32),
+                                specialAttack: Math.floor(Math.random() * 32),
+                                specialDefense: Math.floor(Math.random() * 32),
+                                speed: Math.floor(Math.random() * 32)
+                            }
+                        };
+                        await update(window.userRef, updates);
+                    }
+                    
+                    window.userFM = newFM;
+                    
+                    // Reload user monsters
+                    const userMonstersRef = ref(database, `users/${auth.currentUser.uid}/monsters`);
+                    const snapshot = await get(userMonstersRef);
+                    window.userMonsters = snapshot.val() || {};
+                    
+                    document.getElementById('fm-amount').textContent = newFM;
+                    
+                    // Update UI to show monster as owned
+                    displayMonsters();
+                    
+                    alert(`You have successfully purchased ${monster.name}!`);
+                } catch (error) {
+                    console.error('Error purchasing monster:', error);
+                    alert('Error purchasing monster. Please try again.');
+                }
+            } else {
+                alert(`You don't have enough FM to purchase ${monster.name}.`);
+            }
+        };
+
+        // Purchase FM function
+        window.purchaseFM = async function(amount) {
+            const newFMAmount = window.userFM + amount;
+            await update(window.userRef, { FM: newFMAmount });
+            document.getElementById('fm-amount').textContent = newFMAmount;
+            window.userFM = newFMAmount;
+            closeBuyFMWindow();
+            alert(`You have successfully purchased ${amount} FM!`);
+        };
+        
+        // Make these functions available in the global scope
+        window.openBuyFMWindow = function() {
+            document.getElementById('buy-fm-window').style.display = 'block';
+        };
+
+        window.closeBuyFMWindow = function() {
+            document.getElementById('buy-fm-window').style.display = 'none';
+        };
+    </script>
+</body>
+</html> 

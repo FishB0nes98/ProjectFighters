@@ -507,4 +507,12 @@ export const skinToBaseCharacterMap = {
     'Tokyo Mew Mew Kagome': 'Kagome',
     'Tokyo Mew Mew Lili': 'Lili',
     'Tokyo Mew Mew Cham Cham': 'Cham Cham',
+    'Monster Trainer Ayane': 'Ayane',
+    'Monster Trainer Eagle': 'Eagle',
+    'Monster Trainer FANG': 'FANG',
+    'Monster Trainer Kokoro': 'Kokoro',
+    'Monster Trainer Kotal Kahn': 'Kotal Kahn',
+    'Monster Trainer Lili': 'Lili',
+    'Monster Trainer Peacock': 'Peacock',
+    'Monster Trainer Shoma': 'Shoma',
 };

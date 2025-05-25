@@ -1,4 +1,4 @@
-export const CURRENT_PATCH = "2.5";
+export const CURRENT_PATCH = "2.6";
 
 // Helper function to calculate patch winrate
 export function calculatePatchWinrate(character) {

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonsterDex - Project Fighters</title>
+    <link rel="stylesheet" href="css/monsterdex.css">
+    <script src="firebase-config.js" type="module"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="monsterdex-container">
+        <!-- Header -->
+        <header class="monsterdex-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <button onclick="history.back()" class="back-button" title="Go Back">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <i class="fas fa-dragon header-icon"></i>
+                    <h1 class="monsterdex-title">MonsterDex</h1>
+                    <span class="version-badge">v2.5</span>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="total-monsters">0</span>
+                        <span class="stat-label">Monsters</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="total-types">0</span>
+                        <span class="stat-label">Types</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Search and Filters -->
+        <section class="search-section">
+            <div class="search-container">
+                <div class="search-bar">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="monster-search" placeholder="Search monsters by name, type, or ability..." autocomplete="off">
+                    <button class="clear-search" id="clear-search" title="Clear search">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="filters-container">
+                    <div class="filter-group">
+                        <label for="type-filter">Type:</label>
+                        <select id="type-filter">
+                            <option value="">All Types</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="sort-filter">Sort by:</label>
+                        <select id="sort-filter">
+                            <option value="id">ID (Default)</option>
+                            <option value="name">Name (A-Z)</option>
+                            <option value="name-desc">Name (Z-A)</option>
+                            <option value="type">Type</option>
+                            <option value="hp">HP (High to Low)</option>
+                            <option value="attack">Attack (High to Low)</option>
+                            <option value="speed">Speed (High to Low)</option>
+                            <option value="price">Price (High to Low)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="grid" title="Grid View">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-btn" data-view="list" title="List View">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Monsters Grid -->
+        <main class="monsters-container">
+            <div class="monsters-grid" id="monsters-grid">
+                <!-- Monster cards will be dynamically generated here -->
+            </div>
+            
+            <div class="loading-spinner" id="loading-spinner">
+                <div class="spinner"></div>
+                <p>Loading MonsterDex...</p>
+            </div>
+            
+            <div class="no-results" id="no-results" style="display: none;">
+                <i class="fas fa-search"></i>
+                <h3>No monsters found</h3>
+                <p>Try adjusting your search criteria or filters</p>
+            </div>
+        </main>
+
+        <!-- Monster Detail Modal -->
+        <div class="modal-overlay" id="monster-modal">
+            <div class="monster-detail-modal">
+                <button class="close-modal" id="close-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+                
+                <div class="modal-content">
+                    <div class="monster-header">
+                        <div class="monster-image-container">
+                            <img id="modal-monster-image" src="" alt="" class="monster-image">
+                            <div class="monster-id" id="modal-monster-id">#001</div>
+                        </div>
+                        
+                        <div class="monster-info">
+                            <h2 id="modal-monster-name">Monster Name</h2>
+                            <div class="monster-types" id="modal-monster-types"></div>
+                            <p id="modal-monster-description" class="monster-description"></p>
+                            
+                            <div class="monster-physical-stats">
+                                <div class="physical-stat">
+                                    <i class="fas fa-ruler-vertical"></i>
+                                    <span class="stat-label">Height:</span>
+                                    <span id="modal-monster-height" class="stat-value">0.0m</span>
+                                </div>
+                                <div class="physical-stat">
+                                    <i class="fas fa-weight"></i>
+                                    <span class="stat-label">Weight:</span>
+                                    <span id="modal-monster-weight" class="stat-value">0.0kg</span>
+                                </div>
+                                <div class="physical-stat">
+                                    <i class="fas fa-coins"></i>
+                                    <span class="stat-label">Price:</span>
+                                    <span id="modal-monster-price" class="stat-value">0 coins</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="monster-details">
+                        <div class="detail-section">
+                            <h3><i class="fas fa-magic"></i>Ability</h3>
+                            <div class="ability-card">
+                                <h4 id="modal-ability-name">Ability Name</h4>
+                                <p id="modal-ability-description">Ability description</p>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h3><i class="fas fa-chart-bar"></i>Base Stats</h3>
+                            <div class="stats-container">
+                                <div class="stat-bar">
+                                    <div class="stat-info">
+                                        <span class="stat-name">HP</span>
+                                        <span id="modal-hp-value" class="stat-number">0</span>
+                                    </div>
+                                    <div class="stat-bar-bg">
+                                        <div id="modal-hp-bar" class="stat-bar-fill hp"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-bar">
+                                    <div class="stat-info">
+                                        <span class="stat-name">Attack</span>
+                                        <span id="modal-attack-value" class="stat-number">0</span>
+                                    </div>
+                                    <div class="stat-bar-bg">
+                                        <div id="modal-attack-bar" class="stat-bar-fill attack"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-bar">
+                                    <div class="stat-info">
+                                        <span class="stat-name">Defense</span>
+                                        <span id="modal-defense-value" class="stat-number">0</span>
+                                    </div>
+                                    <div class="stat-bar-bg">
+                                        <div id="modal-defense-bar" class="stat-bar-fill defense"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-bar">
+                                    <div class="stat-info">
+                                        <span class="stat-name">Sp. Attack</span>
+                                        <span id="modal-sp-attack-value" class="stat-number">0</span>
+                                    </div>
+                                    <div class="stat-bar-bg">
+                                        <div id="modal-sp-attack-bar" class="stat-bar-fill sp-attack"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-bar">
+                                    <div class="stat-info">
+                                        <span class="stat-name">Sp. Defense</span>
+                                        <span id="modal-sp-defense-value" class="stat-number">0</span>
+                                    </div>
+                                    <div class="stat-bar-bg">
+                                        <div id="modal-sp-defense-bar" class="stat-bar-fill sp-defense"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-bar">
+                                    <div class="stat-info">
+                                        <span class="stat-name">Speed</span>
+                                        <span id="modal-speed-value" class="stat-number">0</span>
+                                    </div>
+                                    <div class="stat-bar-bg">
+                                        <div id="modal-speed-bar" class="stat-bar-fill speed"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="total-stats">
+                                    <span class="total-label">Total:</span>
+                                    <span id="modal-total-stats" class="total-value">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h3><i class="fas fa-fist-raised"></i>Moves</h3>
+                            <div class="moves-container" id="modal-moves-container">
+                                <!-- Moves will be dynamically generated -->
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h3><i class="fas fa-map-marker-alt"></i>Habitat</h3>
+                            <p id="modal-monster-habitat" class="habitat-text">Monster habitat</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/monsterdex.js"></script>
+</body>
+</html> 

@@ -1,0 +1,303 @@
+/* XP System Styles */
+
+/* XP Progress Bar */
+.xp-progress-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0;
+    font-family: 'Press Start 2P', monospace;
+}
+
+.xp-level-badge {
+    background: linear-gradient(45deg, #4CAF50, #66BB6A);
+    border: 2px solid #2E7D32;
+    border-radius: 8px;
+    padding: 2px 6px;
+    font-size: 10px;
+    color: white;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.7);
+    min-width: 32px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.xp-level-badge.max-level {
+    background: linear-gradient(45deg, #FFD700, #FFC107);
+    border-color: #F57F17;
+    color: #333;
+}
+
+.xp-progress-bar {
+    flex: 1;
+    height: 12px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.xp-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00E676, #4CAF50);
+    transition: width 0.8s ease-in-out;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.xp-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: xp-shine 2s infinite;
+}
+
+.xp-progress-fill.level-up {
+    animation: xp-level-up 1s ease-in-out;
+}
+
+@keyframes xp-shine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+@keyframes xp-level-up {
+    0%, 100% { background: linear-gradient(90deg, #00E676, #4CAF50); }
+    50% { background: linear-gradient(90deg, #FFD700, #FFC107); }
+}
+
+.xp-info-text {
+    font-size: 8px;
+    color: #B0B0B0;
+    min-width: 60px;
+    text-align: right;
+}
+
+/* XP Stats Display */
+.xp-stats {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 6px;
+    margin: 4px 0;
+    font-size: 9px;
+    color: #E0E0E0;
+}
+
+.xp-stat-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 2px 0;
+}
+
+.xp-stat-label {
+    color: #B0B0B0;
+}
+
+.xp-stat-value {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+/* Level Up Animation */
+.level-up-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #FFD700, #FFC107);
+    border: 3px solid #FF6F00;
+    border-radius: 15px;
+    padding: 20px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    z-index: 10000;
+    animation: level-up-popup 3s ease-in-out forwards;
+    pointer-events: none;
+}
+
+.level-up-notification h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+}
+
+.level-up-notification .monster-name {
+    color: #1976D2;
+    margin: 0 0 5px 0;
+}
+
+.level-up-notification .new-level {
+    color: #388E3C;
+    font-size: 18px;
+    margin: 5px 0;
+}
+
+@keyframes level-up-popup {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    30% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    85% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+}
+
+/* Monster Card XP Display */
+.monster-card .xp-section {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.monster-card .xp-progress-container {
+    margin: 2px 0;
+}
+
+.monster-card .xp-level-badge {
+    font-size: 8px;
+    padding: 1px 4px;
+    min-width: 24px;
+}
+
+.monster-card .xp-progress-bar {
+    height: 8px;
+}
+
+.monster-card .xp-info-text {
+    font-size: 7px;
+    min-width: 45px;
+}
+
+/* Battle UI XP Display */
+.battle-monster-info .xp-display {
+    margin-top: 4px;
+}
+
+.battle-monster-info .xp-progress-container {
+    margin: 2px 0;
+}
+
+.battle-monster-info .xp-level-badge {
+    font-size: 9px;
+    padding: 2px 5px;
+    min-width: 28px;
+}
+
+.battle-monster-info .xp-progress-bar {
+    height: 10px;
+}
+
+.battle-monster-info .xp-info-text {
+    font-size: 8px;
+    min-width: 50px;
+}
+
+/* Team Builder XP Display */
+.team-slot .xp-mini {
+    margin-top: 4px;
+}
+
+.team-slot .xp-mini .xp-progress-container {
+    margin: 1px 0;
+}
+
+.team-slot .xp-mini .xp-level-badge {
+    font-size: 7px;
+    padding: 1px 3px;
+    min-width: 20px;
+}
+
+.team-slot .xp-mini .xp-progress-bar {
+    height: 6px;
+}
+
+.team-slot .xp-mini .xp-info-text {
+    font-size: 6px;
+    min-width: 35px;
+}
+
+/* XP Gain Animation */
+.xp-gain-popup {
+    position: absolute;
+    background: linear-gradient(45deg, #4CAF50, #66BB6A);
+    border: 2px solid #2E7D32;
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: white;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.7);
+    pointer-events: none;
+    z-index: 1000;
+    animation: xp-gain-float 2s ease-out forwards;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+}
+
+@keyframes xp-gain-float {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .xp-progress-container {
+        gap: 4px;
+    }
+    
+    .xp-level-badge {
+        font-size: 8px;
+        padding: 1px 4px;
+        min-width: 24px;
+    }
+    
+    .xp-progress-bar {
+        height: 10px;
+    }
+    
+    .xp-info-text {
+        font-size: 7px;
+        min-width: 40px;
+    }
+    
+    .level-up-notification {
+        font-size: 12px;
+        padding: 15px;
+    }
+    
+    .level-up-notification h3 {
+        font-size: 14px;
+    }
+    
+    .level-up-notification .new-level {
+        font-size: 16px;
+    }
+} 

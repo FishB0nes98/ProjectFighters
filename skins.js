@@ -77,6 +77,7 @@ const skinReference = {
         { name: "Goth Elphelt", price: 2000, imagePath: "Skins/Goth Elphelt.png" }
     ],
     "Kotal Kahn": [
+        { name: "Monster Trainer Kotal Kahn", price: 2000, imagePath: "Skins/Monster Trainer Kotal Kahn.jpg" },
         { name: "Sand Soldier Kotal Kahn", price: 1000, imagePath: "Skins/Sand Soldier Kotal Kahn.png" },
         { name: "Atlantean Kotal Kahn", price: 2000, imagePath: "Skins/Atlantean Kotal Kahn.jpeg" },
         { name: "Primal Warrior Kotal Kahn", price: 1000, imagePath: "Skins/Primal Warrior Kotal Kahn.jpeg" },
@@ -91,10 +92,11 @@ const skinReference = {
         { name: "Jade Scorpion", price: 2000, imagePath: "Skins/Jade Scorpion.jpeg" },
         { name: "Voidborn Scorpion", price: 2000, imagePath: "Skins/Voidborn Scorpion.jfif" },
         { name: "Primal Warrior Scorpion", price: 1000, imagePath: "Skins/Primal Warrior Scorpion.jpeg" },
-        { name: "Deadpool Scorpion", price: "UNAVAILABLE", imagePath: "Skins/Deadpool Scorpion.png" },
+        { name: "Deadpool Scorpion", price: "UNAVAILABLE", imagePath: "Skins/Deadpool Scorpion.png", collab: "Collab" },
         { name: "Infernal Scorpion", price: 2000, imagePath: "Skins/Infernal Scorpion.png" }
     ],
     Peacock: [
+        { name: "Monster Trainer Peacock", price: 2000, imagePath: "Skins/Monster Trainer Peacock.jpg" },
         { name: "Easter Bunny Peacock", price: "UNAVAILABLE", imagePath: "Skins/Easter Bunny Peacock.jpg" },
         { name: "Gangster Peacock", price: 1000, imagePath: "Skins/Gangster Peacock.jfif" },
         { name: "Voidborn Peacock", price: 2000, imagePath: "Skins/Voidborn Peacock.jfif" },
@@ -125,7 +127,7 @@ const skinReference = {
         { name: "Demon Hunter Ibuki", price: 1000, imagePath: "Skins/Demon Hunter Ibuki.png" },
         { name: "Professional Athlete Ibuki", price: 1000, imagePath: "Skins/Professional Athlete Ibuki.png" },
         { name: "Infernal Ibuki", price: 2000, imagePath: "Skins/Infernal Ibuki.png" },
-        { name: "Lady Deadpool Ibuki", price: "UNAVAILABLE", imagePath: "Skins/Lady Deadpool Ibuki.jpeg" }
+        { name: "Lady Deadpool Ibuki", price: "UNAVAILABLE", imagePath: "Skins/Lady Deadpool Ibuki.jpeg", collab: "Collab" }
     ],
     "R.Mika": [
         { name: "Easter Bunny R Mika", price: "UNAVAILABLE", imagePath: "Skins/Easter Bunny R Mika.jpg" },
@@ -149,7 +151,7 @@ const skinReference = {
         { name: "Battleborn Yugo", price: 2000, imagePath: "Skins/Battleborn Yugo.jpeg" },
         { name: "Steamforged Yugo", price: 1000, imagePath: "Skins/Steamforged Yugo.jpeg" },
         { name: "Jade Yugo", price: 2000, imagePath: "Skins/Jade Yugo.jpeg" },
-        { name: "Wolverine Yugo", price: "UNAVAILABLE", imagePath: "Skins/Wolverine Yugo.jpeg" },
+        { name: "Wolverine Yugo", price: "UNAVAILABLE", imagePath: "Skins/Wolverine Yugo.jpeg", collab: "Collab" },
         { name: "Arctic Beast Yugo", price: 1000, imagePath: "Skins/Arctic Beast Yugo.png" },
         { name: "Cyber Predator Yugo", price: 2000, imagePath: "Skins/Cyber Predator Yugo.png" },
         { name: "Street Fighter Yugo", price: 1000, imagePath: "Skins/Street Fighter Yugo.png" }
@@ -191,6 +193,7 @@ const skinReference = {
         { name: "Farmer Nina", price: 1000, imagePath: "Skins/Farmer Nina.png" }
     ],
     Ayane: [
+        { name: "Monster Trainer Ayane", price: 2000, imagePath: "Skins/Monster Trainer Ayane.jfif" },
         { name: "Tokyo Mew Mew Ayane", price: 5000, imagePath: "Skins/Tokyo Mew Mew Ayane.png" },
         { name: "Bunny Ayane", price: "UNAVAILABLE", imagePath: "Skins/Bunny Ayane.jpg" },
         { name: "Battleborn Ayane", price: 2000, imagePath: "Skins/Battleborn Ayane.jpeg" },
@@ -208,6 +211,7 @@ const skinReference = {
         { name: "Professional Footballer Siegfried", price: 1000, imagePath: "Skins/Professional Footballer Siegfried.png" }
     ],
     Shoma: [
+        { name: "Monster Trainer Shoma", price: 2000, imagePath: "Skins/Monster Trainer Shoma.jpg" },
         { name: "Sand Soldier Shoma", price: 2000, imagePath: "Skins/Sand Soldier Shoma.jpg" },
         { name: "Skater Shoma", price: 1000, imagePath: "Skins/Skater Shoma.jpg" },
         { name: "Farmer Shoma", price: 1000, imagePath: "Skins/Farmer Shoma.jpeg" },
@@ -236,12 +240,14 @@ const skinReference = {
         { name: "Chris T", price: 1000, imagePath: "Skins/Chris T.png" }
     ],
     Kokoro: [
+        { name: "Monster Trainer Kokoro", price: 2000, imagePath: "Skins/Monster Trainer Kokoro.jpg" },
         { name: "Lunar Festival Kokoro", price: "UNAVAILABLE", imagePath: "Skins/Lunar Festival Kokoro.jpg" },
         { name: "Pajama Party Kokoro", price: 1000, imagePath: "Skins/Pajama Party Kokoro.jpeg" },
         { name: "Schoolgirl Kokoro", price: 1000, imagePath: "Skins/Schoolgirl Kokoro.png" },
            
     ],
     Eagle: [
+        { name: "Monster Trainer Eagle", price: 2000, imagePath: "Skins/Monster Trainer Eagle.jfif" },
         { name: "Bandito Eagle", price: 1000, imagePath: "Skins/Bandito Eagle.jpg" },
         { name: "Battleborn Eagle", price: 2000, imagePath: "Skins/Battleborn Eagle.jpeg" },
         { name: "High Elf Eagle", price: 2000, imagePath: "Skins/High Elf Eagle.png" },
@@ -289,10 +295,12 @@ const skinReference = {
         { name: "Mythic Sentinel Alice", price: 1000, imagePath: "Skins/Mythic Sentinel Alice.jpeg" }
     ],
     FANG: [
+        { name: "Monster Trainer FANG", price: 2000, imagePath: "Skins/Monster Trainer FANG.jfif" },
         { name: "Farmer FANG", price: 3000, imagePath: "Skins/Farmer FANG.jpeg" },
         { name: "Voidborn FANG", price: 2000, imagePath: "Skins/Voidborn FANG.jpeg" }
     ],
     Lili: [
+        { name: "Monster Trainer Lili", price: 2000, imagePath: "Skins/Monster Trainer Lili.jpg" },
         { name: "Tokyo Mew Mew Lili", price: 2500, imagePath: "Skins/Tokyo Mew Mew Lili.png" },
         { name: "Celestial Protector Lili", price: 2000, imagePath: "Skins/Celestial Protector Lili.jpeg" },
         { name: "Lunar Festival Lili", price: "UNAVAILABLE", imagePath: "Skins/Lunar Festival Lili.jpg" },

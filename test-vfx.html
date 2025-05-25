@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VFX System Test</title>
+    <link rel="stylesheet" href="css/battle-vfx.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a2e;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        
+        .battle-screen {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            background: linear-gradient(45deg, #16213e, #0f4c75);
+            border: 2px solid #3282b8;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .monster-sprite {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: #ff6b6b;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border: 3px solid #fff;
+        }
+        
+        .player-sprite {
+            bottom: 50px;
+            left: 100px;
+        }
+        
+        .enemy-sprite {
+            top: 50px;
+            right: 100px;
+            background: #4ecdc4;
+        }
+        
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            background: #3282b8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #2171a8;
+        }
+    </style>
+</head>
+<body>
+    <h1>VFX System Test</h1>
+    <div class="battle-screen">
+        <div class="monster-sprite player-sprite">🐲</div>
+        <div class="monster-sprite enemy-sprite">🦅</div>
+    </div>
+    
+    <div class="controls">
+        <button onclick="testWaterEffect()">Test Water Effect</button>
+        <button onclick="testFireEffect()">Test Fire Effect</button>
+        <button onclick="testElectricEffect()">Test Electric Effect</button>
+        <button onclick="testGrassEffect()">Test Grass Effect</button>
+        <button onclick="testIceEffect()">Test Ice Effect</button>
+        <button onclick="testRockEffect()">Test Rock Effect</button>
+        <button onclick="testFairyEffect()">Test Fairy Effect</button>
+        <button onclick="testCustomMove()">Test Custom Move</button>
+    </div>
+
+    <script type="module">
+        import { battleVFX } from './Monsters/animations/battle-vfx.js';
+        
+        // Initialize VFX system
+        battleVFX.initialize();
+        
+        // Make functions available globally
+        window.testWaterEffect = () => {
+            const userElement = document.querySelector('.player-sprite');
+            const targetElement = document.querySelector('.enemy-sprite');
+            battleVFX.createWaterEffect(userElement.getBoundingClientRect(), targetElement.getBoundingClientRect());
+        };
+        
+        window.testFireEffect = () => {
+            const userElement = document.querySelector('.player-sprite');
+            const targetElement = document.querySelector('.enemy-sprite');
+            battleVFX.createFireEffect(userElement.getBoundingClientRect(), targetElement.getBoundingClientRect());
+        };
+        
+        window.testElectricEffect = () => {
+            const userElement = document.querySelector('.player-sprite');
+            const targetElement = document.querySelector('.enemy-sprite');
+            battleVFX.createElectricEffect(userElement.getBoundingClientRect(), targetElement.getBoundingClientRect());
+        };
+        
+        window.testGrassEffect = () => {
+            const userElement = document.querySelector('.player-sprite');
+            const targetElement = document.querySelector('.enemy-sprite');
+            battleVFX.createGrassEffect(userElement.getBoundingClientRect(), targetElement.getBoundingClientRect());
+        };
+        
+        window.testIceEffect = () => {
+            const userElement = document.querySelector('.player-sprite');
+            const targetElement = document.querySelector('.enemy-sprite');
+            battleVFX.createIceEffect(userElement.getBoundingClientRect(), targetElement.getBoundingClientRect());
+        };
+        
+        window.testRockEffect = () => {
+            const userElement = document.querySelector('.player-sprite');
+            const targetElement = document.querySelector('.enemy-sprite');
+            battleVFX.createRockEffect(userElement.getBoundingClientRect(), targetElement.getBoundingClientRect());
+        };
+        
+        window.testFairyEffect = () => {
+            const userElement = document.querySelector('.player-sprite');
+            const targetElement = document.querySelector('.enemy-sprite');
+            battleVFX.createFairyEffect(userElement.getBoundingClientRect(), targetElement.getBoundingClientRect());
+        };
+        
+        window.testCustomMove = () => {
+            const userElement = document.querySelector('.player-sprite');
+            const targetElement = document.querySelector('.enemy-sprite');
+            
+            // Test custom move with emoji conversion
+            const vfxConfig = {
+                type: 'water_blast',
+                color: '#6890F0',
+                projectile: '🌊', // This should be converted to 'water'
+                particles: ['💧', '🌊', '💦'], // These should be converted to 'water'
+                impactEffect: 'water_explosion',
+                screenShake: 'strong'
+            };
+            
+            battleVFX.playCustomMoveVFX(vfxConfig, userElement.getBoundingClientRect(), targetElement.getBoundingClientRect());
+        };
+        
+        // Test damage numbers
+        setTimeout(() => {
+            const targetElement = document.querySelector('.enemy-sprite');
+            battleVFX.createDamageNumbers(42, targetElement, false, false);
+        }, 2000);
+        
+        setTimeout(() => {
+            const targetElement = document.querySelector('.enemy-sprite');
+            battleVFX.createDamageNumbers(89, targetElement, true, false);
+        }, 4000);
+    </script>
+</body>
+</html> 

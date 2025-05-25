@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Project Fighters</title>
-    <link rel="icon" href="Icons/Profile/tokyo_ayane.png" type="image/png">
+    <link rel="icon" href="Icons/Profile/monster_eagle.png" type="image/png">
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
@@ -63,13 +63,7 @@
                     <span class="nav-text">Build</span>
                     <div class="nav-indicator"></div>
                 </a>
-                <a href="Team Builder.html" class="nav-link">
-                    <div class="nav-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <span class="nav-text">Team Builder</span>
-                    <div class="nav-indicator"></div>
-                </a>
+
                 <a href="statistics.html" class="nav-link">
                     <div class="nav-icon">
                         <i class="fas fa-chart-bar"></i>
@@ -99,10 +93,18 @@
         <!-- Side Buttons -->
         <div class="side-buttons">
             <!-- Changelog Button -->
-            <div class="side-button" onclick="window.location.href='Changelog2.5.html'">
-                <img src="Default Splash/Kotal Kahn.png" alt="Changelog">
+            <div class="side-button" onclick="window.location.href='Changelog2.6.html'">
+                <img src="Default Splash/Kagome.png" alt="Changelog">
                 <div class="button-content">
                     <h3 class="button-title">Changelog</h3>
+                </div>
+            </div>
+            <!-- Monster Tamers Button -->
+            <div class="side-button" onclick="window.location.href='monster-fighters.html'">
+                <img src="Monsters/Bunburrow.png" alt="Monster Tamers">
+                <div class="button-content">
+                    <h3 class="button-title">Monster Tamers</h3>
+                    <div class="button-badge">DEMO</div>
                 </div>
             </div>
             <!-- Quests Button -->
@@ -121,7 +123,7 @@
             </div>
             <!-- Battlepass Button -->
             <div class="side-button" onclick="window.location.href='battlepass.html'">
-                <img src="Event/Tokyo Mew Mew Event 2.png" alt="Battlepass">
+                <img src="Event/Monster Trainers Event.webp" alt="Battlepass">
                 <div class="button-content">
                     <h3 class="button-title">Battlepass</h3>
                 </div>
@@ -338,8 +340,8 @@
             <div class="quest-modal-content">
                 <div class="quest-header">
                     <h2>
-                        <i class="fas fa-ribbon"></i> <!-- Updated Icon -->
-                        Tokyo Mew Mew Quests <!-- Updated Title -->
+                        <i class="fas fa-dragon"></i> <!-- Updated Icon -->
+                        Monster Trainer Quests <!-- Updated Title -->
                     </h2>
                     <div class="quest-tabs">
                         <button class="quest-tab active" onclick="switchQuestTab('daily')">Daily</button>
@@ -355,7 +357,7 @@
             </div>
         </div>
 
-        <!-- Tokyo Mew Mew Song Popup -->
+        <!-- Monster Trainer Song Popup -->
         <div id="song-popup" class="song-popup">
             <div class="song-popup-content">
                 <div class="song-popup-header">
@@ -366,11 +368,11 @@
                 </div>
                 <div class="song-popup-body">
                     <div class="song-image">
-                        <img src="Event/Tokyo Mew Mew Event 2.png" alt="Tokyo Mew Mew">
+                        <img src="Event/Monster Trainer Event.png" alt="Monster Trainer">
                     </div>
                     <div class="song-info">
-                        <h3>Team Up</h3>
-                        <p>Tokyo Mew Mew Event Theme</p>
+                        <h3>Monster Trainer</h3>
+                        <p>Monster Trainer Event Theme</p>
                         <button class="song-play-btn" onclick="playSongPreview()">
                             <i class="fas fa-play"></i> Preview
                         </button>
@@ -397,7 +399,7 @@
                             <i class="fas fa-store"></i>
                             Quest Points Store
                         </h2>
-                        <p class="qp-store-subtitle">Exchange your hard-earned Quest Points for Tokyo Mew Mew rewards</p>
+                        <p class="qp-store-subtitle">Exchange your hard-earned Quest Points for Monster Trainer rewards</p>
                     </div>
                     <div class="qp-store-controls">
                         <div class="qp-store-balance">
@@ -411,13 +413,49 @@
                 </div>
                 
                 <div class="qp-store-grid">
-                    <!-- Tokyo Ayane Icon -->
-                    <div class="qp-store-item" data-item-name="tokyo_ayane" data-item-type="icon">
+                    <!-- Monster Trainer Eagle Skin -->
+                    <div class="qp-store-item" data-item-name="monster_eagle_skin" data-item-type="skin">
                         <div class="item-preview">
-                            <img src="Icons/Profile/tokyo_ayane.png" alt="Tokyo Ayane Icon">
+                            <img src="Skins/Monster Trainer Eagle.jfif" alt="Monster Trainer Eagle Skin">
                         </div>
                         <div class="item-details">
-                            <h3 class="item-name">Tokyo Ayane Icon</h3>
+                            <h3 class="item-name">Monster Trainer Eagle Skin</h3>
+                            <div class="item-price">
+                                <img src="res/img/qp.png" alt="QP">
+                                <span>5500</span>
+                            </div>
+                            <button class="purchase-btn" onclick="purchaseItem(this)">
+                                <span>Purchase</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Infernos Rise Song -->
+                    <div class="qp-store-item" data-item-name="Infernos Rise" data-item-type="song">
+                        <div class="item-preview">
+                            <img src="Loading Screen/Monster Trainer Shoma.png" alt="Infernos Rise Song">
+                        </div>
+                        <div class="item-details">
+                            <h3 class="item-name">Infernos Rise (Song)</h3>
+                            <div class="item-price">
+                                <img src="res/img/qp.png" alt="QP">
+                                <span>800</span>
+                            </div>
+                            <button class="purchase-btn" onclick="purchaseItem(this)">
+                                <span>Purchase</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Trainer Eagle Icon -->
+                    <div class="qp-store-item" data-item-name="trainer_eagle" data-item-type="icon">
+                        <div class="item-preview">
+                            <img src="Icons/Profile/trainer_eagle.webp" alt="Trainer Eagle Icon">
+                        </div>
+                        <div class="item-details">
+                            <h3 class="item-name">Trainer Eagle Icon</h3>
                             <div class="item-price">
                                 <img src="res/img/qp.png" alt="QP">
                                 <span>1500</span>
@@ -429,85 +467,15 @@
                         </div>
                     </div>
 
-                    <!-- Tokyo Lili Icon -->
-                    <div class="qp-store-item" data-item-name="tokyo_lili" data-item-type="icon">
-                        <div class="item-preview">
-                            <img src="Icons/Profile/tokyo_lili.png" alt="Tokyo Lili Icon">
-                        </div>
-                        <div class="item-details">
-                            <h3 class="item-name">Tokyo Lili Icon</h3>
-                            <div class="item-price">
-                                <img src="res/img/qp.png" alt="QP">
-                                <span>1500</span>
-                            </div>
-                            <button class="purchase-btn" onclick="purchaseItem(this)">
-                                <span>Purchase</span>
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
+                    <!-- Monster Trainer Kokoro Icon - REMOVED -->
 
-                    <!-- Tokyo Julia Icon -->
-                    <div class="qp-store-item" data-item-name="tokyo_julia" data-item-type="icon">
+                    <!-- Youngster Title -->
+                    <div class="qp-store-item" data-item-name="youngster" data-item-type="title">
                         <div class="item-preview">
-                            <img src="Icons/Profile/tokyo_julia.png" alt="Tokyo Julia Icon">
+                            <img src="titles/titleimage.jpeg" alt="Youngster Title">
                         </div>
                         <div class="item-details">
-                            <h3 class="item-name">Tokyo Julia Icon</h3>
-                            <div class="item-price">
-                                <img src="res/img/qp.png" alt="QP">
-                                <span>1500</span>
-                            </div>
-                            <button class="purchase-btn" onclick="purchaseItem(this)">
-                                <span>Purchase</span>
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Tokyo Cham Cham Icon -->
-                    <div class="qp-store-item" data-item-name="tokyo_cham_cham" data-item-type="icon">
-                        <div class="item-preview">
-                            <img src="Icons/Profile/tokyo_cham_cham.png" alt="Tokyo Cham Cham Icon">
-                        </div>
-                        <div class="item-details">
-                            <h3 class="item-name">Tokyo Cham Cham Icon</h3>
-                            <div class="item-price">
-                                <img src="res/img/qp.png" alt="QP">
-                                <span>1500</span>
-                            </div>
-                            <button class="purchase-btn" onclick="purchaseItem(this)">
-                                <span>Purchase</span>
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Tokyo Kagome Icon -->
-                    <div class="qp-store-item" data-item-name="tokyo_kagome" data-item-type="icon">
-                        <div class="item-preview">
-                            <img src="Icons/Profile/tokyo_kagome.png" alt="Tokyo Kagome Icon">
-                        </div>
-                        <div class="item-details">
-                            <h3 class="item-name">Tokyo Kagome Icon</h3>
-                            <div class="item-price">
-                                <img src="res/img/qp.png" alt="QP">
-                                <span>1500</span>
-                            </div>
-                            <button class="purchase-btn" onclick="purchaseItem(this)">
-                                <span>Purchase</span>
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Friend of the Mews Title -->
-                    <div class="qp-store-item" data-item-name="friend_of_the_mews" data-item-type="title">
-                        <div class="item-preview">
-                            <img src="titles/titleimage.jpeg" alt="Friend of the Mews Title">
-                        </div>
-                        <div class="item-details">
-                            <h3 class="item-name">Friend of the Mews</h3>
+                            <h3 class="item-name">Youngster Title</h3>
                             <div class="item-price">
                                 <img src="res/img/qp.png" alt="QP">
                                 <span>550</span>
@@ -518,8 +486,6 @@
                             </button>
                         </div>
                     </div>
-
-
 
                     <!-- Repeatable CM (Existing) -->
                     <div class="qp-store-item" data-item-name="cm_reward" data-item-type="cm" data-repeatable="true">
@@ -542,8 +508,6 @@
                             </button>
                         </div>
                     </div>
-
-
 
                     <!-- Fight Money (Existing and now also new FM item) -->
                     <div class="qp-store-item" data-item-name="fm_reward_250" data-item-type="fm"> <!-- Ensure unique data-item-name if another FM item exists -->
@@ -603,6 +567,8 @@
                 </div>
             </div>
         </div>
+
+        <!-- Monster decoration elements removed -->
 
         <style>
             /* QP Store Styles */
@@ -1254,9 +1220,11 @@
                 opacity: 1;
             }
             
-            .quest-reward[data-type="skin"][data-skin-name="Battleborn Talim"]:hover::after {
-                background-image: url('Loading Screen/Battleborn Talim.png');
-                background-color: #1a1a2e;
+            /* Add a special animation for the play button */
+            @keyframes glowing {
+                0% { box-shadow: 0 0 5px #e63e32; }
+                50% { box-shadow: 0 0 20px #e63e32, 0 0 30px #a71d12; }
+                100% { box-shadow: 0 0 5px #e63e32; }
             }
             
             /* Fallback for any skin that might not have an image */
@@ -1267,9 +1235,8 @@
                 background-position: center 30%;
             }
 
-            /* Additional Tokyo Mew Mew styles */
-            /* Cherry blossom animation */
-            @keyframes falling {
+            /* Monster animation */
+            @keyframes floating {
                 0% {
                     transform: translateY(-5vh) rotate(0deg);
                     opacity: 0.8;
@@ -1280,12 +1247,12 @@
                 }
             }
             
-            .cherry-blossom {
+            .monster-element {
                 position: fixed;
                 z-index: 99;
-                color: #ff69b4;
+                color: #e63e32;
                 pointer-events: none;
-                animation: falling linear infinite;
+                animation: floating linear infinite;
             }
             
             /* Event Banner */
@@ -1298,9 +1265,9 @@
                 width: 1000px;
                 z-index: 5;
                 border-radius: 16px;
-                box-shadow: 0 8px 32px rgba(255, 20, 147, 0.4);
+                box-shadow: 0 8px 32px rgba(230, 62, 50, 0.4);
                 overflow: hidden;
-                border: 2px solid #ff69b4;
+                border: 2px solid #e63e32;
             }
             
             .event-banner img {
@@ -1311,7 +1278,7 @@
             
             /* Special QP Store Styles for Tokyo Mew Mew */
             .qp-store-header {
-                background-image: url('Event/tm_store_header.png');
+                background-image: url('Event/monster_trainer_store_header.png');
                 background-size: cover;
                 background-position: center;
             }
@@ -1322,7 +1289,7 @@
             
             /* Style the quest window header for Tokyo Mew Mew */
             .quest-header {
-                background-image: url('Event/tm_quest_header.png');
+                background-image: url('Event/monster_trainer_quest_header.png');
                 background-size: cover;
                 background-position: center;
             }
@@ -1518,6 +1485,26 @@
                     max-width: 80%;
                 }
             }
+
+            /* Add styles for the button badge */
+            .button-badge {
+                position: absolute;
+                top: -20px;
+                right: 10px;
+                background: linear-gradient(135deg, #ff69b4, #9370db);
+                color: white;
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 0.8em;
+                font-weight: bold;
+                text-transform: uppercase;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                z-index: 2;
+            }
+
+            .side-button {
+                position: relative;
+            }
         </style>
 
         <script type="module">
@@ -1655,6 +1642,8 @@
                             isOwned = true;
                         } else if (itemType === 'character' && userData.characters && userData.characters[itemName]) {
                             isOwned = true;
+                        } else if (itemType === 'song' && userData.Songs && userData.Songs[itemName]) {
+                            isOwned = true;
                         }
                         // Add checks for other non-repeatable types like 'fm' if needed
                         // else if (itemType === 'fm' && some_condition_for_fm_ownership) {
@@ -1707,6 +1696,9 @@
                             break;
                         case 'cm':
                             updates['CM'] = (userData.CM || 0) + 1000; // Awarding 1000 CM as per HTML
+                            break;
+                        case 'song': // Added case for song purchases
+                            updates[`Songs/${itemName}`] = 1;
                             break;
                         default:
                             console.error('Unknown item type for purchase:', itemType);
@@ -2305,8 +2297,8 @@
                 // Update header text
                 const header = document.querySelector('.quest-header h2');
                 header.innerHTML = `
-                    <i class="fas fa-ribbon"></i> <!-- Updated Icon -->
-                    Tokyo Mew Mew Quests <!-- Updated Title -->
+                    <i class="fas fa-dragon"></i> <!-- Updated Monster Tamer Icon -->
+                    Monster Trainer Quests <!-- Updated Title -->
                 `;
 
                 // Load quests for the selected tab
@@ -2751,33 +2743,11 @@
                 createCherryBlossoms();
             }
 
-            function createCherryBlossoms() {
-                const container = document.getElementById('cherry-blossoms-container');
-                const blossomCount = 20;
-                const blossomTypes = ['❀', '✿', '❁', '✾'];
-                
-                for (let i = 0; i < blossomCount; i++) {
-                    const blossom = document.createElement('div');
-                    blossom.className = 'cherry-blossom';
-                    
-                    // Random blossom type
-                    const randomType = blossomTypes[Math.floor(Math.random() * blossomTypes.length)];
-                    blossom.textContent = randomType;
-                    
-                    // Random positioning and animation
-                    const left = Math.random() * 100;
-                    const size = Math.random() * 15 + 10;
-                    const duration = Math.random() * 10 + 8;
-                    const delay = Math.random() * 15;
-                    
-                    blossom.style.left = `${left}vw`;
-                    blossom.style.fontSize = `${size}px`;
-                    blossom.style.animationDuration = `${duration}s`;
-                    blossom.style.animationDelay = `${delay}s`;
-                    
-                    container.appendChild(blossom);
-                }
-            }
+            
+            // Monster elements function has been removed as requested
+function createMonsterElements() {
+    // Function intentionally empty - monster animation removed as requested
+}
 
             // Update the claimQuest function to handle quest rewards
             window.claimQuest = async function(questId) {
@@ -2991,6 +2961,11 @@
                 sessionStorage.setItem('openMusicPlayer', 'true');
                 window.location.href = 'Songs.html';
             };
+                        // Call this after the document is loaded
+            document.addEventListener('DOMContentLoaded', () => {
+                // createMonsterElements(); - removed as requested
+                // rest of your existing code
+            });
         </script>
     </div>
 </body>

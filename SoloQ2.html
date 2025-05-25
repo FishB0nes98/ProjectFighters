@@ -256,7 +256,7 @@
             overflow: hidden;
             position: relative; /* Needed for overlay */
             border-radius: 8px; /* Optional: rounds corners */
-            background-image: url('Event/Tokyo Mew Mew Event 2.png');
+            background-image: url('Event/Monster Trainer Event Group.png');
             background-size: cover;
             background-position: center;
             z-index: 0; /* Ensure it's behind content */
@@ -1181,25 +1181,7 @@
             margin-right: 10px;
         }
 
-        /* Tokyo Mew Mew Transition Animation Styles */
-        .mew-mew-transition {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(255, 105, 180, 0.2);
-            z-index: 9999;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        .mew-mew-transition.active {
-            display: flex;
-            animation: bg-fade 3s forwards;
-        }
+        /* Transition Animation Styles */
 
         @keyframes bg-fade {
             0% { background-color: rgba(255, 105, 180, 0.2); }
@@ -1250,7 +1232,7 @@
         .mew-logo {
             width: 300px;
             height: 300px;
-            background-image: url('Event/Tokyo Mew Mew Logo.png');
+            background-image: url('res/img/match_starting.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -1301,6 +1283,32 @@
             85% { opacity: 0.9; }
             100% { opacity: 0; }
         }
+
+        /* Match Transition Animation Styles */
+        .match-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(255, 105, 180, 0.2);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .match-transition.active {
+            display: flex;
+            animation: bg-fade 3s forwards;
+        }
+
+        @keyframes bg-fade {
+            0% { background-color: rgba(255, 105, 180, 0.2); }
+            50% { background-color: rgba(255, 105, 180, 0.6); }
+            100% { background-color: rgba(255, 255, 255, 1); }
+        }
     </style>
 </head>
 <body>
@@ -1311,8 +1319,8 @@
         Your browser does not support the audio element.
     </audio>
 
-    <!-- Tokyo Mew Mew Transition -->
-    <div class="mew-mew-transition" id="mewMewTransition">
+    <!-- Match Starting Transition -->
+    <div class="match-transition" id="matchTransition">
         <div class="sparkle-container" id="sparkleContainer"></div>
         <div class="ring"></div>
         <div class="mew-logo"></div>
@@ -2702,8 +2710,8 @@
                     const queueRef = ref(database, `Queue/${queueId}`);
                     await set(queueRef, gameInfo);
 
-                    // Play Tokyo Mew Mew transition animation
-                    playMewMewTransition(queueId);
+                    // Play match transition animation
+                    playMatchTransition(queueId);
 
                 } catch (error) {
                     console.error('Error starting game:', error);
@@ -3369,6 +3377,41 @@
         
         // Hide the modal
         document.getElementById('roleSelectModal').style.display = 'none';
+
+        // Match Starting Transition Animation
+        function playMatchTransition(queueId) {
+            const transition = document.getElementById('matchTransition');
+            const sparkleContainer = document.getElementById('sparkleContainer');
+            
+            // Create match starting sound
+            const transformSound = new Audio('res/sfx/match_ready.mp3');
+            transformSound.volume = audio.volume; // Match current volume
+            transformSound.play().catch(err => console.log('Could not play match sound:', err));
+            
+            // Activate transition
+            transition.classList.add('active');
+            
+            // Generate sparkles
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    createSparkle(sparkleContainer);
+                }, i * 40);
+            }
+            
+            // Generate hearts
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    createHeart(sparkleContainer);
+                }, 500 + i * 100);
+            }
+            
+            // Redirect after animation completes
+            setTimeout(() => {
+                // Store queue ID in sessionStorage for Game.html to access
+                sessionStorage.setItem('currentQueueId', queueId);
+                window.location.href = 'Game.html';
+            }, 3000);
+        }
     </script>
 </body>
 </html> 

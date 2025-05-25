@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beginner Trainers - Monster Battle System</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .currency-display {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .currency-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .trainers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .trainer-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .trainer-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .trainer-card.defeated {
+            opacity: 0.6;
+            background: rgba(100, 100, 100, 0.15);
+        }
+
+        .trainer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .trainer-name {
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+
+        .difficulty-badge {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .trainer-description {
+            margin-bottom: 15px;
+            line-height: 1.4;
+            opacity: 0.9;
+        }
+
+        .monsters-list {
+            margin-bottom: 15px;
+        }
+
+        .monster-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .monster-name {
+            font-weight: bold;
+            text-transform: capitalize;
+        }
+
+        .monster-level {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.9em;
+        }
+
+        .rewards-info {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #ffd700;
+            margin-bottom: 15px;
+        }
+
+        .battle-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .battle-btn:hover:not(:disabled) {
+            background: linear-gradient(45deg, #45a049, #4CAF50);
+            transform: translateY(-2px);
+        }
+
+        .battle-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .test-btn {
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .test-btn:hover {
+            background: linear-gradient(45deg, #673ab7, #9c27b0);
+        }
+
+        .results {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .reward-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 15px;
+            border: 3px solid #ffd700;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            text-align: center;
+            min-width: 300px;
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+        }
+
+        .close-popup {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Beginner Trainers</h1>
+        <p class="subtitle">Perfect opponents for new players in the daily login monster battle game!</p>
+        
+        <div class="currency-display">
+            <div class="currency-item">
+                <span>💰</span>
+                <span id="cm-amount">0</span>
+                <span>CM</span>
+            </div>
+            <div class="currency-item">
+                <span>💎</span>
+                <span id="fm-amount">0</span>
+                <span>FM</span>
+            </div>
+            <div class="currency-item">
+                <span>🍬</span>
+                <span id="xp-snacks">0</span>
+                <span>XP Snacks</span>
+            </div>
+        </div>
+
+        <div class="trainers-grid" id="trainers-grid">
+            <!-- Trainers will be loaded here -->
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Test & Demo Functions</h3>
+            <button class="test-btn" onclick="loadTrainers()">🔄 Reload Trainers</button>
+            <button class="test-btn" onclick="testRewards()">🎲 Test Reward System</button>
+            <button class="test-btn" onclick="simulateRandomBattle()">⚔️ Simulate Random Battle</button>
+            <button class="test-btn" onclick="resetDailyProgress()">🔄 Reset Daily Progress</button>
+            
+            <div class="results" id="test-results"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeTrainers, getBeginnerTrainers, getTrainer } from './Monsters/trainers.js';
+        import { initializeTrainerBattleSystem, testTrainerRewards, TrainerBattleDemo } from './Monsters/trainer_battle_demo.js';
+        import { trainerRewardSystem } from './Monsters/trainer_rewards.js';
+
+        let battleDemo;
+        let defeatedToday = new Set(); // Simulate daily defeats for demo
+
+        // Initialize the system
+        async function init() {
+            try {
+                initializeTrainers();
+                battleDemo = initializeTrainerBattleSystem();
+                loadTrainers();
+                updateCurrencyDisplay();
+                
+                // Make functions globally available
+                window.loadTrainers = loadTrainers;
+                window.testRewards = testRewards;
+                window.simulateRandomBattle = simulateRandomBattle;
+                window.resetDailyProgress = resetDailyProgress;
+                window.battleTrainer = battleTrainer;
+                
+                console.log('✅ Beginner Trainer System loaded successfully!');
+            } catch (error) {
+                console.error('❌ Error initializing system:', error);
+                document.getElementById('test-results').textContent = `Error: ${error.message}`;
+            }
+        }
+
+        function loadTrainers() {
+            const grid = document.getElementById('trainers-grid');
+            const trainers = getBeginnerTrainers();
+            
+            grid.innerHTML = '';
+            
+            trainers.forEach((trainer, index) => {
+                const difficulty = index + 1;
+                const isDefeated = defeatedToday.has(trainer.id);
+                
+                const card = document.createElement('div');
+                card.className = `trainer-card ${isDefeated ? 'defeated' : ''}`;
+                
+                const avgLevel = Math.round(
+                    trainer.monsters.reduce((sum, m) => sum + m.level, 0) / trainer.monsters.length
+                );
+                
+                card.innerHTML = `
+                    <div class="trainer-header">
+                        <div class="trainer-name">${trainer.name}</div>
+                        <div class="difficulty-badge">Level ${difficulty}</div>
+                    </div>
+                    <div class="trainer-description">${trainer.description}</div>
+                    <div class="monsters-list">
+                        <strong>Team (Avg Level ${avgLevel}):</strong>
+                        ${trainer.monsters.map(monster => `
+                            <div class="monster-item">
+                                <span class="monster-name">${monster.species}</span>
+                                <span class="monster-level">Lv.${monster.level}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="rewards-info">
+                        <strong>💰 Rewards:</strong> 120-250 CM<br>
+                        <strong>🍬 Bonus:</strong> 2% chance for XP Snack
+                    </div>
+                    <button class="battle-btn" onclick="battleTrainer('${trainer.id}')" 
+                            ${isDefeated ? 'disabled' : ''}>
+                        ${isDefeated ? '✅ Defeated Today' : '⚔️ Battle!'}
+                    </button>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        async function battleTrainer(trainerId) {
+            try {
+                // Simulate battle (in real game, this would be actual battle)
+                const trainer = getTrainer(trainerId);
+                if (!trainer) {
+                    showPopup('❌ Error', 'Trainer not found!');
+                    return;
+                }
+
+                if (defeatedToday.has(trainerId)) {
+                    showPopup('⏰ Already Defeated', 'You\'ve already defeated this trainer today. Come back tomorrow!');
+                    return;
+                }
+
+                // Calculate rewards
+                const rewards = trainer.calculateRewards();
+                
+                // Mark as defeated for demo
+                defeatedToday.add(trainerId);
+                
+                // Update currency (simulate)
+                const currentCM = parseInt(document.getElementById('cm-amount').textContent) || 0;
+                const currentSnacks = parseInt(document.getElementById('xp-snacks').textContent) || 0;
+                
+                document.getElementById('cm-amount').textContent = currentCM + rewards.cm;
+                if (rewards.items.length > 0) {
+                    document.getElementById('xp-snacks').textContent = currentSnacks + rewards.items.length;
+                }
+
+                // Show reward popup
+                const rewardText = `💰 ${rewards.cm} CM earned!` + 
+                    (rewards.items.length > 0 ? `\n🍬 Bonus: ${rewards.items[0].name}!` : '');
+                
+                showPopup('🏆 Victory!', `You defeated ${trainer.name}!\n\n${rewardText}`);
+                
+                // Reload trainers to show updated state
+                loadTrainers();
+                
+            } catch (error) {
+                console.error('Battle error:', error);
+                showPopup('❌ Error', `Battle failed: ${error.message}`);
+            }
+        }
+
+        function testRewards() {
+            const results = document.getElementById('test-results');
+            results.textContent = 'Testing reward system...\n\n';
+            
+            const trainers = getBeginnerTrainers();
+            trainers.forEach(trainer => {
+                const simulations = [];
+                let totalCM = 0;
+                let xpSnackCount = 0;
+                
+                // Run 100 simulations
+                for (let i = 0; i < 100; i++) {
+                    const rewards = trainer.calculateRewards();
+                    totalCM += rewards.cm;
+                    if (rewards.items.length > 0) xpSnackCount++;
+                }
+                
+                const avgCM = Math.round(totalCM / 100);
+                const xpSnackPercent = xpSnackCount;
+                
+                results.textContent += `${trainer.name}:\n`;
+                results.textContent += `  Average CM: ${avgCM}\n`;
+                results.textContent += `  XP Snack rate: ${xpSnackPercent}% (expected: 2%)\n\n`;
+            });
+        }
+
+        function simulateRandomBattle() {
+            const trainers = getBeginnerTrainers();
+            const availableTrainers = trainers.filter(t => !defeatedToday.has(t.id));
+            
+            if (availableTrainers.length === 0) {
+                showPopup('⏰ No Battles Available', 'All trainers defeated today! Come back tomorrow.');
+                return;
+            }
+            
+            const randomTrainer = availableTrainers[Math.floor(Math.random() * availableTrainers.length)];
+            battleTrainer(randomTrainer.id);
+        }
+
+        function resetDailyProgress() {
+            defeatedToday.clear();
+            loadTrainers();
+            showPopup('🔄 Reset Complete', 'Daily progress reset! You can now battle all trainers again.');
+        }
+
+        function updateCurrencyDisplay() {
+            // In a real implementation, this would fetch from Firebase
+            // For demo, we'll start with some values
+            document.getElementById('cm-amount').textContent = '1500';
+            document.getElementById('fm-amount').textContent = '50';
+            document.getElementById('xp-snacks').textContent = '3';
+        }
+
+        function showPopup(title, message) {
+            // Remove existing popup
+            const existingOverlay = document.querySelector('.popup-overlay');
+            if (existingOverlay) {
+                existingOverlay.remove();
+            }
+
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay';
+            
+            // Create popup
+            const popup = document.createElement('div');
+            popup.className = 'reward-popup';
+            popup.innerHTML = `
+                <h2>${title}</h2>
+                <p style="white-space: pre-line; margin: 15px 0;">${message}</p>
+                <button class="close-popup" onclick="this.parentElement.parentElement.remove()">
+                    Close
+                </button>
+            `;
+            
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+            
+            // Auto-close after 5 seconds
+            setTimeout(() => {
+                if (overlay.parentElement) {
+                    overlay.remove();
+                }
+            }, 5000);
+        }
+
+        // Initialize when page loads
+        init();
+    </script>
+</body>
+</html> 

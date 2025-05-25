@@ -1,0 +1,255 @@
+/* Mizuryon Liquid Body Ability VFX */
+
+.liquid-body-aura {
+    position: absolute;
+    width: 110%;
+    height: 110%;
+    left: -5%;
+    top: -5%;
+    border-radius: 50%;
+    background: radial-gradient(circle, 
+        rgba(0, 191, 255, 0.4) 0%, 
+        rgba(30, 144, 255, 0.3) 40%, 
+        rgba(65, 105, 225, 0.2) 70%, 
+        transparent 100%);
+    animation: liquidFlow 2.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes liquidFlow {
+    0%, 100% { 
+        transform: scale(1) rotate(0deg); 
+        opacity: 0.6; 
+    }
+    33% { 
+        transform: scale(1.1) rotate(120deg); 
+        opacity: 0.8; 
+    }
+    66% { 
+        transform: scale(0.95) rotate(240deg); 
+        opacity: 0.4; 
+    }
+}
+
+.speed-boost-indicator {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid rgba(0, 191, 255, 0.8);
+    border-radius: 50%;
+    animation: speedLines 1s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes speedLines {
+    0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.2) rotate(360deg);
+        opacity: 0.3;
+    }
+}
+
+.critical-focus-vfx {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        rgba(255, 215, 0, 0.6) 45deg,
+        transparent 90deg,
+        rgba(255, 215, 0, 0.6) 135deg,
+        transparent 180deg,
+        rgba(255, 215, 0, 0.6) 225deg,
+        transparent 270deg,
+        rgba(255, 215, 0, 0.6) 315deg,
+        transparent 360deg
+    );
+    border-radius: 50%;
+    animation: criticalSpin 1.5s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes criticalSpin {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    100% {
+        transform: rotate(360deg) scale(1.1);
+    }
+}
+
+.hydro-claw-vfx {
+    position: absolute;
+    width: 60px;
+    height: 8px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        #00bfff 20%, 
+        #1e90ff 50%, 
+        #00bfff 80%, 
+        transparent 100%);
+    animation: clawSlash 0.6s ease-out forwards;
+    box-shadow: 0 0 10px rgba(0, 191, 255, 0.8);
+    pointer-events: none;
+}
+
+@keyframes clawSlash {
+    0% {
+        transform: translateX(-30px) rotate(-45deg) scaleX(0);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(0px) rotate(-45deg) scaleX(1);
+    }
+    100% {
+        transform: translateX(30px) rotate(-45deg) scaleX(0.8);
+        opacity: 0;
+    }
+}
+
+.aqua-jet-vfx {
+    position: absolute;
+    width: 150px;
+    height: 30px;
+    background: linear-gradient(45deg, 
+        transparent 0%, 
+        rgba(0, 191, 255, 0.8) 20%, 
+        rgba(255, 255, 255, 0.9) 50%, 
+        rgba(0, 191, 255, 0.8) 80%, 
+        transparent 100%);
+    border-radius: 15px;
+    animation: jetStream 0.4s ease-out forwards;
+    box-shadow: 0 0 15px rgba(0, 191, 255, 0.6);
+    pointer-events: none;
+}
+
+@keyframes jetStream {
+    0% {
+        transform: translateX(-100px) scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(0px) scale(1);
+    }
+    100% {
+        transform: translateX(50px) scale(1.2);
+        opacity: 0;
+    }
+}
+
+.tidal-wave-vfx {
+    position: absolute;
+    width: 200px;
+    height: 80px;
+    background: linear-gradient(180deg, 
+        transparent 0%, 
+        rgba(0, 191, 255, 0.3) 20%, 
+        rgba(30, 144, 255, 0.6) 50%, 
+        rgba(0, 100, 200, 0.8) 80%, 
+        rgba(0, 50, 150, 0.9) 100%);
+    border-radius: 50% 50% 0 0;
+    animation: tidalCrash 1.5s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes tidalCrash {
+    0% {
+        transform: translateY(50px) scaleY(0.3) scaleX(0.5);
+        opacity: 0;
+    }
+    30% {
+        opacity: 1;
+        transform: translateY(0px) scaleY(1) scaleX(1);
+    }
+    70% {
+        transform: translateY(-10px) scaleY(1.2) scaleX(1.3);
+    }
+    100% {
+        transform: translateY(20px) scaleY(0.8) scaleX(1.5);
+        opacity: 0;
+    }
+}
+
+.precision-strike-vfx {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, 
+        rgba(255, 215, 0, 0.9) 0%, 
+        rgba(255, 255, 0, 0.7) 30%, 
+        rgba(255, 215, 0, 0.5) 60%, 
+        transparent 100%);
+    border-radius: 50%;
+    animation: precisionFocus 0.8s ease-in-out forwards;
+    pointer-events: none;
+}
+
+@keyframes precisionFocus {
+    0% {
+        transform: scale(2);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(0.8);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+.liquid-ripple {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 3px solid rgba(0, 191, 255, 0.6);
+    border-radius: 50%;
+    animation: rippleExpand 1s ease-out infinite;
+    pointer-events: none;
+}
+
+@keyframes rippleExpand {
+    0% {
+        transform: scale(0.8);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.water-accuracy-boost {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, 
+        rgba(0, 191, 255, 0.8) 0%, 
+        rgba(30, 144, 255, 0.6) 50%, 
+        transparent 100%);
+    border-radius: 50%;
+    animation: accuracyOrb 1s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes accuracyOrb {
+    0% {
+        transform: scale(0.3) translateY(20px);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1) translateY(-10px);
+    }
+    100% {
+        transform: scale(0.5) translateY(-30px);
+        opacity: 0;
+    }
+} 

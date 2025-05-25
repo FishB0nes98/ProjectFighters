@@ -78,15 +78,14 @@ export const items = {
         name: "Scorpion Sword",
         image: "items/scorpion_sword.webp",
         cost: 1900,
-        tags: ["Attack Speed", "Attack", "Movement", "Healing Reduction"],
+        tags: ["Attack", "Movement", "Healing Reduction"],
         stats: {
-            attackSpeed: 0.3,
             attackDamage: 20,
             movementSpeed: 5
         },
         passive: {
             name: "Venom Strike",
-            description: "Your attacks decrease healing by 10% for 2s"
+            description: "Your attacks decrease healing by 25% for 2s"
         }
     },
     white_veil: {
@@ -188,11 +187,10 @@ export const items = {
         name: "Palm Leaf",
         image: "items/palm_leaf.webp",
         cost: 2300,
-        tags: ["Support", "Movement", "Defense"],
+        tags: ["Support", "Defense"],
         stats: {
-            healingAndShieldingPower: 10,
-            movementSpeed: 10,
-            health: 200,
+            healingAndShieldingPower: 14,
+            health: 150,
             mana: 200
         }
     },
@@ -333,7 +331,7 @@ export const items = {
         active: {
             name: "Scarab's Protection",
             description: "Grant a target champion a [850] shield",
-            cooldown: 60
+            cooldown: 40
         }
     },
     pyramid_wardstone: {
@@ -420,15 +418,15 @@ export const items = {
         id: "shinnoks_dark_magic_bubble",
         name: "Shinnok's Dark Magic Bubble",
         image: "items/shinnoks_dark_magic_bubble.webp",
-        cost: 2850,
+        cost: 2750,
         tags: ["Magic", "Defense"],
         stats: {
             abilityPower: 75,
-            health: 250
+            mana: 100
         },
         passive: {
-            name: "Mana Drain",
-            description: "Dealing damage with abilities restores mana equal to 3% of the damage dealt"
+            name: "Dark Magic",
+            description: "Your abilities apply 25% healing reduction to enemies hit for 3 seconds"
         }
     },
     golden_arrow: {
@@ -498,10 +496,10 @@ export const items = {
         cost: 3000,
         tags: ["Support", "Magic"],
         stats: {
-            mana: 350,
+            mana: 225,
             manaRegen: 5,
             healingAndShieldingPower: 10,
-            abilityPower: 20
+            abilityPower: 35
         },
         passive: {
             name: "Oceanic Empowerment",
@@ -729,12 +727,12 @@ export const items = {
         id: "seaborne_crown",
         name: "Seaborne Crown",
         image: "items/seaborne_crown.webp",
-        cost: 2800,
+        cost: 3000,
         tags: ["Support", "Magic"],
         stats: {
             abilityPower: 40,
             manaRegen: 8,
-            healingAndShieldingPower: 10
+            healingAndShieldingPower: 13
         },
         passive: {
             name: "Tidal Currents",
@@ -870,10 +868,10 @@ export const items = {
         id: "broadway_star_badge",
         name: "Broadway Star Badge",
         image: "items/broadway_star_badge.webp",
-        cost: 2500,
+        cost: 2650,
         tags: ["Support", "Magic"],
         stats: {
-            abilityPower: 35,
+            abilityPower: 40,
             healingAndShieldingPower: 15,
             manaRegen: 5
         },
@@ -886,17 +884,17 @@ export const items = {
         id: "taxi_drivers_whistle",
         name: "Taxi Driver's Whistle",
         image: "items/taxi_drivers_whistle.webp",
-        cost: 2400,
+        cost: 2450,
         tags: ["Support", "Movement"],
         stats: {
-            health: 250,
+            health: 300,
             armor: 5,
             magicResistance: 4
         },
         active: {
             name: "Fast Lane",
-            description: "ACTIVE: Sound the whistle, granting yourself and nearby allies 40% bonus Movement Speed that decays over 3 seconds (90s cooldown)",
-            cooldown: 90
+            description: "ACTIVE: Sound the whistle, granting yourself and nearby allies 40% bonus Movement Speed that decays over 3 seconds (60s cooldown)",
+            cooldown: 60
         }
     },
     cybernetic_data_core: {

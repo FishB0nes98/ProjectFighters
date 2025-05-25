@@ -1,46 +1,46 @@
 /* Theme Variables */
 :root {
-    /* Primary Theme Colors - Tokyo Mew Mew Inspired */
-    --theme-primary: #ff69b4;          /* Hot Pink (Mew Ichigo) */
-    --theme-secondary: #ff1493;        /* Deep Pink */
-    --theme-accent: #ffb6c1;           /* Light Pink */
+    /* Primary Theme Colors - Monster Trainer Inspired */
+    --theme-primary: #3d7dca;          /* Pokemon Blue */
+    --theme-secondary: #ffcb05;        /* Pokemon Yellow */
+    --theme-accent: #4dad5b;           /* Pokemon Green */
     
-    /* Additional Mew Mew Character Colors */
-    --mew-mint: #3eb489;               /* Mint Green (Mew Mint) */
-    --mew-lettuce: #90ee90;            /* Light Green (Mew Lettuce) */
-    --mew-pudding: #ffd700;            /* Gold (Mew Pudding) */
-    --mew-zakuro: #9370db;             /* Medium Purple (Mew Zakuro) */
-    --mew-berry: #1e90ff;              /* Dodger Blue (Mew Berry) */
+    /* Additional Monster Trainer Colors */
+    --tamer-dark-blue: #003a70;        /* Dark Blue */
+    --tamer-white: #f8f8f8;            /* White */
+    --tamer-light-blue: #5db9ff;       /* Light Blue */
+    --tamer-yellow: #fbd743;           /* Yellow */
+    --tamer-dark-green: #2a5934;       /* Dark Green */
     
     /* Background Colors */
-    --bg-primary: rgba(255, 105, 180, 0.95);    /* Hot Pink background */
-    --bg-secondary: rgba(255, 20, 147, 0.15);   /* Light pink overlay */
-    --bg-dark: #2a0a1a;                        /* Dark pink background */
-    --bg-gradient: linear-gradient(135deg, #ff69b4, #ff1493);
+    --bg-primary: rgba(61, 125, 202, 0.95);    /* Blue background */
+    --bg-secondary: rgba(255, 203, 5, 0.15);   /* Light yellow overlay */
+    --bg-dark: #003a70;                        /* Dark blue background */
+    --bg-gradient: linear-gradient(135deg, #3d7dca, #4dad5b);
     
     /* Text Colors */
     --text-primary: #ffffff;           /* White text */
-    --text-secondary: #ffb6c1;         /* Light pink text */
+    --text-secondary: #ffcb05;         /* Yellow text */
     --text-muted: rgba(255, 255, 255, 0.7);    /* Muted white text */
     
     /* Border Colors */
     --border-primary: var(--theme-primary);
     --border-secondary: var(--theme-secondary);
-    --border-light: rgba(255, 20, 147, 0.2);
+    --border-light: rgba(61, 125, 202, 0.2);
     
     /* Shadow Colors */
-    --shadow-primary: rgba(255, 20, 147, 0.3);
-    --shadow-secondary: rgba(255, 105, 180, 0.3);
-    --shadow-hover: rgba(255, 20, 147, 0.3);
+    --shadow-primary: rgba(61, 125, 202, 0.3);
+    --shadow-secondary: rgba(255, 203, 5, 0.3);
+    --shadow-hover: rgba(77, 173, 91, 0.3);
     
     /* Interactive Element Colors */
-    --interactive-default: #ff1493;
-    --interactive-hover: #ff4aab;
-    --interactive-active: #ff69b4;
+    --interactive-default: #003a70;
+    --interactive-hover: #3d7dca;
+    --interactive-active: #5db9ff;
     
     /* Overlay Colors */
-    --overlay-dark: rgba(42, 10, 26, 0.7);
-    --overlay-light: rgba(255, 20, 147, 0.1);
+    --overlay-dark: rgba(0, 58, 112, 0.7);
+    --overlay-light: rgba(61, 125, 202, 0.1);
     
     /* Animation Timings */
     --transition-fast: 0.2s;
@@ -60,6 +60,14 @@
     --radius-lg: 12px;
     --radius-xl: 20px;
     --radius-circle: 50%;
+
+    /* Quest Window Styles from queststyle.css - for consistency */
+    --primary-color: #4CAF50; /* Dark Green */
+    --secondary-color: #FF9800; /* Orange */
+    --bg-dark: rgba(34, 51, 34, 0.95); /* Dark Greenish background */
+    --text-light: #FFF3E0; /* Light Orange/Cream */
+    --shadow-primary: rgba(76, 175, 80, 0.3); /* Green shadow */
+    --shadow-secondary: rgba(255, 152, 0, 0.3); /* Orange shadow */
 }
 
 /* Reset & Base Styles */
@@ -534,16 +542,13 @@ h1, h2, h3, h4, h5, h6 {
     transform: translate(-50%, -50%);
     width: 90%;
     max-width: 800px;
-    background: linear-gradient(135deg,
-        rgba(26, 26, 26, 0.95),
-        rgba(0, 0, 0, 0.95)
-    );
+    background: var(--bg-dark); /* Applied from :root */
+    color: var(--text-light); /* Applied from :root */
+    border: 1px solid var(--primary-color);
+    box-shadow: 0 0 30px var(--shadow-primary);
     backdrop-filter: blur(10px);
     border-radius: var(--radius-xl);
     padding: var(--spacing-xl);
-    color: var(--text-primary);
-    box-shadow: 0 8px 32px var(--shadow-primary);
-    border: 1px solid var(--theme-primary);
 }
 
 .quest-header {
@@ -575,6 +580,7 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0;
     flex-grow: 1;
     padding-right: var(--spacing-sm);
+    color: var(--secondary-color); /* Orange title */
 }
 
 .quest-tabs {
@@ -599,8 +605,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .quest-tab.active {
-    background: linear-gradient(135deg, var(--theme-primary), #ff0066);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     box-shadow: 0 4px 15px rgba(255, 20, 147, 0.3);
+    border-bottom: 3px solid var(--secondary-color);
 }
 
 .quest-content {
@@ -619,28 +626,31 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     align-items: center;
     gap: var(--spacing-lg);
-    background: var(--overlay-light);
+    background: rgba(76, 175, 80, 0.15); /* Lighter green based on --primary-color */
     padding: var(--spacing-lg);
     border-radius: var(--radius-lg);
     transition: all var(--transition-normal);
+    border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
 .quest-item:hover {
     transform: translateX(4px);
     background: var(--overlay-dark);
-    box-shadow: 0 0 20px rgba(241, 196, 15, 0.2);
+    box-shadow: 0 5px 15px var(--shadow-primary); /* Green shadow on hover */
 }
 
 .quest-icon {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, var(--theme-primary), #ff0066);
+    background: linear-gradient(135deg, var(--primary-color), #ff0066);
     border-radius: var(--radius-circle);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.5em;
     flex-shrink: 0;
+    color: var(--primary-color);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
 }
 
 .quest-info {
@@ -665,7 +675,7 @@ h1, h2, h3, h4, h5, h6 {
 .quest-progress-bar {
     position: absolute;
     height: 100%;
-    background: var(--theme-accent);
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
     border-radius: var(--radius-sm);
     transition: width var(--transition-normal);
 }
@@ -721,7 +731,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .quest-status.claim-ready {
-    background: linear-gradient(135deg, var(--theme-primary), #ff0066);
+    background: var(--primary-color);
     color: var(--text-primary);
     cursor: pointer;
     animation: pulse 2s infinite;
@@ -750,12 +760,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .quest-content::-webkit-scrollbar-thumb {
-    background: var(--theme-accent);
+    background: linear-gradient(var(--primary-color), var(--secondary-color));
     border-radius: var(--radius-sm);
 }
 
 .quest-content::-webkit-scrollbar-thumb:hover {
-    background: var(--theme-primary);
+    background: linear-gradient(var(--secondary-color), var(--primary-color));
 }
 
 /* Close Button */
@@ -2558,7 +2568,7 @@ h1, h2, h3, h4, h5, h6 {
     overflow: hidden;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid var(--theme-primary);
-    box-shadow: 0 8px 32px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 8px 32px rgba(61, 125, 202, 0.3);
 }
 
 .quest-header {
@@ -2583,6 +2593,10 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0;
 }
 
+.quest-header h2 i {
+    color: var(--secondary-color); /* Example: Making icon orange */
+}
+
 .quest-tabs {
     display: flex;
     gap: var(--spacing-sm);
@@ -2600,13 +2614,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .quest-tab:hover {
-    background: rgba(212, 175, 55, 0.2);
+    background: rgba(61, 125, 202, 0.2);
     transform: translateY(-2px);
 }
 
 .quest-tab.active {
-    background: linear-gradient(135deg, var(--theme-primary), #ff0066);
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    box-shadow: 0 4px 15px rgba(61, 125, 202, 0.3);
 }
 
 .quest-content {
@@ -2642,7 +2656,7 @@ h1, h2, h3, h4, h5, h6 {
 .quest-icon {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, var(--theme-primary), #ff0066);
+    background: linear-gradient(135deg, var(--primary-color), #ff0066);
     border-radius: var(--radius-circle);
     display: flex;
     align-items: center;
@@ -2660,7 +2674,7 @@ h1, h2, h3, h4, h5, h6 {
 .quest-title {
     font-size: 1.2em;
     font-weight: 600;
-    color: var(--theme-primary);
+    color: var(--secondary-color); /* Orange title */
     margin-bottom: var(--spacing-xs);
 }
 
@@ -2678,7 +2692,7 @@ h1, h2, h3, h4, h5, h6 {
     left: 0;
     top: 0;
     height: 100%;
-    background: linear-gradient(to right, var(--theme-primary), var(--theme-secondary));
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
     border-radius: var(--radius-sm);
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -2727,7 +2741,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .quest-status.claim-ready {
-    background: linear-gradient(135deg, var(--theme-primary), #ff0066);
+    background: var(--primary-color);
     color: var(--text-primary);
     cursor: pointer;
     animation: pulse 2s infinite;
@@ -2894,7 +2908,7 @@ h1, h2, h3, h4, h5, h6 {
     flex: 1;
     height: 4px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
+    border-radius: var(--radius-md);
     position: relative;
     cursor: pointer;
     overflow: hidden;
@@ -2906,7 +2920,7 @@ h1, h2, h3, h4, h5, h6 {
     top: 0;
     height: 100%;
     background: var(--theme-secondary);
-    border-radius: 2px;
+    border-radius: var(--radius-md);
     transition: width 0.1s linear;
 }
 
@@ -2916,7 +2930,7 @@ h1, h2, h3, h4, h5, h6 {
     width: 12px;
     height: 12px;
     background: var(--text-primary);
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
     transform: translate(-50%, -50%);
     box-shadow: 0 2px 8px var(--shadow-primary);
     opacity: 0;
@@ -2968,7 +2982,7 @@ h1, h2, h3, h4, h5, h6 {
     height: 4px;
     -webkit-appearance: none;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
+    border-radius: var(--radius-md);
     outline: none;
 }
 
@@ -2977,9 +2991,9 @@ h1, h2, h3, h4, h5, h6 {
     width: 12px;
     height: 12px;
     background: var(--text-primary);
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: all var(--transition-normal);
 }
 
 .volume-slider::-webkit-slider-thumb:hover {
@@ -3387,48 +3401,291 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
-/* Cherry blossom animation */
-@keyframes floating {
-    0% {
-        transform: translate(0, 0) rotate(0deg);
-    }
-    50% {
-        transform: translate(10px, 10px) rotate(10deg);
-    }
-    100% {
-        transform: translate(0, 0) rotate(0deg);
-    }
+/* Event Banner */
+.event-banner {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 90%;
+    width: 1000px;
+    z-index: 5;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(61, 125, 202, 0.4);
+    overflow: hidden;
+    border: 2px solid #3d7dca;
 }
 
-.mew-mew-icon {
+.event-banner img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Special QP Store Styles for Monster Trainer */
+.qp-store-header {
+    background-image: url('Event/monster_trainer_store_header.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.qp-store-title h2 {
+    text-shadow: 0 2px 10px rgba(61, 125, 202, 0.5);
+}
+
+/* Style the quest window header for Monster Trainer */
+.quest-header {
+    background-image: url('Event/monster_trainer_quest_header.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.quest-header h2 {
+    text-shadow: 0 2px 10px rgba(61, 125, 202, 0.5);
+}
+
+/* Add a special animation for the play button */
+@keyframes glowing {
+    0% { box-shadow: 0 0 5px #3d7dca; }
+    50% { box-shadow: 0 0 20px #3d7dca, 0 0 30px #ffcb05; }
+    100% { box-shadow: 0 0 5px #3d7dca; }
+}
+
+.play-button {
+    animation: glowing 2s infinite;
+}
+
+/* Monster icons removed */
+
+/* Monster Trainer Song Popup Styles */
+.song-popup {
+    display: none;
     position: fixed;
-    pointer-events: none;
-    z-index: 1;
-    opacity: 0.7;
-    animation: floating 6s infinite ease-in-out;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    z-index: 3000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Add floating Mew Mew icons around the page */
-.icon-top-left {
-    top: 15%;
-    left: 5%;
-    transform: scale(0.5);
+.song-popup.show {
+    opacity: 1;
+    visibility: visible;
 }
 
-.icon-top-right {
-    top: 20%;
-    right: 5%;
-    transform: scale(0.6) rotate(15deg);
+.song-popup-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    width: 90%;
+    max-width: 600px;
+    background: rgba(0, 58, 112, 0.95);
+    border-radius: 24px;
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid rgba(61, 125, 202, 0.7);
+    box-shadow: 0 8px 32px rgba(61, 125, 202, 0.4);
 }
 
-.icon-bottom-left {
-    bottom: 10%;
-    left: 8%;
-    transform: scale(0.45) rotate(-10deg);
+.song-popup.show .song-popup-content {
+    transform: translate(-50%, -50%) scale(1);
 }
 
-.icon-bottom-right {
-    bottom: 15%;
-    right: 7%;
-    transform: scale(0.55);
+.song-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(to right, rgba(61, 125, 202, 0.8), rgba(77, 173, 91, 0.8));
+    color: white;
+}
+
+.song-popup-header h2 {
+    font-size: 1.8em;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.song-popup-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.song-popup-close:hover {
+    transform: rotate(90deg);
+}
+
+.song-popup-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.song-image {
+    width: 100%;
+    max-width: 350px;
+    height: auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.song-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.song-info {
+    text-align: center;
+}
+
+.song-info h3 {
+    font-size: 1.8em;
+    margin-bottom: 5px;
+    background: linear-gradient(135deg, #3d7dca, #ffcb05);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.song-info p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 15px;
+}
+
+.song-play-btn {
+    background: linear-gradient(135deg, #3d7dca, #4dad5b);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(61, 125, 202, 0.3);
+}
+
+.song-play-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(61, 125, 202, 0.5);
+}
+
+.song-popup-footer {
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.song-popup-footer p {
+    margin-bottom: 15px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.song-popup-btn {
+    background: linear-gradient(135deg, #3d7dca, #4dad5b);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin: 0 5px;
+    box-shadow: 0 4px 15px rgba(61, 125, 202, 0.3);
+}
+
+.song-popup-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(61, 125, 202, 0.5);
+}
+
+.song-popup-btn.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    box-shadow: none;
+}
+
+.song-popup-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+}
+
+@media (max-width: 768px) {
+    .song-popup-body {
+        flex-direction: column;
+    }
+
+    .song-image {
+        max-width: 80%;
+    }
+}
+
+/* Play Button Animation */
+@keyframes glowing {
+    0% { box-shadow: 0 0 5px #3d7dca; }
+    50% { box-shadow: 0 0 20px #3d7dca, 0 0 30px #ffcb05; }
+    100% { box-shadow: 0 0 5px #3d7dca; }
+}
+
+.play-button {
+    animation: glowing 2s infinite;
+}
+
+/* Monster element animation removed as requested */
+
+/* Event Banner */
+.event-banner {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 90%;
+    width: 1000px;
+    z-index: 5;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(61, 125, 202, 0.4);
+    overflow: hidden;
+    border: 2px solid #3d7dca;
+}
+
+.event-banner img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Special QP Store Styles for Monster Trainer */
+.qp-store-header {
+    background-image: url('Event/monster_trainer_store_header.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.qp-store-title h2 {
+    text-shadow: 0 2px 10px rgba(61, 125, 202, 0.5);
+}
+
+/* Style the quest window header for Monster Trainer */
+.quest-header {
+    background-image: url('Event/monster_trainer_quest_header.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.quest-header h2 {
+    text-shadow: 0 2px 10px rgba(61, 125, 202, 0.5);
 }

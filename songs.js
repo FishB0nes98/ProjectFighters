@@ -1,183 +1,174 @@
+// songs.js - List of all available songs with their IDs for the music player
+// Note: IDs should match the keys used in Firebase FavoriteMusic
+
 const songs = [
     {
-        id: 17,
-        title: "Team Up",
-        artist: "Tokyo Mew Mew",
-        path: "Songs/team_up_tokyo_mew_mew.mp3",
-        cover: "Event/Tokyo Mew Mew Event 2.png",
-        category: "Event Theme",
-        duration: "3:32",
-        isFavorite: false
+        id: "unstoppable_ice",
+        title: "Unstoppable Ice",
+        artist: "Monster Trainer",
+        path: "Songs/Unstoppable Ice (Monster Trainer Ayane Theme).mp3",
+        description: "Monster Trainer Ayane's Theme",
+        cover: "Loading Screen/Monster Trainer Ayane.png"
     },
     {
-        id: 18,
+        id: "trainers_pride",
+        title: "Trainer's Pride",
+        artist: "Monster Trainer",
+        path: "Songs/Trainers Pride (Monster Trainer Kokoro Theme).mp3",
+        description: "Monster Trainer Kokoro's Theme",
+        cover: "Loading Screen/Monster Trainer Kokoro.png"
+    },
+    {
+        id: "infernos_rise",
+        title: "Inferno's Rise",
+        artist: "Monster Trainer",
+        path: "Songs/Infernos Rise (Monster Trainer Shoma Theme).mp3",
+        description: "Monster Trainer Shoma's Theme",
+        cover: "Loading Screen/Monster Trainer Shoma.png"
+    },
+    {
+        id: "animal_instinct",
         title: "Animal Instinct",
         artist: "Tokyo Mew Mew",
         path: "Songs/animal_instinct_tokyo_mew_mew.mp3",
-        cover: "Loading Screen/Tokyo Mew Mew Ayane.png",
-        category: "Event Theme",
-        duration: "3:32",
-        isFavorite: false
+        description: "Tokyo Mew Mew Battle Theme",
+        cover: "Event/Tokyo Mew Mew Event 2.png"
     },
     {
-        id: 19,
+        id: "team_up",
+        title: "Team Up",
+        artist: "Tokyo Mew Mew",
+        path: "Songs/team_up_tokyo_mew_mew.mp3",
+        description: "Tokyo Mew Mew Victory Theme",
+        cover: "Loading Screen/Tokyo Mew Mew Ayane.png"
+    },
+    {
+        id: "born_of_light",
         title: "Born of Light",
-        artist: "Celestial Protector Lili",
+        artist: "Celestial Protector",
         path: "Songs/Born of Light (Celestial Protector Lili Theme).mp3",
-        cover: "Loading Screen/Celestial Protector Lili.png",
-        category: "Character Theme",
-        duration: "3:45",
-        isFavorite: false
+        description: "Celestial Protector Lili's Theme",
+        cover: "Loading Screen/Celestial Protector Lili.png"
     },
     {
-        id: 2,
-        title: "Starlit Sky",
-        artist: "Celestial Protector R.Mika",
-        path: "Songs/Starlit Sky (Celestial Protector R Mika Theme).mp3",
-        cover: "Loading Screen/Celestial Protector R Mika.png",
-        category: "Character Theme",
-        duration: "4:12",
-        isFavorite: false
-    },
-    {
-        id: 3,
+        id: "twilight_shadows",
         title: "Twilight Shadows",
-        artist: "Celestial Protector Juri",
+        artist: "Celestial Protector",
         path: "Songs/Twilight Shadows (Celestial Protector Juri Theme).mp3",
-        cover: "Loading Screen/Celestial Protector Juri.png",
-        category: "Character Theme",
-        duration: "3:58",
-        isFavorite: false
+        description: "Celestial Protector Juri's Theme",
+        cover: "Loading Screen/Celestial Protector Juri.png"
     },
     {
-        id: 4,
-        title: "Date Night Prep",
-        artist: "Date Night Mega Man",
-        path: "Songs/Date Night Prep (Date Night Mega Man Theme).mp3",
-        cover: "Loading Screen/Date Night Mega Man.png",
-        category: "Character Theme",
-        duration: "3:30",
-        isFavorite: false
+        id: "starlit_sky",
+        title: "Starlit Sky",
+        artist: "Celestial Protector",
+        path: "Songs/Starlit Sky (Celestial Protector R Mika Theme).mp3",
+        description: "Celestial Protector R Mika's Theme",
+        cover: "Loading Screen/Celestial Protector R Mika.png"
     },
     {
-        id: 5,
+        id: "love_day",
         title: "Love Day 2024",
-        artist: "Event",
+        artist: "Event Theme",
         path: "Songs/Love Day 2024 (Event Theme).mp3",
-        cover: "Event/Love Day Event.webp",
-        category: "Event Theme",
-        duration: "4:00",
-        isFavorite: false
+        description: "Love Day 2024 Event Theme",
+        cover: "Event/Love Day Event.webp"
     },
     {
-        id: 6,
+        id: "date_night_prep",
+        title: "Date Night Prep",
+        artist: "Date Night",
+        path: "Songs/Date Night Prep (Date Night Mega Man Theme).mp3",
+        description: "Date Night Mega Man's Theme",
+        cover: "Loading Screen/Date Night Mega Man.png"
+    },
+    {
+        id: "lovely_wind",
         title: "Lovely Wind",
-        artist: "Lovely Kagome",
+        artist: "Lovely Theme",
         path: "Songs/Lovely Wind (Lovely Kagome Theme).mp3",
-        cover: "Loading Screen/Lovely Kagome.png",
-        category: "Character Theme",
-        duration: "3:35",
-        isFavorite: false
+        description: "Lovely Kagome's Theme",
+        cover: "Loading Screen/Lovely Kagome.png"
     },
     {
-        id: 7,
-        title: "Lunar Festival 2024",
-        artist: "Event",
-        path: "Songs/Lunar Festival 2024 (Event Theme).mp3",
-        cover: "Event/Lunar Festival 2024 Event.png",
-        category: "Event Theme",
-        duration: "4:15",
-        isFavorite: false
-    },
-    {
-        id: 8,
+        id: "moonlight",
         title: "Moonlight",
-        artist: "Lunar Festival Kokoro",
+        artist: "Lunar Festival",
         path: "Songs/Moonlight (Lunar Festival Kokoro Theme).mp3",
-        cover: "Loading Screen/Lunar Festival Kokoro.png",
-        category: "Character Theme",
-        duration: "3:50",
-        isFavorite: false
+        description: "Lunar Festival Kokoro's Theme",
+        cover: "Loading Screen/Lunar Festival Kokoro.png"
     },
     {
-        id: 9,
-        title: "Under The Sea",
-        artist: "Atlantean Christie",
-        path: "Songs/Under The Sea (Atlantean Christie Theme).mp3",
-        cover: "Loading Screen/Atlantean Christie.png",
-        category: "Character Theme",
-        duration: "3:40",
-        isFavorite: false
+        id: "lunar_festival",
+        title: "Lunar Festival 2024",
+        artist: "Event Theme",
+        path: "Songs/Lunar Festival 2024 (Event Theme).mp3",
+        description: "Lunar Festival 2024 Event Theme",
+        cover: "Event/Lunar Festival 2024 Event.png"
     },
     {
-        id: 10,
+        id: "welcome_to_atlantis",
         title: "Welcome To Atlantis",
-        artist: "Event",
+        artist: "Event Theme",
         path: "Songs/Welcome To Atlantis (Event Theme).mp3",
-        cover: "Event/Atlantis Event.jpeg",
-        category: "Event Theme",
-        duration: "4:20",
-        isFavorite: false
+        description: "Atlantean Event Theme",
+        cover: "Event/Atlantis Event.jpeg"
     },
     {
-        id: 11,
+        id: "under_the_sea",
+        title: "Under the Sea",
+        artist: "Atlantean",
+        path: "Songs/Under the Sea (Atlantean Christie Theme).mp3",
+        description: "Atlantean Christie's Theme",
+        cover: "Loading Screen/Atlantean Christie.png"
+    },
+    {
+        id: "capoeira_queen",
         title: "Capoeira Queen",
-        artist: "Christie",
+        artist: "Character Theme",
         path: "Songs/Capoeira Queen (Christie Theme).mp3",
-        cover: "Loading Screen/Christie.png",
-        category: "Character Theme",
-        duration: "3:25",
-        isFavorite: false
+        description: "Christie's Character Theme",
+        cover: "Loading Screen/Christie.png"
     },
     {
-        id: 12,
-        title: "Flight of the Snow Queen Angel",
-        artist: "Winter Queen Angel",
-        path: "Songs/Flight of the Snow Queen Angel (Winter Queen Angel Theme).mp3",
-        cover: "Loading Screen/Winter Queen Angel.png",
-        category: "Character Theme",
-        duration: "4:05",
-        isFavorite: false
-    },
-    {
-        id: 13,
+        id: "forest_wanderer",
         title: "Forest Wanderer",
-        artist: "Julia",
+        artist: "Character Theme",
         path: "Songs/Forest Wanderer (Julia Theme).mp3",
-        cover: "Loading Screen/Julia.png",
-        category: "Character Theme",
-        duration: "3:30",
-        isFavorite: false
+        description: "Julia's Character Theme",
+        cover: "Loading Screen/Julia.png"
     },
     {
-        id: 14,
-        title: "Jingle Bells",
-        artist: "Winter Festival Shizumaru",
-        path: "Songs/Jingle Bells (Winter Festival Shizumaru Theme).mp3",
-        cover: "Loading Screen/Winter Festival Shizumaru.png",
-        category: "Event Theme",
-        duration: "3:15",
-        isFavorite: false
-    },
-    {
-        id: 15,
+        id: "skater_boy_riffs",
         title: "Skater Boy Riffs",
-        artist: "Skater Shoma",
+        artist: "Skater Theme",
         path: "Songs/Skater Boy Riffs (Skater Shoma Theme).mp3",
-        cover: "Loading Screen/Skater Shoma.png",
-        category: "Character Theme",
-        duration: "3:45",
-        isFavorite: false
+        description: "Skater Shoma's Theme",
+        cover: "Loading Screen/Skater Shoma.png"
     },
     {
-        id: 16,
+        id: "snowball_princess",
         title: "Snowball Princess",
-        artist: "Winter Festival Lili",
+        artist: "Winter Festival",
         path: "Songs/Snowball Princess (Winter Festival Lili Theme).mp3",
-        cover: "Loading Screen/Winter Festival Lili.png",
-        category: "Event Theme",
-        duration: "3:55",
-        isFavorite: false
+        description: "Winter Festival Lili's Theme",
+        cover: "Loading Screen/Winter Festival Lili.png"
+    },
+    {
+        id: "flight_of_the_snow_queen",
+        title: "Flight of the Snow Queen",
+        artist: "Winter Festival",
+        path: "Songs/Flight of the Snow Queen Angel (Winter Queen Angel Theme).mp3",
+        description: "Winter Queen Angel's Theme",
+        cover: "Loading Screen/Winter Queen Angel.png"
+    },
+    {
+        id: "jingle_bells",
+        title: "Jingle Bells",
+        artist: "Winter Festival",
+        path: "Songs/Jingle Bells (Winter Festival Shizumaru Theme).mp3",
+        description: "Winter Festival Shizumaru's Theme",
+        cover: "Loading Screen/Winter Festival Shizumaru.png"
     },
 ];
 

@@ -1,24 +1,24 @@
 // Quest Types and their configurations
 export const questTypes = {
     daily: {
-        title: 'Tokyo Mew Mew Daily Quests',
+        title: 'Monster Trainer Daily Quests',
         resetInterval: 64800000, // 18 hours in milliseconds
         maxActive: 3
     },
     special: {
-        title: 'Tokyo Mew Mew Special Challenges',
+        title: 'Monster Trainer Special Challenges',
         maxActive: 4
     }
 };
 
-// Tokyo Mew Mew themed quest templates
+// Monster Trainer themed quest templates
 export const questTemplates = {
     daily: [
         {
-            id: 'mew_daily_patrol',
-            icon: 'fa-paw',
-            title: 'Mew Daily Patrol',
-            description: 'Play 2 games to help the team!',
+            id: 'trainer_daily_expedition',
+            icon: 'fa-map-signs',
+            title: 'Daily Expedition',
+            description: 'Explore the wild! Play 2 games.',
             requirements: {
                 count: 2,
                 type: 'play_games'
@@ -30,10 +30,10 @@ export const questTemplates = {
             defaultData: { progress: 0, completed: false, claimed: false, lastReset: null }
         },
         {
-            id: 'mew_daily_win',
-            icon: 'fa-magic',
-            title: 'Magical Girl Victory',
-            description: 'Win 1 game with flair!',
+            id: 'trainer_daily_victory',
+            icon: 'fa-trophy',
+            title: "Trainer\'s Triumph",
+            description: 'Achieve victory in 1 game.',
             requirements: {
                 count: 1,
                 type: 'win_games'
@@ -45,14 +45,14 @@ export const questTemplates = {
             defaultData: { progress: 0, completed: false, claimed: false, lastReset: null }
         },
         {
-            id: 'mew_team_play',
-            icon: 'fa-users',
-            title: 'Mew Team Up!',
-            description: 'Play 1 game using any Tokyo Mew Mew skin.',
+            id: 'monster_partner_up',
+            icon: 'fa-dragon',
+            title: 'Monster Partner Up!',
+            description: 'Play 1 game using any Monster Trainer series skin.',
             requirements: {
                 count: 1,
                 type: 'play_character_theme_skin',
-                skins: ['Tokyo Mew Mew Ayane', 'Tokyo Mew Mew Julia', 'Tokyo Mew Mew Kagome', 'Tokyo Mew Mew Lili', 'Tokyo Mew Mew Cham Cham']
+                skins: ['Monster Trainer Ayane', 'Monster Trainer Kokoro', 'Monster Trainer Shoma']
             },
             rewards: [
                 { type: 'questPoints', icon: 'res/img/qp.png', amount: 120 },
@@ -64,10 +64,10 @@ export const questTemplates = {
     ],
     special: [
         {
-            id: 'mew_spell_slinging',
-            icon: 'fa-magic',
-            title: 'Magical Barrage',
-            description: 'Land 10 abilities on enemy champions in a single game.',
+            id: 'elemental_overload',
+            icon: 'fa-fire-alt',
+            title: 'Elemental Overload',
+            description: "Unleash your monster\'s power! Land 10 abilities on opponents in a single game.",
             requirements: {
                 count: 10,
                 type: 'land_abilities_on_enemies_in_match'
@@ -80,43 +80,43 @@ export const questTemplates = {
             defaultData: { progress: 0, completed: false, claimed: false, completionCount: 0 }
         },
         {
-            id: 'ichigos_valor',
-            icon: 'fa-heart',
-            title: "Ichigo's Valor",
-            description: 'Accumulate 3 Kills or Assists while playing as Tokyo Mew Mew Ayane.',
+            id: 'trainers_resolve',
+            icon: 'fa-shield-alt',
+            title: "Trainer\'s Resolve",
+            description: 'Show your resolve! Get 3 Kills or Assists as Monster Trainer Ayane.',
             requirements: {
                 count: 3,
                 type: 'kills_assists_as_character_skin',
-                skin: 'Tokyo Mew Mew Ayane'
+                skin: 'Monster Trainer Ayane'
             },
             rewards: [
                 { type: 'questPoints', icon: 'res/img/qp.png', amount: 250 },
-                { type: 'sticker', name: 'tokyo_ayane_ribbon', icon: 'Stickers/tokyo_ayane_ribbon.png' }
+                { type: 'sticker', name: 'ayane_trainer_badge', icon: 'Stickers/ayane_trainer_badge.png' }
             ],
             repeatable: true,
             defaultData: { progress: 0, completed: false, claimed: false, completionCount: 0 }
         },
         {
-            id: 'earth_defenders',
-            icon: 'fa-shield-alt',
-            title: 'Defenders of Earth',
-            description: 'Win 5 games during the Tokyo Mew Mew Event.',
+            id: 'world_class_trainers',
+            icon: 'fa-globe-americas',
+            title: 'World Class Trainers',
+            description: 'Prove your skill! Win 5 games during the Monster Trainer Event.',
             requirements: {
                 count: 5,
                 type: 'win_games_event'
             },
             rewards: [
                 { type: 'questPoints', icon: 'res/img/qp.png', amount: 400 },
-                { type: 'title', name: 'Mew Guardian', icon: 'fa-id-badge' }
+                { type: 'title', name: 'Elite Trainer', icon: 'fa-id-badge' }
             ],
             repeatable: false,
             defaultData: { progress: 0, completed: false, claimed: false, winsDuringEvent: 0 }
         },
         {
-            id: 'mew_aqua_aid',
-            icon: 'fa-tint',
-            title: 'Mew Aqua Aid',
-            description: 'Heal or Shield allies for 5000 health in total. (Across multiple games)',
+            id: 'vitality_boost',
+            icon: 'fa-plus-square',
+            title: 'Vitality Boost',
+            description: 'Support your team! Heal or Shield allies for 5000 health in total.',
             requirements: {
                 count: 5000,
                 type: 'heal_shield_allies_total'
@@ -297,7 +297,7 @@ export async function updateQuestProgress(userId, matchData, database, ref, get,
                 case 'win_games_event':
                     if (isWin) {
                         questData.progress = (questData.progress || 0) + 1;
-                         if (template.id === 'earth_defenders') {
+                         if (template.id === 'world_class_trainers') {
                             questData.winsDuringEvent = (questData.winsDuringEvent || 0) + 1;
                             questData.progress = questData.winsDuringEvent;
                          }

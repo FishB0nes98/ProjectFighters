@@ -20,13 +20,17 @@ const app = initializeApp(firebaseConfig);
 
 export function initMusicPlayer() {
     // Wait for DOM to be fully loaded
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            initializePlayer();
-        });
-    } else {
-        initializePlayer();
-    }
+    return new Promise((resolve) => {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                const instance = initializePlayer();
+                resolve(instance);
+            });
+        } else {
+            const instance = initializePlayer();
+            resolve(instance);
+        }
+    });
 }
 
 function initializePlayer() {
@@ -396,4 +400,15 @@ function initializePlayer() {
             }
         });
     }
+
+    // Return the player instance with exposed functions
+    return {
+        state: state,
+        playTrack: playTrack,
+        togglePlay: togglePlay,
+        playNext: playNext,
+        playPrevious: playPrevious,
+        updateVolume: updateVolume,
+        elements: elements
+    };
 } 

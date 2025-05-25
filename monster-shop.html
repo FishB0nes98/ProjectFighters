@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monster Shop - Monster Fighters</title>
+    <link rel="icon" href="Icons/Profile/tokyo_ayane.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase config -->
+    <script src='./firebase-config.js' type='module'></script>
+    
+    <!-- Monster Tamers JS for monster collection management -->
+    <script src="js/monster-tamers.js" type="module"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #00BCD4;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .back-btn {
+            background: linear-gradient(45deg, #FF5722, #FF9800);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 87, 34, 0.4);
+        }
+
+        .shop-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 1.2rem;
+            color: #00BCD4;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+        }
+
+        .currency-display {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .currency-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .currency-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .currency-amount {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Main content */
+        .main-content {
+            margin-top: 80px;
+            padding: 20px;
+        }
+
+        .shop-intro {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .shop-intro h1 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #FFD700;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+        }
+
+        .shop-intro p {
+            font-size: 1.1rem;
+            color: #E0E0E0;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid transparent;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: rgba(0, 188, 212, 0.3);
+            border-color: #00BCD4;
+        }
+
+        /* Monster grid */
+        .monsters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .monster-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .monster-card:hover {
+            transform: translateY(-5px);
+            border-color: #00BCD4;
+            box-shadow: 0 10px 30px rgba(0, 188, 212, 0.3);
+        }
+
+        .monster-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(0, 188, 212, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+
+        .monster-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .monster-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .monster-image {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px;
+        }
+
+        .monster-info {
+            flex: 1;
+        }
+
+        .monster-name {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 1rem;
+            color: #FFD700;
+            margin-bottom: 5px;
+        }
+
+        .monster-id {
+            font-size: 0.8rem;
+            color: #B0B0B0;
+            margin-bottom: 8px;
+        }
+
+        .monster-types {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .owned-count {
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #B0B0B0;
+            font-weight: 500;
+        }
+
+        .owned-number {
+            color: #00BCD4;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .owned-count .owned-number[data-count="0"] {
+            color: #666;
+        }
+
+        .owned-count .owned-number:not([data-count="0"]) {
+            background: rgba(0, 188, 212, 0.2);
+            padding: 2px 6px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 188, 212, 0.3);
+        }
+
+        .type-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        /* Type colors */
+        .type-normal { background-color: #A8A878; }
+        .type-fire { background-color: #F08030; }
+        .type-water { background-color: #6890F0; }
+        .type-electric { background-color: #F8D030; }
+        .type-grass { background-color: #78C850; }
+        .type-ice { background-color: #98D8D8; }
+        .type-fighting { background-color: #C03028; }
+        .type-poison { background-color: #A040A0; }
+        .type-ground { background-color: #E0C068; }
+        .type-flying { background-color: #A890F0; }
+        .type-psychic { background-color: #F85888; }
+        .type-bug { background-color: #A8B820; }
+        .type-rock { background-color: #B8A038; }
+        .type-ghost { background-color: #705898; }
+        .type-dragon { background-color: #7038F8; }
+        .type-dark { background-color: #705848; }
+        .type-steel { background-color: #B8B8D0; }
+        .type-fairy { background-color: #EE99AC; }
+
+        .monster-description {
+            font-size: 0.85rem;
+            color: #E0E0E0;
+            line-height: 1.4;
+            margin: 10px 0;
+            font-style: italic;
+        }
+
+        .monster-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 15px 0;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 8px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: #B0B0B0;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #00BCD4;
+        }
+
+        .monster-ability {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .ability-name {
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 5px;
+        }
+
+        .ability-description {
+            font-size: 0.8rem;
+            color: #E0E0E0;
+            line-height: 1.3;
+        }
+
+        .monster-moves {
+            margin: 15px 0;
+        }
+
+        .moves-title {
+            font-weight: bold;
+            color: #00BCD4;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .moves-list {
+            display: grid;
+            gap: 5px;
+        }
+
+        .move-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+
+        .move-name {
+            color: white;
+            font-weight: 600;
+        }
+
+        .move-details {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .move-type {
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.6rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .move-power {
+            color: #FFB74D;
+            font-size: 0.7rem;
+        }
+
+        .purchase-section {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .price-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .price-option {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .price-option:hover,
+        .price-option.selected {
+            border-color: #00BCD4;
+            background: rgba(0, 188, 212, 0.2);
+        }
+
+        .price-label {
+            font-size: 0.8rem;
+            color: #B0B0B0;
+            margin-bottom: 3px;
+        }
+
+        .price-amount {
+            font-weight: bold;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .buy-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .buy-btn:hover:not(:disabled) {
+            background: linear-gradient(45deg, #8BC34A, #4CAF50);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .buy-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .quantity-btn {
+            background: #555;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .quantity-btn:hover {
+            background: #666;
+        }
+
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: #00BCD4;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .monsters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .currency-display {
+                gap: 10px;
+            }
+            
+            .filters {
+                gap: 8px;
+            }
+            
+            .filter-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <a href="monster-fighters.html" class="back-btn">⬅ Back to Game</a>
+            <div class="shop-title">MONSTER SHOP</div>
+        </div>
+        <div class="currency-display">
+            <div class="currency-item">
+                <img src="res/img/fm.png" alt="FM" class="currency-icon">
+                <span id="fm-amount" class="currency-amount">0</span>
+            </div>
+            <div class="currency-item">
+                <img src="res/img/cm.png" alt="CM" class="currency-icon">
+                <span id="cm-amount" class="currency-amount">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="shop-intro">
+            <h1>MONSTER COLLECTION</h1>
+            <p>Discover and collect powerful monsters to build your ultimate team! Each monster has unique abilities, stats, and moves.</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <button class="filter-btn active" data-type="all">All Monsters</button>
+            <button class="filter-btn" data-type="fire">Fire</button>
+            <button class="filter-btn" data-type="water">Water</button>
+            <button class="filter-btn" data-type="grass">Grass</button>
+            <button class="filter-btn" data-type="electric">Electric</button>
+            <button class="filter-btn" data-type="ice">Ice</button>
+            <button class="filter-btn" data-type="ground">Ground</button>
+            <button class="filter-btn" data-type="rock">Rock</button>
+            <button class="filter-btn" data-type="fighting">Fighting</button>
+            <button class="filter-btn" data-type="poison">Poison</button>
+            <button class="filter-btn" data-type="flying">Flying</button>
+            <button class="filter-btn" data-type="psychic">Psychic</button>
+            <button class="filter-btn" data-type="bug">Bug</button>
+            <button class="filter-btn" data-type="ghost">Ghost</button>
+            <button class="filter-btn" data-type="dragon">Dragon</button>
+            <button class="filter-btn" data-type="dark">Dark</button>
+            <button class="filter-btn" data-type="steel">Steel</button>
+            <button class="filter-btn" data-type="fairy">Fairy</button>
+            <button class="filter-btn" data-type="boosters">🥚 Egg Boosters</button>
+        </div>
+
+        <!-- Monsters Grid -->
+        <div id="monsters-grid" class="monsters-grid">
+            <div class="loading">Loading monsters...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { ref, get, set, push, update, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+
+        // Global variables
+        let currentUser = null;
+        let userCurrency = { FM: 0, CM: 0 };
+        let monstersData = [];
+        let userMonstersData = [];
+        let currentFilter = 'all';
+
+        // Egg booster data
+        const EGG_BOOSTERS = {
+            IV_BOOSTER: {
+                name: 'IV Enhancer',
+                description: 'Increases the IV potential of the monster inside an egg by +10 to all stats',
+                price: { FM: 2500, CM: 15000 },
+                icon: '🚀',
+                effect: 'Boosts IV generation for hatched monsters'
+            },
+            TIME_BOOSTER: {
+                name: 'Hatch Accelerator',
+                description: 'Halves the remaining hatch time of an egg, getting your monster faster!',
+                price: { FM: 1500, CM: 8000 },
+                icon: '⏰',
+                effect: 'Reduces hatch time by 50%'
+            }
+        };
+
+        // Only existing monsters with JSON files
+        const MONSTER_FILES = [
+            "Bunburrow.json", "Pechac.json", "Cryorose.json", 
+            "Hauntorch.json", "Mizuryon.json", "Ratastrophe.json",
+            "Scorchlete.json", "Nymaria.json", "Peepuff.json",
+            "Shiverion.json", "Lumillow.json", "Puffsqueak.json",
+            // New image-based monsters
+            "Crisilla.json", "Buzzy.json", "Maquatic.json",
+            "Sharx.json", "Smouldimp.json", "Blobby.json",
+            "Crymora.json", "Nerephal.json",
+            // New monsters from images
+            "Furnacron.json", "Nivoxis.json",
+            "Noctivy.json", "Skarth.json", "Frosmoth.json",
+            "Fulverice.json", "Pyrochi.json", "Synthraze.json"
+        ];
+
+        // Initialize the shop
+        async function initializeShop() {
+            console.log('🏪 Initializing Monster Shop...');
+            
+            // Set up auth listener
+            onAuthStateChanged(window.firebaseAuth, (user) => {
+                if (user) {
+                    currentUser = user;
+                    loadUserCurrency();
+                    loadUserMonsters();
+                    
+                    // Ensure Monster Tamers knows about the user
+                    if (window.MonsterTamers) {
+                        window.MonsterTamers.setUserID(user.uid);
+                    }
+                } else {
+                    window.location.href = 'index.html';
+                }
+            });
+
+            // Load monster data
+            await loadMonsterData();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            console.log('✅ Monster Shop ready!');
+        }
+
+        // Load all monster data
+        async function loadMonsterData() {
+            console.log('📚 Loading monster data...');
+            monstersData = [];
+
+            for (const file of MONSTER_FILES) {
+                try {
+                    const response = await fetch(`/Monsters/${file}`);
+                    if (response.ok) {
+                        const monsterData = await response.json();
+                        monstersData.push(monsterData);
+                        console.log(`✅ Loaded ${monsterData.name} from JSON`);
+                    } else {
+                        console.warn(`❌ Failed to load ${file}: ${response.status} ${response.statusText}`);
+                    }
+                } catch (error) {
+                    console.error(`❌ Error loading ${file}:`, error);
+                }
+            }
+
+            console.log(`📊 Loaded ${monstersData.length} monsters`);
+            displayMonsters();
+        }
+
+        // Load user currency
+        async function loadUserCurrency() {
+            if (!currentUser || !window.firebaseDatabase) return;
+
+            try {
+                const userRef = ref(window.firebaseDatabase, `users/${currentUser.uid}`);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+
+                if (userData) {
+                    userCurrency.FM = userData.FM || 0;
+                    userCurrency.CM = userData.CM || 0;
+                    
+                    document.getElementById('fm-amount').textContent = userCurrency.FM;
+                    document.getElementById('cm-amount').textContent = userCurrency.CM;
+                }
+            } catch (error) {
+                console.error('❌ Error loading user currency:', error);
+            }
+        }
+
+        // Load user monsters to show owned count
+        async function loadUserMonsters() {
+            if (!currentUser || !window.firebaseDatabase) return;
+
+            try {
+                const userMonstersRef = ref(window.firebaseDatabase, `users/${currentUser.uid}/monsters`);
+                const snapshot = await get(userMonstersRef);
+                const monstersData = snapshot.val() || {};
+                
+                userMonstersData = Object.keys(monstersData).map(key => ({
+                    uid: key,
+                    ...monstersData[key]
+                }));
+                
+                console.log(`📊 Loaded ${userMonstersData.length} user monsters`);
+                
+                // Refresh the display to show updated owned counts
+                displayMonsters();
+                
+            } catch (error) {
+                console.error('❌ Error loading user monsters:', error);
+            }
+        }
+
+        // Get count of owned monsters by monster ID
+        function getOwnedCount(monsterId) {
+            return userMonstersData.filter(monster => 
+                monster.monsterId && monster.monsterId.toLowerCase() === monsterId.toLowerCase()
+            ).length;
+        }
+
+        // Display monsters in the grid
+        function displayMonsters() {
+            const grid = document.getElementById('monsters-grid');
+            grid.innerHTML = '';
+
+            if (currentFilter === 'boosters') {
+                // Display egg boosters
+                displayEggBoosters();
+                return;
+            }
+
+            let filteredMonsters = monstersData;
+            if (currentFilter !== 'all') {
+                filteredMonsters = monstersData.filter(monster => 
+                    monster.types.some(type => type.toLowerCase() === currentFilter)
+                );
+            }
+
+            if (filteredMonsters.length === 0) {
+                grid.innerHTML = '<div class="loading">No monsters found for this filter.</div>';
+                return;
+            }
+
+            filteredMonsters.forEach(monster => {
+                const card = createMonsterCard(monster);
+                grid.appendChild(card);
+            });
+        }
+
+        // Display egg boosters
+        function displayEggBoosters() {
+            const grid = document.getElementById('monsters-grid');
+            
+            Object.entries(EGG_BOOSTERS).forEach(([key, booster]) => {
+                const card = createBoosterCard(key, booster);
+                grid.appendChild(card);
+            });
+        }
+
+        // Create a booster card element
+        function createBoosterCard(boosterId, booster) {
+            const card = document.createElement('div');
+            card.className = 'monster-card';
+
+            card.innerHTML = `
+                <div class="monster-header">
+                    <div class="monster-image" style="display: flex; align-items: center; justify-content: center; font-size: 3rem; background: linear-gradient(135deg, #FFD700, #FFA000);">
+                        ${booster.icon}
+                    </div>
+                    <div class="monster-info">
+                        <div class="monster-name">${booster.name}</div>
+                        <div class="monster-id">Egg Booster</div>
+                        <div class="monster-types">
+                            <span class="type-badge" style="background-color: #FFD700; color: #000;">BOOSTER</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="monster-description">${booster.description}</div>
+
+                <div class="monster-ability">
+                    <div class="ability-name">Effect</div>
+                    <div class="ability-description">${booster.effect}</div>
+                </div>
+
+                <div class="purchase-section">
+                    <div style="text-align: center; margin-bottom: 10px; font-size: 0.8rem; color: #00BCD4; font-weight: bold;">
+                        💡 Apply to any egg in your collection
+                    </div>
+                    <div class="price-options">
+                        <div class="price-option selected" data-currency="FM">
+                            <div class="price-label">Fighter Money</div>
+                            <div class="price-amount">
+                                ${booster.price.FM} <img src="res/img/fm.png" alt="FM" style="width: 16px; height: 16px;">
+                            </div>
+                        </div>
+                        <div class="price-option" data-currency="CM">
+                            <div class="price-label">Champion Money</div>
+                            <div class="price-amount">
+                                ${booster.price.CM} <img src="res/img/cm.png" alt="CM" style="width: 16px; height: 16px;">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" onclick="adjustQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity-input" value="1" min="1" max="10">
+                        <button class="quantity-btn" onclick="adjustQuantity(this, 1)">+</button>
+                    </div>
+                    
+                    <button class="buy-btn" onclick="purchaseBooster('${boosterId}', this)">
+                        Purchase Booster
+                    </button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Create a monster card element
+        function createMonsterCard(monster) {
+            const card = document.createElement('div');
+            card.className = 'monster-card';
+            card.setAttribute('data-types', monster.types.join(',').toLowerCase());
+
+            card.innerHTML = `
+                <div class="monster-header">
+                    <img src="/Monsters/${monster.name}.png" alt="${monster.name}" class="monster-image">
+                    <div class="monster-info">
+                        <div class="monster-name">${monster.name}</div>
+                        <div class="monster-id">#${monster.id.padStart(3, '0')}</div>
+                        <div class="monster-types">
+                            ${monster.types.map(type => 
+                                `<span class="type-badge type-${type.toLowerCase()}">${type}</span>`
+                            ).join('')}
+                        </div>
+                        <div class="owned-count">
+                            Owned: <span class="owned-number" data-count="${getOwnedCount(monster.name)}">${getOwnedCount(monster.name)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="monster-description">${monster.description || 'A mysterious monster waiting to be discovered.'}</div>
+
+                <div class="monster-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">HP</div>
+                        <div class="stat-value">${monster.stats.hp}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">ATK</div>
+                        <div class="stat-value">${monster.stats.attack}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">DEF</div>
+                        <div class="stat-value">${monster.stats.defense}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">SP.ATK</div>
+                        <div class="stat-value">${monster.stats.specialAttack}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">SP.DEF</div>
+                        <div class="stat-value">${monster.stats.specialDefense}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">SPD</div>
+                        <div class="stat-value">${monster.stats.speed}</div>
+                    </div>
+                </div>
+
+                ${monster.ability ? `
+                    <div class="monster-ability">
+                        <div class="ability-name">${monster.ability.name}</div>
+                        <div class="ability-description">${monster.ability.description}</div>
+                    </div>
+                ` : ''}
+
+                <div class="monster-moves">
+                    <div class="moves-title">Moves:</div>
+                    <div class="moves-list">
+                        ${monster.moves.map(move => `
+                            <div class="move-item">
+                                <span class="move-name">${move.name}</span>
+                                <div class="move-details">
+                                    <span class="move-type type-${move.type.toLowerCase()}">${move.type}</span>
+                                    <span class="move-power">${move.power || '--'}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="purchase-section">
+                    <div style="text-align: center; margin-bottom: 10px; font-size: 0.8rem; color: #00BCD4; font-weight: bold;">
+                        ⭐ Starts at Level 1 with 0 XP ⭐
+                    </div>
+                    <div class="price-options">
+                        <div class="price-option selected" data-currency="FM">
+                            <div class="price-label">Fighter Money</div>
+                            <div class="price-amount">
+                                1500 <img src="res/img/fm.png" alt="FM" style="width: 16px; height: 16px;">
+                            </div>
+                        </div>
+                        <div class="price-option" data-currency="CM">
+                            <div class="price-label">Champion Money</div>
+                            <div class="price-amount">
+                                10000 <img src="res/img/cm.png" alt="CM" style="width: 16px; height: 16px;">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" onclick="adjustQuantity(this, -1)">-</button>
+                        <input type="number" class="quantity-input" value="1" min="1" max="10">
+                        <button class="quantity-btn" onclick="adjustQuantity(this, 1)">+</button>
+                    </div>
+                    
+                    <button class="buy-btn" onclick="purchaseMonster('${monster.name.toLowerCase()}', this)">
+                        Purchase Monster
+                    </button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.getAttribute('data-type');
+                    displayMonsters();
+                });
+            });
+
+            // Price option selection
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.price-option')) {
+                    const option = e.target.closest('.price-option');
+                    const container = option.closest('.price-options');
+                    container.querySelectorAll('.price-option').forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                }
+            });
+        }
+
+        // Adjust quantity
+        window.adjustQuantity = function(btn, change) {
+            const input = btn.parentNode.querySelector('.quantity-input');
+            const newValue = Math.max(1, Math.min(10, parseInt(input.value) + change));
+            input.value = newValue;
+        };
+
+        // Purchase monster
+        window.purchaseMonster = async function(monsterId, btn) {
+            if (!currentUser) {
+                alert('Please log in to purchase monsters.');
+                return;
+            }
+
+            const card = btn.closest('.monster-card');
+            const selectedPrice = card.querySelector('.price-option.selected');
+            const currency = selectedPrice.getAttribute('data-currency');
+            const quantity = parseInt(card.querySelector('.quantity-input').value);
+            
+            const cost = currency === 'FM' ? 1500 * quantity : 10000 * quantity;
+
+            // Check if user has enough currency
+            if (userCurrency[currency] < cost) {
+                alert(`Not enough ${currency}! You need ${cost} ${currency} but only have ${userCurrency[currency]}.`);
+                return;
+            }
+
+            // Confirm purchase
+            const monsterName = card.querySelector('.monster-name').textContent;
+            if (!confirm(`Purchase ${quantity}x ${monsterName} for ${cost} ${currency}?`)) {
+                return;
+            }
+
+            try {
+                btn.disabled = true;
+                btn.textContent = 'Purchasing...';
+
+                // Deduct currency
+                const newAmount = userCurrency[currency] - cost;
+                const userRef = ref(window.firebaseDatabase, `users/${currentUser.uid}`);
+                await update(userRef, { [currency]: newAmount });
+
+                // Add monsters to collection
+                for (let i = 0; i < quantity; i++) {
+                    if (window.MonsterTamers && window.MonsterTamers.addMonsterToUserCollection) {
+                        await window.MonsterTamers.addMonsterToUserCollection(monsterId, currentUser.uid);
+                    }
+                }
+
+                // Update local currency
+                userCurrency[currency] = newAmount;
+                document.getElementById(currency.toLowerCase() + '-amount').textContent = newAmount;
+
+                // Reload user monsters to update owned counts
+                await loadUserMonsters();
+
+                alert(`Successfully purchased ${quantity}x ${monsterName}!`);
+                
+            } catch (error) {
+                console.error('❌ Purchase failed:', error);
+                alert('Purchase failed. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Purchase Monster';
+            }
+        };
+
+        // Purchase booster
+        window.purchaseBooster = async function(boosterId, btn) {
+            if (!currentUser) {
+                alert('Please log in to purchase boosters.');
+                return;
+            }
+
+            const card = btn.closest('.monster-card');
+            const selectedPrice = card.querySelector('.price-option.selected');
+            const currency = selectedPrice.getAttribute('data-currency');
+            const quantity = parseInt(card.querySelector('.quantity-input').value);
+            
+            const booster = EGG_BOOSTERS[boosterId];
+            const cost = booster.price[currency] * quantity;
+
+            // Check if user has enough currency
+            if (userCurrency[currency] < cost) {
+                alert(`Not enough ${currency}! You need ${cost} ${currency} but only have ${userCurrency[currency]}.`);
+                return;
+            }
+
+            // Confirm purchase
+            if (!confirm(`Purchase ${quantity}x ${booster.name} for ${cost} ${currency}?\n\nNote: You can apply these boosters to eggs in your Egg Collection.`)) {
+                return;
+            }
+
+            try {
+                btn.disabled = true;
+                btn.textContent = 'Purchasing...';
+
+                // Deduct currency
+                const newAmount = userCurrency[currency] - cost;
+                const userRef = ref(window.firebaseDatabase, `users/${currentUser.uid}`);
+                await update(userRef, { [currency]: newAmount });
+
+                // Add boosters to user inventory
+                const boostersRef = ref(window.firebaseDatabase, `users/${currentUser.uid}/boosters/${boosterId}`);
+                const currentBoostersSnapshot = await get(boostersRef);
+                const currentCount = currentBoostersSnapshot.val() || 0;
+                await set(boostersRef, currentCount + quantity);
+
+                // Update local currency
+                userCurrency[currency] = newAmount;
+                document.getElementById(currency.toLowerCase() + '-amount').textContent = newAmount;
+
+                alert(`Successfully purchased ${quantity}x ${booster.name}!\n\nYou can now apply these boosters to eggs in your Egg Collection.`);
+                
+            } catch (error) {
+                console.error('❌ Purchase failed:', error);
+                alert('Purchase failed. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Purchase Booster';
+            }
+        };
+
+        // Initialize when DOM loads
+        document.addEventListener('DOMContentLoaded', initializeShop);
+    </script>
+</body>
+</html> 

@@ -167,6 +167,40 @@ export const usernames = [
     "TacticianKing", "StrategyGod", "CommanderLord", "LeaderHeart", "BrainMaster",
     "TacticianLord", "StrategyLord", "CommanderKing", "LeaderKing", "BrainLord",
 
+    // Monster Tamer / Pokemon Themed (100+ Names)
+    // Simple & Iconic
+    "TrainerRed", "ChampionBlue", "ProfessorOak", "MistyPure", "BrockSolid", "PikachuPal", "EeveeFriend",
+    "Charmander", "SquirtleSquad", "BulbaBuddy", "KantoKid", "JohtoJourney", "HoennHero", "SinnohStar",
+    "UnovaLegend", "KalosKnight", "AlolaChamp", "GalarGuard", "PaldeaPro", "GymLeader", "EliteFour",
+    "RivalSilver", "YoungsterJoey", "BugCatcher", "AceTrainer", "BreederMax", "CoolTrainer",
+    "PokeBaller", "MasterBall", "RareCandy", "ExpShare", "PokedexUser", "StarterSquad", "TeamAqua",
+    "TeamMagma", "TeamGalaxy", "TeamPlasma", "TeamFlare", "TeamSkull", "TeamYell", "TeamStar",
+
+    // Trainer Focus & Titles
+    "MonCollector", "BeastBinder", "CreatureKeeper", "CritterCoach", "TamingExpert", "MonsterMentor",
+    "PaladinOfPals", "BeastWhisperer", "BondedSoul", "SynchroSavant", "TypeMaster", "EvoGuru",
+    "LegendSeeker", "MythicHunter", "ShinyChaser", "PerfectIVs", "BattleMaster", "ContestStar",
+    "RangerRick", "BreederBelle", "ResearcherRei", "CollectorCory", "StrategistSam", "RisingStarRoy",
+    "TopCoordinator", "FrontierBrain", "IslandKahuna", "TrialCaptain", "GuildMasterMon",
+
+    // Creature Inspired (Generic & Evocative)
+    "SparkyPup", "FlameTail", "AquaFin", "TerraHide", "AeroWing", "PsyBeam", "ShadowClaw", "SteelCore",
+    "VoltTackle", "HydroPump", "SolarBeam", "MoonBlast", "DragonBreath", "VenomStrike", "RockSlide",
+    "QuickAttack", "ProtectPro", "RoarKing", "GrowlitheGuard", "VulpixFlame", "AbraTeleport", "GeodudeRock",
+    "MachopPower", "GhastlyHaunt", "ScytherBlade", "LaprasSong", "DittoMorph", "SnorlaxSnore",
+
+    // Locations & Concepts
+    "IndigoPlateau", "CeruleanCave", "PewterGym", "ViridianForest", "CinnabarLab", "MtMoonRock",
+    "SafariZone", "VictoryRoad", "PowerPlant", "RocketHideout", "SilphCo", "BattleTower", "TradeCenter",
+    "MysteryDungeon", "EggHatcher", "FossilFinder", "MegaEvolve", "ZMoveUser", "DynamaxBand", "TeraOrb",
+    "AlphaSapphire", "OmegaRuby", "SunMoonUltra", "SwordShieldCrown", "ScarletVioletZero",
+
+    // More Unique & Playful
+    "KetchumLegacy", "OakLabIntern", "NotGaryOak", "RouteOneRookie", "FullHealNeeded", "RepelWearer",
+    "HMCollector", "BikePathZoomer", "GameCornerPro", "SlowpokeTail", "MagikarpSplash", "BidoofGod",
+    "MissingNo", "GlitchCity", "NurseJoyFan", "OfficerJenny", "LookerInvestigates", "SmogonTier",
+    "NuzlockeRun", "WonderTrader", "GottaCatchEm", "BeTheVeryBest", "ProfessorJuniper", "LookerHere",
+
     // Creative Gaming Nicknames
     "Pr0_Sn1per", "N00bSlayer420", "1337_Gamer", "xXDarkLord99Xx", "Gh0st_Hunt3r",
     "R4ge_Qu1t", "360NoScope_Pro", "MLG_Dr3amer", "Pwn3d_U", "L3gacy_K1ller",
@@ -612,5 +646,17 @@ export const usernames = [
     "Aetheria", "Zephyr", "Kael", "Lyra", "Seraphina",
     "Orion", "Astrid", "Rylan", "Elara", "Jaxon",
     "Nyx", "Caspian", "Willow", "Finnian", "Rowan",
-    "Lucian", "Aurora", "Jasper", "Skye", "Ezra"
+    "Lucian", "Aurora", "Jasper", "Skye", "Ezra",
+
+    "Blaze", "Echo", "Nova", "Zephyr", "Orion",
+    "Aetheria", "Seraphina", "Caspian", "Nyx", "Astrid",
+    "GlitchMode", "SynthWave", "NeoCyber", "QuantumLeap", "ApexWraith",
+    "Zephyr", "Lyra", "Finnian", "Aurora", "Skye",
+    "Willow", "Rowan", "Jasper", "Skye", "Ezra",
+
+    "Pikachu", "Charizard", "Bulbasaur", "Squirtle", "Jigglypuff",
+    "Ash", "Misty", "Brock", "Cynthia", "Lance",
+    "PalletTown", "Cerulean", "Pewter", "Lavender", "Vermilion",
+    "Electric", "Fire", "Water", "Grass", "Psychic",
+    "Pokeball", "Potion", "RareCandy", "MasterBall", "ExpShare"
 ]; 

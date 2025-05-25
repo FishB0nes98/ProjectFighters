@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monster Level-Up System Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .demo-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .monster-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .xp-bar {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            height: 20px;
+            margin: 10px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .xp-fill {
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            height: 100%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+        
+        .xp-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .button {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: transform 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .log {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .level-up-animation {
+            animation: levelUpGlow 1s ease-in-out;
+        }
+        
+        @keyframes levelUpGlow {
+            0% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.6); }
+            100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+        }
+        
+        .error {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Monster Level-Up System</h1>
+        
+        <div class="demo-section">
+            <h2>🔵 Player Monster</h2>
+            <div id="playerMonster" class="monster-card">
+                <h3 id="playerName">Blobby</h3>
+                <div>Level: <span id="playerLevel">4</span></div>
+                <div>Experience: <span id="playerXP">800</span></div>
+                <div class="xp-bar">
+                    <div id="playerXPFill" class="xp-fill" style="width: 60%"></div>
+                    <div class="xp-text" id="playerXPText">800 / 1200 XP</div>
+                </div>
+                <div class="stat-grid">
+                    <div class="stat-item">HP: <span id="playerHP">80</span></div>
+                    <div class="stat-item">ATK: <span id="playerATK">75</span></div>
+                    <div class="stat-item">DEF: <span id="playerDEF">70</span></div>
+                    <div class="stat-item">SP.ATK: <span id="playerSPATK">90</span></div>
+                    <div class="stat-item">SP.DEF: <span id="playerSPDEF">85</span></div>
+                    <div class="stat-item">SPD: <span id="playerSPD">95</span></div>
+                </div>
+                <div>Current HP: <span id="playerCurrentHP">80</span> / <span id="playerMaxHP">80</span></div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🔴 Opponent Monster (Defeated)</h2>
+            <div id="opponentMonster" class="monster-card">
+                <h3>Sharx</h3>
+                <div>Level: 6</div>
+                <div>Status: Defeated</div>
+                <div class="stat-grid">
+                    <div class="stat-item">HP: 85</div>
+                    <div class="stat-item">ATK: 95</div>
+                    <div class="stat-item">DEF: 75</div>
+                    <div class="stat-item">SP.ATK: 70</div>
+                    <div class="stat-item">SP.DEF: 70</div>
+                    <div class="stat-item">SPD: 100</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>⚔️ Battle Actions</h2>
+            <button class="button" onclick="simulateWildBattle()">🌿 Wild Battle Victory</button>
+            <button class="button" onclick="simulateTrainerBattle()">🏆 Trainer Battle Victory</button>
+            <button class="button" onclick="simulateBossBattle()">👑 Boss Battle Victory</button>
+            <button class="button" onclick="resetMonster()">🔄 Reset Monster</button>
+        </div>
+        
+        <div class="demo-section">
+            <h2>📊 Battle Log</h2>
+            <div id="battleLog" class="log">
+                Ready to battle! Click a battle type above to see the level-up system in action.
+            </div>
+        </div>
+        
+        <div id="errorContainer"></div>
+    </div>
+
+    <script type="module">
+        import { levelUpManager } from './level_up_manager.js';
+        
+        // Global monster data
+        let playerMonster = {
+            name: "Blobby",
+            level: 4,
+            experience: 800,
+            stats: {
+                hp: 80,
+                attack: 75,
+                defense: 70,
+                specialAttack: 90,
+                specialDefense: 85,
+                speed: 95
+            },
+            currentHP: 80,
+            maxHP: 80,
+            uid: "demo_player_monster",
+            types: ["Water", "Dragon"]
+        };
+        
+        const opponentMonster = {
+            name: "Sharx",
+            level: 6,
+            experience: 1500,
+            stats: {
+                hp: 85,
+                attack: 95,
+                defense: 75,
+                specialAttack: 70,
+                specialDefense: 70,
+                speed: 100
+            },
+            currentHP: 0,
+            maxHP: 85,
+            uid: "demo_opponent_monster",
+            types: ["Water", "Dark"]
+        };
+        
+        // Make functions global for onclick handlers
+        window.simulateWildBattle = () => simulateBattle('wild', false);
+        window.simulateTrainerBattle = () => simulateBattle('trainer', true);
+        window.simulateBossBattle = () => simulateBattle('boss', false);
+        window.resetMonster = resetMonster;
+        
+        function updateMonsterDisplay() {
+            // Update basic info
+            document.getElementById('playerLevel').textContent = playerMonster.level;
+            document.getElementById('playerXP').textContent = playerMonster.experience;
+            
+            // Update stats
+            document.getElementById('playerHP').textContent = playerMonster.stats.hp;
+            document.getElementById('playerATK').textContent = playerMonster.stats.attack;
+            document.getElementById('playerDEF').textContent = playerMonster.stats.defense;
+            document.getElementById('playerSPATK').textContent = playerMonster.stats.specialAttack;
+            document.getElementById('playerSPDEF').textContent = playerMonster.stats.specialDefense;
+            document.getElementById('playerSPD').textContent = playerMonster.stats.speed;
+            
+            // Update HP
+            document.getElementById('playerCurrentHP').textContent = playerMonster.currentHP;
+            document.getElementById('playerMaxHP').textContent = playerMonster.maxHP;
+            
+            // Update XP bar
+            const xpProgress = levelUpManager.getXPProgress(playerMonster);
+            const xpFill = document.getElementById('playerXPFill');
+            const xpText = document.getElementById('playerXPText');
+            
+            xpFill.style.width = `${xpProgress.progress * 100}%`;
+            xpText.textContent = `${xpProgress.progressXP} / ${xpProgress.neededXP} XP to next level`;
+            
+            if (xpProgress.isMaxLevel) {
+                xpText.textContent = "MAX LEVEL";
+                xpFill.style.width = "100%";
+            }
+        }
+        
+        function addToLog(message) {
+            const log = document.getElementById('battleLog');
+            const timestamp = new Date().toLocaleTimeString();
+            log.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function simulateBattle(battleType, isTrainerBattle) {
+            try {
+                addToLog(`🎯 Starting ${battleType} battle...`);
+                
+                // Calculate XP gain
+                const xpGain = levelUpManager.calculateXPGain(playerMonster, opponentMonster, battleType, isTrainerBattle);
+                addToLog(`💫 Calculated XP gain: ${xpGain}`);
+                
+                // Store old values for comparison
+                const oldLevel = playerMonster.level;
+                const oldStats = { ...playerMonster.stats };
+                
+                // Award XP
+                const result = levelUpManager.awardXP(playerMonster, xpGain);
+                
+                addToLog(`📈 ${playerMonster.name} gained ${result.xpGained} XP!`);
+                
+                // Handle level-ups
+                if (result.levelsGained > 0) {
+                    // Add level-up animation
+                    const monsterCard = document.getElementById('playerMonster');
+                    monsterCard.classList.add('level-up-animation');
+                    setTimeout(() => monsterCard.classList.remove('level-up-animation'), 1000);
+                    
+                    addToLog(`🎉 LEVEL UP! ${playerMonster.name} reached level ${result.newLevel}!`);
+                    
+                    if (result.statIncreases) {
+                        const statNames = {
+                            hp: 'HP',
+                            attack: 'Attack',
+                            defense: 'Defense',
+                            specialAttack: 'Sp. Attack',
+                            specialDefense: 'Sp. Defense',
+                            speed: 'Speed'
+                        };
+                        
+                        const increases = [];
+                        for (const [stat, increase] of Object.entries(result.statIncreases)) {
+                            if (increase > 0) {
+                                increases.push(`${statNames[stat]} +${increase}`);
+                            }
+                        }
+                        
+                        if (increases.length > 0) {
+                            addToLog(`📊 Stats increased: ${increases.join(', ')}`);
+                        }
+                    }
+                    
+                    addToLog(`🏥 ${playerMonster.name} recovered some HP from leveling up!`);
+                }
+                
+                // Update display
+                updateMonsterDisplay();
+                
+                addToLog(`✅ Battle complete! Current level: ${playerMonster.level} (${playerMonster.experience} XP)`);
+                
+            } catch (error) {
+                console.error('Battle simulation error:', error);
+                showError(`Battle simulation failed: ${error.message}`);
+            }
+        }
+        
+        function resetMonster() {
+            playerMonster = {
+                name: "Blobby",
+                level: 4,
+                experience: 800,
+                stats: {
+                    hp: 80,
+                    attack: 75,
+                    defense: 70,
+                    specialAttack: 90,
+                    specialDefense: 85,
+                    speed: 95
+                },
+                currentHP: 80,
+                maxHP: 80,
+                uid: "demo_player_monster",
+                types: ["Water", "Dragon"]
+            };
+            
+            updateMonsterDisplay();
+            addToLog(`🔄 Monster reset to level ${playerMonster.level}`);
+        }
+        
+        function showError(message) {
+            const errorContainer = document.getElementById('errorContainer');
+            errorContainer.innerHTML = `<div class="error">❌ Error: ${message}</div>`;
+            setTimeout(() => {
+                errorContainer.innerHTML = '';
+            }, 5000);
+        }
+        
+        // Initialize display
+        updateMonsterDisplay();
+        addToLog('🎮 Level-up system loaded! Ready for battle!');
+        
+    </script>
+</body>
+</html> 

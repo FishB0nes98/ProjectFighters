@@ -448,16 +448,16 @@
             100% { box-shadow: 0 0 10px rgba(255, 105, 180, 0.3); }
         }
 
-        /* Collab tag style */
-        .tag-collab {
+        /* COLLAB tag style */
+        .tag-COLLAB {
             background: linear-gradient(45deg, #DA70D6, #C71585);
             box-shadow: 0 0 10px rgba(218, 112, 214, 0.3);
-            animation: collabGlow 2s ease-in-out infinite;
+            animation: COLLABGlow 2s ease-in-out infinite;
             color: #FFFFFF;
             text-shadow: 0 0 3px rgba(0,0,0,0.5);
         }
 
-        @keyframes collabGlow {
+        @keyframes COLLABGlow {
             0% { box-shadow: 0 0 10px rgba(218, 112, 214, 0.3); }
             50% { box-shadow: 0 0 20px rgba(199, 21, 133, 0.5); }
             100% { box-shadow: 0 0 10px rgba(218, 112, 214, 0.3); }
@@ -499,6 +499,23 @@
             color: #FFFFFF;
             text-shadow: 0 0 3px rgba(0,0,0,0.8);
         }
+
+        /* Add Monster Trainer tag style */
+        .tag-monster {
+            background: linear-gradient(45deg, #E3350D, #3B4CCA);
+            box-shadow: 0 0 10px rgba(227, 53, 13, 0.3);
+            animation: monsterGlow 2s ease-in-out infinite;
+            color: #FFFFFF;
+            text-shadow: 0 0 3px rgba(0,0,0,0.5);
+        }
+
+        @keyframes monsterGlow {
+            0% { box-shadow: 0 0 10px rgba(227, 53, 13, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(59, 76, 202, 0.5); }
+            100% { box-shadow: 0 0 10px rgba(227, 53, 13, 0.3); }
+        }
+        
+
     </style>
 </head>
 <body>
@@ -570,14 +587,12 @@
         // Initialize champions grid
         function initChampionsGrid() {
             const grid = document.getElementById('champions-grid');
-            // Update new skins list for characters who received new skins in Patch 2.5
-            const newSkins = ["Ayane", "Julia", "Kagome", "Lili", "Cham Cham"];
-            // Season 2 characters (including new Blossom Event characters)
-            const seasonTwoSkins = ["Juri", "Shoma", "Blanka", "Scorpion", "Akuma", "Jun", "Zasalamel", "Talim", "Yugo", "Eagle", "Ayane", "Julia", "Mai", "Raiden", "Shizumaru", "Kuma", "Peacock", "R.Mika", "Shinnok", "Alice", "Tanya", "Shao Kahn", "Kotal Kahn", "Kagome", "Reptile", "Lili", "Cham Cham"];
-            // Characters with Tokyo Mew Mew collab skins
-            const mewSkins = ["Ayane", "Julia", "Kagome", "Lili", "Cham Cham"];
-            // Remove Desert tags
-            
+            // Only Monster Trainer skins are new for Patch 2.6
+            const newSkins = ["Eagle", "Kotal Kahn", "Peacock", "Ayane", "Shoma", "Lili", "FANG", "Kokoro"];
+            // Add FANG and Kokoro to Season 2 characters if they aren't already there
+            const seasonTwoSkins = ["Juri", "Shoma", "Blanka", "Scorpion", "Akuma", "Jun", "Zasalamel", "Talim", "Yugo", "Eagle", "Ayane", "Julia", "Mai", "Raiden", "Shizumaru", "Kuma", "Peacock", "R.Mika", "Shinnok", "Alice", "Tanya", "Shao Kahn", "Kotal Kahn", "Kagome", "Reptile", "Lili", "Cham Cham", "FANG", "Kokoro"];
+            // Characters with Monster Trainer skins
+            const monsterTrainerSkins = ["Eagle", "Kotal Kahn", "Peacock", "Ayane", "Shoma", "Lili", "FANG", "Kokoro"];
             // Free skins
             const freeSkins = ["Kuma"];
             
@@ -648,11 +663,11 @@
                     badgeRow1.appendChild(s2Badge);
                 }
                 
-                if (mewSkins.includes(champion)) {
-                    const mewBadge = document.createElement('div');
-                    mewBadge.className = 'skin-tag tag-mew';
-                    mewBadge.textContent = 'MEW';
-                    badgeRow2.appendChild(mewBadge);
+                if (monsterTrainerSkins.includes(champion)) {
+                    const monsterBadge = document.createElement('div');
+                    monsterBadge.className = 'skin-tag tag-monster';
+                    monsterBadge.textContent = 'MONSTER';
+                    badgeRow2.appendChild(monsterBadge);
                 }
 
                 if (freeSkins.includes(champion)) {
@@ -714,17 +729,31 @@
                     tagsContainer.appendChild(s2Tag);
                 }
 
-                // Add Tokyo Mew Mew tag for collab skins
+                // Add Tokyo Mew Mew tag for COLLAB skins (without NEW tag)
                 if (skin.name.includes('Tokyo Mew Mew')) {
-                    const mewTag = document.createElement('div');
-                    mewTag.className = 'skin-tag tag-mew';
-                    mewTag.textContent = 'MEW';
-                    tagsContainer.appendChild(mewTag);
-                    
-                    const collabTag = document.createElement('div');
-                    collabTag.className = 'skin-tag tag-collab';
-                    collabTag.textContent = 'COLLAB';
-                    tagsContainer.appendChild(collabTag);
+                    const COLLABTag = document.createElement('div');
+                    COLLABTag.className = 'skin-tag tag-COLLAB';
+                    COLLABTag.textContent = 'COLLAB';
+                    tagsContainer.appendChild(COLLABTag);
+                }
+                
+                // Add COLLAB COLLAB tag for specific skins
+                if (skin.COLLAB === "COLLAB" || 
+                    skin.name === "Lady Deadpool Ibuki" || 
+                    skin.name === "Wolverine Yugo" || 
+                    skin.name === "Deadpool Scorpion") {
+                    const COLLABTag = document.createElement('div');
+                    COLLABTag.className = 'skin-tag tag-COLLAB';
+                    COLLABTag.textContent = 'COLLAB';
+                    tagsContainer.appendChild(COLLABTag);
+                }
+
+                // Add Monster Trainer tag for these skins (with NEW tag)
+                if (skin.name.includes('Monster Trainer')) {
+                    const monsterTag = document.createElement('div');
+                    monsterTag.className = 'skin-tag tag-monster';
+                    monsterTag.textContent = 'MONSTER';
+                    tagsContainer.appendChild(monsterTag);
                     
                     const newTag = document.createElement('div');
                     newTag.className = 'skin-tag tag-new';

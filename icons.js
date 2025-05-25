@@ -12,6 +12,7 @@ export const profileIcons = {
     ],
     // Special icons
     special: [
+        'trainer_kokoro', 'trainer_fang', 'trainer_ayane', 'trainer_kotal', 'trainer_eagle',
         'talim_desert', 'astaroth_desert', 'jun_desert', 'blanka_desert', 'scorpion_desert', 'shoma_desert',
         'ayane_bunny', 'peacock_bunny', 'shinnok_bunny_rage', 'shinnok_bunny',
         'gangster_peacock', 'bandito_eagle', 'bandito_shinnok',

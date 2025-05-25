@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Egg Collection - Monster Fighters</title>
+    <link rel="icon" href="Icons/Profile/tokyo_ayane.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase config -->
+    <script src='./firebase-config.js' type='module'></script>
+    
+    <!-- Egg System -->
+    <script src="js/egg-system.js" type="module"></script>
+    
+    <!-- Base styles -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #00BCD4;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .back-btn {
+            background: linear-gradient(45deg, #FF5722, #FF9800);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 87, 34, 0.4);
+        }
+
+        .page-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 1.2rem;
+            color: #00BCD4;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+        }
+
+        .currency-display {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .currency-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .currency-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .currency-amount {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Main content */
+        .main-content {
+            margin-top: 80px;
+            padding: 20px;
+        }
+
+        .page-intro {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-intro h1 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #FFD700;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+        }
+
+        .page-intro p {
+            font-size: 1.1rem;
+            color: #E0E0E0;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: #00BCD4;
+        }
+
+        /* Currency Selection Styles */
+        .price-option {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            padding: 8px;
+            border: 2px solid transparent;
+        }
+
+        .price-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .price-option.selected {
+            border-color: #00BCD4;
+            background: rgba(0, 188, 212, 0.2);
+            box-shadow: 0 0 10px rgba(0, 188, 212, 0.3);
+        }
+
+        .price-option.affordable {
+            border-color: #4CAF50;
+        }
+
+        .price-option.unaffordable {
+            border-color: #F44336;
+            opacity: 0.6;
+        }
+
+        .buy-booster-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #666 !important;
+        }
+
+        .buy-booster-btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .currency-display {
+                gap: 10px;
+            }
+        }
+    </style>
+    
+    <!-- Egg System CSS -->
+    <link rel="stylesheet" href="css/egg-system.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <a href="monster-fighters.html" class="back-btn">⬅ Back to Game</a>
+            <div class="page-title">EGG COLLECTION</div>
+        </div>
+        <div class="currency-display">
+            <div class="currency-item">
+                <img src="res/img/fm.png" alt="FM" class="currency-icon">
+                <span id="fm-amount" class="currency-amount">0</span>
+            </div>
+            <div class="currency-item">
+                <img src="res/img/cm.png" alt="CM" class="currency-icon">
+                <span id="cm-amount" class="currency-amount">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-intro">
+            <h1>🥚 EGG COLLECTION</h1>
+            <p>Manage your monster eggs and watch them hatch into powerful creatures! Use boosters to enhance your eggs and reduce hatch times.</p>
+        </div>
+
+        <!-- Egg Collection Stats -->
+        <div id="egg-stats" class="egg-stats">
+            <h3>Collection Statistics</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="total-eggs">0</div>
+                    <div class="stat-label">Active Eggs</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="ready-eggs">0</div>
+                    <div class="stat-label">Ready to Hatch</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="total-hatched">0</div>
+                    <div class="stat-label">Total Hatched</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="next-daily">--</div>
+                    <div class="stat-label">Next Daily Egg</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booster Shop -->
+        <div class="booster-shop">
+            <h3>🚀 EGG BOOSTERS</h3>
+            <div class="boosters-grid">
+                <div class="booster-card" data-booster="IV_BOOSTER">
+                    <div class="booster-name">IV Enhancer</div>
+                    <div class="booster-description">Increases the IV potential of the monster inside the egg by +10 to all stats</div>
+                    <div class="booster-price">
+                        <div class="price-option" onclick="selectCurrency('IV_BOOSTER', 'FM')" data-currency="FM">
+                            <div>2500 <img src="res/img/fm.png" alt="FM" style="width: 16px; height: 16px;"></div>
+                        </div>
+                        <div class="price-option" onclick="selectCurrency('IV_BOOSTER', 'CM')" data-currency="CM">
+                            <div>15000 <img src="res/img/cm.png" alt="CM" style="width: 16px; height: 16px;"></div>
+                        </div>
+                    </div>
+                    <button class="buy-booster-btn" onclick="purchaseBooster('IV_BOOSTER')" id="buy-IV_BOOSTER" disabled>
+                        Select Currency First
+                    </button>
+                </div>
+
+                <div class="booster-card" data-booster="TIME_BOOSTER">
+                    <div class="booster-name">Hatch Accelerator</div>
+                    <div class="booster-description">Halves the remaining hatch time of an egg, getting your monster faster!</div>
+                    <div class="booster-price">
+                        <div class="price-option" onclick="selectCurrency('TIME_BOOSTER', 'FM')" data-currency="FM">
+                            <div>1500 <img src="res/img/fm.png" alt="FM" style="width: 16px; height: 16px;"></div>
+                        </div>
+                        <div class="price-option" onclick="selectCurrency('TIME_BOOSTER', 'CM')" data-currency="CM">
+                            <div>8000 <img src="res/img/cm.png" alt="CM" style="width: 16px; height: 16px;"></div>
+                        </div>
+                    </div>
+                    <button class="buy-booster-btn" onclick="purchaseBooster('TIME_BOOSTER')" id="buy-TIME_BOOSTER" disabled>
+                        Select Currency First
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Eggs Grid -->
+        <div id="eggs-container">
+            <div class="loading">Loading your egg collection...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { ref, get, set, update } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js';
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
+        import { eggSystem, EGG_RARITIES, EGG_BOOSTERS } from './js/egg-system.js';
+
+        // Global variables
+        let currentUser = null;
+        let userCurrency = { FM: 0, CM: 0 };
+        let selectedBooster = null;
+        let selectedEgg = null;
+        let selectedCurrencies = {}; // Track selected currency for each booster
+
+        // Initialize the page
+        async function initializeEggCollection() {
+            console.log('🥚 Initializing Egg Collection...');
+            
+            // Set up auth listener
+            onAuthStateChanged(window.firebaseAuth, (user) => {
+                if (user) {
+                    currentUser = user;
+                    eggSystem.setUserID(user.uid);
+                    loadUserCurrency();
+                    loadEggCollection();
+                } else {
+                    window.location.href = 'index.html';
+                }
+            });
+
+            // Set up periodic updates
+            setInterval(updateEggTimers, 1000); // Update every second
+            
+            console.log('✅ Egg Collection ready!');
+        }
+
+        // Load user currency
+        async function loadUserCurrency() {
+            if (!currentUser || !window.firebaseDatabase) return;
+
+            try {
+                const userRef = ref(window.firebaseDatabase, `users/${currentUser.uid}`);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+
+                if (userData) {
+                    userCurrency.FM = userData.FM || 0;
+                    userCurrency.CM = userData.CM || 0;
+                    
+                    document.getElementById('fm-amount').textContent = userCurrency.FM;
+                    document.getElementById('cm-amount').textContent = userCurrency.CM;
+                    
+                    // Update affordability indicators
+                    updateAffordabilityIndicators();
+                }
+            } catch (error) {
+                console.error('❌ Error loading user currency:', error);
+            }
+        }
+
+        // Load and display egg collection
+        async function loadEggCollection() {
+            if (!currentUser) return;
+
+            try {
+                await eggSystem.loadUserEggs();
+                displayEggs();
+                updateStats();
+            } catch (error) {
+                console.error('❌ Error loading egg collection:', error);
+                document.getElementById('eggs-container').innerHTML = 
+                    '<div class="loading" style="color: red;">Failed to load eggs. Please refresh the page.</div>';
+            }
+        }
+
+        // Display eggs in the grid
+        function displayEggs() {
+            const container = document.getElementById('eggs-container');
+            const eggs = eggSystem.getUserEggs();
+
+            if (eggs.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-eggs">
+                        <h3>No Eggs Yet</h3>
+                        <p>You don't have any eggs in your collection yet. Defeat Kotal Kahn daily to get water eggs, or earn eggs through other rewards!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="eggs-grid">
+                    ${eggs.map(egg => createEggCard(egg)).join('')}
+                </div>
+            `;
+        }
+
+        // Create an egg card element
+        function createEggCard(egg) {
+            const rarity = EGG_RARITIES[egg.rarity];
+            const timeRemaining = eggSystem.getTimeRemaining(egg);
+            const isReady = timeRemaining.total <= 0;
+            const progress = Math.max(0, Math.min(100, 
+                ((Date.now() - egg.createdAt) / (egg.hatchTime - egg.createdAt)) * 100
+            ));
+
+            return `
+                <div class="egg-card" data-egg-id="${egg.id}">
+                    <div class="egg-header">
+                        <div class="egg-icon" style="background: linear-gradient(135deg, ${rarity.color}, ${rarity.color}88);">
+                            🥚
+                        </div>
+                        <div class="egg-info">
+                            <div class="egg-type" style="color: ${rarity.color};">${egg.type} Egg</div>
+                            <div class="egg-rarity ${egg.rarity.toLowerCase()}">${rarity.name}</div>
+                        </div>
+                    </div>
+
+                    <div class="egg-timer">
+                        <div class="timer-label">Time Remaining</div>
+                        <div class="timer-value ${isReady ? 'ready' : ''}" id="timer-${egg.id}">
+                            ${isReady ? 'Ready to hatch!' : eggSystem.formatTimeRemaining(egg)}
+                        </div>
+                    </div>
+
+                    <div class="egg-progress">
+                        <div class="egg-progress-bar" style="width: ${progress}%"></div>
+                    </div>
+
+                    ${egg.boosters.ivBoost > 0 || egg.boosters.timeReduction < 1.0 ? `
+                        <div class="egg-boosters">
+                            <div class="booster-list">
+                                ${egg.boosters.ivBoost > 0 ? `<div class="booster-item">IV +${egg.boosters.ivBoost}</div>` : ''}
+                                ${egg.boosters.timeReduction < 1.0 ? `<div class="booster-item">Time ${Math.round((1 - egg.boosters.timeReduction) * 100)}% Faster</div>` : ''}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="egg-actions">
+                        ${isReady ? `
+                            <button class="egg-action-btn hatch-btn" onclick="hatchEgg('${egg.id}')">
+                                🐣 Hatch Now!
+                            </button>
+                        ` : `
+                            <button class="egg-action-btn" onclick="selectEggForBooster('${egg.id}')">
+                                🚀 Apply Booster
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Update egg timers
+        function updateEggTimers() {
+            const eggs = eggSystem.getUserEggs();
+            eggs.forEach(egg => {
+                const timerElement = document.getElementById(`timer-${egg.id}`);
+                if (timerElement) {
+                    const timeRemaining = eggSystem.getTimeRemaining(egg);
+                    const isReady = timeRemaining.total <= 0;
+                    
+                    timerElement.textContent = isReady ? 'Ready to hatch!' : eggSystem.formatTimeRemaining(egg);
+                    timerElement.className = `timer-value ${isReady ? 'ready' : ''}`;
+                    
+                    // If egg is ready, update the card
+                    if (isReady) {
+                        const card = document.querySelector(`[data-egg-id="${egg.id}"]`);
+                        if (card) {
+                            const actionsDiv = card.querySelector('.egg-actions');
+                            if (actionsDiv && !actionsDiv.innerHTML.includes('Hatch Now')) {
+                                actionsDiv.innerHTML = `
+                                    <button class="egg-action-btn hatch-btn" onclick="hatchEgg('${egg.id}')">
+                                        🐣 Hatch Now!
+                                    </button>
+                                `;
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update statistics
+        async function updateStats() {
+            const eggs = eggSystem.getUserEggs();
+            const readyEggs = eggs.filter(egg => eggSystem.getTimeRemaining(egg).total <= 0);
+            
+            document.getElementById('total-eggs').textContent = eggs.length;
+            document.getElementById('ready-eggs').textContent = readyEggs.length;
+            
+            // Get total hatched from Firebase
+            try {
+                const hatchedRef = ref(window.firebaseDatabase, `users/${currentUser.uid}/eggs`);
+                const snapshot = await get(hatchedRef);
+                const allEggs = snapshot.val() || {};
+                const hatchedCount = Object.values(allEggs).filter(egg => egg.isHatched).length;
+                document.getElementById('total-hatched').textContent = hatchedCount;
+            } catch (error) {
+                console.error('❌ Error loading hatched count:', error);
+            }
+
+            // Check next daily egg availability
+            const canReceive = await eggSystem.canReceiveDailyEgg();
+            document.getElementById('next-daily').textContent = canReceive ? 'Available!' : 'Tomorrow';
+        }
+
+        // Hatch an egg manually
+        window.hatchEgg = async function(eggId) {
+            const egg = eggSystem.userEggs.find(e => e.id === eggId);
+            if (!egg) return;
+
+            const timeRemaining = eggSystem.getTimeRemaining(egg);
+            if (timeRemaining.total > 0) {
+                alert('This egg is not ready to hatch yet!');
+                return;
+            }
+
+            try {
+                await eggSystem.triggerEggHatch(egg);
+                await loadEggCollection(); // Refresh the display
+            } catch (error) {
+                console.error('❌ Error hatching egg:', error);
+                alert('Failed to hatch egg. Please try again.');
+            }
+        };
+
+        // Select egg for booster application
+        window.selectEggForBooster = function(eggId) {
+            selectedEgg = eggId;
+            
+            // Highlight selected egg
+            document.querySelectorAll('.egg-card').forEach(card => {
+                card.style.border = '2px solid rgba(255, 255, 255, 0.1)';
+            });
+            
+            const selectedCard = document.querySelector(`[data-egg-id="${eggId}"]`);
+            if (selectedCard) {
+                selectedCard.style.border = '2px solid #FFD700';
+            }
+            
+            alert('Egg selected! Now choose a booster to apply.');
+        };
+
+        // Update affordability indicators
+        function updateAffordabilityIndicators() {
+            Object.keys(EGG_BOOSTERS).forEach(boosterType => {
+                ['FM', 'CM'].forEach(currency => {
+                    const cost = EGG_BOOSTERS[boosterType].price[currency];
+                    const option = document.querySelector(`[data-booster="${boosterType}"] .price-option[data-currency="${currency}"]`);
+                    
+                    if (option) {
+                        option.classList.remove('affordable', 'unaffordable');
+                        
+                        if (userCurrency[currency] >= cost) {
+                            option.classList.add('affordable');
+                        } else {
+                            option.classList.add('unaffordable');
+                        }
+                    }
+                });
+            });
+        }
+
+        // Select currency for booster purchase
+        window.selectCurrency = function(boosterType, currency) {
+            // Clear previous selection for this booster
+            document.querySelectorAll(`[data-booster="${boosterType}"] .price-option`).forEach(option => {
+                option.classList.remove('selected');
+            });
+
+            // Select the clicked option
+            const selectedOption = document.querySelector(`[data-booster="${boosterType}"] .price-option[data-currency="${currency}"]`);
+            selectedOption.classList.add('selected');
+
+            // Store the selected currency
+            selectedCurrencies[boosterType] = currency;
+
+            // Update button text and enable it
+            const button = document.getElementById(`buy-${boosterType}`);
+            const booster = EGG_BOOSTERS[boosterType];
+            const cost = booster.price[currency];
+            
+            button.textContent = `Purchase for ${cost} ${currency}`;
+            button.disabled = false;
+            button.style.background = 'linear-gradient(45deg, #00BCD4, #2196F3)';
+        };
+
+        // Purchase and apply booster
+        window.purchaseBooster = async function(boosterType) {
+            if (!selectedEgg) {
+                alert('Please select an egg first by clicking "Apply Booster" on an egg card.');
+                return;
+            }
+
+            if (!selectedCurrencies[boosterType]) {
+                alert('Please select a currency first by clicking on a price option.');
+                return;
+            }
+
+            const booster = EGG_BOOSTERS[boosterType];
+            if (!booster) return;
+
+            const currency = selectedCurrencies[boosterType];
+            const cost = booster.price[currency];
+
+            if (userCurrency[currency] < cost) {
+                alert(`Not enough ${currency}! You need ${cost} ${currency} but only have ${userCurrency[currency]}.`);
+                return;
+            }
+
+            if (!confirm(`Apply ${booster.name} to selected egg for ${cost} ${currency}?`)) {
+                return;
+            }
+
+            try {
+                // Deduct currency
+                const newAmount = userCurrency[currency] - cost;
+                const userRef = ref(window.firebaseDatabase, `users/${currentUser.uid}`);
+                await update(userRef, { [currency]: newAmount });
+
+                // Apply booster
+                const success = await eggSystem.applyBoosterToEgg(selectedEgg, boosterType);
+                
+                if (success) {
+                    // Update local currency
+                    userCurrency[currency] = newAmount;
+                    document.getElementById(currency.toLowerCase() + '-amount').textContent = newAmount;
+                    
+                    // Update affordability indicators
+                    updateAffordabilityIndicators();
+
+                    // Clear selection
+                    selectedEgg = null;
+                    document.querySelectorAll('.egg-card').forEach(card => {
+                        card.style.border = '2px solid rgba(255, 255, 255, 0.1)';
+                    });
+
+                    // Clear currency selection
+                    delete selectedCurrencies[boosterType];
+                    document.querySelectorAll(`[data-booster="${boosterType}"] .price-option`).forEach(option => {
+                        option.classList.remove('selected');
+                    });
+                    const button = document.getElementById(`buy-${boosterType}`);
+                    button.textContent = 'Select Currency First';
+                    button.disabled = true;
+
+                    // Refresh display
+                    await loadEggCollection();
+                    
+                    alert(`${booster.name} applied successfully!`);
+                } else {
+                    // Refund on failure
+                    await update(userRef, { [currency]: userCurrency[currency] });
+                    alert('Failed to apply booster. Please try again.');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error purchasing booster:', error);
+                alert('Purchase failed. Please try again.');
+            }
+        };
+
+        // Initialize when DOM loads
+        document.addEventListener('DOMContentLoaded', initializeEggCollection);
+    </script>
+</body>
+</html> 

@@ -35,7 +35,7 @@
             flex-direction: column;
             justify-content: center;
             padding: 20px;
-            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('Event/Tokyo Mew Mew Event 2.png') no-repeat center center fixed;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('res/img/ls.jpeg') no-repeat center center fixed;
             background-size: cover;
             margin: 0;
             overflow: hidden;
@@ -368,6 +368,360 @@
             background: linear-gradient(45deg, #D4AF37, var(--accent-color));
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
+
+        /* Sticker wheel styles */
+        #sticker-wheel-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            z-index: 2000;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        #sticker-wheel {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            pointer-events: all;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .sticker-option {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid #555;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-origin: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .sticker-option.active {
+            border-color: var(--accent-color);
+            transform: scale(1.2);
+            z-index: 10;
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .sticker-option img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        #sticker-display-container {
+            position: fixed;
+            z-index: 1500;
+            pointer-events: none;
+        }
+
+        #sticker-display {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Completely redesigned music selector styles */
+        #music-selector-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 500px;
+            z-index: 2000;
+            background-color: rgba(10, 15, 25, 0.95);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #1E90FF;
+            box-shadow: 0 0 30px rgba(30, 144, 255, 0.5);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        #music-selector {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .music-header {
+            padding: 20px;
+            background: linear-gradient(to right, #1E90FF, #00BFFF);
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .music-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .music-categories {
+            width: 150px;
+            background-color: rgba(20, 25, 35, 0.8);
+            overflow-y: auto;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .music-category {
+            padding: 15px 20px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .music-category[data-category="Favorites"] {
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        .music-category[data-category="Favorites"]::before {
+            content: "★";
+            margin-right: 8px;
+            color: #FFD700;
+        }
+
+        .music-category:hover {
+            background-color: rgba(30, 144, 255, 0.2);
+            color: white;
+        }
+
+        .music-category.active {
+            background-color: rgba(30, 144, 255, 0.3);
+            color: white;
+            font-weight: bold;
+            border-left: 4px solid #1E90FF;
+        }
+
+        .music-category[data-category="Favorites"].active {
+            background-color: rgba(255, 215, 0, 0.2);
+            border-left: 4px solid #FFD700;
+        }
+
+        .music-tracks {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 10px;
+            justify-content: space-around;
+        }
+
+        .music-track {
+            width: calc(50% - 15px);
+            background-color: rgba(40, 50, 70, 0.6);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .music-track:hover {
+            background-color: rgba(40, 50, 70, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .music-track.active {
+            background-color: rgba(30, 144, 255, 0.3);
+            border: 1px solid #1E90FF;
+            box-shadow: 0 0 15px rgba(30, 144, 255, 0.4);
+        }
+
+        /* Favorite track styling */
+        .music-track.favorite {
+            border: 1px solid #FFD700;
+            background-color: rgba(255, 215, 0, 0.1);
+        }
+
+        .music-track.favorite:hover {
+            background-color: rgba(255, 215, 0, 0.2);
+        }
+
+        .music-track.favorite.active {
+            background-color: rgba(255, 215, 0, 0.3);
+            border: 1px solid #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .favorite-indicator {
+            position: absolute;
+            top: 10px;
+            right: 40px;
+            width: 20px;
+            height: 20px;
+            color: #FFD700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+
+        .track-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .track-name {
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .track-artist {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .play-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #1E90FF;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .music-track.active .play-indicator {
+            display: flex;
+        }
+
+        .music-controls {
+            padding: 15px;
+            background-color: rgba(20, 25, 35, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .music-volume {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-size: 12px;
+        }
+
+        .volume-slider {
+            width: 100px;
+            accent-color: #1E90FF;
+        }
+
+        .play-button {
+            background-color: #1E90FF;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .play-button:hover {
+            transform: scale(1.1);
+            background-color: #00BFFF;
+        }
+
+        .music-now-playing {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            font-size: 12px;
+            margin: 0 15px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            text-align: center;
+        }
+
+        .now-playing-track {
+            font-weight: bold;
+            font-size: 14px;
+            color: #1E90FF;
+            margin-bottom: 3px;
+        }
+
+        .now-playing-artist {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .music-categories::-webkit-scrollbar,
+        .music-tracks::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .music-categories::-webkit-scrollbar-track,
+        .music-tracks::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .music-categories::-webkit-scrollbar-thumb,
+        .music-tracks::-webkit-scrollbar-thumb {
+            background: rgba(30, 144, 255, 0.5);
+            border-radius: 5px;
+        }
+
+        /* For Firefox */
+        .music-categories,
+        .music-tracks {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(30, 144, 255, 0.5) rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -535,6 +889,47 @@
         </div>
     </div>
 
+    <!-- Add sticker wheel container -->
+    <div id="sticker-wheel-container" class="hidden">
+        <div id="sticker-wheel">
+            <!-- Stickers will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Add sticker display container -->
+    <div id="sticker-display-container" class="hidden">
+        <img id="sticker-display" src="" alt="Sticker">
+    </div>
+
+    <!-- Completely redesigned music selector container -->
+    <div id="music-selector-container" class="hidden">
+        <div id="music-selector">
+            <div class="music-header">Select Music Track</div>
+            <div class="music-content">
+                <div class="music-categories" id="music-categories">
+                    <!-- Categories will be added dynamically -->
+                </div>
+                <div class="music-tracks" id="music-tracks">
+                    <!-- Tracks will be added dynamically -->
+                </div>
+            </div>
+            <div class="music-controls">
+                <div class="music-volume">
+                    <span>Volume</span>
+                    <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="30">
+                </div>
+                <div class="music-now-playing">
+                    <div class="now-playing-track" id="now-playing-track">No track selected</div>
+                    <div class="now-playing-artist" id="now-playing-artist"></div>
+                </div>
+                <button class="play-button" id="play-button">▶</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add audio player for music -->
+    <audio id="background-music" loop></audio>
+
     <!-- Add game result container -->
     <div class="game-result" id="gameResult"></div>
 
@@ -548,6 +943,7 @@
         import { roles } from './roles.js';
         import { Roles } from './roles-data.js';
         import { updateQuestProgress } from './quests.js';
+        import songs from './songs.js';
 
         // Firebase configuration
         const firebaseConfig = {
@@ -565,6 +961,19 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
+
+        // Add sticker wheel functionality
+        let userStickers = [];
+        let activeSticker = null;
+        let wheelOpen = false;
+        let stickerDisplayTimeout = null;
+
+        // Add music selector functionality
+        let musicTracks = [];
+        let activeMusic = null;
+        let musicSelectorOpen = false;
+        let audioPlayer = null;
+        let userMusicLibrary = {};
 
         // Get queue ID from session storage
         const queueId = sessionStorage.getItem('currentQueueId');
@@ -796,7 +1205,853 @@
         }
 
         // Load game data when page loads
-        window.addEventListener('load', loadGameData);
+        window.addEventListener('load', () => {
+            loadGameData();
+            loadUserStickers();
+            loadUserMusic();
+            audioPlayer = document.getElementById('background-music');
+        });
+
+        // Load user's stickers
+        async function loadUserStickers() {
+            try {
+                const user = auth.currentUser;
+                if (!user) {
+                    // Wait for auth state to initialize
+                    setTimeout(loadUserStickers, 500);
+                    return;
+                }
+
+                // First check if user has selected stickers in stickerSlots
+                const stickerSlotsRef = ref(database, `users/${user.uid}/stickerSlots`);
+                const stickerSlotsSnapshot = await get(stickerSlotsRef);
+                let selectedStickers = [];
+
+                if (stickerSlotsSnapshot.exists()) {
+                    const stickerSlots = stickerSlotsSnapshot.val();
+                    console.log('Found sticker slots:', stickerSlots);
+                    
+                    // Get all selected stickers from slots (non-empty values)
+                    selectedStickers = Object.values(stickerSlots).filter(sticker => sticker && sticker !== "");
+                    console.log('Selected stickers from slots:', selectedStickers);
+                }
+
+                // If no selected stickers in slots, fall back to all owned stickers
+                if (selectedStickers.length === 0) {
+                    const userStickerRef = ref(database, `users/${user.uid}/Stickers`);
+                    const snapshot = await get(userStickerRef);
+                    const stickersData = snapshot.val() || {};
+                    
+                    // Filter stickers owned by user (value = 1)
+                    userStickers = Object.keys(stickersData).filter(key => stickersData[key] === 1);
+                    console.log('No selected stickers found, using all owned stickers:', userStickers);
+                } else {
+                    userStickers = selectedStickers;
+                }
+                
+                // Initialize sticker wheel with the stickers
+                initStickerWheel();
+            } catch (error) {
+                console.error('Error loading user stickers:', error);
+            }
+        }
+
+        // Load user's music library
+        async function loadUserMusic() {
+            try {
+                const user = auth.currentUser;
+                if (!user) {
+                    // Wait for auth state to initialize
+                    setTimeout(loadUserMusic, 500);
+                    return;
+                }
+
+                // Use songs imported from songs.js to ensure accurate track IDs
+                const songsFromFile = Array.isArray(songs) ? songs : [];
+                console.log('Songs loaded from songs.js:', songsFromFile.length);
+
+                // Map songs from the file to our expected format
+                const baseTracks = songsFromFile.map(song => ({
+                    id: song.id.toString(),  // Convert numeric ID to string
+                    name: song.title,
+                    src: song.path,
+                    artist: song.artist,
+                    favorite: song.isFavorite || false
+                }));
+                
+                // Add the silence track if it doesn't exist
+                if (!baseTracks.some(track => track.id === 'silence')) {
+                    baseTracks.push({ id: "silence", name: "No Music", src: "", artist: "System" });
+                }
+                
+                // Reset tracks array and create a map for quick access
+                musicTracks = [];
+                const trackMap = {};
+                const favoriteTracks = [];
+                
+                // First check user-owned tracks in the database
+                console.log('Checking user-owned tracks from database...');
+                
+                // First source: users/{uid}/OwnedMusic
+                const ownedMusicRef = ref(database, `users/${user.uid}/OwnedMusic`);
+                const ownedMusicSnapshot = await get(ownedMusicRef);
+                
+                if (ownedMusicSnapshot.exists()) {
+                    const ownedMusic = ownedMusicSnapshot.val();
+                    console.log('Found OwnedMusic:', ownedMusic);
+                    
+                    // For each track with value = 1, add it to the tracks array
+                    for (const [trackId, owned] of Object.entries(ownedMusic)) {
+                        if (owned === 1) {
+                            // Find the track in base tracks
+                            const baseTrack = baseTracks.find(t => t.id === trackId);
+                            if (baseTrack) {
+                                musicTracks.push(baseTrack);
+                                trackMap[trackId] = true;
+                                console.log('Added owned track:', trackId);
+                            }
+                        }
+                    }
+                }
+                
+                // Second source: users/{uid}/Music (direct ownership)
+                const userMusicRef = ref(database, `users/${user.uid}/Music`);
+                const userMusicSnapshot = await get(userMusicRef);
+                
+                if (userMusicSnapshot.exists()) {
+                    const userMusic = userMusicSnapshot.val();
+                    console.log('Found Music:', userMusic);
+                    
+                    // Check each entry in the Music path
+                    for (const [trackId, data] of Object.entries(userMusic)) {
+                        if (!trackMap[trackId]) { // Avoid duplicates
+                            const baseTrack = baseTracks.find(t => t.id === trackId);
+                            if (baseTrack) {
+                                musicTracks.push(baseTrack);
+                                trackMap[trackId] = true;
+                                console.log('Added direct Music track:', trackId);
+                            }
+                        }
+                    }
+                }
+                
+                // Third source: users/{uid}/Purchases/Music
+                const purchasedMusicRef = ref(database, `users/${user.uid}/Purchases/Music`);
+                const purchasedMusicSnapshot = await get(purchasedMusicRef);
+                
+                if (purchasedMusicSnapshot.exists()) {
+                    const purchasedMusic = purchasedMusicSnapshot.val();
+                    console.log('Found Purchases/Music:', purchasedMusic);
+                    
+                    // For each purchased track, add it to the tracks array
+                    for (const [trackId, purchased] of Object.entries(purchasedMusic)) {
+                        if (purchased && !trackMap[trackId]) { // Avoid duplicates
+                            const baseTrack = baseTracks.find(t => t.id === trackId);
+                            if (baseTrack) {
+                                musicTracks.push(baseTrack);
+                                trackMap[trackId] = true;
+                                console.log('Added purchased track:', trackId);
+                            }
+                        }
+                    }
+                }
+                
+                // Fourth source: Check songs global folder for free tracks
+                const freeMusicRef = ref(database, `Songs`);
+                const freeMusicSnapshot = await get(freeMusicRef);
+                
+                if (freeMusicSnapshot.exists()) {
+                    const freeMusic = freeMusicSnapshot.val();
+                    console.log('Found global Songs:', freeMusic);
+                    
+                    // For each free track, add it if not already added
+                    for (const [trackId, data] of Object.entries(freeMusic)) {
+                        if (!trackMap[trackId]) {
+                            const baseTrack = baseTracks.find(t => t.id === trackId);
+                            if (baseTrack) {
+                                musicTracks.push(baseTrack);
+                                trackMap[trackId] = true;
+                                console.log('Added free track:', trackId);
+                            }
+                        }
+                    }
+                }
+                
+                // If no tracks were found in any of the paths, use all base tracks as fallback
+                if (musicTracks.length === 0) {
+                    console.log('No tracks found in database, using all base tracks as fallback');
+                    musicTracks = [...baseTracks];
+                } else if (!trackMap['silence']) {
+                    // Make sure "No Music" option is always available
+                    const silenceTrack = baseTracks.find(t => t.id === 'silence');
+                    if (silenceTrack) {
+                        musicTracks.push(silenceTrack);
+                    }
+                }
+                
+                // Check for favorite tracks BEFORE grouping
+                const favoritesRef = ref(database, `users/${user.uid}/FavoriteMusic`);
+                const favoritesSnapshot = await get(favoritesRef);
+
+                if (favoritesSnapshot.exists()) {
+                    const favorites = favoritesSnapshot.val();
+                    console.log('Found favorite tracks:', favorites);
+                    
+                    // Add favorite flag to tracks and collect favorites
+                    for (const trackId in favorites) {
+                        // Check for both boolean true and value 1
+                        if (favorites[trackId] === 1 || favorites[trackId] === true) {
+                            // First check by string ID (direct match)
+                            let track = musicTracks.find(t => t.id === trackId);
+                            
+                            // If not found, try numeric ID conversion (for songs.js format)
+                            if (!track) {
+                                track = musicTracks.find(t => t.id === trackId.toString());
+                            }
+                            
+                            // If still not found, try to find it in baseTracks
+                            if (!track) {
+                                // Try string match first
+                                let baseTrack = baseTracks.find(t => t.id === trackId);
+                                
+                                // Then try numeric conversion if needed
+                                if (!baseTrack) {
+                                    baseTrack = baseTracks.find(t => t.id === trackId.toString());
+                                }
+                                
+                                if (baseTrack) {
+                                    // Add it to musicTracks so it's available
+                                    musicTracks.push({...baseTrack});
+                                    trackMap[trackId] = true;
+                                    track = musicTracks[musicTracks.length - 1];
+                                    console.log('Recovered favorite track from baseTracks:', trackId);
+                                }
+                            }
+                            
+                            if (track) {
+                                track.favorite = true;
+                                favoriteTracks.push({...track});
+                                console.log('Added favorite track:', trackId, '(', track.name, ')');
+                            } else {
+                                console.log(`Favorite track ${trackId} not found in any track source. This may indicate a mismatch between database keys and track IDs.`);
+                            }
+                        }
+                    }
+                } else {
+                    console.log('No favorite tracks found in database');
+                }
+                
+                // Sort tracks by artist then name for a better UI experience
+                musicTracks.sort((a, b) => {
+                    if (a.artist === b.artist) {
+                        return a.name.localeCompare(b.name);
+                    }
+                    return a.artist.localeCompare(b.artist);
+                });
+                
+                // Group tracks by category for the UI
+                const groupedTracks = {};
+                
+                // Add favorites category if there are any
+                if (favoriteTracks.length > 0) {
+                    groupedTracks['Favorites'] = favoriteTracks;
+                }
+                
+                // Add the rest of the categories
+                musicTracks.forEach(track => {
+                    if (!groupedTracks[track.artist]) {
+                        groupedTracks[track.artist] = [];
+                    }
+                    groupedTracks[track.artist].push(track);
+                });
+                
+                console.log('Final music tracks loaded:', musicTracks.length);
+                console.log('Favorite tracks loaded:', favoriteTracks.length);
+                
+                // Initialize music selector with the grouped tracks
+                initMusicSelector(groupedTracks);
+                
+            } catch (error) {
+                console.error('Error loading music:', error);
+                
+                // Fallback to basic tracks
+                musicTracks = [
+                    { id: "animal_instinct", name: "Animal Instinct", src: "Songs/animal_instinct_tokyo_mew_mew.mp3", artist: "Tokyo Mew Mew" },
+                    { id: "team_up", name: "Team Up", src: "Songs/team_up_tokyo_mew_mew.mp3", artist: "Tokyo Mew Mew" },
+                    { id: "silence", name: "No Music", src: "", artist: "System" }
+                ];
+                
+                initMusicSelector();
+            }
+        }
+
+        // Initialize the music selector with the completely new design
+        function initMusicSelector(groupedTracks = null) {
+            // Get elements
+            const categoriesContainer = document.getElementById('music-categories');
+            const tracksContainer = document.getElementById('music-tracks');
+            const volumeSlider = document.getElementById('volume-slider');
+            const playButton = document.getElementById('play-button');
+            const nowPlayingTrack = document.getElementById('now-playing-track');
+            const nowPlayingArtist = document.getElementById('now-playing-artist');
+            
+            // Clear containers
+            categoriesContainer.innerHTML = '';
+            tracksContainer.innerHTML = '';
+            
+            // If no active music, set first track as default if available
+            if (!activeMusic && musicTracks.length > 0) {
+                activeMusic = musicTracks[0].id;
+            }
+            
+            // Create an "All Tracks" category
+            const allCategory = document.createElement('div');
+            allCategory.className = 'music-category active';
+            allCategory.dataset.category = 'all';
+            allCategory.textContent = 'All Tracks';
+            categoriesContainer.appendChild(allCategory);
+            
+            // Set up categories
+            if (groupedTracks) {
+                // Add Favorites category with special styling if it exists
+                if (groupedTracks['Favorites'] && groupedTracks['Favorites'].length > 0) {
+                    const favoritesCategory = document.createElement('div');
+                    favoritesCategory.className = 'music-category';
+                    favoritesCategory.dataset.category = 'Favorites';
+                    
+                    // Enhanced styling for Favorites category
+                    const starIcon = document.createElement('span');
+                    starIcon.innerHTML = '★';
+                    starIcon.style.color = '#ffbb00';
+                    starIcon.style.marginRight = '8px';
+                    starIcon.style.fontSize = '16px';
+                    
+                    const categoryText = document.createElement('span');
+                    categoryText.textContent = 'Favorites';
+                    categoryText.style.fontWeight = 'bold';
+                    
+                    favoritesCategory.appendChild(starIcon);
+                    favoritesCategory.appendChild(categoryText);
+                    favoritesCategory.style.background = 'linear-gradient(to right, rgba(255, 215, 0, 0.15), transparent)';
+                    
+                    // Insert after All Tracks
+                    categoriesContainer.insertBefore(favoritesCategory, allCategory.nextSibling);
+                }
+                
+                // Add other categories
+                Object.keys(groupedTracks).forEach(category => {
+                    if (category !== 'Favorites') {
+                        const categoryElement = document.createElement('div');
+                        categoryElement.className = 'music-category';
+                        categoryElement.dataset.category = category;
+                        categoryElement.textContent = category;
+                        categoriesContainer.appendChild(categoryElement);
+                    }
+                });
+            }
+            
+            // Add event listener for all categories
+            document.querySelectorAll('.music-category').forEach(element => {
+                element.addEventListener('click', () => {
+                    // Remove active class from all categories
+                    document.querySelectorAll('.music-category').forEach(cat => {
+                        cat.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked category
+                    element.classList.add('active');
+                    
+                    // Update tracks display
+                    updateTracksDisplay(element.dataset.category);
+                });
+            });
+            
+            // Initial display of all tracks
+            updateTracksDisplay('all');
+            
+            // Set up volume control
+            volumeSlider.addEventListener('input', () => {
+                if (audioPlayer) {
+                    audioPlayer.volume = volumeSlider.value / 100;
+                }
+            });
+            
+            // Set up play button
+            playButton.addEventListener('click', () => {
+                if (audioPlayer.paused) {
+                    playSelectedMusic();
+                    playButton.textContent = '⏸';
+                } else {
+                    audioPlayer.pause();
+                    playButton.textContent = '▶';
+                }
+            });
+            
+            // Update now playing if active track exists
+            updateNowPlaying();
+            
+            // Set up audio player events
+            audioPlayer.onplay = () => {
+                playButton.textContent = '⏸';
+            };
+            
+            audioPlayer.onpause = () => {
+                playButton.textContent = '▶';
+            };
+            
+            audioPlayer.onended = () => {
+                playButton.textContent = '▶';
+            };
+        }
+        
+        // Function to update tracks display based on selected category
+        function updateTracksDisplay(category) {
+            const tracksContainer = document.getElementById('music-tracks');
+            tracksContainer.innerHTML = '';
+            
+            let tracksToDisplay = [];
+            
+            if (category === 'all') {
+                tracksToDisplay = musicTracks;
+            } else if (category === 'Favorites') {
+                tracksToDisplay = musicTracks.filter(track => track.favorite === true);
+            } else {
+                tracksToDisplay = musicTracks.filter(track => track.artist === category);
+            }
+            
+            tracksToDisplay.forEach(track => {
+                const trackElement = document.createElement('div');
+                trackElement.className = 'music-track';
+                trackElement.dataset.trackId = track.id;
+                
+                if (track.id === activeMusic) {
+                    trackElement.classList.add('active');
+                }
+                
+                // Add favorite class if track is favorited
+                if (track.favorite) {
+                    trackElement.classList.add('favorite');
+                }
+                
+                const trackInfo = document.createElement('div');
+                trackInfo.className = 'track-info';
+                
+                const trackName = document.createElement('div');
+                trackName.className = 'track-name';
+                trackName.textContent = track.name;
+                
+                const trackArtist = document.createElement('div');
+                trackArtist.className = 'track-artist';
+                trackArtist.textContent = track.artist;
+                
+                const playIndicator = document.createElement('div');
+                playIndicator.className = 'play-indicator';
+                playIndicator.innerHTML = '▶';
+                
+                // Add favorite star if track is a favorite
+                if (track.favorite) {
+                    const favoriteIndicator = document.createElement('div');
+                    favoriteIndicator.className = 'favorite-indicator';
+                    favoriteIndicator.innerHTML = '★';
+                    trackElement.appendChild(favoriteIndicator);
+                }
+                
+                trackInfo.appendChild(trackName);
+                trackInfo.appendChild(trackArtist);
+                trackElement.appendChild(trackInfo);
+                trackElement.appendChild(playIndicator);
+                
+                tracksContainer.appendChild(trackElement);
+                
+                // Add event listener for track selection
+                trackElement.addEventListener('click', () => {
+                    document.querySelectorAll('.music-track').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    
+                    trackElement.classList.add('active');
+                    activeMusic = track.id;
+                    
+                    // Update now playing display
+                    updateNowPlaying();
+                });
+            });
+        }
+        
+        // Function to update now playing display
+        function updateNowPlaying() {
+            const nowPlayingTrack = document.getElementById('now-playing-track');
+            const nowPlayingArtist = document.getElementById('now-playing-artist');
+            
+            if (activeMusic) {
+                const selectedTrack = musicTracks.find(track => track.id === activeMusic);
+                if (selectedTrack) {
+                    nowPlayingTrack.textContent = selectedTrack.name;
+                    nowPlayingArtist.textContent = selectedTrack.artist;
+                }
+            } else {
+                nowPlayingTrack.textContent = 'No track selected';
+                nowPlayingArtist.textContent = '';
+            }
+        }
+
+        // Play the selected music with improved track selection
+        function playSelectedMusic() {
+            if (!activeMusic) {
+                console.log('No active music selected');
+                return;
+            }
+            
+            // Find the selected track
+            const selectedTrack = musicTracks.find(track => track.id === activeMusic);
+            if (!selectedTrack) {
+                console.error('Selected track not found in music tracks list');
+                return;
+            }
+            
+            console.log('Attempting to play:', selectedTrack.name, '| Source:', selectedTrack.src);
+            
+            // If "No Music" is selected, pause the current music
+            if (selectedTrack.id === 'silence') {
+                console.log('Silence selected, pausing audio');
+                audioPlayer.pause();
+                return;
+            }
+            
+            try {
+                // Set the audio source and play
+                audioPlayer.src = selectedTrack.src;
+                
+                // Set volume from slider
+                const volumeSlider = document.getElementById('volume-slider');
+                audioPlayer.volume = volumeSlider ? (volumeSlider.value / 100) : 0.3;
+                
+                // Update now playing display
+                updateNowPlaying();
+                
+                // Log when audio is loaded
+                audioPlayer.onloadeddata = () => {
+                    console.log('Audio loaded successfully:', selectedTrack.name);
+                };
+                
+                // Handle potential issues with audio loading
+                audioPlayer.oncanplaythrough = () => {
+                    console.log('Audio can play through, attempting playback');
+                    // Use a promise to catch any play errors
+                    audioPlayer.play()
+                        .then(() => {
+                            console.log('Audio playback started successfully');
+                            // Update UI to show playing state
+                            const playButton = document.getElementById('play-button');
+                            if (playButton) playButton.textContent = '⏸';
+                        })
+                        .catch(error => {
+                            console.error('Error playing audio:', error);
+                            // Try alternative playback method for browsers with autoplay restrictions
+                            if (error.name === 'NotAllowedError') {
+                                console.log('Autoplay prevented by browser, trying with user interaction');
+                                // Create a temporary button for user interaction
+                                const tempButton = document.createElement('button');
+                                tempButton.textContent = 'Click to Play Music';
+                                tempButton.style.position = 'fixed';
+                                tempButton.style.top = '10px';
+                                tempButton.style.right = '10px';
+                                tempButton.style.zIndex = '9999';
+                                tempButton.style.padding = '5px 10px';
+                                tempButton.style.backgroundColor = '#1E90FF';
+                                tempButton.style.color = 'white';
+                                tempButton.style.border = 'none';
+                                tempButton.style.borderRadius = '5px';
+                                tempButton.style.cursor = 'pointer';
+                                
+                                tempButton.onclick = () => {
+                                    audioPlayer.play()
+                                        .then(() => {
+                                            console.log('Audio playback started after user interaction');
+                                            document.body.removeChild(tempButton);
+                                            // Update UI to show playing state
+                                            const playButton = document.getElementById('play-button');
+                                            if (playButton) playButton.textContent = '⏸';
+                                        })
+                                        .catch(e => {
+                                            console.error('Error playing audio even after user interaction:', e);
+                                        });
+                                };
+                                
+                                document.body.appendChild(tempButton);
+                            }
+                        });
+                };
+                
+                // Handle audio loading errors
+                audioPlayer.onerror = (e) => {
+                    console.error('Error loading audio file:', selectedTrack.src, e);
+                    // Try an alternative file extension
+                    const fileName = selectedTrack.src.split('/').pop().split('.')[0];
+                    console.log('Trying alternative file extension for:', fileName);
+                    
+                    // Try mp3 first, then wav, then ogg
+                    const extensions = ['mp3', 'wav', 'ogg'];
+                    let currentExtIndex = 0;
+                    
+                    function tryNextExtension() {
+                        if (currentExtIndex >= extensions.length) {
+                            console.error('All extensions failed for:', fileName);
+                            return;
+                        }
+                        
+                        const newSrc = `Songs/${fileName}.${extensions[currentExtIndex]}`;
+                        console.log('Trying:', newSrc);
+                        
+                        audioPlayer.src = newSrc;
+                        currentExtIndex++;
+                        
+                        // If this extension fails, try the next one
+                        audioPlayer.onerror = tryNextExtension;
+                        
+                        // If it succeeds, play the audio
+                        audioPlayer.oncanplaythrough = () => {
+                            console.log('Alternative format loaded successfully:', newSrc);
+                            audioPlayer.play()
+                                .then(() => {
+                                    console.log('Playing alternative format');
+                                    // Update UI to show playing state
+                                    const playButton = document.getElementById('play-button');
+                                    if (playButton) playButton.textContent = '⏸';
+                                })
+                                .catch(err => console.error('Error playing alternative format:', err));
+                        };
+                    }
+                    
+                    tryNextExtension();
+                };
+                
+                // Log when audio ends
+                audioPlayer.onended = () => {
+                    console.log('Audio playback ended');
+                    // Update UI to show stopped state
+                    const playButton = document.getElementById('play-button');
+                    if (playButton) playButton.textContent = '▶';
+                };
+            } catch (error) {
+                console.error('Unexpected error in playSelectedMusic:', error);
+            }
+        }
+
+        // Handle keyboard events for music selector with improved UI
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'm' || e.key === 'M') {
+                if (!musicSelectorOpen) {
+                    showMusicSelector();
+                    e.preventDefault();
+                }
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'm' || e.key === 'M') {
+                if (musicSelectorOpen) {
+                    hideMusicSelector();
+                    playSelectedMusic();
+                    e.preventDefault();
+                }
+            }
+        });
+
+        // Show the music selector (different style than sticker wheel)
+        function showMusicSelector() {
+            const container = document.getElementById('music-selector-container');
+            container.classList.remove('hidden');
+            musicSelectorOpen = true;
+        }
+
+        // Hide the music selector
+        function hideMusicSelector() {
+            const container = document.getElementById('music-selector-container');
+            container.classList.add('hidden');
+            musicSelectorOpen = false;
+        }
+
+        // Initialize the sticker wheel with user's stickers
+        function initStickerWheel() {
+            const wheelElement = document.getElementById('sticker-wheel');
+            wheelElement.innerHTML = '';
+            
+            // Use up to 8 stickers for the wheel
+            const stickerCount = Math.min(userStickers.length, 8);
+            
+            if (stickerCount === 0) {
+                console.log('User has no stickers');
+                return;
+            }
+            
+            // If user has at least one sticker, set it as active
+            activeSticker = userStickers[0];
+            
+            // Calculate angle between stickers
+            const angleBetween = 360 / stickerCount;
+            
+            // Create sticker elements in a circle
+            for (let i = 0; i < stickerCount; i++) {
+                const stickerName = userStickers[i];
+                const angle = i * angleBetween;
+                const stickerElement = document.createElement('div');
+                stickerElement.className = 'sticker-option';
+                stickerElement.dataset.sticker = stickerName;
+                
+                // Position sticker in a circle
+                const radius = 100; // Distance from center
+                const x = Math.cos(angle * Math.PI / 180) * radius;
+                const y = Math.sin(angle * Math.PI / 180) * radius;
+                
+                // Store the x and y coordinates in CSS variables for use in transform
+                stickerElement.style.setProperty('--x', x + 'px');
+                stickerElement.style.setProperty('--y', y + 'px');
+                stickerElement.style.transform = `translate(${x}px, ${y}px)`;
+                
+                // Create image element
+                const img = document.createElement('img');
+                img.src = `Stickers/${stickerName}.png`;
+                img.alt = stickerName;
+                
+                stickerElement.appendChild(img);
+                wheelElement.appendChild(stickerElement);
+                
+                // Add event listener for hover
+                stickerElement.addEventListener('mouseover', () => {
+                    activeSticker = stickerName;
+                    highlightActiveSticker();
+                });
+            }
+            
+            // Highlight the first sticker as default
+            highlightActiveSticker();
+        }
+
+        // Highlight the active sticker
+        function highlightActiveSticker() {
+            const options = document.querySelectorAll('.sticker-option');
+            options.forEach(option => {
+                if (option.dataset.sticker === activeSticker) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+        }
+
+        // Show the sticker wheel
+        function showStickerWheel() {
+            const container = document.getElementById('sticker-wheel-container');
+            container.classList.remove('hidden');
+            wheelOpen = true;
+        }
+
+        // Hide the sticker wheel
+        function hideStickerWheel() {
+            const container = document.getElementById('sticker-wheel-container');
+            container.classList.add('hidden');
+            wheelOpen = false;
+        }
+
+        // Use the active sticker
+        function useSticker() {
+            if (!activeSticker || userStickers.length === 0) return;
+            
+            // Get the player slot that is highlighted (current user's character)
+            const playerSlot = document.querySelector('.player-slot.highlight');
+            if (!playerSlot) {
+                console.error('Player slot not found');
+                return;
+            }
+            
+            // Find the skin image container inside the highlighted player slot
+            const skinContainer = playerSlot.querySelector('.skin-image-container');
+            if (!skinContainer) {
+                console.error('Skin container not found');
+                return;
+            }
+            
+            // Display sticker
+            const displayContainer = document.getElementById('sticker-display-container');
+            const displayImg = document.getElementById('sticker-display');
+            
+            // Position the sticker container over the player's character
+            const skinRect = skinContainer.getBoundingClientRect();
+            displayContainer.style.top = `${skinRect.top + (skinRect.height * 0.2)}px`;
+            displayContainer.style.left = `${skinRect.left + (skinRect.width * 0.5) - 75}px`;
+            
+            // Set the sticker image
+            displayImg.src = `Stickers/${activeSticker}.png`;
+            displayContainer.classList.remove('hidden');
+            
+            // Clear any existing timeout
+            if (stickerDisplayTimeout) {
+                clearTimeout(stickerDisplayTimeout);
+            }
+            
+            // Hide sticker after 3 seconds
+            stickerDisplayTimeout = setTimeout(() => {
+                displayContainer.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Handle keyboard events for sticker wheel
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 't' || e.key === 'T') {
+                if (!wheelOpen && userStickers.length > 0) {
+                    showStickerWheel();
+                    e.preventDefault();
+                } else if (!wheelOpen && userStickers.length === 0) {
+                    console.log('No stickers available');
+                }
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 't' || e.key === 'T') {
+                if (wheelOpen) {
+                    hideStickerWheel();
+                    useSticker();
+                    e.preventDefault();
+                }
+            }
+        });
+
+        // Handle mouse movement to select stickers
+        document.addEventListener('mousemove', (e) => {
+            if (!wheelOpen) return;
+            
+            const wheelElement = document.getElementById('sticker-wheel');
+            const wheelRect = wheelElement.getBoundingClientRect();
+            
+            // Calculate center of wheel
+            const centerX = wheelRect.left + wheelRect.width / 2;
+            const centerY = wheelRect.top + wheelRect.height / 2;
+            
+            // Calculate angle between mouse and center
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+            
+            // Get distance from center
+            const distance = Math.sqrt(Math.pow(mouseX - centerX, 2) + Math.pow(mouseY - centerY, 2));
+            
+            // Only select if mouse is not too close to center (to avoid jitter)
+            if (distance > 30) {
+                // Calculate angle in degrees
+                let angle = Math.atan2(mouseY - centerY, mouseX - centerX) * 180 / Math.PI;
+                if (angle < 0) angle += 360; // Convert to 0-360 range
+                
+                // Calculate which sticker this corresponds to
+                const stickerCount = Math.min(userStickers.length, 8);
+                const stickerIndex = Math.floor(((angle + (360 / (stickerCount * 2))) % 360) / (360 / stickerCount));
+                
+                if (stickerIndex >= 0 && stickerIndex < stickerCount) {
+                    activeSticker = userStickers[stickerIndex];
+                    highlightActiveSticker();
+                }
+            }
+        });
 
         // Add decide game functionality
         document.querySelector('.decide-game-button').addEventListener('click', async function() {

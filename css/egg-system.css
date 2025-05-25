@@ -1,0 +1,458 @@
+/* Egg System Styles */
+
+/* Egg Hatch Notification */
+.egg-hatch-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    border: 3px solid #FFD700;
+    border-radius: 20px;
+    padding: 30px;
+    z-index: 10000;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: eggHatchAppear 0.5s ease-out;
+    max-width: 400px;
+    text-align: center;
+}
+
+@keyframes eggHatchAppear {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.hatch-content h3 {
+    color: #FFD700;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+}
+
+.hatch-content p {
+    color: white;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+.hatched-monster {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.hatched-monster img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.hatched-monster h4 {
+    color: #00BCD4;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1rem;
+    margin-bottom: 8px;
+}
+
+.hatched-monster p {
+    color: #E0E0E0;
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.hatch-content button {
+    background: linear-gradient(45deg, #4CAF50, #8BC34A);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hatch-content button:hover {
+    background: linear-gradient(45deg, #8BC34A, #4CAF50);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+}
+
+/* Egg Card Styles */
+.egg-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.egg-card:hover {
+    transform: translateY(-5px);
+    border-color: #00BCD4;
+    box-shadow: 0 10px 30px rgba(0, 188, 212, 0.3);
+}
+
+.egg-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(0, 188, 212, 0.1), transparent);
+    transform: translateX(-100%);
+    transition: 0.5s;
+}
+
+.egg-card:hover::before {
+    transform: translateX(100%);
+}
+
+.egg-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.egg-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    background: linear-gradient(135deg, #FFD700, #FFA000);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.egg-info {
+    flex: 1;
+}
+
+.egg-type {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1rem;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.egg-rarity {
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 12px;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.egg-rarity.common { background-color: #9E9E9E; color: white; }
+.egg-rarity.uncommon { background-color: #4CAF50; color: white; }
+.egg-rarity.rare { background-color: #2196F3; color: white; }
+.egg-rarity.epic { background-color: #9C27B0; color: white; }
+.egg-rarity.legendary { background-color: #FF9800; color: white; }
+.egg-rarity.mythical { background-color: #E91E63; color: white; }
+
+.egg-timer {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 8px;
+    margin: 15px 0;
+    text-align: center;
+}
+
+.timer-label {
+    font-size: 0.8rem;
+    color: #B0B0B0;
+    margin-bottom: 5px;
+}
+
+.timer-value {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1rem;
+    color: #00BCD4;
+}
+
+.timer-value.ready {
+    color: #4CAF50;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.egg-progress {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    height: 8px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.egg-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.egg-boosters {
+    margin: 15px 0;
+}
+
+.booster-list {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.booster-item {
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    color: #FFD700;
+}
+
+.egg-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.egg-action-btn {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 2px solid transparent;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.8rem;
+}
+
+.egg-action-btn:hover {
+    background: rgba(0, 188, 212, 0.3);
+    border-color: #00BCD4;
+}
+
+.egg-action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.hatch-btn {
+    background: linear-gradient(45deg, #4CAF50, #8BC34A) !important;
+}
+
+.hatch-btn:hover:not(:disabled) {
+    background: linear-gradient(45deg, #8BC34A, #4CAF50) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+}
+
+/* Egg Grid Layout */
+.eggs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Egg Collection Stats */
+.egg-stats {
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.egg-stats h3 {
+    color: #FFD700;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.stat-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.stat-value {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1.5rem;
+    color: #00BCD4;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #B0B0B0;
+    text-transform: uppercase;
+}
+
+/* Booster Shop Section */
+.booster-shop {
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.booster-shop h3 {
+    color: #FFD700;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.boosters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.booster-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.booster-card:hover {
+    border-color: #00BCD4;
+    background: rgba(0, 188, 212, 0.2);
+}
+
+.booster-name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.9rem;
+    color: #FFD700;
+    margin-bottom: 10px;
+}
+
+.booster-description {
+    color: #E0E0E0;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    margin-bottom: 15px;
+}
+
+.booster-price {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.price-option {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+.buy-booster-btn {
+    width: 100%;
+    background: linear-gradient(45deg, #FF5722, #FF9800);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.buy-booster-btn:hover:not(:disabled) {
+    background: linear-gradient(45deg, #FF9800, #FF5722);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 87, 34, 0.4);
+}
+
+.buy-booster-btn:disabled {
+    background: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Empty State */
+.empty-eggs {
+    text-align: center;
+    padding: 50px;
+    color: #B0B0B0;
+}
+
+.empty-eggs h3 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: #666;
+}
+
+.empty-eggs p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .eggs-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .boosters-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .egg-actions {
+        flex-direction: column;
+    }
+    
+    .booster-price {
+        flex-direction: column;
+        gap: 8px;
+    }
+} 

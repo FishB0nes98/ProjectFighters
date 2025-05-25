@@ -273,9 +273,9 @@ export const chatMessages = {
         "meta slaves unite",
         "breaking the meta",
         "meta pick solid",
-        "creative pick",
         "following the meta",
         "meta is meta for a reason",
+        "The current item meta really favors [insert class].",
         "Shinnok is S+ tier? Nerf incoming for sure.",
         "Raiden is still D tier... those 2.5 buffs better be good.",
         "Kabal at 54% winrate? That's pretty strong.",
@@ -283,7 +283,6 @@ export const chatMessages = {
         "Kagome still at 40%... rough.",
         "This patch made [insert champ] completely broken.",
         "Remember when [insert champ] was actually good? Good times.",
-        "The current item meta really favors [insert class].",
         "Is anyone else tired of seeing [insert champ] every game?",
         "They need to buff [insert champ], totally unplayable right now."
     ],
@@ -490,6 +489,20 @@ export const chatMessages = {
         "Grinding for that Legendary Ayane skin.",
         "Strawberry Bell Blast 'em!",
         "Ribbon Mint Echo for the win!"
+    ],
+
+    // Monster Trainer / Pokemon Event Chat
+    monsterTrainerEventChat: [
+        "Ready to catch 'em all in this event!",
+        "Which Monster Trainer skin is everyone going for?",
+        "Hope I get a shiny Monster Trainer skin!",
+        "Time to evolve my gameplay for these rewards.",
+        "Let's be the very best, like no one ever was!",
+        "This Monster Trainer event is Pika-perfect!",
+        "Gotta train hard for these event quests.",
+        "Are the Monster Trainer titles worth grinding for?",
+        "I choose you, victory!",
+        "This event is super effective at taking my QP!"
     ],
 
     // General Banter/Trash Talk

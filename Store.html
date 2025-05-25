@@ -911,22 +911,26 @@
                 const button = item.querySelector('button');
                 if (Bundles[bundleName] || 
                     // Check for specific skin ownership for bundles that don't have a direct bundle flag
-                    (bundleName === 'TokyoMewMewBundle' && 
-                        skins['Tokyo Mew Mew Ayane'] === 1 &&
-                        skins['Tokyo Mew Mew Julia'] === 1 &&
-                        skins['Tokyo Mew Mew Kagome'] === 1 &&
-                        skins['Tokyo Mew Mew Lili'] === 1 &&
-                        skins['Tokyo Mew Mew Cham Cham'] === 1) ||
-                    (bundleName === 'DoubleTroubleBundle1' && 
-                        skins['Tokyo Mew Mew Julia'] === 1 &&
-                        skins['Tokyo Mew Mew Kagome'] === 1) ||
-                    (bundleName === 'DoubleTroubleBundle2' && 
-                        skins['Tokyo Mew Mew Lili'] === 1 &&
-                        skins['Tokyo Mew Mew Cham Cham'] === 1) ||
+                    (bundleName === 'MonsterTrainersBundle' && 
+                        skins['Monster Trainer Eagle'] === 1 &&
+                        skins['Monster Trainer Kotal Kahn'] === 1 &&
+                        skins['Monster Trainer Peacock'] === 1 &&
+                        skins['Monster Trainer Ayane'] === 1 &&
+                        skins['Monster Trainer Shoma'] === 1 &&
+                        skins['Monster Trainer Lili'] === 1 &&
+                        skins['Monster Trainer FANG'] === 1 &&
+                        skins['Monster Trainer Kokoro'] === 1) ||
+                    (bundleName === 'MonsterTrainersSupportPack' && 
+                        skins['Monster Trainer Shoma'] === 1 &&
+                        skins['Monster Trainer FANG'] === 1 &&
+                        skins['Monster Trainer Kokoro'] === 1) ||
+                    (bundleName === 'MonsterTrainersADCPack' && 
+                        skins['Monster Trainer Eagle'] === 1 &&
+                        skins['Monster Trainer Peacock'] === 1) ||
                     (bundleName === 'DesertDemonShizumaru' && skins['Desert Demon Shizumaru'] === 1) ||
                     (bundleName === 'BanditoShinnok' && skins['Bandito Shinnok'] === 1) ||
-                    (bundleName === 'DragonTamerMorrigan' && skins['Dragon Tamer Morrigan'] === 1) ||
-                    (bundleName === 'PajamaPartyKokoro' && skins['Pajama Party Kokoro'] === 1)) {
+                    (bundleName === 'FarmerAlice' && skins['Farmer Alice'] === 1) ||
+                    (bundleName === 'AtlanteanShinnok' && skins['Atlantean Shinnok'] === 1)) {
                     button.disabled = true;
                     button.textContent = 'Owned';
                 }
@@ -958,28 +962,34 @@
                 const snapshot = await get(userRef);
                 const userData = snapshot.val();
 
-                if (bundleName === 'TokyoMewMewBundle') {
-                    updates[`skins/Tokyo Mew Mew Ayane`] = 1;
-                    updates[`skins/Tokyo Mew Mew Julia`] = 1;
-                    updates[`skins/Tokyo Mew Mew Kagome`] = 1;
-                    updates[`skins/Tokyo Mew Mew Lili`] = 1;
-                    updates[`skins/Tokyo Mew Mew Cham Cham`] = 1;
+                if (bundleName === 'MonsterTrainersBundle') {
+                    updates[`skins/Monster Trainer Eagle`] = 1;
+                    updates[`skins/Monster Trainer Kotal Kahn`] = 1;
+                    updates[`skins/Monster Trainer Peacock`] = 1;
+                    updates[`skins/Monster Trainer Ayane`] = 1;
+                    updates[`skins/Monster Trainer Shoma`] = 1;
+                    updates[`skins/Monster Trainer Lili`] = 1;
+                    updates[`skins/Monster Trainer FANG`] = 1;
+                    updates[`skins/Monster Trainer Kokoro`] = 1;
                     updates[`Bundles/${bundleName}`] = 1;
-                } else if (bundleName === 'DoubleTroubleBundle1') {
-                    updates[`skins/Tokyo Mew Mew Julia`] = 1;
-                    updates[`skins/Tokyo Mew Mew Kagome`] = 1;
+                } else if (bundleName === 'MonsterTrainersSupportPack') {
+                    updates[`skins/Monster Trainer Shoma`] = 1;
+                    updates[`skins/Monster Trainer FANG`] = 1;
+                    updates[`skins/Monster Trainer Kokoro`] = 1;
                     updates[`Bundles/${bundleName}`] = 1;
-                } else if (bundleName === 'DoubleTroubleBundle2') {
-                    updates[`skins/Tokyo Mew Mew Lili`] = 1;
-                    updates[`skins/Tokyo Mew Mew Cham Cham`] = 1;
+                } else if (bundleName === 'MonsterTrainersADCPack') {
+                    updates[`skins/Monster Trainer Eagle`] = 1;
+                    updates[`skins/Monster Trainer Peacock`] = 1;
                     updates[`Bundles/${bundleName}`] = 1;
                 } else if (bundleName === 'DesertDemonShizumaru') {
                     updates[`Bundles/${bundleName}`] = 1;
                 } else if (bundleName === 'BanditoShinnok') {
                     updates[`Bundles/${bundleName}`] = 1;
-                } else if (bundleName === 'DragonTamerMorrigan') {
+                } else if (bundleName === 'FarmerAlice') {
+                    updates[`skins/Farmer Alice`] = 1;
                     updates[`Bundles/${bundleName}`] = 1;
-                } else if (bundleName === 'PajamaPartyKokoro') {
+                } else if (bundleName === 'AtlanteanShinnok') {
+                    updates[`skins/Atlantean Shinnok`] = 1;
                     updates[`Bundles/${bundleName}`] = 1;
                 }
 
@@ -1117,133 +1127,161 @@
         function showBundleDetails(bundleName) {
             let modalContent = '';
             switch (bundleName) {
-                case 'TokyoMewMewBundle':
+                case 'MonsterTrainersBundle':
                     modalContent = `
                         <div class="bundle-details">
-                            <h2>Tokyo Mew Mew Collab Bundle</h2>
+                            <h2>Monster Trainers Collab Bundle</h2>
                             <div class="bundle-purchase">
                                 <div class="price-container">
                                     <div class="original-price">
                                         <img src="res/img/fm.png" alt="FM">
-                                        <span>15000</span> <!-- 5000 + 2500 * 4 -->
+                                        <span>16000</span> <!-- 8 skins × 2000 FM -->
                                     </div>
                                     <div class="price-divider"></div>
                                     <div class="final-price">
                                         <img src="res/img/fm.png" alt="FM">
-                                        <span>11250</span> <!-- 15000 * 0.75 -->
+                                        <span>11200</span> <!-- 16000 * 0.7 -->
                                     </div>
                                 </div>
-                                <button class="purchase-bundle-btn" data-bundle-name="TokyoMewMewBundle" onclick="purchaseBundle(this)">Buy Bundle</button>
+                                <button class="purchase-bundle-btn" data-bundle-name="MonsterTrainersBundle" onclick="purchaseBundle(this)">Buy Bundle</button>
                             </div>
                             <div class="bundle-grid">
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Tokyo Mew Mew Ayane.png" alt="Tokyo Mew Mew Ayane">
+                                        <img src="Skins/Monster Trainer Eagle.jfif" alt="Monster Trainer Eagle">
+                                    </div>
+                                    <h3>Eagle</h3>
+                                    <p>Monster Trainer Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Monster Trainer Kotal Kahn.jpg" alt="Monster Trainer Kotal Kahn">
+                                    </div>
+                                    <h3>Kotal Kahn</h3>
+                                    <p>Monster Trainer Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Monster Trainer Peacock.jpg" alt="Monster Trainer Peacock">
+                                    </div>
+                                    <h3>Peacock</h3>
+                                    <p>Monster Trainer Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Monster Trainer Ayane.jfif" alt="Monster Trainer Ayane">
                                     </div>
                                     <h3>Ayane</h3>
-                                    <p>Tokyo Mew Mew Skin</p>
+                                    <p>Monster Trainer Skin</p>
                                 </div>
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Tokyo Mew Mew Julia.png" alt="Tokyo Mew Mew Julia">
+                                        <img src="Skins/Monster Trainer Shoma.jpg" alt="Monster Trainer Shoma">
                                     </div>
-                                    <h3>Julia</h3>
-                                    <p>Tokyo Mew Mew Skin</p>
+                                    <h3>Shoma</h3>
+                                    <p>Monster Trainer Skin</p>
                                 </div>
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Tokyo Mew Mew Kagome.jpg" alt="Tokyo Mew Mew Kagome">
-                                    </div>
-                                    <h3>Kagome</h3>
-                                    <p>Tokyo Mew Mew Skin</p>
-                                </div>
-                                <div class="bundle-character">
-                                    <div class="image-container">
-                                        <img src="Skins/Tokyo Mew Mew Lili.png" alt="Tokyo Mew Mew Lili">
+                                        <img src="Skins/Monster Trainer Lili.jpg" alt="Monster Trainer Lili">
                                     </div>
                                     <h3>Lili</h3>
-                                    <p>Tokyo Mew Mew Skin</p>
+                                    <p>Monster Trainer Skin</p>
                                 </div>
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Tokyo Mew Mew Cham Cham.png" alt="Tokyo Mew Mew Cham Cham">
+                                        <img src="Skins/Monster Trainer FANG.jfif" alt="Monster Trainer FANG">
                                     </div>
-                                    <h3>Cham Cham</h3>
-                                    <p>Tokyo Mew Mew Skin</p>
+                                    <h3>FANG</h3>
+                                    <p>Monster Trainer Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Monster Trainer Kokoro.jpg" alt="Monster Trainer Kokoro">
+                                    </div>
+                                    <h3>Kokoro</h3>
+                                    <p>Monster Trainer Skin</p>
                                 </div>
                             </div>
                         </div>
                     `;
                     break;
-                case 'DoubleTroubleBundle1':
+                case 'MonsterTrainersSupportPack':
                     modalContent = `
                         <div class="bundle-details">
-                            <h2>Double Trouble Bundle 1</h2>
+                            <h2>Monster Trainers Support Pack</h2>
                             <div class="bundle-purchase">
                                 <div class="price-container">
                                     <div class="original-price">
                                         <img src="res/img/fm.png" alt="FM">
-                                        <span>5000</span> <!-- 2500 + 2500 -->
+                                        <span>6000</span> <!-- 2000 * 3 -->
                                     </div>
                                     <div class="price-divider"></div>
                                     <div class="final-price">
                                         <img src="res/img/fm.png" alt="FM">
-                                        <span>4000</span> <!-- 5000 * 0.80 -->
+                                        <span>4800</span> <!-- 6000 * 0.80 -->
                                     </div>
                                 </div>
-                                <button class="purchase-bundle-btn" data-bundle-name="DoubleTroubleBundle1" onclick="purchaseBundle(this)">Buy Bundle</button>
+                                <button class="purchase-bundle-btn" data-bundle-name="MonsterTrainersSupportPack" onclick="purchaseBundle(this)">Buy Bundle</button>
                             </div>
                             <div class="bundle-grid">
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Tokyo Mew Mew Julia.png" alt="Tokyo Mew Mew Julia">
+                                        <img src="Skins/Monster Trainer Shoma.jpg" alt="Monster Trainer Shoma">
                                     </div>
-                                    <h3>Julia</h3>
-                                    <p>Tokyo Mew Mew Skin</p>
+                                    <h3>Shoma</h3>
+                                    <p>Monster Trainer Skin</p>
                                 </div>
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Tokyo Mew Mew Kagome.jpg" alt="Tokyo Mew Mew Kagome">
+                                        <img src="Skins/Monster Trainer FANG.jfif" alt="Monster Trainer FANG">
                                     </div>
-                                    <h3>Kagome</h3>
-                                    <p>Tokyo Mew Mew Skin</p>
+                                    <h3>FANG</h3>
+                                    <p>Monster Trainer Skin</p>
+                                </div>
+                                <div class="bundle-character">
+                                    <div class="image-container">
+                                        <img src="Skins/Monster Trainer Kokoro.jpg" alt="Monster Trainer Kokoro">
+                                    </div>
+                                    <h3>Kokoro</h3>
+                                    <p>Monster Trainer Skin</p>
                                 </div>
                             </div>
                         </div>
                     `;
                     break;
-                case 'DoubleTroubleBundle2':
+                case 'MonsterTrainersADCPack':
                     modalContent = `
                         <div class="bundle-details">
-                            <h2>Double Trouble Bundle 2</h2>
+                            <h2>Monster Trainers ADC Pack</h2>
                             <div class="bundle-purchase">
                                 <div class="price-container">
                                     <div class="original-price">
                                         <img src="res/img/fm.png" alt="FM">
-                                        <span>5000</span> <!-- 2500 + 2500 -->
+                                        <span>4000</span> <!-- 2000 * 2 -->
                                     </div>
                                     <div class="price-divider"></div>
                                     <div class="final-price">
                                         <img src="res/img/fm.png" alt="FM">
-                                        <span>4000</span> <!-- 5000 * 0.80 -->
+                                        <span>3200</span> <!-- 4000 * 0.80 -->
                                     </div>
                                 </div>
-                                <button class="purchase-bundle-btn" data-bundle-name="DoubleTroubleBundle2" onclick="purchaseBundle(this)">Buy Bundle</button>
+                                <button class="purchase-bundle-btn" data-bundle-name="MonsterTrainersADCPack" onclick="purchaseBundle(this)">Buy Bundle</button>
                             </div>
                             <div class="bundle-grid">
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Tokyo Mew Mew Lili.png" alt="Tokyo Mew Mew Lili">
+                                        <img src="Skins/Monster Trainer Eagle.jfif" alt="Monster Trainer Eagle">
                                     </div>
-                                    <h3>Lili</h3>
-                                    <p>Tokyo Mew Mew Skin</p>
+                                    <h3>Eagle</h3>
+                                    <p>Monster Trainer Skin</p>
                                 </div>
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Tokyo Mew Mew Cham Cham.png" alt="Tokyo Mew Mew Cham Cham">
+                                        <img src="Skins/Monster Trainer Peacock.jpg" alt="Monster Trainer Peacock">
                                     </div>
-                                    <h3>Cham Cham</h3>
-                                    <p>Tokyo Mew Mew Skin</p>
+                                    <h3>Peacock</h3>
+                                    <p>Monster Trainer Skin</p>
                                 </div>
                             </div>
                         </div>
@@ -1255,10 +1293,10 @@
                 case 'BanditoShinnok':
                     // Removed Bandito Shinnok
                     break;
-                case 'DragonTamerMorrigan':
+                case 'FarmerAlice':
                     modalContent = `
                         <div class="bundle-details">
-                            <h2>Dragon Tamer Morrigan</h2>
+                            <h2>Farmer Alice</h2>
                             <div class="bundle-purchase">
                                 <div class="price-container">
                                     <div class="final-price">
@@ -1266,40 +1304,40 @@
                                         <span>800</span>
                                     </div>
                                 </div>
-                                <button class="purchase-bundle-btn" data-bundle-name="DragonTamerMorrigan" onclick="purchaseBundle(this)">Buy Now</button>
+                                <button class="purchase-bundle-btn" data-bundle-name="FarmerAlice" onclick="purchaseBundle(this)">Buy Now</button>
                             </div>
                             <div class="bundle-grid">
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Dragon Tamer Morrigan.jpeg" alt="Dragon Tamer Morrigan">
+                                        <img src="Skins/Farmer Alice.jpeg" alt="Farmer Alice">
                                     </div>
-                                    <h3>Morrigan</h3>
-                                    <p>Dragon Tamer Skin</p>
+                                    <h3>Alice</h3>
+                                    <p>Farmer Skin</p>
                                 </div>
                             </div>
                         </div>
                     `;
                     break;
-                case 'PajamaPartyKokoro':
+                case 'AtlanteanShinnok':
                     modalContent = `
                         <div class="bundle-details">
-                            <h2>Pajama Party Kokoro</h2>
+                            <h2>Atlantean Shinnok</h2>
                             <div class="bundle-purchase">
                                 <div class="price-container">
                                     <div class="final-price">
                                         <img src="res/img/cm.png" alt="CM">
-                                        <span>80000</span>
+                                        <span>100000</span>
                                     </div>
                                 </div>
-                                <button class="purchase-bundle-btn" data-bundle-name="PajamaPartyKokoro" onclick="purchaseBundle(this)">Buy Now</button>
+                                <button class="purchase-bundle-btn" data-bundle-name="AtlanteanShinnok" onclick="purchaseBundle(this)">Buy Now</button>
                             </div>
                             <div class="bundle-grid">
                                 <div class="bundle-character">
                                     <div class="image-container">
-                                        <img src="Skins/Pajama Party Kokoro.jpeg" alt="Pajama Party Kokoro">
+                                        <img src="Skins/Atlantean Shinnok.jpeg" alt="Atlantean Shinnok">
                                     </div>
-                                    <h3>Kokoro</h3>
-                                    <p>Pajama Party Skin</p>
+                                    <h3>Shinnok</h3>
+                                    <p>Atlantean Skin</p>
                                 </div>
                             </div>
                         </div>
@@ -1371,7 +1409,7 @@
                 <a href="home.html">Home</a>
                 <a href="Store.html">Store</a>
                 <a href="event.html">Event</a>
-                <a href="Team Builder.html">Team Builder</a>
+                
                 <a href="statistics.html">Statistics</a>
             </div>
         </div>
@@ -1392,7 +1430,7 @@
                 <button onclick="purchaseFM(1000)">1000 <img src="res/img/fm.png" alt="FM" style="width: 15px; height: 15px; vertical-align: middle; margin-left: 5px;"></button>
                 <button onclick="purchaseFM(2000)">2000 <img src="res/img/fm.png" alt="FM" style="width: 15px; height: 15px; vertical-align: middle; margin-left: 5px;"></button>
                 <button onclick="purchaseFM(5000)">5000 <img src="res/img/fm.png" alt="FM" style="width: 15px; height: 15px; vertical-align: middle; margin-left: 5px;"></button>
-                <button onclick="purchaseFM(10000)">10000 <img src="res/img/fm.png" alt="FM" style="width: 15px; height: 15px; vertical-align: middle; margin-left: 5px;"></button>
+                <button onclick="purchaseFM(100000)">100000 <img src="res/img/fm.png" alt="FM" style="width: 15px; height: 15px; vertical-align: middle; margin-left: 5px;"></button>
             </div>
         </div>
     </div>
@@ -1437,78 +1475,78 @@
         </a>
     </div>
     <div class="bundle-container">
-        <!-- Tokyo Mew Mew Bundles -->
-        <div class="bundle-item" data-bundle-name="TokyoMewMewBundle" onclick="showBundleDetails('TokyoMewMewBundle')">
-            <div class="bundle-name">Tokyo Mew Mew Collab Bundle</div>
-            <div class="discount-badge">-25%</div>
+        <!-- Monster Trainers Bundles -->
+        <div class="bundle-item" data-bundle-name="MonsterTrainersBundle" onclick="showBundleDetails('MonsterTrainersBundle')">
+            <div class="bundle-name">Monster Trainers Collab Bundle</div>
+            <div class="discount-badge">-30%</div>
             <div class="images-grid">
-                <img src="Skins/Tokyo Mew Mew Ayane.png" alt="Tokyo Mew Mew Ayane">
-                <img src="Skins/Tokyo Mew Mew Julia.png" alt="Tokyo Mew Mew Julia">
-                <img src="Skins/Tokyo Mew Mew Kagome.jpg" alt="Tokyo Mew Mew Kagome">
-                <img src="Skins/Tokyo Mew Mew Lili.png" alt="Tokyo Mew Mew Lili">
-                <img src="Skins/Tokyo Mew Mew Cham Cham.png" alt="Tokyo Mew Mew Cham Cham">
+                <img src="Skins/Monster Trainer Eagle.jfif" alt="Monster Trainer Eagle">
+                <img src="Skins/Monster Trainer Kotal Kahn.jpg" alt="Monster Trainer Kotal Kahn">
+                <img src="Skins/Monster Trainer Peacock.jpg" alt="Monster Trainer Peacock">
+                <img src="Skins/Monster Trainer Ayane.jfif" alt="Monster Trainer Ayane">
             </div>
             <div class="price-container">
                 <div class="original-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>15000</span> <!-- 5000 + 2500 * 4 -->
+                    <span>16000</span> <!-- 8 skins × 2000 FM -->
                 </div>
                 <div class="price-divider"></div>
                 <div class="final-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>11250</span> <!-- 15000 * 0.75 -->
+                    <span>11200</span> <!-- 16000 * 0.7 -->
                 </div>
             </div>
             <button onclick="purchaseBundle(this)">Buy Bundle</button>
         </div>
 
-        <div class="bundle-item" data-bundle-name="DoubleTroubleBundle1" onclick="showBundleDetails('DoubleTroubleBundle1')">
-            <div class="bundle-name">Double Trouble Bundle 1</div>
+        <div class="bundle-item" data-bundle-name="MonsterTrainersSupportPack" onclick="showBundleDetails('MonsterTrainersSupportPack')">
+            <div class="bundle-name">Monster Trainers Support Pack</div>
             <div class="discount-badge">-20%</div>
             <div class="images-grid">
-                <img src="Skins/Tokyo Mew Mew Julia.png" alt="Tokyo Mew Mew Julia">
-                <img src="Skins/Tokyo Mew Mew Kagome.jpg" alt="Tokyo Mew Mew Kagome">
+                <img src="Skins/Monster Trainer Shoma.jpg" alt="Monster Trainer Shoma">
+                <img src="Skins/Monster Trainer FANG.jfif" alt="Monster Trainer FANG">
+                <img src="Skins/Monster Trainer Kokoro.jpg" alt="Monster Trainer Kokoro">
             </div>
             <div class="price-container">
                 <div class="original-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>5000</span> <!-- 2500 + 2500 -->
+                    <span>6000</span> <!-- 2000 * 3 -->
                 </div>
                 <div class="price-divider"></div>
                 <div class="final-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>4000</span> <!-- 5000 * 0.80 -->
+                    <span>4800</span> <!-- 6000 * 0.80 -->
                 </div>
             </div>
             <button onclick="purchaseBundle(this)">Buy Bundle</button>
         </div>
 
-        <div class="bundle-item" data-bundle-name="DoubleTroubleBundle2" onclick="showBundleDetails('DoubleTroubleBundle2')">
-            <div class="bundle-name">Double Trouble Bundle 2</div>
+        <div class="bundle-item" data-bundle-name="MonsterTrainersADCPack" onclick="showBundleDetails('MonsterTrainersADCPack')">
+            <div class="bundle-name">Monster Trainers ADC Pack</div>
             <div class="discount-badge">-20%</div>
             <div class="images-grid">
-                <img src="Skins/Tokyo Mew Mew Lili.png" alt="Tokyo Mew Mew Lili">
-                <img src="Skins/Tokyo Mew Mew Cham Cham.png" alt="Tokyo Mew Mew Cham Cham">
+                <img src="Skins/Monster Trainer Eagle.jfif" alt="Monster Trainer Eagle">
+                <img src="Skins/Monster Trainer Peacock.jpg" alt="Monster Trainer Peacock">
             </div>
             <div class="price-container">
                 <div class="original-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>5000</span> <!-- 2500 + 2500 -->
+                    <span>4000</span> <!-- 2000 * 2 -->
                 </div>
                 <div class="price-divider"></div>
                 <div class="final-price">
                     <img src="res/img/fm.png" alt="FM">
-                    <span>4000</span> <!-- 5000 * 0.80 -->
+                    <span>3200</span> <!-- 4000 * 0.80 -->
                 </div>
             </div>
             <button onclick="purchaseBundle(this)">Buy Bundle</button>
         </div>
 
         <!-- Existing Bundles -->
-        <div class="bundle-item" data-bundle-name="DragonTamerMorrigan" onclick="showBundleDetails('DragonTamerMorrigan')">
-            <div class="bundle-name">Dragon Tamer Morrigan</div>
+        <div class="bundle-item" data-bundle-name="FarmerAlice" onclick="showBundleDetails('FarmerAlice')">
+            <div class="bundle-name">Farmer Alice</div>
             <div class="image-container">
-                <img src="Skins/Dragon Tamer Morrigan.jpeg" alt="Dragon Tamer Morrigan">
+                <img src="Skins/Farmer Alice.jpeg" alt="Farmer Alice">
             </div>
             <div class="price-container">
                 <div class="final-price">
@@ -1519,15 +1557,15 @@
             <button onclick="purchaseBundle(this)">Buy Now</button>
         </div>
 
-        <div class="bundle-item" data-bundle-name="PajamaPartyKokoro" onclick="showBundleDetails('PajamaPartyKokoro')">
-            <div class="bundle-name">Pajama Party Kokoro</div>
+        <div class="bundle-item" data-bundle-name="AtlanteanShinnok" onclick="showBundleDetails('AtlanteanShinnok')">
+            <div class="bundle-name">Atlantean Shinnok</div>
             <div class="image-container">
-                <img src="Skins/Pajama Party Kokoro.jpeg" alt="Pajama Party Kokoro">
+                <img src="Skins/Atlantean Shinnok.jpeg" alt="Atlantean Shinnok">
             </div>
             <div class="price-container">
                 <div class="final-price">
                     <img src="res/img/cm.png" alt="CM">
-                    <span>80000</span>
+                    <span>100000</span>
                 </div>
             </div>
             <button onclick="purchaseBundle(this)">Buy Now</button>

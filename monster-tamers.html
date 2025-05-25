@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monster Tamers - Team Builder</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Press+Start+2P&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/monster-tamers.css">
+  <link rel="stylesheet" href="css/xp-system.css">
+  
+  <!-- Firebase config - initializes Firebase and sets globals -->
+  <script src='./firebase-config.js' type='module'></script>
+  <!-- Monster Tamers JS - Contains addMonsterToUserCollection -->
+  <script src="js/monster-tamers.js" type="module"></script>
+  <!-- XP Snack Test Utilities -->
+  <script src="js/xp-snack-test.js" type="module"></script>
+  <!-- XP Debug Script -->
+  <script src="Monsters/xp_debug.js" type="module"></script>
+  <!-- Monster Level Fixer Script -->
+  <script src="Monsters/fix-monster-levels.js" type="module"></script>
+  <!-- Frozen Status Test Script -->
+  <script src="Monsters/frozen_status_test.js"></script>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="app-loading" class="app-loading">
+    <div class="loading-container">
+      <div class="loading-logo">
+        <img src="Icons/logo.png" alt="Monster Tamers" onerror="this.style.display='none'">
+        <h1>Monster Tamers</h1>
+      </div>
+      <div class="loading-spinner-advanced"></div>
+      <p class="loading-text">Preparing your monsters...</p>
+    </div>
+  </div>
+
+  <!-- Main Application -->
+  <div id="app" class="app-container" style="display: none;">
+    <!-- Navigation Header -->
+    <header class="app-header">
+      <div class="header-content">
+        <div class="header-left">
+          <button id="menu-toggle" class="menu-toggle" aria-label="Toggle Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <div class="logo-section">
+            <img src="Icons/logo.png" alt="Monster Tamers" class="header-logo" onerror="this.style.display='none'">
+            <h1 class="app-title">Monster Tamers</h1>
+          </div>
+        </div>
+        
+        <nav class="main-nav" id="main-nav">
+          <div class="nav-links">
+            <a href="#team-builder" class="nav-link active" data-section="team-builder">
+              <span class="nav-icon">🏗️</span>
+              <span class="nav-text">Team Builder</span>
+            </a>
+            <a href="monsterdex.html" class="nav-link" id="monsterdex-link">
+              <span class="nav-icon">📖</span>
+              <span class="nav-text">MonsterDex</span>
+            </a>
+            <a href="#battle" class="nav-link" data-section="battle">
+              <span class="nav-icon">⚔️</span>
+              <span class="nav-text">Battle</span>
+            </a>
+            <a href="#trade" class="nav-link" data-section="trade">
+              <span class="nav-icon">🔄</span>
+              <span class="nav-text">Trade</span>
+            </a>
+          </div>
+        </nav>
+        
+                  <div class="header-right">
+            <div class="user-items" id="user-items">
+              <div class="item-display">
+                <span class="item-icon">🍬</span>
+                <span class="item-count" id="xp-snack-count">0</span>
+                <span class="item-label">XP Snacks</span>
+              </div>
+            </div>
+            <div class="user-info" id="user-info">
+              <div class="user-avatar">👤</div>
+              <span class="user-status" id="user-status">Guest</span>
+            </div>
+            <button id="back-to-game" class="back-button">
+              <span class="back-icon">⬅️</span>
+              <span class="back-text">Back to Game</span>
+            </button>
+          </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="app-main" id="main-content">
+      <!-- Team Builder Section -->
+      <section id="team-builder-section" class="content-section active">
+        <div class="section-header">
+          <div class="section-title">
+            <h2>Team Builder</h2>
+            <p class="section-subtitle">Build your perfect monster team</p>
+          </div>
+          <div class="section-controls">
+            <div class="view-toggles">
+              <button class="view-toggle active" data-view="grid" title="Grid View">
+                <span class="icon">⚏</span>
+              </button>
+              <button class="view-toggle" data-view="list" title="List View">
+                <span class="icon">☰</span>
+              </button>
+            </div>
+            <div class="filter-controls">
+              <select id="type-filter" class="filter-select">
+                <option value="">All Types</option>
+                <option value="water">Water</option>
+                <option value="fire">Fire</option>
+                <option value="grass">Grass</option>
+                <option value="electric">Electric</option>
+                <option value="psychic">Psychic</option>
+                <option value="ice">Ice</option>
+                <option value="dragon">Dragon</option>
+                <option value="dark">Dark</option>
+                <option value="fighting">Fighting</option>
+                <option value="poison">Poison</option>
+                <option value="ground">Ground</option>
+                <option value="flying">Flying</option>
+                <option value="bug">Bug</option>
+                <option value="rock">Rock</option>
+                <option value="ghost">Ghost</option>
+                <option value="steel">Steel</option>
+                <option value="fairy">Fairy</option>
+                <option value="normal">Normal</option>
+              </select>
+              <div class="search-container">
+                <input type="text" id="monster-search" placeholder="Search monsters..." class="search-input">
+                <span class="search-icon">🔍</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="team-builder-content">
+          <!-- Current Team Panel -->
+          <aside class="team-panel">
+            <div class="team-header">
+              <h3>Current Team</h3>
+              <div class="team-actions">
+                <button class="team-action" id="save-team" title="Save Team">💾</button>
+                <button class="team-action" id="load-team" title="Load Team">📂</button>
+                <button class="team-action" id="clear-team" title="Clear Team">🗑️</button>
+              </div>
+            </div>
+            
+            <div class="team-composition">
+              <div class="team-slots" id="team-slots">
+                <div class="team-slot empty" data-slot="0">
+                  <div class="slot-number">1</div>
+                  <div class="slot-content">
+                    <span class="slot-placeholder">+</span>
+                    <span class="slot-text">Add Monster</span>
+                  </div>
+                </div>
+                <div class="team-slot empty" data-slot="1">
+                  <div class="slot-number">2</div>
+                  <div class="slot-content">
+                    <span class="slot-placeholder">+</span>
+                    <span class="slot-text">Add Monster</span>
+                  </div>
+                </div>
+                <div class="team-slot empty" data-slot="2">
+                  <div class="slot-number">3</div>
+                  <div class="slot-content">
+                    <span class="slot-placeholder">+</span>
+                    <span class="slot-text">Add Monster</span>
+                  </div>
+                </div>
+                <div class="team-slot empty" data-slot="3">
+                  <div class="slot-number">4</div>
+                  <div class="slot-content">
+                    <span class="slot-placeholder">+</span>
+                    <span class="slot-text">Add Monster</span>
+                  </div>
+                </div>
+                <div class="team-slot empty" data-slot="4">
+                  <div class="slot-number">5</div>
+                  <div class="slot-content">
+                    <span class="slot-placeholder">+</span>
+                    <span class="slot-text">Add Monster</span>
+                  </div>
+                </div>
+                <div class="team-slot empty" data-slot="5">
+                  <div class="slot-number">6</div>
+                  <div class="slot-content">
+                    <span class="slot-placeholder">+</span>
+                    <span class="slot-text">Add Monster</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="team-stats">
+              <h4>Team Statistics</h4>
+              <div class="type-coverage">
+                <div class="coverage-item">
+                  <span class="coverage-label">Type Coverage</span>
+                  <div class="coverage-types" id="team-types"></div>
+                </div>
+                <div class="coverage-item">
+                  <span class="coverage-label">Avg. Level</span>
+                  <span class="coverage-value" id="avg-level">-</span>
+                </div>
+                <div class="coverage-item">
+                  <span class="coverage-label">Total CP</span>
+                  <span class="coverage-value" id="total-cp">-</span>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Monster Collection -->
+          <div class="collection-panel">
+            <div class="collection-header">
+              <div class="collection-stats">
+                <div class="stat-item">
+                  <span class="stat-number" id="owned-count">0</span>
+                  <span class="stat-label">Owned</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-number" id="total-count">0</span>
+                  <span class="stat-label">Total</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-number" id="completion-percent">0%</span>
+                  <span class="stat-label">Complete</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="monster-collection" id="monster-collection">
+              <div class="collection-loading">
+                <div class="loading-spinner-small"></div>
+                <p>Loading your monsters...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Monster Detail Modal -->
+      <div id="monster-detail-modal" class="modal-overlay">
+        <div class="modal-content monster-detail-card">
+          <div class="modal-header">
+            <h3 class="modal-title">Monster Details</h3>
+            <button class="modal-close" id="close-detail">&times;</button>
+          </div>
+          <div class="modal-body" id="monster-detail-content">
+            <!-- Content will be dynamically loaded -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Other sections placeholder -->
+      <section id="battle-section" class="content-section">
+        <div class="section-header">
+          <h2>Battle Arena</h2>
+          <p class="section-subtitle">Test your team in battle</p>
+        </div>
+        <div class="coming-soon">
+          <h3>Coming Soon!</h3>
+          <p>Battle system is under development.</p>
+        </div>
+      </section>
+
+      <section id="trade-section" class="content-section">
+        <div class="section-header">
+          <h2>Trade Center</h2>
+          <p class="section-subtitle">Trade monsters with other trainers</p>
+        </div>
+        <div class="coming-soon">
+          <h3>Coming Soon!</h3>
+          <p>Trading system is under development.</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+  </div>
+  
+  <!-- JavaScript -->
+  <script type="module">
+    // Import auth specifically for the auth state listener
+    import { auth } from './firebase-config.js'; 
+    
+    // Enhanced initialization with loading screen
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOM loaded, initializing Monster Tamers...');
+        
+        // Show loading screen
+        const loadingScreen = document.getElementById('app-loading');
+        const app = document.getElementById('app');
+        
+        // Initialize navigation
+        initializeNavigation();
+        
+        // Wait for Firebase and MonsterTamers to be ready
+        const checkFirebaseGlobals = setInterval(() => {
+            if (window.firebaseApp && window.firebaseAuth && window.firebaseDatabase && window.MonsterTamers) {
+                clearInterval(checkFirebaseGlobals);
+                console.log('Firebase globals and MonsterTamers module available, initializing...');
+                
+                // Initialize the MonsterTamers module UI
+                window.MonsterTamers.init();
+
+                // Set up the auth state change listener
+                auth.onAuthStateChanged(function(user) {
+                    if (user) {
+                        console.log("User is logged in with ID:", user.uid);
+                        window.currentUserID = user.uid;
+                        
+                        // Update UI
+                        updateUserInterface(user);
+                        
+                        // Load user-specific data
+                        window.MonsterTamers.loadUserMonsters(user.uid);
+                    } else {
+                        console.log("No user is logged in. Handling logout/demo mode.");
+                        window.currentUserID = null;
+                        
+                        // Update UI for guest
+                        updateUserInterface(null);
+                        
+                        // Load demo data
+                        window.MonsterTamers.loadUserMonsters(null);
+                    }
+                });
+
+                // Hide loading screen and show app
+                setTimeout(() => {
+                    loadingScreen.style.opacity = '0';
+                    loadingScreen.style.pointerEvents = 'none';
+                    app.style.display = 'block';
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                    }, 300);
+                }, 1500);
+                
+            } else {
+                console.log('Waiting for Firebase globals or MonsterTamers module...', { 
+                    firebaseApp: !!window.firebaseApp,
+                    firebaseAuth: !!window.firebaseAuth,
+                    firebaseDatabase: !!window.firebaseDatabase,
+                    MonsterTamers: !!window.MonsterTamers
+                });
+            }
+        }, 100);
+    });
+
+    // Navigation functionality
+    function initializeNavigation() {
+        const menuToggle = document.getElementById('menu-toggle');
+        const mainNav = document.getElementById('main-nav');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const backButton = document.getElementById('back-to-game');
+
+        // Mobile menu toggle
+        menuToggle?.addEventListener('click', () => {
+            mainNav.classList.toggle('active');
+            menuToggle.classList.toggle('active');
+        });
+
+        // Navigation link handling
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                // Check if this is the MonsterDex link
+                if (link.id === 'monsterdex-link') {
+                    // Allow the default navigation to monsterdex.html
+                    return;
+                }
+                
+                e.preventDefault();
+                const section = link.dataset.section;
+                switchSection(section);
+                
+                // Update active state
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                
+                // Close mobile menu
+                mainNav.classList.remove('active');
+                menuToggle.classList.remove('active');
+            });
+        });
+
+        // Back button
+        backButton?.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        // Close mobile menu on outside click
+        document.addEventListener('click', (e) => {
+            if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
+                mainNav.classList.remove('active');
+                menuToggle.classList.remove('active');
+            }
+        });
+    }
+
+    // Section switching
+    function switchSection(sectionName) {
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        const targetSection = document.getElementById(`${sectionName}-section`);
+        if (targetSection) {
+            targetSection.classList.add('active');
+        }
+    }
+
+    // Update user interface based on auth state
+    function updateUserInterface(user) {
+        const userStatus = document.getElementById('user-status');
+        if (user) {
+            userStatus.textContent = user.displayName || user.email || 'Trainer';
+        } else {
+            userStatus.textContent = 'Guest';
+        }
+    }
+
+    // Global error handling
+    window.addEventListener('error', (e) => {
+        console.error('Application error:', e);
+        showToast('An error occurred. Please refresh the page.', 'error');
+    });
+
+    // Toast notification system
+    window.showToast = function(message, type = 'info', duration = 3000) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `
+            <span class="toast-message">${message}</span>
+            <button class="toast-close">&times;</button>
+        `;
+        
+        container.appendChild(toast);
+        
+        // Auto remove
+        setTimeout(() => {
+            toast.classList.add('removing');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, duration);
+        
+        // Manual close
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            toast.classList.add('removing');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        });
+    };
+  </script>
+</body>
+</html> 

@@ -1,0 +1,847 @@
+/* Battle VFX Animations and Effects */
+
+/* VFX Container */
+.vfx-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+/* Projectile Animations */
+.vfx-projectile {
+    position: absolute;
+    font-size: 2rem;
+    z-index: 1001;
+    pointer-events: none;
+}
+
+@keyframes projectile-move {
+    0% {
+        transform: translate(0, 0) scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    80% {
+        transform: translate(var(--end-x, 0), var(--end-y, 0)) scale(1.2) rotate(180deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(var(--end-x, 0), var(--end-y, 0)) scale(0) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Explosion Effects */
+.vfx-explosion {
+    position: absolute;
+    font-size: 3rem;
+    z-index: 1002;
+    pointer-events: none;
+}
+
+@keyframes explosion-burst {
+    0% {
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        opacity: 0;
+    }
+    20% {
+        transform: translate(-50%, -50%) scale(1.5) rotate(45deg);
+        opacity: 1;
+    }
+    70% {
+        transform: translate(-50%, -50%) scale(2) rotate(135deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(3) rotate(180deg);
+        opacity: 0;
+    }
+}
+
+/* Damage Number Animations */
+.vfx-damage-text {
+    position: absolute;
+    font-family: 'Press Start 2P', monospace;
+    font-weight: bold;
+    z-index: 1003;
+    pointer-events: none;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8);
+}
+
+.vfx-damage-text.critical {
+    font-size: 2rem !important;
+    color: #FF5722 !important;
+    animation: critical-damage-float 1.5s ease-out forwards;
+}
+
+.vfx-damage-text.healing {
+    color: #4CAF50 !important;
+    animation: healing-float 1.5s ease-out forwards;
+}
+
+@keyframes damage-float {
+    0% {
+        transform: translate(-50%, -100%) scale(0);
+        opacity: 0;
+    }
+    20% {
+        transform: translate(-50%, -120%) scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -200%) scale(0.8);
+        opacity: 0;
+    }
+}
+
+@keyframes critical-damage-float {
+    0% {
+        transform: translate(-50%, -100%) scale(0) rotate(-10deg);
+        opacity: 0;
+    }
+    20% {
+        transform: translate(-50%, -120%) scale(1.4) rotate(5deg);
+        opacity: 1;
+        filter: drop-shadow(0 0 20px #FF5722);
+    }
+    100% {
+        transform: translate(-50%, -200%) scale(1) rotate(0deg);
+        opacity: 0;
+    }
+}
+
+@keyframes healing-float {
+    0% {
+        transform: translate(-50%, -100%) scale(0);
+        opacity: 0;
+        filter: drop-shadow(0 0 10px #4CAF50);
+    }
+    20% {
+        transform: translate(-50%, -120%) scale(1.2);
+        opacity: 1;
+        filter: drop-shadow(0 0 15px #4CAF50);
+    }
+    100% {
+        transform: translate(-50%, -200%) scale(0.9);
+        opacity: 0;
+    }
+}
+
+/* Lightning Effects */
+.vfx-lightning {
+    position: absolute;
+    font-size: 4rem;
+    color: #F8D030;
+    z-index: 1002;
+    pointer-events: none;
+}
+
+@keyframes lightning-strike {
+    0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 0;
+        filter: drop-shadow(0 0 5px #F8D030);
+    }
+    10% {
+        transform: scale(1.5) rotate(-5deg);
+        opacity: 1;
+        filter: drop-shadow(0 0 30px #F8D030);
+    }
+    20% {
+        transform: scale(1) rotate(5deg);
+        opacity: 0.8;
+        filter: drop-shadow(0 0 20px #F8D030);
+    }
+    100% {
+        transform: scale(0.5) rotate(0deg);
+        opacity: 0;
+        filter: drop-shadow(0 0 5px #F8D030);
+    }
+}
+
+/* Screen Flash Effects */
+@keyframes screen-flash {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: var(--flash-opacity, 0.3);
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Sparkle Effects */
+@keyframes sparkle-fade {
+    0% {
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        opacity: 0;
+    }
+    20% {
+        transform: translate(calc(-50% + var(--spark-x, 0px)), calc(-50% + var(--spark-y, 0px))) scale(1.2) rotate(180deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(calc(-50% + var(--spark-x, 0px)), calc(-50% + var(--spark-y, 0px))) scale(0.5) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Impact Wave Effects */
+.vfx-impact-wave {
+    position: absolute;
+    border: 3px solid;
+    border-radius: 50%;
+    z-index: 1001;
+    pointer-events: none;
+}
+
+@keyframes impact-wave {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+    100% {
+        width: 200px;
+        height: 200px;
+        opacity: 0;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* Ripple Effects */
+.vfx-ripple {
+    position: absolute;
+    border: 2px solid;
+    border-radius: 50%;
+    z-index: 1001;
+    pointer-events: none;
+}
+
+@keyframes ripple-expand {
+    0% {
+        width: 20px;
+        height: 20px;
+        opacity: 0.8;
+        transform: translate(-50%, -50%);
+    }
+    100% {
+        width: 150px;
+        height: 150px;
+        opacity: 0;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* Ice Crystal Effects */
+.vfx-ice-crystal {
+    position: absolute;
+    color: #98D8D8;
+    font-size: 1.5rem;
+    z-index: 1001;
+    pointer-events: none;
+}
+
+@keyframes ice-form {
+    0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 0;
+        filter: drop-shadow(0 0 5px #98D8D8);
+    }
+    50% {
+        transform: scale(1.2) rotate(180deg);
+        opacity: 1;
+        filter: drop-shadow(0 0 15px #98D8D8);
+    }
+    100% {
+        transform: scale(1) rotate(360deg);
+        opacity: 0.7;
+        filter: drop-shadow(0 0 10px #98D8D8);
+    }
+}
+
+@keyframes ice-shatter {
+    0% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    80% {
+        transform: translate(calc(-50% + var(--shard-x, 0px)), calc(-50% + var(--shard-y, 0px))) scale(0.8) rotate(var(--shard-rotation, 0deg));
+        opacity: 0.6;
+    }
+    100% {
+        transform: translate(calc(-50% + var(--shard-x, 0px)), calc(-50% + var(--shard-y, 0px))) scale(0) rotate(var(--shard-rotation, 0deg));
+        opacity: 0;
+    }
+}
+
+/* Fire Effects */
+.vfx-fire-particle {
+    position: absolute;
+    color: #F08030;
+    font-size: 1rem;
+    z-index: 1001;
+    pointer-events: none;
+}
+
+@keyframes fire-rise {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100px) scale(0.5);
+        opacity: 0;
+    }
+}
+
+/* Grass/Nature Effects */
+.vfx-leaf {
+    position: absolute;
+    color: #78C850;
+    font-size: 1.2rem;
+    z-index: 1001;
+    pointer-events: none;
+}
+
+@keyframes leaf-spiral {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--spiral-x, 50px), var(--spiral-y, -50px)) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Growth Effect */
+.vfx-growth {
+    position: absolute;
+    z-index: 1001;
+    pointer-events: none;
+}
+
+@keyframes nature-growth {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.5);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
+}
+
+/* Rock/Debris Effects */
+.vfx-debris {
+    position: absolute;
+    color: #B8A038;
+    font-size: 1rem;
+    z-index: 1001;
+    pointer-events: none;
+}
+
+@keyframes debris-scatter {
+    0% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    80% {
+        transform: translate(calc(-50% + var(--debris-x, 0px)), calc(-50% + var(--debris-y, 0px))) scale(0.8) rotate(var(--debris-rotation, 0deg));
+        opacity: 0.6;
+    }
+    100% {
+        transform: translate(calc(-50% + var(--debris-x, 0px)), calc(-50% + var(--debris-y, 0px))) scale(0) rotate(var(--debris-rotation, 0deg));
+        opacity: 0;
+    }
+}
+
+/* Status Effect Particles */
+.vfx-status-particle {
+    position: absolute;
+    font-size: 0.8rem;
+    z-index: 1001;
+    pointer-events: none;
+}
+
+@keyframes status-float {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-50px) scale(0.5);
+        opacity: 0;
+    }
+}
+
+/* Battle Flow Animations */
+.monster-entering {
+    animation: monster-enter 1s ease-out forwards;
+}
+
+.monster-fainting {
+    animation: monster-faint 1.5s ease-in forwards;
+}
+
+@keyframes monster-enter {
+    0% {
+        transform: scale(0) translateY(50px);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1) translateY(0);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes monster-faint {
+    0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+        filter: brightness(1);
+    }
+    50% {
+        transform: scale(0.9) rotate(-5deg);
+        opacity: 0.7;
+        filter: brightness(0.5);
+    }
+    100% {
+        transform: scale(0.3) rotate(-15deg) translateY(50px);
+        opacity: 0;
+        filter: brightness(0.1) grayscale(1);
+    }
+}
+
+/* Turn Transition Effects */
+.turn-transition {
+    animation: turn-change 0.8s ease-in-out;
+}
+
+@keyframes turn-change {
+    0% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: scale(1.05);
+        filter: brightness(1.2);
+    }
+    100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+}
+
+/* HP Bar Animations */
+.hp-fill {
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hp-fill.rapid-change {
+    transition: width 0.3s ease-out;
+}
+
+.hp-critical-warning {
+    animation: critical-warning 0.5s infinite alternate;
+}
+
+@keyframes critical-warning {
+    0% {
+        box-shadow: 0 0 5px #F44336;
+    }
+    100% {
+        box-shadow: 0 0 20px #F44336, inset 0 0 10px rgba(244, 67, 54, 0.3);
+    }
+}
+
+/* Switch Animation */
+.monster-switching-out {
+    animation: switch-out 0.8s ease-in forwards;
+}
+
+.monster-switching-in {
+    animation: switch-in 0.8s ease-out forwards;
+}
+
+@keyframes switch-out {
+    0% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.3) translateY(-100px);
+        opacity: 0;
+    }
+}
+
+@keyframes switch-in {
+    0% {
+        transform: scale(0.3) translateY(100px);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Weather Effects */
+.weather-rain {
+    background: linear-gradient(180deg, transparent 0%, rgba(100, 150, 200, 0.1) 100%);
+    animation: rain-fall 2s linear infinite;
+}
+
+.weather-sun {
+    filter: brightness(1.2) saturate(1.3);
+    animation: sun-shine 3s ease-in-out infinite;
+}
+
+.weather-hail {
+    animation: hail-shake 0.3s infinite;
+}
+
+@keyframes rain-fall {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 100px; }
+}
+
+@keyframes sun-shine {
+    0%, 100% { filter: brightness(1.2) saturate(1.3); }
+    50% { filter: brightness(1.4) saturate(1.5); }
+}
+
+@keyframes hail-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .vfx-projectile {
+        font-size: 1.5rem;
+    }
+    
+    .vfx-explosion {
+        font-size: 2rem;
+    }
+    
+    .vfx-damage-text {
+        font-size: 1rem !important;
+    }
+    
+    .vfx-damage-text.critical {
+        font-size: 1.3rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .vfx-projectile {
+        font-size: 1.2rem;
+    }
+    
+    .vfx-explosion {
+        font-size: 1.5rem;
+    }
+    
+    .vfx-damage-text {
+        font-size: 0.8rem !important;
+    }
+    
+    .vfx-damage-text.critical {
+        font-size: 1rem !important;
+    }
+}
+
+/* Custom Move VFX Animations */
+
+/* Combo Burst Effect for Multi-Hit Moves */
+@keyframes combo-burst {
+    0% {
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.5) rotate(180deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(0.5) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Ground Eruption Effect for Rock/Ground Moves */
+@keyframes ground-eruption {
+    0% {
+        transform: translateY(100px) scale(0) rotate(0deg);
+        opacity: 0;
+    }
+    30% {
+        transform: translateY(-20px) scale(1.2) rotate(-10deg);
+        opacity: 1;
+    }
+    70% {
+        transform: translateY(-40px) scale(1) rotate(10deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-60px) scale(0.8) rotate(0deg);
+        opacity: 0;
+    }
+}
+
+/* Rock Shatter Effect */
+@keyframes rock-shatter {
+    0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    25% {
+        transform: scale(1.3) rotate(45deg);
+        opacity: 0.9;
+    }
+    75% {
+        transform: scale(0.7) rotate(135deg);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(0.3) rotate(180deg);
+        opacity: 0;
+    }
+}
+
+/* Enhanced Sparkle Effects for Fairy Moves */
+.vfx-fairy-sparkle {
+    position: absolute;
+    font-size: 1.5rem;
+    z-index: 1002;
+    pointer-events: none;
+    animation: fairy-sparkle 1.2s ease-out forwards;
+}
+
+@keyframes fairy-sparkle {
+    0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 0;
+        filter: drop-shadow(0 0 5px #EE99AC);
+    }
+    20% {
+        transform: scale(1.2) rotate(90deg);
+        opacity: 1;
+        filter: drop-shadow(0 0 15px #EE99AC);
+    }
+    80% {
+        transform: scale(0.8) rotate(270deg);
+        opacity: 0.6;
+        filter: drop-shadow(0 0 10px #EE99AC);
+    }
+    100% {
+        transform: scale(0.3) rotate(360deg);
+        opacity: 0;
+        filter: drop-shadow(0 0 5px #EE99AC);
+    }
+}
+
+/* Water Splash Enhancement */
+.vfx-water-enhanced {
+    position: absolute;
+    font-size: 2.5rem;
+    z-index: 1002;
+    pointer-events: none;
+    animation: water-enhanced 1s ease-out forwards;
+}
+
+@keyframes water-enhanced {
+    0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 0;
+        filter: drop-shadow(0 0 5px #6890F0);
+    }
+    30% {
+        transform: scale(1.5) rotate(15deg);
+        opacity: 1;
+        filter: drop-shadow(0 0 20px #6890F0);
+    }
+    70% {
+        transform: scale(1.2) rotate(-15deg);
+        opacity: 0.7;
+        filter: drop-shadow(0 0 15px #6890F0);
+    }
+    100% {
+        transform: scale(0.5) rotate(0deg);
+        opacity: 0;
+        filter: drop-shadow(0 0 5px #6890F0);
+    }
+}
+
+/* Fighting Type Combo Effects */
+.vfx-fighting-combo {
+    position: absolute;
+    font-size: 2rem;
+    z-index: 1002;
+    pointer-events: none;
+    animation: fighting-combo 0.6s ease-out forwards;
+}
+
+@keyframes fighting-combo {
+    0% {
+        transform: scale(0) rotate(-45deg);
+        opacity: 0;
+        filter: drop-shadow(0 0 5px #C03028);
+    }
+    40% {
+        transform: scale(1.3) rotate(15deg);
+        opacity: 1;
+        filter: drop-shadow(0 0 15px #C03028);
+    }
+    80% {
+        transform: scale(1) rotate(-15deg);
+        opacity: 0.8;
+        filter: drop-shadow(0 0 10px #C03028);
+    }
+    100% {
+        transform: scale(0.4) rotate(0deg);
+        opacity: 0;
+        filter: drop-shadow(0 0 5px #C03028);
+    }
+}
+
+/* Electric Surge Effect */
+.vfx-electric-surge {
+    position: absolute;
+    font-size: 3rem;
+    color: #F8D030;
+    z-index: 1002;
+    pointer-events: none;
+    animation: electric-surge 0.8s ease-out forwards;
+}
+
+@keyframes electric-surge {
+    0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 0;
+        filter: drop-shadow(0 0 5px #F8D030);
+    }
+    15% {
+        transform: scale(1.5) rotate(-10deg);
+        opacity: 1;
+        filter: drop-shadow(0 0 25px #F8D030);
+    }
+    35% {
+        transform: scale(1.2) rotate(10deg);
+        opacity: 0.9;
+        filter: drop-shadow(0 0 20px #F8D030);
+    }
+    65% {
+        transform: scale(1) rotate(-5deg);
+        opacity: 0.7;
+        filter: drop-shadow(0 0 15px #F8D030);
+    }
+    100% {
+        transform: scale(0.3) rotate(0deg);
+        opacity: 0;
+        filter: drop-shadow(0 0 5px #F8D030);
+    }
+}
+
+/* Splash Effects */
+@keyframes splash-burst {
+    0% {
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        opacity: 0;
+    }
+    30% {
+        transform: translate(-50%, -50%) scale(1.5) rotate(45deg);
+        opacity: 1;
+    }
+    70% {
+        transform: translate(-50%, -50%) scale(2) rotate(90deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(3) rotate(180deg);
+        opacity: 0;
+    }
+}
+
+/* Magical Burst Effects */
+@keyframes magical-burst {
+    0% {
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        opacity: 0;
+    }
+    20% {
+        transform: translate(-50%, -50%) scale(1.2) rotate(90deg);
+        opacity: 1;
+    }
+    60% {
+        transform: translate(-50%, -50%) scale(1.8) rotate(180deg);
+        opacity: 0.9;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2.5) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Explosion Particle Effects */
+.vfx-explosion-particle {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1001;
+}
+
+@keyframes explosion-particle {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(calc(-50% + var(--particle-x)), calc(-50% + var(--particle-y))) scale(1.2);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(calc(-50% + var(--particle-x)), calc(-50% + var(--particle-y))) scale(0);
+        opacity: 0;
+    }
+}
+
+/* Enhanced Sparks Effect */
+.vfx-sparks {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: currentColor;
+    border-radius: 50%;
+    z-index: 1001;
+    pointer-events: none;
+}
+
+@keyframes sparks-scatter {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(calc(-50% + var(--spark-x)), calc(-50% + var(--spark-y))) scale(0);
+        opacity: 0;
+    }
+} 

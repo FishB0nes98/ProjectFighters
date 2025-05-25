@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOBA Shop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="shop_2.css">
+</head>
+<body>
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <header>
+        <div class="logo">
+            <h1>Project Fighters Shop</h1>
+        </div>
+        <div class="currency-display">
+            <div class="currency">
+                <img src="res/img/fm.png" alt="FM">
+                <span id="fm-amount">0</span>
+            </div>
+            <div class="currency">
+                <img src="res/img/cm.png" alt="CM">
+                <span id="cm-amount">0</span>
+            </div>
+            <div class="currency">
+                <img src="res/img/qp.png" alt="QP">
+                <span id="qp-amount">0</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Simple Shop Header (no image, no timer) -->
+        <div class="shop-banner">
+            <div class="shop-banner-text">
+                <h2>Daily Shop</h2>
+                <p>Check out today's featured items</p>
+            </div>
+        </div>
+
+        <!-- Shop Container -->
+        <div id="shopContainer" class="shop-container">
+            <!-- Collections will be dynamically loaded here -->
+        </div>
+
+        <!-- Back to Top Button -->
+        <button id="backToTop" class="back-to-top">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+    </main>
+
+    <!-- Item Details Modal -->
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Item Name</h2>
+            </div>
+            <div class="modal-body">
+                <div class="modal-image" data-type="1">
+                    <img src="" alt="Item Image">
+                </div>
+                <audio class="modal-audio-player" controls></audio>
+                <div class="modal-details">
+                    <div class="modal-description">
+                        Description of the item will appear here.
+                    </div>
+                    <div class="modal-price">
+                        <img src="res/img/fm.png" alt="FM">
+                        <span class="modal-price-value">1000</span>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="modal-buy-button">Purchase</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Notification Modals -->
+    <div id="notificationOverlay" class="notification-overlay">
+        <div class="notification-container">
+            <div class="notification-icon question">
+                <i class="fas fa-question-circle"></i>
+            </div>
+            <h3 class="notification-title">Confirm Purchase</h3>
+            <p class="notification-message">Are you sure you want to purchase this item?</p>
+            <div class="notification-buttons">
+                <button class="notification-button secondary" id="notificationCancel">Cancel</button>
+                <button class="notification-button primary" id="notificationConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="errorNotificationOverlay" class="notification-overlay">
+        <div class="notification-container">
+            <div class="notification-icon error">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <h3 class="notification-title">Insufficient Funds</h3>
+            <p class="notification-message">You don't have enough FM to purchase this item.</p>
+            <div class="notification-buttons">
+                <button class="notification-button primary" id="errorNotificationOk">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="successNotificationOverlay" class="notification-overlay">
+        <div class="notification-container">
+            <div class="notification-icon success">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="notification-title">Purchase Successful</h3>
+            <p class="notification-message">You have successfully purchased this item!</p>
+            <div class="notification-buttons">
+                <button class="notification-button primary" id="successNotificationOk">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getDatabase, ref, onValue, get, update } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import skinReference from './skins.js';
+
+        // Let's define firebaseConfig here for clarity, assuming it would be in firebase-config.js
+        // TODO: This firebaseConfig should ideally be imported from firebase-config.js
+        // For now, we are moving the firebaseConfig object from firebase-config.js into this script
+        // to resolve the immediate "missing" issue. The correct approach is to import it.
+
+        const firebaseConfig = {
+  apiKey: "AIzaSyCqhxq6sPDU3EmuvvkBIIDJ-H6PsBc42Jg",
+  authDomain: "project-fighters-by-fishb0nes.firebaseapp.com",
+  databaseURL: "https://project-fighters-by-fishb0nes-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "project-fighters-by-fishb0nes",
+  storageBucket: "project-fighters-by-fishb0nes.appspot.com",
+  messagingSenderId: "867339299995",
+  appId: "1:867339299995:web:99c379940014b9c05cea3e",
+  measurementId: "G-LNEM6HR842"
+};
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth(app);
+        
+        let userData = null;
+        let shopData = null;
+        let currentUserId = null;
+        
+        // DOM Elements
+        const shopContainer = document.getElementById('shopContainer');
+        const userCoinsElement = document.getElementById('userCoins');
+        const userGemsElement = document.getElementById('userGems');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const backToTop = document.getElementById('backToTop');
+        const itemModal = document.getElementById('itemModal');
+        const modalClose = document.querySelector('.modal-close');
+        const modalTitle = document.querySelector('.modal-title');
+        const modalImage = document.getElementById('modalImage');
+        const modalDescription = document.getElementById('modalDescription');
+        const modalPrice = document.getElementById('modalPrice');
+        const modalBuyButton = document.getElementById('modalBuyButton');
+        
+        // Item type mapping
+        const itemTypes = {
+            1: 'Skin',
+            2: 'Icon',
+            3: 'Sticker',
+            4: 'Song',
+            5: 'Currency',
+            6: 'Lootbox'
+        };
+        
+        // Rarity mapping
+        const rarityClasses = {
+            'common': 'rarity-common',
+            'uncommon': 'rarity-uncommon',
+            'rare': 'rarity-rare',
+            'epic': 'rarity-epic',
+            'legendary': 'rarity-legendary'
+        };
+        
+        // Initialize Firebase and handle auth state
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize loading spinner
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.display = 'flex';
+            
+            // Initialize notification event handlers
+            document.getElementById('notificationCancel').addEventListener('click', () => {
+                document.getElementById('notificationOverlay').classList.remove('show');
+            });
+            
+            document.getElementById('errorNotificationOk').addEventListener('click', () => {
+                document.getElementById('errorNotificationOverlay').classList.remove('show');
+            });
+            
+            document.getElementById('successNotificationOk').addEventListener('click', () => {
+                document.getElementById('successNotificationOverlay').classList.remove('show');
+            });
+            
+            // Close notifications when clicking outside
+            document.querySelectorAll('.notification-overlay').forEach(overlay => {
+                overlay.addEventListener('click', (event) => {
+                    if (event.target === overlay) {
+                        overlay.classList.remove('show');
+                    }
+                });
+            });
+            
+            // Add event listener for modal close button
+            document.querySelector('.modal-close').addEventListener('click', () => {
+                closeModal();
+            });
+            
+            // Close modal when clicking outside
+            document.getElementById('itemModal').addEventListener('click', (event) => {
+                if (event.target === document.getElementById('itemModal')) {
+                    closeModal();
+                }
+            });
+            
+            // Initialize auth state
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    // User is signed in
+                    currentUserId = user.uid;
+                    try {
+                        // Get user data
+                        userData = await fetchUserData(user.uid);
+                        // Initialize shop with user data
+                        initShop(userData);
+                    } catch (error) {
+                        console.error("Error initializing shop:", error);
+                        alert("Failed to load shop. Please try again later.");
+                    } finally {
+                        // Hide loading overlay
+                        loadingOverlay.style.display = 'none';
+                    }
+                } else {
+                    // User is not signed in, redirect to login
+                    window.location.href = 'index.html';
+                }
+            });
+        });
+        
+        // Fetch user data including currencies and inventory
+        async function fetchUserData(userId) {
+            try {
+                const userRef = ref(database, `users/${userId}`);
+                const snapshot = await get(userRef);
+                
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    
+                    // Update currency displays
+                    document.getElementById('fm-amount').textContent = userData.FM || 0;
+                    document.getElementById('cm-amount').textContent = userData.CM || 0;
+                    document.getElementById('qp-amount').textContent = userData.questPoints || 0;
+                    
+                    return userData;
+                } else {
+                    console.log("No user data found");
+                    return { FM: 0, CM: 0, questPoints: 0, inventory: {} };
+                }
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                throw error;
+            }
+        }
+        
+        // Initialize shop with user data
+        async function initShop(userData) {
+            try {
+                // Fetch shop data from Firebase
+                const shopRef = ref(database, 'Store');
+                const snapshot = await get(shopRef);
+                
+                if (snapshot.exists()) {
+                    shopData = snapshot.val();
+                    // Render collections with shop data
+                    renderShopCollections(shopData);
+                } else {
+                    console.log("No shop data found");
+                    // Display message if no shop data
+                    const shopContainer = document.getElementById('shopContainer');
+                    shopContainer.innerHTML = `
+                        <div class="empty-shop">
+                            <h2>Shop is currently empty</h2>
+                            <p>Check back later for new items!</p>
+                        </div>
+                    `;
+                }
+                
+                // Initialize back to top button functionality
+                initBackToTop();
+            } catch (error) {
+                console.error("Error loading shop data:", error);
+                throw error;
+            }
+        }
+        
+        // Initialize back to top button
+        function initBackToTop() {
+            const backToTop = document.getElementById('backToTop');
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    backToTop.classList.add('visible');
+                } else {
+                    backToTop.classList.remove('visible');
+                }
+            });
+            
+            backToTop.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        }
+        
+        // Helper function to format item names (tokyo_kagome -> Tokyo Kagome)
+        function formatItemName(name) {
+            return name.split('_')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(' ');
+        }
+
+        // Helper function to capitalize first letter of a string
+        function capitalizeFirstLetter(string) {
+            if (!string) return string;
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        // Check if user owns the item
+        function isItemOwned(itemName, itemType) {
+            if (!userData) return false;
+
+            // Based on item type, check the appropriate section of user data
+            switch (parseInt(itemType)) {
+                case 1: // Skin
+                    return userData.skins && userData.skins[itemName] === 1;
+                case 2: // Icon
+                    return (userData.Icons && userData.Icons[itemName] === 1) || 
+                           (userData.icons && userData.icons[itemName] === 1);
+                case 3: // Sticker
+                    return userData.Stickers && userData.Stickers[itemName] === 1;
+                case 4: // Song
+                    return userData.Songs && userData.Songs[itemName] === 1;
+                case 6: // Lootbox
+                    return false; // Lootboxes are always purchasable
+                default:
+                    return false;
+            }
+        }
+        
+        // Function to render shop collections
+        function renderShopCollections(collections) {
+            const shopContainer = document.getElementById('shopContainer');
+            shopContainer.innerHTML = ''; // Clear previous items
+            
+            for (const collectionName in collections) {
+                const collection = collections[collectionName];
+                const collectionSection = document.createElement('div');
+                collectionSection.classList.add('collection-section');
+                
+                // Create simplified collection header (just name, no banner, no item count)
+                const collectionHeader = document.createElement('div');
+                collectionHeader.classList.add('collection-header');
+                
+                // Collection name - pretty format using our helper function
+                const collectionTitle = document.createElement('h3');
+                collectionTitle.classList.add('collection-name');
+                // Format collection name using our helper function
+                collectionTitle.textContent = formatItemName(collectionName);
+                
+                // Add name to header
+                collectionHeader.appendChild(collectionTitle);
+                
+                // Create items grid
+                const itemsGrid = document.createElement('div');
+                itemsGrid.classList.add('shop-items');
+                
+                for (const itemName in collection) {
+                    const itemData = collection[itemName];
+                    const itemCard = createItemCard(itemName, itemData, collectionName);
+                    itemsGrid.appendChild(itemCard);
+                }
+                
+                // Add elements to section
+                collectionSection.appendChild(collectionHeader);
+                collectionSection.appendChild(itemsGrid);
+                
+                // Add section to container
+                shopContainer.appendChild(collectionSection);
+            }
+        }
+        
+        // Custom notification system
+        let currentPurchaseItem = null;
+        let currentPurchaseItemName = null;
+        let currentPurchaseCollectionName = null;
+        
+        // Show confirmation modal
+        function showConfirmation(message, item, itemName, collectionName) {
+            const overlay = document.getElementById('notificationOverlay');
+            const messageElement = overlay.querySelector('.notification-message');
+            
+            // Store item details for later use
+            currentPurchaseItem = item;
+            currentPurchaseItemName = itemName;
+            currentPurchaseCollectionName = collectionName;
+            
+            // Set the message
+            messageElement.textContent = message;
+            
+            // Show the overlay
+            overlay.classList.add('show');
+            
+            // Return a promise that resolves when the user makes a choice
+            return new Promise((resolve) => {
+                document.getElementById('notificationConfirm').onclick = () => {
+                    overlay.classList.remove('show');
+                    resolve(true);
+                };
+                
+                document.getElementById('notificationCancel').onclick = () => {
+                    overlay.classList.remove('show');
+                    resolve(false);
+                };
+            });
+        }
+        
+        // Show error notification
+        function showError(message) {
+            const overlay = document.getElementById('errorNotificationOverlay');
+            const messageElement = overlay.querySelector('.notification-message');
+            
+            // Set the message
+            messageElement.textContent = message;
+            
+            // Show the overlay
+            overlay.classList.add('show');
+            
+            // Handle the OK button
+            document.getElementById('errorNotificationOk').onclick = () => {
+                overlay.classList.remove('show');
+            };
+        }
+        
+        // Show success notification
+        function showSuccess(message) {
+            const overlay = document.getElementById('successNotificationOverlay');
+            const messageElement = overlay.querySelector('.notification-message');
+            
+            // Set the message
+            messageElement.textContent = message;
+            
+            // Show the overlay
+            overlay.classList.add('show');
+            
+            // Handle the OK button
+            document.getElementById('successNotificationOk').onclick = () => {
+                overlay.classList.remove('show');
+            };
+        }
+        
+        // Function to close the item modal
+        function closeModal() {
+            const modal = document.getElementById('itemModal');
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                // Stop audio if playing
+                const audioPlayer = modal.querySelector('.modal-audio-player');
+                if (audioPlayer && !audioPlayer.paused) {
+                    audioPlayer.pause();
+                    audioPlayer.currentTime = 0;
+                }
+            }, 300); // Wait for animation to complete
+        }
+        
+        // Improved function to try loading image with different extensions
+        function loadImageWithFallback(imgElement, basePath, itemName, callback) {
+            // Define the extensions to try in order
+            const extensions = ['png', 'jpg', 'jpeg', 'webp', 'jfif'];
+            let currentExtensionIndex = 0;
+            
+            // Function to try the next extension
+            function tryNextExtension() {
+                if (currentExtensionIndex >= extensions.length) {
+                    console.error(`Failed to load image for ${itemName} with any extension`);
+                    // If callback provided, call it
+                    if (callback) callback(false);
+                    return;
+                }
+                
+                const ext = extensions[currentExtensionIndex];
+                imgElement.src = `${basePath}${itemName}.${ext}`;
+                currentExtensionIndex++;
+            }
+            
+            // Handle image load error
+            imgElement.onerror = function() {
+                tryNextExtension();
+            };
+            
+            // Handle image load success
+            imgElement.onload = function() {
+                console.log(`Loaded image for ${itemName} with extension: ${imgElement.src.split('.').pop()}`);
+                // If callback provided, call it
+                if (callback) callback(true);
+            };
+            
+            // Start with the first extension
+            tryNextExtension();
+        }
+        
+        // Create item card
+        function createItemCard(itemName, itemData, collectionName) {
+            const itemCard = document.createElement('div');
+            itemCard.className = `item-card rarity-${itemData.rarity || 'common'}`;
+            itemCard.setAttribute('data-item-name', itemName);
+            itemCard.setAttribute('data-collection', collectionName);
+            
+            // Different sizes based on item type
+            if (itemData.type !== 1) { // If NOT a skin
+                itemCard.classList.add('small-item-card');
+            }
+            
+            // Determine the appropriate currency based on item price type
+            const currencyImg = 'res/img/fm.png'; // Default to FM
+            const currencyAlt = 'FM';
+
+            const itemImageContainer = document.createElement('div');
+            itemImageContainer.className = 'item-image';
+            itemImageContainer.setAttribute('data-type', itemData.type);
+            
+            const itemImage = document.createElement('img');
+            // Determine image path based on item type
+            let basePath = '';
+            if (itemData.type === 1) { // Skin
+                basePath = 'Loading Screen/';
+            } else if (itemData.type === 2) { // Icon
+                basePath = 'Icons/Profile/'; // Updated path for icons
+            } else if (itemData.type === 3) { // Sticker
+                basePath = 'Stickers/';
+            } else if (itemData.type === 4) { // Song
+                basePath = 'Songs/thumbnails/';
+            } else if (itemData.type === 5) { // Currency
+                basePath = 'res/img/';
+            } else if (itemData.type === 6) { // Lootbox
+                basePath = 'Lootboxes/';
+            }
+
+            // Use the improved image loading function
+            loadImageWithFallback(itemImage, basePath, itemName);
+            
+            itemImage.alt = itemName;
+            itemImageContainer.appendChild(itemImage);
+
+            const itemType = document.createElement('div');
+            itemType.className = 'item-type';
+            // Set item type text
+            if (itemData.type === 1) {
+                itemType.textContent = 'Skin';
+            } else if (itemData.type === 2) {
+                itemType.textContent = 'Icon';
+            } else if (itemData.type === 3) {
+                itemType.textContent = 'Sticker';
+            } else if (itemData.type === 4) {
+                itemType.textContent = 'Song';
+            } else if (itemData.type === 5) {
+                itemType.textContent = 'Currency';
+            } else if (itemData.type === 6) {
+                itemType.textContent = 'Lootbox';
+            }
+
+            const itemRarity = document.createElement('div');
+            itemRarity.className = 'item-rarity';
+            // Set rarity
+            if (itemData.rarity) {
+                itemRarity.textContent = itemData.rarity.charAt(0).toUpperCase() + itemData.rarity.slice(1);
+            } else {
+                itemRarity.textContent = 'Common';
+            }
+
+            const itemInfo = document.createElement('div');
+            itemInfo.className = 'item-info';
+
+            const itemName_div = document.createElement('div');
+            itemName_div.className = 'item-name';
+            // Format the item name for display
+            const displayItemName = capitalizeFirstLetter(itemName.replace(/_/g, ' '));
+            itemName_div.textContent = displayItemName;
+
+            const itemDescription = document.createElement('div');
+            itemDescription.className = 'item-description';
+            itemDescription.textContent = itemData.description || `${itemType.textContent} - ${collectionName.replace(/_/g, ' ')}`;
+
+            const itemPrice = document.createElement('div');
+            itemPrice.className = 'item-price';
+
+            const price = document.createElement('div');
+            price.className = 'price';
+
+            const currencyIcon = document.createElement('img');
+            currencyIcon.src = currencyImg;
+            currencyIcon.alt = currencyAlt;
+
+            const priceValue = document.createElement('span');
+            priceValue.className = 'price-value';
+            
+            // Display original price with strikethrough if there's a discount
+            if (itemData.discount) {
+                const originalPrice = document.createElement('span');
+                originalPrice.className = 'original-price';
+                originalPrice.textContent = itemData.original_price;
+                price.appendChild(originalPrice);
+                
+                const discountTag = document.createElement('div');
+                discountTag.className = 'discount-tag';
+                discountTag.textContent = `-${itemData.discount}%`;
+                itemImageContainer.appendChild(discountTag);
+                
+                // Calculate discounted price
+                priceValue.textContent = Math.round(itemData.original_price * (1 - itemData.discount / 100));
+            } else {
+                priceValue.textContent = itemData.price;
+            }
+
+            price.appendChild(currencyIcon);
+            price.appendChild(priceValue);
+            itemPrice.appendChild(price);
+
+            // Check if user already owns this item
+            const isOwned = isItemOwned(itemName, itemData.type);
+            
+            if (isOwned) {
+                const ownedLabel = document.createElement('div');
+                ownedLabel.className = 'owned-label';
+                ownedLabel.textContent = 'OWNED';
+                itemPrice.appendChild(ownedLabel);
+            } else {
+                const buyButton = document.createElement('button');
+                buyButton.className = 'buy-button';
+                buyButton.textContent = 'Buy';
+                buyButton.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent item card click
+                    purchaseItem(itemData, itemName, collectionName);
+                });
+                itemPrice.appendChild(buyButton);
+            }
+
+            itemInfo.appendChild(itemName_div);
+            itemInfo.appendChild(itemDescription);
+
+            itemCard.appendChild(itemImageContainer);
+            itemCard.appendChild(itemType);
+            itemCard.appendChild(itemRarity);
+            itemCard.appendChild(itemInfo);
+            itemCard.appendChild(itemPrice);
+
+            // Add click event to show details
+            itemCard.addEventListener('click', () => {
+                showItemDetails(itemData, itemName, collectionName);
+            });
+
+            return itemCard;
+        }
+        
+        // Get image path based on item type
+        function getImagePathByType(type, itemName) {
+            switch (parseInt(type)) {
+                case 1: // Skin
+                    // First check if it exists in skinReference
+                    for (const character in skinReference) {
+                        const skinArray = skinReference[character];
+                        const foundSkin = skinArray.find(skin => skin.name === itemName);
+                        if (foundSkin) {
+                            return `Loading Screen/${itemName}.jpg`;
+                        }
+                    }
+                    return `Loading Screen/${itemName}.jpg`;
+                
+                case 2: // Icon
+                    return `Icons/${itemName}.png`;
+                
+                case 3: // Sticker
+                    return `Stickers/${itemName}.png`;
+                
+                case 4: // Song
+                    return `Songs/${itemName}.jpg`;
+                
+                case 5: // Currency
+                    return `images/${itemName.toLowerCase()}.png`;
+                
+                case 6: // Lootbox
+                    return `Lootboxes/${itemName}.png`;
+                
+                default:
+                    return `images/placeholder.jpg`;
+            }
+        }
+        
+        // Show item details in modal
+        function showItemDetails(item, itemName, collectionName) {
+            const modal = document.getElementById('itemModal');
+            const modalTitle = modal.querySelector('.modal-title');
+            const modalImage = modal.querySelector('.modal-image img');
+            const modalDescription = modal.querySelector('.modal-description');
+            const modalPrice = modal.querySelector('.modal-price-value');
+            const modalCurrencyImg = modal.querySelector('.modal-price img');
+            const modalActions = modal.querySelector('.modal-actions');
+            const modalImageContainer = modal.querySelector('.modal-image');
+            const modalAudioPlayer = modal.querySelector('.modal-audio-player');
+            
+            // Set data-type attribute for aspect ratio
+            modalImageContainer.setAttribute('data-type', item.type);
+
+            // Set modal content with formatted name
+            modalTitle.textContent = formatItemName(itemName);
+            
+            // Determine image path for modal (use full-sized image if it's a skin)
+            let basePath;
+            if (item.type === 1) { // Skin
+                basePath = `Skins/`; // Show the full skin in modal
+            } else if (item.type === 2) { // Icon
+                basePath = `Icons/Profile/`; // Updated path for icons
+            } else if (item.type === 3) { // Sticker
+                basePath = `Stickers/`;
+            } else if (item.type === 4) { // Song
+                basePath = `Songs/thumbnails/`;
+                // Setup audio player for songs
+                modalAudioPlayer.src = `Songs/${itemName}.mp3`;
+                // Set audio to start at 40% of the song when started
+                modalAudioPlayer.onloadedmetadata = function() {
+                    modalAudioPlayer.currentTime = modalAudioPlayer.duration * 0.4;
+                };
+            } else if (item.type === 5) { // Currency
+                basePath = `res/img/`;
+            } else if (item.type === 6) { // Lootbox
+                basePath = `Lootboxes/`;
+            } else {
+                basePath = `Loading Screen/`; // Default
+            }
+            
+            // Hide audio player for non-song items
+            if (item.type !== 4) {
+                modalAudioPlayer.style.display = 'none';
+            } else {
+                modalAudioPlayer.style.display = 'block';
+            }
+            
+            // Use the improved image loading function
+            loadImageWithFallback(modalImage, basePath, itemName);
+            
+            modalImage.alt = itemName;
+            
+            // Detailed description for modal - use formatted names
+            modalDescription.textContent = item.description || 
+                `This ${getItemTypeName(item.type)} is part of the ${formatItemName(collectionName)} collection.`;
+            
+            // Set price and currency
+            modalPrice.textContent = item.discount ? 
+                Math.round(item.original_price * (1 - item.discount / 100)) : 
+                item.price;
+            
+            // Set currency image based on item type
+            modalCurrencyImg.src = 'res/img/fm.png';
+            modalCurrencyImg.alt = 'FM';
+            
+            // Clear previous actions
+            modalActions.innerHTML = '';
+            
+            // Check if user already owns this item
+            const isOwned = isItemOwned(itemName, item.type);
+            
+            if (isOwned) {
+                const ownedLabel = document.createElement('div');
+                ownedLabel.className = 'modal-owned-label';
+                ownedLabel.textContent = 'OWNED';
+                modalActions.appendChild(ownedLabel);
+            } else {
+                // Add buy button if not owned
+                const buyButton = document.createElement('button');
+                buyButton.className = 'modal-buy-button';
+                buyButton.textContent = 'Purchase';
+                buyButton.onclick = () => purchaseItem(item, itemName, collectionName);
+                modalActions.appendChild(buyButton);
+            }
+            
+            // Show modal with fade-in animation
+            modal.style.display = 'block';
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+        }
+        
+        // Helper function to get the item type name
+        function getItemTypeName(type) {
+            switch(type) {
+                case 1: return 'Skin';
+                case 2: return 'Icon';
+                case 3: return 'Sticker';
+                case 4: return 'Song';
+                case 5: return 'Currency';
+                case 6: return 'Lootbox';
+                default: return 'Item';
+            }
+        }
+        
+        // Handle buying an item
+        async function purchaseItem(item, itemName, collectionName) {
+            // Check if user has enough currency
+            if (userData.FM < item.price) {
+                showError(`You don't have enough FM to purchase this item! You have ${userData.FM} FM, but this item costs ${item.price} FM.`);
+                return;
+            }
+            
+            // Show confirmation message
+            const confirmed = await showConfirmation(
+                `Are you sure you want to buy ${formatItemName(itemName)} for ${item.price} FM?`, 
+                item, 
+                itemName, 
+                collectionName
+            );
+            
+            if (confirmed) {
+                try {
+                    // Create a location to store the item based on its type
+                    const updates = {};
+                    
+                    // Deduct FM
+                    const newFMBalance = userData.FM - item.price;
+                    updates[`FM`] = newFMBalance;
+                    
+                    // Add item to appropriate user data location based on type
+                    switch (parseInt(item.type)) {
+                        case 1: // Skin
+                            if (!userData.skins) userData.skins = {};
+                            updates[`skins/${itemName}`] = 1;
+                            break;
+                        case 2: // Icon
+                            if (!userData.Icons) userData.Icons = {};
+                            updates[`Icons/${itemName}`] = 1;
+                            break;
+                        case 3: // Sticker
+                            if (!userData.Stickers) userData.Stickers = {};
+                            updates[`Stickers/${itemName}`] = 1;
+                            break;
+                        case 4: // Song
+                            if (!userData.Songs) userData.Songs = {};
+                            updates[`Songs/${itemName}`] = 1;
+                            break;
+                        case 5: // Currency
+                            // For currency, add the value to the user's balance
+                            const currencyAmount = 1000; // Example value
+                            updates[`CM`] = (userData.CM || 0) + currencyAmount;
+                            break;
+                        case 6: // Lootbox
+                            // If the user doesn't have a freelootbox field, create it
+                            if (!userData.freelootbox) userData.freelootbox = 0;
+                            updates[`freelootbox`] = userData.freelootbox + 1;
+                            break;
+                    }
+                    
+                    // Update Firebase
+                    await update(ref(database, `users/${currentUserId}`), updates);
+                    
+                    // Update local user data
+                    userData.FM = newFMBalance;
+                    
+                    // Update specific item data
+                    switch (parseInt(item.type)) {
+                        case 1: // Skin
+                            if (!userData.skins) userData.skins = {};
+                            userData.skins[itemName] = 1;
+                            break;
+                        case 2: // Icon
+                            if (!userData.Icons) userData.Icons = {};
+                            userData.Icons[itemName] = 1;
+                            break;
+                        case 3: // Sticker
+                            if (!userData.Stickers) userData.Stickers = {};
+                            userData.Stickers[itemName] = 1;
+                            break;
+                        case 4: // Song
+                            if (!userData.Songs) userData.Songs = {};
+                            userData.Songs[itemName] = 1;
+                            break;
+                        case 5: // Currency
+                            userData.CM = (userData.CM || 0) + 1000; // Example value
+                            break;
+                        case 6: // Lootbox
+                            userData.freelootbox = (userData.freelootbox || 0) + 1;
+                            break;
+                    }
+                    
+                    // Update UI
+                    document.getElementById('fm-amount').textContent = newFMBalance;
+                    if (item.type === 5) { // If currency was purchased
+                        document.getElementById('cm-amount').textContent = userData.CM;
+                    }
+                    
+                    // Close the modal
+                    closeModal();
+                    
+                    // Show success notification
+                    showSuccess(`Successfully purchased ${formatItemName(itemName)}!`);
+                    
+                    // Refresh the shop display to update owned items
+                    renderShopCollections(shopData);
+                } catch (error) {
+                    console.error("Error purchasing item:", error);
+                    showError("There was an error processing your purchase. Please try again.");
+                }
+            }
+        }
+    </script>
+</body>
+</html>
