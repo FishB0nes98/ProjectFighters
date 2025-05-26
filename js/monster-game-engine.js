@@ -48,7 +48,7 @@ export class MonsterGameEngine {
 
     // Load all monster definitions
     async loadMonsterData() {
-        const monsterFiles = [
+        const MonsterFiles = [
             "Bunburrow.json",
             "Pechac.json",
             "Cryorose.json",
