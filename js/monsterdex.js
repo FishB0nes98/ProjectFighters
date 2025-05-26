@@ -93,15 +93,15 @@ class MonsterDex {
         try {
             // Get all monster JSON files from the Monsters directory
             const monsterFiles = [
-                'Nerephal.json', 'Crymora.json', 'Blobby.json', 'Smouldimp.json',
-                'Sharx.json', 'Maquatic.json', 'Buzzy.json', 'Crisilla.json',
-                'Puffsqueak.json', 'Lumillow.json', 'Shiverion.json', 'Peepuff.json',
-                'Nymaria.json', 'Scorchlete.json', 'Ratastrophe.json', 'Mizuryon.json',
-                'Hauntorch.json', 'Cryorose.json', 'Pechac.json', 'Bunburrow.json',
+                'nerephal.json', 'crymora.json', 'blobby.json', 'smouldimp.json',
+                'sharx.json', 'maquatic.json', 'buzzy.json', 'crisilla.json',
+                'puffsqueak.json', 'lumillow.json', 'shiverion.json', 'peepuff.json',
+                'nymaria.json', 'scorchlete.json', 'ratastrophe.json', 'mizuryon.json',
+                'hauntorch.json', 'cryorose.json', 'pechac.json', 'bunburrow.json',
                 // New monsters from images
-                'Furnacron.json', 'Nivoxis.json', 'Noctivy.json',
-                'Skarth.json', 'Frosmoth.json', 'Fulverice.json', 'Pyrochi.json',
-                'Synthraze.json'
+                'furnacron.json', 'nivoxis.json', 'noctivy.json',
+                'skarth.json', 'frosmoth.json', 'fulverice.json', 'pyrochi.json',
+                'synthraze.json'
             ];
             
             const monsterPromises = monsterFiles.map(async (file) => {
