@@ -81,7 +81,7 @@ export class MonsterGameEngine {
             "Synthraze.json"
         ];
         
-        for (const file of monsterFiles) {
+        for (const file of MonsterFiles) {
             try {
                 const response = await fetch(`/Monsters/${file}`);
                 if (response.ok) {
