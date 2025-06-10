@@ -1,129 +1,216 @@
 // Quest Types and their configurations
 export const questTypes = {
     daily: {
-        title: 'Monster Trainer Daily Quests',
+        title: 'Rebellious Daily Challenges',
         resetInterval: 64800000, // 18 hours in milliseconds
         maxActive: 3
     },
     special: {
-        title: 'Monster Trainer Special Challenges',
-        maxActive: 4
+        title: 'Rebellious Special Missions',
+        maxActive: 6
     }
 };
 
-// Monster Trainer themed quest templates
+// Rebellious themed quest templates
 export const questTemplates = {
     daily: [
         {
-            id: 'trainer_daily_expedition',
-            icon: 'fa-map-signs',
-            title: 'Daily Expedition',
-            description: 'Explore the wild! Play 2 games.',
+            id: 'daily_street_fights',
+            icon: 'fa-fist-raised',
+            title: 'Daily Street Fights',
+            description: 'Hit the streets! Play 2 games to prove your rebellious spirit.',
             requirements: {
                 count: 2,
                 type: 'play_games'
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 100 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 120 }
             ],
             resetInterval: 64800000,
             defaultData: { progress: 0, completed: false, claimed: false, lastReset: null }
         },
         {
-            id: 'trainer_daily_victory',
-            icon: 'fa-trophy',
-            title: "Trainer\'s Triumph",
-            description: 'Achieve victory in 1 game.',
+            id: 'daily_rebel_victory',
+            icon: 'fa-fire',
+            title: 'Rebel Victory',
+            description: 'Show them who\'s boss! Win 1 game today.',
             requirements: {
                 count: 1,
                 type: 'win_games'
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 150 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 150 },
+                { type: 'championMoney', icon: 'res/img/cm.png', amount: 200 }
             ],
             resetInterval: 64800000,
             defaultData: { progress: 0, completed: false, claimed: false, lastReset: null }
         },
         {
-            id: 'monster_partner_up',
-            icon: 'fa-dragon',
-            title: 'Monster Partner Up!',
-            description: 'Play 1 game using any Monster Trainer series skin.',
+            id: 'daily_rebel_style',
+            icon: 'fa-tshirt',
+            title: 'Rebel Style',
+            description: 'Represent the rebellion! Play 1 game using any Rebellious series skin.',
             requirements: {
                 count: 1,
                 type: 'play_character_theme_skin',
-                skins: ['Monster Trainer Ayane', 'Monster Trainer Kokoro', 'Monster Trainer Shoma']
+                skins: ['Rebellious Ayane', 'Rebellious Anna', 'Rebellious Kabal', 'Rebellious Christie', 'Rebellious Ibuki', 'Rebellious FANG', 'Rebellious Mega Man']
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 120 },
-                { type: 'championMoney', icon: 'res/img/cm.png', amount: 200 }
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 100 },
+                { type: 'championMoney', icon: 'res/img/cm.png', amount: 300 }
             ],
             resetInterval: 64800000,
             defaultData: { progress: 0, completed: false, claimed: false, lastReset: null }
         }
     ],
     special: [
+        // Rebellious Skin Quests (dynamically created based on user's free song choice)
         {
-            id: 'elemental_overload',
-            icon: 'fa-fire-alt',
-            title: 'Elemental Overload',
-            description: "Unleash your monster\'s power! Land 10 abilities on opponents in a single game.",
+            id: 'rebellious_ayane_quest',
+            icon: 'fa-fire',
+            title: 'Rebellious Spirit: Ayane',
+            description: 'Prove your rebellious nature! Win 50 Ranked games to unlock the Rebellious Ayane skin.',
             requirements: {
-                count: 10,
-                type: 'land_abilities_on_enemies_in_match'
+                count: 50,
+                type: 'win_ranked_games'
             },
             rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 200 },
-                { type: 'championMoney', icon: 'res/img/cm.png', amount: 300 }
-            ],
-            repeatable: true,
-            defaultData: { progress: 0, completed: false, claimed: false, completionCount: 0 }
-        },
-        {
-            id: 'trainers_resolve',
-            icon: 'fa-shield-alt',
-            title: "Trainer\'s Resolve",
-            description: 'Show your resolve! Get 3 Kills or Assists as Monster Trainer Ayane.',
-            requirements: {
-                count: 3,
-                type: 'kills_assists_as_character_skin',
-                skin: 'Monster Trainer Ayane'
-            },
-            rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 250 },
-                { type: 'sticker', name: 'ayane_trainer_badge', icon: 'Stickers/ayane_trainer_badge.png' }
-            ],
-            repeatable: true,
-            defaultData: { progress: 0, completed: false, claimed: false, completionCount: 0 }
-        },
-        {
-            id: 'world_class_trainers',
-            icon: 'fa-globe-americas',
-            title: 'World Class Trainers',
-            description: 'Prove your skill! Win 5 games during the Monster Trainer Event.',
-            requirements: {
-                count: 5,
-                type: 'win_games_event'
-            },
-            rewards: [
-                { type: 'questPoints', icon: 'res/img/qp.png', amount: 400 },
-                { type: 'title', name: 'Elite Trainer', icon: 'fa-id-badge' }
+                { type: 'skin', name: 'Rebellious Ayane', icon: 'fa-tshirt' }
             ],
             repeatable: false,
-            defaultData: { progress: 0, completed: false, claimed: false, winsDuringEvent: 0 }
+            hidden: true, // Only visible if user chose Ayane's song
+            defaultData: { progress: 0, completed: false, claimed: false, targetSkin: 'Rebellious Ayane', character: 'Ayane' }
         },
         {
-            id: 'vitality_boost',
-            icon: 'fa-plus-square',
-            title: 'Vitality Boost',
-            description: 'Support your team! Heal or Shield allies for 5000 health in total.',
+            id: 'rebellious_anna_quest',
+            icon: 'fa-fire',
+            title: 'Rebellious Spirit: Anna',
+            description: 'Prove your rebellious nature! Win 50 Ranked games to unlock the Rebellious Anna skin.',
             requirements: {
-                count: 5000,
-                type: 'heal_shield_allies_total'
+                count: 50,
+                type: 'win_ranked_games'
+            },
+            rewards: [
+                { type: 'skin', name: 'Rebellious Anna', icon: 'fa-tshirt' }
+            ],
+            repeatable: false,
+            hidden: true, // Only visible if user chose Anna's song
+            defaultData: { progress: 0, completed: false, claimed: false, targetSkin: 'Rebellious Anna', character: 'Anna' }
+        },
+        {
+            id: 'rebellious_kabal_quest',
+            icon: 'fa-fire',
+            title: 'Rebellious Spirit: Kabal',
+            description: 'Prove your rebellious nature! Win 50 Ranked games to unlock the Rebellious Kabal skin.',
+            requirements: {
+                count: 50,
+                type: 'win_ranked_games'
+            },
+            rewards: [
+                { type: 'skin', name: 'Rebellious Kabal', icon: 'fa-tshirt' }
+            ],
+            repeatable: false,
+            hidden: true, // Only visible if user chose Kabal's song
+            defaultData: { progress: 0, completed: false, claimed: false, targetSkin: 'Rebellious Kabal', character: 'Kabal' }
+        },
+        // Basic Rebellious Quests
+        {
+            id: 'rebel_uprising',
+            icon: 'fa-fist-raised',
+            title: 'Rebel Uprising',
+            description: 'Join the rebellion! Play 5 games using any Rebellious series skin.',
+            requirements: {
+                count: 5,
+                type: 'play_character_theme_skin',
+                skins: ['Rebellious Ayane', 'Rebellious Anna', 'Rebellious Kabal', 'Rebellious Christie', 'Rebellious Ibuki', 'Rebellious FANG', 'Rebellious Mega Man']
             },
             rewards: [
                 { type: 'questPoints', icon: 'res/img/qp.png', amount: 300 },
-                { type: 'championMoney', icon: 'res/img/cm.png', amount: 750 }
+                { type: 'championMoney', icon: 'res/img/cm.png', amount: 500 }
+            ],
+            repeatable: true,
+            defaultData: { progress: 0, completed: false, claimed: false, completionCount: 0 }
+        },
+        {
+            id: 'street_fighter',
+            icon: 'fa-fire-alt',
+            title: 'Street Fighter',
+            description: 'Show your rebellious spirit! Win 5 games in a row.',
+            requirements: {
+                count: 5,
+                type: 'win_streak'
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 400 },
+                { type: 'championMoney', icon: 'res/img/cm.png', amount: 700 },
+                { type: 'title', name: 'Street Fighter', icon: 'fa-id-badge' }
+            ],
+            repeatable: false,
+            defaultData: { progress: 0, completed: false, claimed: false, currentStreak: 0 }
+        },
+        {
+            id: 'rebel_domination',
+            icon: 'fa-crown',
+            title: 'Rebel Domination',
+            description: 'Dominate the battlefield! Get 15 kills or assists in a single game.',
+            requirements: {
+                count: 15,
+                type: 'kills_assists_in_match'
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 350 },
+                { type: 'championMoney', icon: 'res/img/cm.png', amount: 600 }
+            ],
+            repeatable: true,
+            defaultData: { progress: 0, completed: false, claimed: false, completionCount: 0 }
+        },
+        {
+            id: 'underground_champion',
+            icon: 'fa-trophy',
+            title: 'Underground Champion',
+            description: 'Prove yourself in the underground! Win 20 ranked games.',
+            requirements: {
+                count: 20,
+                type: 'win_ranked_games'
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 600 },
+                { type: 'championMoney', icon: 'res/img/cm.png', amount: 1200 },
+                { type: 'title', name: 'Underground Champion', icon: 'fa-id-badge' }
+            ],
+            repeatable: false,
+            defaultData: { progress: 0, completed: false, claimed: false }
+        },
+        {
+            id: 'rebel_loyalty',
+            icon: 'fa-heart',
+            title: 'Rebel Loyalty',
+            description: 'Stay loyal to the cause! Play 10 games with the same Rebellious character.',
+            requirements: {
+                count: 10,
+                type: 'play_same_rebellious_character',
+                characters: ['Ayane', 'Anna', 'Kabal', 'Christie', 'Ibuki', 'FANG', 'Mega Man']
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 500 },
+                { type: 'championMoney', icon: 'res/img/cm.png', amount: 900 },
+                { type: 'sticker', name: 'rebel_loyalty_badge', icon: 'Stickers/rebel_loyalty_badge.png' }
+            ],
+            repeatable: true,
+            defaultData: { progress: 0, completed: false, claimed: false, completionCount: 0, chosenCharacter: null }
+        },
+        {
+            id: 'midnight_rebellion',
+            icon: 'fa-moon',
+            title: 'Midnight Rebellion',
+            description: 'The rebellion never sleeps! Play 25 games total.',
+            requirements: {
+                count: 25,
+                type: 'play_games'
+            },
+            rewards: [
+                { type: 'questPoints', icon: 'res/img/qp.png', amount: 400 },
+                { type: 'championMoney', icon: 'res/img/cm.png', amount: 800 }
             ],
             repeatable: true,
             defaultData: { progress: 0, completed: false, claimed: false, completionCount: 0 }
@@ -137,42 +224,37 @@ export function calculateQuestProgress(quest, userStats) {
     let currentProgress = 0;
     
     switch (quest.requirements.type) {
-        case 'play':
+        case 'play_games':
             currentProgress = userStats?.gamesPlayed || 0;
             break;
-        case 'win':
+        case 'win_games':
             currentProgress = userStats?.wins || 0;
             break;
         case 'win_streak':
             currentProgress = userStats?.currentStreak || 0;
             break;
-        case 'win_1v1':
-            currentProgress = userStats?.wins1v1 || 0;
+        case 'win_ranked_games':
+            currentProgress = userStats?.rankedWins || 0;
             break;
-        case 'win_aram':
-            currentProgress = userStats?.winsARAM || 0;
+        case 'play_character_theme_skin':
+            // Check if user is playing with any of the required skins
+            if (userStats?.lastPlayedSkin && quest.requirements.skins?.includes(userStats.lastPlayedSkin)) {
+                currentProgress = quest.defaultData.progress + 1;
+            }
             break;
-        case 'damage':
-            currentProgress = userStats?.totalDamage || 0;
+        case 'kills_assists_in_match':
+            // This should be tracked per match, not cumulative
+            currentProgress = userStats?.lastMatchKillsAssists || 0;
             break;
-        case 'multikills':
-            currentProgress = userStats?.multikills || 0;
-            break;
-        case 'objectives':
-            currentProgress = userStats?.objectives || 0;
-            break;
-        case 'high_kda':
-            currentProgress = userStats?.highKDAGames || 0;
-            break;
-        case 'play_champion':
-            // Check if the user is using the same champion as the quest requirement
-            if (userStats?.lastPlayedChampion) {
-                if (!quest.defaultData.champion) {
-                    // First game with a champion, set it as the requirement
-                    quest.defaultData.champion = userStats.lastPlayedChampion;
+        case 'play_same_rebellious_character':
+            // Track playing the same rebellious character multiple times
+            if (userStats?.lastPlayedCharacter && quest.requirements.characters?.includes(userStats.lastPlayedCharacter)) {
+                if (!quest.defaultData.chosenCharacter) {
+                    // First time playing a rebellious character, set it as the chosen one
+                    quest.defaultData.chosenCharacter = userStats.lastPlayedCharacter;
                     currentProgress = 1;
-                } else if (userStats.lastPlayedChampion === quest.defaultData.champion) {
-                    // Playing with the same champion
+                } else if (userStats.lastPlayedCharacter === quest.defaultData.chosenCharacter) {
+                    // Playing with the same chosen character
                     currentProgress = quest.defaultData.progress + 1;
                 }
             }
@@ -227,12 +309,12 @@ export async function updateQuestProgress(userId, matchData, database, ref, get,
     const currentTime = Date.now();
     const updates = {};
 
-    const { result, kda, character: playedCharacter, skin: playedSkin, gameMode, abilitiesLandedOnEnemies, healingDoneToAllies, shieldingDoneToAllies } = matchData;
+    const { result, kda, character: playedCharacter, skin: playedSkin, gameMode } = matchData;
     const isWin = result === 'Victory';
     const kills = kda?.kills ?? 0;
     const deaths = kda?.deaths ?? 0;
     const assists = kda?.assists ?? 0;
-    const calculatedKda = deaths === 0 ? (kills + assists) : (kills + assists) / deaths;
+    const isRanked = gameMode === 'SoloQ' || gameMode === '1v1';
 
     // Helper to get quest template by ID
     const getTemplate = (questId) => {
@@ -294,47 +376,22 @@ export async function updateQuestProgress(userId, matchData, database, ref, get,
                     break;
 
                 case 'win_games':
-                case 'win_games_event':
                     if (isWin) {
                         questData.progress = (questData.progress || 0) + 1;
-                         if (template.id === 'world_class_trainers') {
-                            questData.winsDuringEvent = (questData.winsDuringEvent || 0) + 1;
-                            questData.progress = questData.winsDuringEvent;
-                         }
-                         progressMade = true;
+                        progressMade = true;
+                    }
+                    break;
+
+                case 'win_ranked_games':
+                    if (isWin && isRanked) {
+                        questData.progress = (questData.progress || 0) + 1;
+                        progressMade = true;
                     }
                     break;
 
                 case 'play_character_theme_skin':
                     if (template.requirements.skins && template.requirements.skins.includes(playedSkin)) {
                         questData.progress = (questData.progress || 0) + 1;
-                        progressMade = true;
-                    }
-                    break;
-
-                case 'land_abilities_on_enemies_in_match':
-                    if ((abilitiesLandedOnEnemies || 0) >= template.requirements.count) {
-                        questData.progress = template.requirements.count;
-                        progressMade = true;
-                    } else {
-                        if (template.repeatable) questData.progress = 0;
-                    }
-                    break;
-
-                case 'kills_assists_as_character_skin':
-                    if (playedSkin === template.requirements.skin) {
-                        const kAThisMatch = kills + assists;
-                        if (kAThisMatch > 0) {
-                            questData.progress = (questData.progress || 0) + kAThisMatch;
-                            progressMade = true;
-                        }
-                    }
-                    break;
-                
-                case 'heal_shield_allies_total':
-                    const healingShieldingDoneThisMatch = (healingDoneToAllies || 0) + (shieldingDoneToAllies || 0);
-                    if (healingShieldingDoneThisMatch > 0) {
-                        questData.progress = (questData.progress || 0) + healingShieldingDoneThisMatch;
                         progressMade = true;
                     }
                     break;
@@ -349,17 +406,28 @@ export async function updateQuestProgress(userId, matchData, database, ref, get,
                     progressMade = true;
                     break;
 
-                case 'high_kda':
-                    if (kills >= (template.requirements.minKills || 0) && calculatedKda >= (template.requirements.kdaThreshold || 0)) {
-                        questData.progress = (questData.progress || 0) + 1;
+                case 'kills_assists_in_match':
+                    const kAThisMatch = kills + assists;
+                    if (kAThisMatch >= template.requirements.count) {
+                        questData.progress = template.requirements.count;
                         progressMade = true;
+                    } else {
+                        if (template.repeatable) questData.progress = 0;
                     }
                     break;
 
-                case 'play_character_theme':
+                case 'play_same_rebellious_character':
                     if (template.requirements.characters && template.requirements.characters.includes(playedCharacter)) {
-                        questData.progress = (questData.progress || 0) + 1;
-                        progressMade = true;
+                        if (!questData.chosenCharacter) {
+                            // First time playing a rebellious character, set it as the chosen one
+                            questData.chosenCharacter = playedCharacter;
+                            questData.progress = 1;
+                            progressMade = true;
+                        } else if (playedCharacter === questData.chosenCharacter) {
+                            // Playing with the same chosen character
+                            questData.progress = (questData.progress || 0) + 1;
+                            progressMade = true;
+                        }
                     }
                     break;
 

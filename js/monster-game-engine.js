@@ -83,10 +83,13 @@ export class MonsterGameEngine {
         
         for (const file of MonsterFiles) {
             try {
-                const response = await fetch(`/Monsters/${file}`);
+                // Updated path to use relative path from current directory
+                const response = await fetch(`../Monsters/${file}`);
                 if (response.ok) {
                     const monsterData = await response.json();
                     this.monstersData.set(monsterData.name.toLowerCase(), monsterData);
+                } else {
+                    console.error(`Failed to load ${file}: HTTP ${response.status}`);
                 }
             } catch (error) {
                 console.error(`Failed to load ${file}:`, error);

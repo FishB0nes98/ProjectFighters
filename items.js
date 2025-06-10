@@ -112,12 +112,12 @@ export const items = {
         cost: 1800,
         tags: ["Attack", "Attack Speed"],
         stats: {
-            attackDamage: 40,
-            attackSpeed: 0.2
+            attackDamage: 15,
+            attackSpeed: 0.3
         },
         passive: {
             name: "Extended Reach",
-            description: "Gain 10% bonus attack range"
+            description: "Gain 20% bonus attack range"
         }
     },
     pharaoh_amulet: {
@@ -164,7 +164,7 @@ export const items = {
         },
         passive: {
             name: "Desert Thorns",
-            description: "Occasionally, your spells shoot thorns when hit around the first target, dealing [20% AP] damage to all targets hit by the thorns (35s cooldown)"
+            description: "Occasionally, your spells shoot thorns when hit around the first target, dealing [16% AP] damage to all targets hit by the thorns (35s cooldown)"
         }
     },
     thorny_shield: {
@@ -321,7 +321,7 @@ export const items = {
         id: "scarab_amulet",
         name: "Scarab Amulet",
         image: "items/scarab_amulet.webp",
-        cost: 2600,
+        cost: 2850,
         tags: ["Support", "Movement", "Cooldown Reduction"],
         stats: {
             healingAndShieldingPower: 8,
@@ -441,7 +441,7 @@ export const items = {
         },
         passive: {
             name: "First Strike",
-            description: "Your first autoattack against each target deals bonus [110% AD] as magic damage"
+            description: "Your first autoattack against each target deals bonus [100% AD] as magic damage"
         }
     },
     leviathans_fang: {
@@ -493,7 +493,7 @@ export const items = {
         id: "pearl_of_the_depths",
         name: "Pearl of the Depths",
         image: "items/pearl_of_the_depths.webp",
-        cost: 3000,
+        cost: 3100,
         tags: ["Support", "Magic"],
         stats: {
             mana: 225,
@@ -564,7 +564,7 @@ export const items = {
         tags: ["Magic", "Support"],
         stats: {
             abilityPower: 50,
-            healingAndShieldingPower: 12
+            healingAndShieldingPower: 9
         },
         passive: {
             name: "Ocean's Blessing",
@@ -951,7 +951,7 @@ export const items = {
         tags: ["Attack", "Attack Speed"],
         stats: {
             attackDamage: 40,
-            attackSpeed: 0.35
+            attackSpeed: 0.45
         },
         passive: {
             name: "Piercing Shot",

@@ -93,9 +93,13 @@ function initializePlayer() {
                 
                 // Filter songs to only include owned ones
                 state.playlist = songs.filter(song => {
-                    // Extract song name from path (e.g., "Songs/songname.mp3")
-                    const songName = song.path.split('/').pop().replace('.mp3', '');
-                    return state.ownedSongs[songName] === 1;
+                    // Check if the song is owned using the full song name format from database
+                    const fullSongName = song.path.split('/').pop().replace('.mp3', '');
+                    
+                    // Check multiple possible formats for the song name in the database
+                    return state.ownedSongs[fullSongName] === 1 || 
+                           state.ownedSongs[song.title] === 1 ||
+                           state.ownedSongs[`${song.title} (${song.description})`] === 1;
                 });
                 state.filteredPlaylist = [...state.playlist];
                 
@@ -346,18 +350,25 @@ function initializePlayer() {
                         <div class="track-item-title">${track.title}</div>
                         <div class="track-item-artist">${track.artist}</div>
                     </div>
-                    <div class="track-item-duration">${track.duration}</div>
+                    <div class="track-item-duration">${track.duration || '0:00'}</div>
                 </div>
             `).join('');
 
         // Add click event listeners to playlist items
         document.querySelectorAll('.track-item').forEach(item => {
             item.addEventListener('click', () => {
-                const trackId = parseInt(item.dataset.trackId);
+                const trackId = item.dataset.trackId;
                 const track = state.playlist.find(t => t.id === trackId);
                 if (track) playTrack(track);
             });
         });
+
+        // Update track count
+        const trackCountElement = document.querySelector('.track-count');
+        if (trackCountElement) {
+            const count = state.filteredPlaylist.length;
+            trackCountElement.textContent = `${count} track${count !== 1 ? 's' : ''}`;
+        }
 
         // Update now playing indicator
         const nowPlayingIndicator = document.querySelector('.now-playing-indicator');
@@ -368,7 +379,7 @@ function initializePlayer() {
 
     function updatePlaylistActiveState() {
         document.querySelectorAll('.track-item').forEach(item => {
-            const trackId = parseInt(item.dataset.trackId);
+            const trackId = item.dataset.trackId;
             item.classList.toggle('active', trackId === state.currentTrack?.id);
         });
     }

@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Fighters - Patch 2.7 Changelog</title>
+    <link rel="icon" href="Icons/Profile/monster_eagle.png" type="image/png">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #4B0082;
+            --secondary-color: #C0C0C0;
+            --accent-color: #800080;
+            --text-color: #ffffff;
+            --bg-dark: #0d0d0d;
+            --bg-secondary: #1a1a1a;
+            --border-color: rgba(192, 192, 192, 0.2);
+            --nerf-color: #ff6b6b;
+            --buff-color: #51cf66;
+            --adjust-color: #ffd43b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--primary-color) 100%);
+            color: var(--text-color);
+            font-family: 'Rajdhani', sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 0;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            border: 2px solid var(--border-color);
+        }
+
+        .patch-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .patch-subtitle {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            font-weight: 300;
+            margin-bottom: 20px;
+        }
+
+        .patch-date {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .section {
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .champion-changes {
+            margin-bottom: 25px;
+        }
+
+        .champion-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(75, 0, 130, 0.2);
+            border-radius: 10px;
+            border-left: 4px solid var(--nerf-color);
+        }
+
+        .champion-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 15px;
+            border: 2px solid var(--secondary-color);
+        }
+
+        .champion-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .champion-role {
+            font-size: 1.1rem;
+            color: var(--secondary-color);
+            margin-left: 10px;
+        }
+
+        .nerf-badge {
+            margin-left: auto;
+            background: var(--nerf-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .ability-change {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--nerf-color);
+        }
+
+        .ability-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .ability-key {
+            background: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .change-item {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .change-item::before {
+            content: "▼";
+            position: absolute;
+            left: 0;
+            color: var(--nerf-color);
+            font-weight: bold;
+        }
+
+        .change-item[style*="buff-color"]::before {
+            content: "▲";
+            color: var(--buff-color);
+        }
+
+        .change-text {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .change-values {
+            font-family: 'Orbitron', monospace;
+            color: var(--nerf-color);
+            font-weight: 600;
+        }
+
+        .developer-notes {
+            background: rgba(128, 0, 128, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid var(--primary-color);
+        }
+
+        .developer-notes h4 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .developer-notes p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.8;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(75, 0, 130, 0.4);
+        }
+
+        .back-button i {
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .patch-title {
+                font-size: 2.5rem;
+            }
+            
+            .champion-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .champion-icon {
+                margin-bottom: 10px;
+            }
+            
+            .nerf-badge {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="home.html" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Back to Home
+        </a>
+
+        <div class="header">
+            <h1 class="patch-title">Patch 2.7</h1>
+            <p class="patch-subtitle">Rebellious Balance Update</p>
+            <p class="patch-date">Released: January 2025</p>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <i class="fas fa-plus-circle"></i>
+                New Champion: Anna
+            </h2>
+
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="display: inline-block; background: rgba(75, 0, 130, 0.3); border-radius: 20px; padding: 30px; border: 2px solid var(--secondary-color); max-width: 800px;">
+                    <img src="Icons/Anna.png" alt="Anna" style="width: 120px; height: 120px; border-radius: 50%; margin-bottom: 20px; border: 3px solid var(--secondary-color); box-shadow: 0 0 20px rgba(192, 192, 192, 0.3);">
+                    <h3 style="color: var(--secondary-color); font-size: 2.5rem; margin-bottom: 10px; font-family: 'Orbitron', monospace;">Anna Williams</h3>
+                    <h4 style="color: var(--text-color); font-size: 1.8rem; margin-bottom: 20px; font-style: italic;">The Rocket Artillery</h4>
+                    <p style="color: rgba(255, 255, 255, 0.9); font-size: 1.2rem; line-height: 1.8; margin-bottom: 0;">
+                        The deadly assassin from the Williams family brings her lethal expertise to Project Fighters. Armed with a massive rocket launcher and her signature cunning, Anna combines explosive firepower with seductive tactics to dominate the battlefield. Her rivalry with her sister Nina has forged her into a merciless combatant.
+                    </p>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 30px;">
+                
+                <div style="background: rgba(75, 0, 130, 0.2); border-radius: 15px; padding: 25px; border: 1px solid var(--border-color);">
+                    <h4 style="color: var(--secondary-color); margin-bottom: 15px; font-size: 1.4rem; display: flex; align-items: center;">
+                        <div style="background: var(--primary-color); color: white; width: 30px; height: 30px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px;">P</div>
+                        Artillery Momentum
+                    </h4>
+                    <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6;">Anna gains 10% bonus movement speed for each enemy hit by abilities for 5.5 seconds.</p>
+                </div>
+
+                <div style="background: rgba(75, 0, 130, 0.2); border-radius: 15px; padding: 25px; border: 1px solid var(--border-color);">
+                    <h4 style="color: var(--secondary-color); margin-bottom: 15px; font-size: 1.4rem; display: flex; align-items: center;">
+                        <div style="background: var(--primary-color); color: white; width: 30px; height: 30px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px;">Q</div>
+                        Aimed Rocket
+                    </h4>
+                    <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6;">Calls a rocket from the sky in a circular area. Deals massive damage with bonus damage for direct center hits.</p>
+                </div>
+
+                <div style="background: rgba(75, 0, 130, 0.2); border-radius: 15px; padding: 25px; border: 1px solid var(--border-color);">
+                    <h4 style="color: var(--secondary-color); margin-bottom: 15px; font-size: 1.4rem; display: flex; align-items: center;">
+                        <div style="background: var(--primary-color); color: white; width: 30px; height: 30px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px;">W</div>
+                        Tempting Kiss
+                    </h4>
+                    <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6;">Throws a kiss in a crescent shape that charms enemies and makes them take 50% more damage from Anna.</p>
+                </div>
+
+                <div style="background: rgba(75, 0, 130, 0.2); border-radius: 15px; padding: 25px; border: 1px solid var(--border-color);">
+                    <h4 style="color: var(--secondary-color); margin-bottom: 15px; font-size: 1.4rem; display: flex; align-items: center;">
+                        <div style="background: var(--primary-color); color: white; width: 30px; height: 30px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px;">E</div>
+                        Kunai Strike
+                    </h4>
+                    <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6;">Throws 6 kunai in a crescent shape, slowing enemies and reducing their armor by 12%.</p>
+                </div>
+
+                <div style="background: rgba(75, 0, 130, 0.2); border-radius: 15px; padding: 25px; border: 1px solid var(--border-color); grid-column: span 2;">
+                    <h4 style="color: var(--secondary-color); margin-bottom: 15px; font-size: 1.4rem; display: flex; align-items: center;">
+                        <div style="background: linear-gradient(45deg, var(--primary-color), var(--accent-color)); color: white; width: 30px; height: 30px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px;">R</div>
+                        Power Rocket
+                    </h4>
+                    <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6; margin-bottom: 10px;">Fires a massive rocket with infinite range that completely ignores enemy armor. Damage scales with distance traveled.</p>
+                    <div style="background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 8px; padding: 10px; margin-top: 10px;">
+                        <span style="color: #FFD700; font-weight: bold; font-size: 0.9rem;">⚡ ULTIMATE: Global range, armor penetration, scaling damage</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="developer-notes">
+                <h4><i class="fas fa-rocket"></i> Designer Notes</h4>
+                <p>
+                    Anna Williams brings the deadly precision of the Williams assassin bloodline to Project Fighters. 
+                    As a high-damage marksman, she specializes in long-range artillery combat that reflects her cunning 
+                    and ruthless nature from the Tekken series. Her kit rewards precise positioning and skillshot accuracy, 
+                    with her Power Rocket serving as one of the most devastating abilities in the game when properly aimed. 
+                    Players will need to master her seductive combo potential between Tempting Kiss and her explosive abilities.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Origin:</strong> Tekken Series<br>
+                    <strong>Role:</strong> ADC/Marksman<br>
+                    <strong>Difficulty:</strong> Medium<br>
+                    <strong>Damage Type:</strong> Physical<br>
+                    <strong>Playstyle:</strong> Long-range artillery assassin with high skill ceiling
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <i class="fas fa-balance-scale"></i>
+                Champion Balance Changes
+            </h2>
+
+            <div class="champion-changes">
+                <div class="champion-header">
+                    <img src="Icons/Julia.png" alt="Julia" class="champion-icon">
+                    <div>
+                        <div class="champion-name">Julia</div>
+                        <div class="champion-role">The Nature's Guardian</div>
+                    </div>
+                    <div class="nerf-badge">
+                        <i class="fas fa-arrow-down"></i>
+                        NERF
+                    </div>
+                </div>
+
+                <div class="ability-change">
+                    <div class="ability-name">
+                        <div class="ability-key">Q</div>
+                        Windblower
+                    </div>
+                    <div class="change-item">
+                        <span class="change-text">Healing reduced: </span>
+                        <span class="change-values">90/275/450/630/800/900 → 80/250/400/550/700/800</span>
+                    </div>
+                    <div class="change-item">
+                        <span class="change-text">Cooldown increased: </span>
+                        <span class="change-values">6s → 7s</span>
+                    </div>
+                </div>
+
+                <div class="ability-change">
+                    <div class="ability-name">
+                        <div class="ability-key">T</div>
+                        Enhanced Healing (Level 5 Talent)
+                    </div>
+                    <div class="change-item">
+                        <span class="change-text">Bonus healing reduced: </span>
+                        <span class="change-values">10% → 8%</span>
+                    </div>
+                </div>
+
+                <div class="ability-change">
+                    <div class="ability-name">
+                        <div class="ability-key">S</div>
+                        Base Stats
+                    </div>
+                    <div class="change-item">
+                        <span class="change-text">Mana growth reduced: </span>
+                        <span class="change-values">100 per level → 85 per level</span>
+                    </div>
+                    <div class="change-item">
+                        <span class="change-text">Maximum mana: </span>
+                        <span class="change-values">2960 → 2600</span>
+                    </div>
+                </div>
+
+                <div class="developer-notes">
+                    <h4><i class="fas fa-code"></i> Developer Notes</h4>
+                    <p>
+                        Julia has been overperforming in the current meta due to her synergy with enchanter items. 
+                        These nerfs target her healing output and sustainability while maintaining her core identity 
+                        as a support champion. The reduced mana growth will force more strategic decision-making 
+                        around ability usage, while the Q ability changes directly address her overwhelming presence 
+                        in team fights.
+                    </p>
+                </div>
+            </div>
+
+            <div class="champion-changes">
+                <div class="champion-header">
+                    <img src="Icons/Ibuki.png" alt="Ibuki" class="champion-icon">
+                    <div>
+                        <div class="champion-name">Ibuki</div>
+                        <div class="champion-role">The Stealthy Ninja</div>
+                    </div>
+                    <div class="nerf-badge" style="background: var(--buff-color);">
+                        <i class="fas fa-arrow-up"></i>
+                        BUFF
+                    </div>
+                </div>
+
+                <div class="ability-change" style="border-left: 4px solid var(--buff-color);">
+                    <div class="ability-name">
+                        <div class="ability-key">P</div>
+                        Mark of the Assassin
+                    </div>
+                    <div class="change-item" style="color: var(--buff-color);">
+                        <span class="change-text">Movement speed toward marked targets increased: </span>
+                        <span class="change-values" style="color: var(--buff-color);">15% → 20%</span>
+                    </div>
+                </div>
+
+                <div class="ability-change" style="border-left: 4px solid var(--buff-color);">
+                    <div class="ability-name">
+                        <div class="ability-key">E</div>
+                        Shadowstep
+                    </div>
+                    <div class="change-item" style="color: var(--buff-color);">
+                        <span class="change-text">Activation delay removed: </span>
+                        <span class="change-values" style="color: var(--buff-color);">0.45s delay → Instant</span>
+                    </div>
+                </div>
+
+                <div class="ability-change" style="border-left: 4px solid var(--nerf-color);">
+                    <div class="ability-name">
+                        <div class="ability-key">T</div>
+                        Basic Attack Enhancement (Level 5 Talent)
+                    </div>
+                    <div class="change-item">
+                        <span class="change-text">Bonus damage reduced: </span>
+                        <span class="change-values">15% → 10%</span>
+                    </div>
+                </div>
+
+                <div class="ability-change" style="border-left: 4px solid var(--buff-color);">
+                    <div class="ability-name">
+                        <div class="ability-key">T</div>
+                        Kunai Cooldown (Level 15 Talent)
+                    </div>
+                    <div class="change-item" style="color: var(--buff-color);">
+                        <span class="change-text">Cooldown reduction increased: </span>
+                        <span class="change-values" style="color: var(--buff-color);">1s → 1.5s</span>
+                    </div>
+                </div>
+
+                <div class="developer-notes">
+                    <h4><i class="fas fa-code"></i> Developer Notes</h4>
+                    <p>
+                        Ibuki has been underperforming due to her difficulty sticking to targets and vulnerability 
+                        during engages. These buffs improve her chase potential and remove the clunky delay on her 
+                        escape mechanism. The talent adjustments shift some raw damage power into utility to make 
+                        her more well-rounded while maintaining her assassin identity.
+                    </p>
+                </div>
+            </div>
+
+            <div class="champion-changes">
+                <div class="champion-header">
+                    <img src="Icons/Sophitia.png" alt="Sophitia" class="champion-icon">
+                    <div>
+                        <div class="champion-name">Sophitia</div>
+                        <div class="champion-role">The Holy Warrior</div>
+                    </div>
+                    <div class="nerf-badge">
+                        <i class="fas fa-arrow-down"></i>
+                        NERF
+                    </div>
+                </div>
+
+                <div class="ability-change">
+                    <div class="ability-name">
+                        <div class="ability-key">P</div>
+                        Divine Blessing
+                    </div>
+                    <div class="change-item">
+                        <span class="change-text">High HP bonus AD reduced: </span>
+                        <span class="change-values">+2/5/10/16/25 → +2/4/8/12/18</span>
+                    </div>
+                </div>
+
+                <div class="ability-change">
+                    <div class="ability-name">
+                        <div class="ability-key">Q</div>
+                        Holy Strike
+                    </div>
+                    <div class="change-item">
+                        <span class="change-text">Cooldown increased: </span>
+                        <span class="change-values">12/11/10/9/8s → 13/12/11/10/9s</span>
+                    </div>
+                </div>
+
+                <div class="ability-change">
+                    <div class="ability-name">
+                        <div class="ability-key">E</div>
+                        Shield of Faith
+                    </div>
+                    <div class="change-item">
+                        <span class="change-text">Movement speed bonus removed: </span>
+                        <span class="change-values">20% MS → No bonus</span>
+                    </div>
+                    <div class="change-item">
+                        <span class="change-text">Stun duration reduced: </span>
+                        <span class="change-values">1.5s → 0.6s</span>
+                    </div>
+                </div>
+
+                <div class="developer-notes">
+                    <h4><i class="fas fa-code"></i> Developer Notes</h4>
+                    <p>
+                        Sophitia continues to dominate both laning phase and teamfights with her overloaded kit. 
+                        This marks her 5th set of nerfs since March as she continues to shape the top lane meta. 
+                        These changes target her early game trading power, ability spam, and excessive utility on 
+                        her Shield of Faith to bring her more in line with other tanks.
+                    </p>
+                </div>
+            </div>
+
+            <div class="champion-changes">
+                <div class="champion-header">
+                    <img src="Icons/Talim.png" alt="Talim" class="champion-icon">
+                    <div>
+                        <div class="champion-name">Talim</div>
+                        <div class="champion-role">The Wind Dancer</div>
+                    </div>
+                    <div class="nerf-badge" style="background: var(--adjust-color);">
+                        <i class="fas fa-balance-scale"></i>
+                        ADJUSTMENT
+                    </div>
+                </div>
+
+                <div class="ability-change" style="border-left: 4px solid var(--buff-color);">
+                    <div class="ability-name">
+                        <div class="ability-key">E</div>
+                        Spinning Blades
+                    </div>
+                    <div class="change-item" style="color: var(--buff-color);">
+                        <span class="change-text">Damage increased: </span>
+                        <span class="change-values" style="color: var(--buff-color);">85/115/270/400/515 → 100/135/290/430/550</span>
+                    </div>
+                    <div class="change-item" style="color: var(--buff-color);">
+                        <span class="change-text">Armor reduction increased: </span>
+                        <span class="change-values" style="color: var(--buff-color);">7% → 10%</span>
+                    </div>
+                </div>
+
+                <div class="ability-change" style="border-left: 4px solid var(--buff-color);">
+                    <div class="ability-name">
+                        <div class="ability-key">R</div>
+                        Tornado Blow
+                    </div>
+                    <div class="change-item" style="color: var(--buff-color);">
+                        <span class="change-text">AD bonus per enemy hit increased: </span>
+                        <span class="change-values" style="color: var(--buff-color);">+25 AD → +35 AD</span>
+                    </div>
+                </div>
+
+                <div class="ability-change" style="border-left: 4px solid var(--buff-color);">
+                    <div class="ability-name">
+                        <div class="ability-key">T</div>
+                        Wind's Blessing (Level 1 Talent)
+                    </div>
+                    <div class="change-item" style="color: var(--buff-color);">
+                        <span class="change-text">Lifesteal increased: </span>
+                        <span class="change-values" style="color: var(--buff-color);">4% → 8%</span>
+                    </div>
+                </div>
+
+                <div class="ability-change" style="border-left: 4px solid var(--nerf-color);">
+                    <div class="ability-name">
+                        <div class="ability-key">T</div>
+                        Enhanced Wind (Level 15 Talent)
+                    </div>
+                    <div class="change-item">
+                        <span class="change-text">Bonus damage reduced: </span>
+                        <span class="change-values">100/200/350 → 80/150/250</span>
+                    </div>
+                </div>
+
+                <div class="ability-change" style="border-left: 4px solid var(--nerf-color);">
+                    <div class="ability-name">
+                        <div class="ability-key">T</div>
+                        Wind's Protection (Level 20 Talent)
+                    </div>
+                    <div class="change-item">
+                        <span class="change-text">Damage reduction reduced: </span>
+                        <span class="change-values">18% → 15%</span>
+                    </div>
+                </div>
+
+                <div class="developer-notes">
+                    <h4><i class="fas fa-code"></i> Developer Notes</h4>
+                    <p>
+                        Talim has been struggling against the current tank meta, being easily peeled and lacking 
+                        the damage to threaten tanky champions. These changes boost her core damage abilities and 
+                        tank-busting potential while toning down some overperforming talents to maintain balance. 
+                        The increased armor reduction and AD scaling should help her remain relevant against 
+                        tankier compositions.
+                    </p>
+                </div>
+            </div>
+
+            <div class="champion-changes">
+                <div class="champion-header">
+                    <img src="Icons/Yugo.png" alt="Yugo" class="champion-icon">
+                    <div>
+                        <div class="champion-name">Yugo</div>
+                        <div class="champion-role">The Wolf Warrior</div>
+                    </div>
+                    <div class="nerf-badge" style="background: var(--buff-color);">
+                        <i class="fas fa-arrow-up"></i>
+                        BUFF
+                    </div>
+                </div>
+
+                <div class="ability-change" style="border-left: 4px solid var(--buff-color);">
+                    <div class="ability-name">
+                        <div class="ability-key">S</div>
+                        Base Stats - Human Form
+                    </div>
+                    <div class="change-item" style="color: var(--buff-color);">
+                        <span class="change-text">HP growth increased: </span>
+                        <span class="change-values" style="color: var(--buff-color);">311 per level → 340 per level</span>
+                    </div>
+                    <div class="change-item" style="color: var(--buff-color);">
+                        <span class="change-text">Maximum HP: </span>
+                        <span class="change-values" style="color: var(--buff-color);">8039 → 8735</span>
+                    </div>
+                </div>
+
+                <div class="ability-change" style="border-left: 4px solid var(--buff-color);">
+                    <div class="ability-name">
+                        <div class="ability-key">S</div>
+                        Base Stats - Wolf Form
+                    </div>
+                    <div class="change-item" style="color: var(--buff-color);">
+                        <span class="change-text">HP growth increased: </span>
+                        <span class="change-values" style="color: var(--buff-color);">340 per level → 365 per level</span>
+                    </div>
+                    <div class="change-item" style="color: var(--buff-color);">
+                        <span class="change-text">Maximum HP: </span>
+                        <span class="change-values" style="color: var(--buff-color);">8860 → 9460</span>
+                    </div>
+                </div>
+
+                <div class="developer-notes">
+                    <h4><i class="fas fa-code"></i> Developer Notes</h4>
+                    <p>
+                        Yugo has been struggling with survivability issues, particularly in the mid-to-late game 
+                        where his dual-form mechanics require him to be in melee range frequently. These HP growth 
+                        improvements provide him with the baseline survivability needed to effectively utilize his 
+                        transformation mechanics without being instantly deleted in team fights.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <i class="fas fa-hammer"></i>
+                Item Balance Changes
+            </h2>
+
+            <div class="champion-changes">
+                <div class="champion-header" style="border-left: 4px solid var(--nerf-color);">
+                    <img src="items/mermaid_essence.webp" alt="Mermaid Essence" class="champion-icon">
+                    <div>
+                        <div class="champion-name">Mermaid Essence</div>
+                        <div class="champion-role">Support Item</div>
+                    </div>
+                    <div class="nerf-badge">
+                        <i class="fas fa-arrow-down"></i>
+                        NERF
+                    </div>
+                </div>
+
+                <div class="ability-change">
+                    <div class="change-item">
+                        <span class="change-text">Healing and Shielding Power reduced: </span>
+                        <span class="change-values">12 → 9</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="champion-changes">
+                <div class="champion-header" style="border-left: 4px solid var(--nerf-color);">
+                    <img src="items/pearl_of_the_depths.webp" alt="Pearl of the Depths" class="champion-icon">
+                    <div>
+                        <div class="champion-name">Pearl of the Depths</div>
+                        <div class="champion-role">Support Item</div>
+                    </div>
+                    <div class="nerf-badge">
+                        <i class="fas fa-arrow-down"></i>
+                        NERF
+                    </div>
+                </div>
+
+                <div class="ability-change">
+                    <div class="change-item">
+                        <span class="change-text">Cost increased: </span>
+                        <span class="change-values">3000 → 3100</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="champion-changes">
+                <div class="champion-header" style="border-left: 4px solid var(--nerf-color);">
+                    <img src="items/scarab_amulet.webp" alt="Scarab Amulet" class="champion-icon">
+                    <div>
+                        <div class="champion-name">Scarab Amulet</div>
+                        <div class="champion-role">Support Item</div>
+                    </div>
+                    <div class="nerf-badge">
+                        <i class="fas fa-arrow-down"></i>
+                        NERF
+                    </div>
+                </div>
+
+                <div class="ability-change">
+                    <div class="change-item">
+                        <span class="change-text">Cost increased: </span>
+                        <span class="change-values">2600 → 2850</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="champion-changes">
+                <div class="champion-header" style="border-left: 4px solid var(--nerf-color);">
+                    <img src="items/cactus_staff.webp" alt="Cactus Staff" class="champion-icon">
+                    <div>
+                        <div class="champion-name">Cactus Staff</div>
+                        <div class="champion-role">Magic Item</div>
+                    </div>
+                    <div class="nerf-badge">
+                        <i class="fas fa-arrow-down"></i>
+                        NERF
+                    </div>
+                </div>
+
+                <div class="ability-change">
+                    <div class="change-item">
+                        <span class="change-text">Desert Thorns damage scaling reduced: </span>
+                        <span class="change-values">20% AP → 16% AP</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="champion-changes">
+                <div class="champion-header" style="border-left: 4px solid var(--nerf-color);">
+                    <img src="items/golden_arrow.webp" alt="Golden Arrow" class="champion-icon">
+                    <div>
+                        <div class="champion-name">Golden Arrow</div>
+                        <div class="champion-role">Hybrid Item</div>
+                    </div>
+                    <div class="nerf-badge">
+                        <i class="fas fa-arrow-down"></i>
+                        NERF
+                    </div>
+                </div>
+
+                <div class="ability-change">
+                    <div class="change-item">
+                        <span class="change-text">First Strike damage scaling reduced: </span>
+                        <span class="change-values">110% AD → 100% AD</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="champion-changes">
+                <div class="champion-header" style="border-left: 4px solid var(--buff-color);">
+                    <img src="items/cyber_revolver.webp" alt="Cyber Revolver" class="champion-icon">
+                    <div>
+                        <div class="champion-name">Cyber Revolver</div>
+                        <div class="champion-role">Attack Item</div>
+                    </div>
+                    <div class="nerf-badge" style="background: var(--buff-color);">
+                        <i class="fas fa-arrow-up"></i>
+                        BUFF
+                    </div>
+                </div>
+
+                <div class="ability-change" style="border-left: 4px solid var(--buff-color);">
+                    <div class="change-item" style="color: var(--buff-color);">
+                        <span class="change-text">Attack Speed increased: </span>
+                        <span class="change-values" style="color: var(--buff-color);">0.35 → 0.45</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="champion-changes">
+                <div class="champion-header" style="border-left: 4px solid var(--adjust-color);">
+                    <img src="items/straightshot_aimer.webp" alt="Straightshot Aimer" class="champion-icon">
+                    <div>
+                        <div class="champion-name">Straightshot Aimer</div>
+                        <div class="champion-role">Attack Item</div>
+                    </div>
+                    <div class="nerf-badge" style="background: var(--adjust-color);">
+                        <i class="fas fa-balance-scale"></i>
+                        REWORK
+                    </div>
+                </div>
+
+                <div class="ability-change" style="border-left: 4px solid var(--nerf-color);">
+                    <div class="change-item">
+                        <span class="change-text">Attack Damage reduced: </span>
+                        <span class="change-values">40 → 15</span>
+                    </div>
+                </div>
+
+                <div class="ability-change" style="border-left: 4px solid var(--buff-color);">
+                    <div class="change-item" style="color: var(--buff-color);">
+                        <span class="change-text">Attack Speed increased: </span>
+                        <span class="change-values" style="color: var(--buff-color);">0.2 → 0.3</span>
+                    </div>
+                    <div class="change-item" style="color: var(--buff-color);">
+                        <span class="change-text">Extended Reach bonus increased: </span>
+                        <span class="change-values" style="color: var(--buff-color);">10% → 20% bonus attack range</span>
+                    </div>
+                </div>
+
+                <div class="developer-notes">
+                    <h4><i class="fas fa-code"></i> Developer Notes</h4>
+                    <p>
+                        Straightshot Aimer was providing too much raw damage for its cost while underdelivering on its 
+                        unique identity as a range-focused item. This rework shifts it toward a more utility-focused 
+                        approach, emphasizing attack speed and positioning advantages over pure damage output.
+                    </p>
+                </div>
+            </div>
+
+            <div class="developer-notes" style="margin-top: 30px;">
+                <h4><i class="fas fa-code"></i> Overall Item Balance Philosophy</h4>
+                <p>
+                    These item changes target the enchanter item dominance that has been shaping the meta. Support items 
+                    like Mermaid Essence, Pearl of the Depths, and Scarab Amulet have been too cost-efficient, making 
+                    healing-focused strategies oppressive. The nerfs to Cactus Staff and Golden Arrow address overperforming 
+                    hybrid builds, while the Cyber Revolver buff helps pure AD carries compete in the current environment.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <i class="fas fa-tshirt"></i>
+                New Rebellious Event Skins
+            </h2>
+
+            <div style="text-align: center; margin-bottom: 30px;">
+                <p style="font-size: 1.2rem; color: rgba(255, 255, 255, 0.9); line-height: 1.8;">
+                    The Rebellious Event brings a collection of edgy, street-inspired skins that embody the spirit of revolution and defiance. 
+                    Each skin transforms our fighters into urban rebels ready to take on the establishment.
+                </p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin-bottom: 30px;">
+                
+                <div style="background: rgba(75, 0, 130, 0.2); border-radius: 15px; overflow: hidden; border: 1px solid var(--border-color); transition: transform 0.3s ease; position: relative;">
+                    <div style="position: relative; height: 250px; overflow: hidden;">
+                        <img src="Skins/Rebellious Ibuki.jpg" alt="Rebellious Ibuki" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                        <div style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); padding: 5px 10px; border-radius: 10px; font-size: 0.9rem; font-weight: bold; color: white;">REBEL</div>
+                    </div>
+                    <div style="padding: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: var(--text-color); font-size: 1.4rem; text-align: center;">Rebellious Ibuki</h4>
+                        <p style="color: var(--secondary-color); font-size: 1.2rem; font-weight: 600; text-align: center; margin: 10px 0;">2000 FM</p>
+                        <p style="color: rgba(255, 255, 255, 0.8); margin: 0; line-height: 1.6; text-align: center; font-size: 0.95rem;">The stealthy ninja embraces urban warfare with tactical gear and neon accents.</p>
+                    </div>
+                </div>
+
+                <div style="background: rgba(75, 0, 130, 0.2); border-radius: 15px; overflow: hidden; border: 1px solid var(--border-color); transition: transform 0.3s ease; position: relative;">
+                    <div style="position: relative; height: 250px; overflow: hidden;">
+                        <img src="Skins/Rebellious Ayane.jfif" alt="Rebellious Ayane" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                        <div style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); padding: 5px 10px; border-radius: 10px; font-size: 0.9rem; font-weight: bold; color: white;">REBEL</div>
+                    </div>
+                    <div style="padding: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: var(--text-color); font-size: 1.4rem; text-align: center;">Rebellious Ayane</h4>
+                        <p style="color: var(--secondary-color); font-size: 1.2rem; font-weight: 600; text-align: center; margin: 10px 0;">2000 FM</p>
+                        <p style="color: rgba(255, 255, 255, 0.8); margin: 0; line-height: 1.6; text-align: center; font-size: 0.95rem;">The deadly kunoichi trades traditional garb for modern rebellion aesthetics.</p>
+                    </div>
+                </div>
+
+                <div style="background: rgba(75, 0, 130, 0.2); border-radius: 15px; overflow: hidden; border: 1px solid var(--border-color); transition: transform 0.3s ease; position: relative;">
+                    <div style="position: relative; height: 250px; overflow: hidden;">
+                        <img src="Skins/Rebellious Christie.jpg" alt="Rebellious Christie" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                        <div style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); padding: 5px 10px; border-radius: 10px; font-size: 0.9rem; font-weight: bold; color: white;">REBEL</div>
+                    </div>
+                    <div style="padding: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: var(--text-color); font-size: 1.4rem; text-align: center;">Rebellious Christie</h4>
+                        <p style="color: var(--secondary-color); font-size: 1.2rem; font-weight: 600; text-align: center; margin: 10px 0;">2000 FM</p>
+                        <p style="color: rgba(255, 255, 255, 0.8); margin: 0; line-height: 1.6; text-align: center; font-size: 0.95rem;">The assassin adopts street fashion with a dangerous edge and cyberpunk flair.</p>
+                    </div>
+                </div>
+
+                <div style="background: rgba(75, 0, 130, 0.2); border-radius: 15px; overflow: hidden; border: 1px solid var(--border-color); transition: transform 0.3s ease; position: relative;">
+                    <div style="position: relative; height: 250px; overflow: hidden;">
+                        <img src="Skins/Rebellious Kabal.jpg" alt="Rebellious Kabal" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                        <div style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); padding: 5px 10px; border-radius: 10px; font-size: 0.9rem; font-weight: bold; color: white;">REBEL</div>
+                    </div>
+                    <div style="padding: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: var(--text-color); font-size: 1.4rem; text-align: center;">Rebellious Kabal</h4>
+                        <p style="color: var(--secondary-color); font-size: 1.2rem; font-weight: 600; text-align: center; margin: 10px 0;">2000 FM</p>
+                        <p style="color: rgba(255, 255, 255, 0.8); margin: 0; line-height: 1.6; text-align: center; font-size: 0.95rem;">The speedster races through neon-lit streets with enhanced tech and attitude.</p>
+                    </div>
+                </div>
+
+                <div style="background: rgba(75, 0, 130, 0.2); border-radius: 15px; overflow: hidden; border: 1px solid var(--border-color); transition: transform 0.3s ease; position: relative;">
+                    <div style="position: relative; height: 250px; overflow: hidden;">
+                        <img src="Skins/Rebellious FANG.jpg" alt="Rebellious FANG" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                        <div style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); padding: 5px 10px; border-radius: 10px; font-size: 0.9rem; font-weight: bold; color: white;">REBEL</div>
+                    </div>
+                    <div style="padding: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: var(--text-color); font-size: 1.4rem; text-align: center;">Rebellious FANG</h4>
+                        <p style="color: var(--secondary-color); font-size: 1.2rem; font-weight: 600; text-align: center; margin: 10px 0;">2000 FM</p>
+                        <p style="color: rgba(255, 255, 255, 0.8); margin: 0; line-height: 1.6; text-align: center; font-size: 0.95rem;">The poisonous fighter embraces underground culture with toxic style.</p>
+                    </div>
+                </div>
+
+                <div style="background: rgba(75, 0, 130, 0.2); border-radius: 15px; overflow: hidden; border: 1px solid var(--border-color); transition: transform 0.3s ease; position: relative;">
+                    <div style="position: relative; height: 250px; overflow: hidden;">
+                        <img src="Skins/Rebellious Anna.jpg" alt="Rebellious Anna" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                        <div style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); padding: 5px 10px; border-radius: 10px; font-size: 0.9rem; font-weight: bold; color: white;">REBEL</div>
+                    </div>
+                    <div style="padding: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: var(--text-color); font-size: 1.4rem; text-align: center;">Rebellious Anna</h4>
+                        <p style="color: var(--secondary-color); font-size: 1.2rem; font-weight: 600; text-align: center; margin: 10px 0;">2000 FM</p>
+                        <p style="color: rgba(255, 255, 255, 0.8); margin: 0; line-height: 1.6; text-align: center; font-size: 0.95rem;">The Williams sister joins the rebellion with high-tech gear and fierce determination.</p>
+                    </div>
+                </div>
+
+                <div style="background: rgba(75, 0, 130, 0.2); border-radius: 15px; overflow: hidden; border: 1px solid var(--border-color); transition: transform 0.3s ease; position: relative; background: linear-gradient(135deg, rgba(75, 0, 130, 0.3), rgba(255, 215, 0, 0.1));">
+                    <div style="position: relative; height: 250px; overflow: hidden;">
+                        <img src="Skins/Rebellious Mega Man.jpg" alt="Rebellious Mega Man" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                        <div style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, #FFD700, #FFA500); padding: 5px 10px; border-radius: 10px; font-size: 0.9rem; font-weight: bold; color: #000; box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);">LEGENDARY</div>
+                        <div style="position: absolute; top: 10px; right: 10px; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); padding: 5px 10px; border-radius: 10px; font-size: 0.9rem; font-weight: bold; color: white;">REBEL</div>
+                    </div>
+                    <div style="padding: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: #FFD700; font-size: 1.4rem; text-align: center; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">Rebellious Mega Man</h4>
+                        <p style="color: #FFD700; font-size: 1.2rem; font-weight: 600; text-align: center; margin: 10px 0;">3000 FM</p>
+                        <p style="color: rgba(255, 255, 255, 0.8); margin: 0; line-height: 1.6; text-align: center; font-size: 0.95rem;">The Blue Bomber gets a dark makeover with corrupted systems and rebellious programming.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="developer-notes">
+                <h4><i class="fas fa-paint-brush"></i> Event Information</h4>
+                <p>
+                    The Rebellious Event runs throughout Patch 2.7, offering players the chance to acquire these 
+                    exclusive skins through the in-game store. Each skin features unique visual effects, 
+                    voice lines, and animations that capture the rebellious spirit. The Legendary Rebellious 
+                    Mega Man skin includes additional particle effects and a special transformation sequence.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Event Duration:</strong> Available now through the end of Patch 2.7<br>
+                    <strong>Availability:</strong> These skins will become legacy content after the event ends
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <i class="fas fa-map"></i>
+                What's Next - New Chapter Begins!
+            </h2>
+
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(75, 0, 130, 0.3)); border-radius: 20px; padding: 25px; border: 2px solid #FFD700; margin-bottom: 30px;">
+                    <h3 style="color: #FFD700; font-size: 2rem; margin-bottom: 15px; font-family: 'Orbitron', monospace;">
+                        <i class="fas fa-calendar-alt"></i> Chapter Transition
+                    </h3>
+                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px; align-items: center;">
+                        <div>
+                            <h4 style="color: var(--nerf-color); margin-bottom: 5px;">Chapter 1 Ends</h4>
+                            <p style="color: rgba(255, 255, 255, 0.9); font-size: 1.3rem; margin: 0; font-weight: bold;">June 21st</p>
+                        </div>
+                        <div style="color: #FFD700; font-size: 2rem;">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--buff-color); margin-bottom: 5px;">New Chapter Begins</h4>
+                            <p style="color: rgba(255, 255, 255, 0.9); font-size: 1.3rem; margin: 0; font-weight: bold;">June 22nd</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(75, 0, 130, 0.3); border-radius: 15px; padding: 25px; border: 1px solid var(--border-color); margin-bottom: 30px;">
+                    <h4 style="color: var(--secondary-color); margin-bottom: 15px; font-size: 1.5rem;">
+                        <i class="fas fa-trophy"></i> Ranked Season Reward
+                    </h4>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                        <img src="Skins/Glorious Julia.jpg" alt="Glorious Julia" style="width: 240px; height: 160px; border-radius: 15px; border: 2px solid #FFD700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);">
+                        <div style="text-align: left;">
+                            <h5 style="color: #FFD700; font-size: 1.4rem; margin-bottom: 8px;">Glorious Julia Skin</h5>
+                            <p style="color: rgba(255, 255, 255, 0.8); margin: 0; line-height: 1.5;">
+                                <strong>Requirement:</strong> 1500+ Ranked Points<br>
+                                <strong>Reward:</strong> Exclusive Glorious Julia skin
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="color: var(--secondary-color); font-size: 2rem; margin-bottom: 25px; text-align: center; font-family: 'Orbitron', monospace;">
+                <i class="fas fa-rocket"></i> New Chapter Roadmap
+            </h3>
+
+            <div style="display: grid; gap: 25px; margin-bottom: 30px;">
+                
+                <!-- Core Updates -->
+                <div style="background: rgba(75, 0, 130, 0.2); border-radius: 15px; padding: 25px; border-left: 4px solid var(--buff-color);">
+                    <h4 style="color: var(--buff-color); margin-bottom: 15px; font-size: 1.4rem;">
+                        <i class="fas fa-cogs"></i> Core System Updates
+                    </h4>
+                    <ul style="color: rgba(255, 255, 255, 0.8); line-height: 1.8; margin: 0; padding-left: 20px;">
+                        <li><strong>New Items:</strong> Major item additions coming soon (reveal video in development)</li>
+                        <li><strong>Complete UI Overhaul:</strong> Brand new client interface for enhanced user experience</li>
+                        <li><strong>4 New Map Variants:</strong> Explore diverse battlegrounds across different locations</li>
+                    </ul>
+                </div>
+
+                <!-- Explorer Skins -->
+                <div style="background: rgba(75, 0, 130, 0.2); border-radius: 15px; padding: 25px; border-left: 4px solid #FFD700;">
+                    <h4 style="color: #FFD700; margin-bottom: 15px; font-size: 1.4rem;">
+                        <i class="fas fa-compass"></i> Free Explorer Skins
+                    </h4>
+                    <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6; margin-bottom: 15px;">
+                        Kick off the new season with 4 FREE Explorer skins! Each skin represents a character exploring one of the main chapter locations.
+                    </p>
+                    <div style="background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 8px; padding: 10px;">
+                        <span style="color: #FFD700; font-weight: bold; font-size: 0.9rem;">
+                            <i class="fas fa-gift"></i> All players will receive these skins for free during the chapter launch event!
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Events Timeline -->
+                <div style="background: rgba(75, 0, 130, 0.2); border-radius: 15px; padding: 25px; border-left: 4px solid var(--accent-color);">
+                    <h4 style="color: var(--accent-color); margin-bottom: 20px; font-size: 1.4rem;">
+                        <i class="fas fa-calendar-week"></i> Seasonal Events & Releases
+                    </h4>
+                    
+                    <div style="display: grid; gap: 20px;">
+                        
+                        <!-- Summer Event -->
+                        <div style="display: flex; align-items: center; gap: 25px; background: rgba(255, 107, 107, 0.1); border-radius: 15px; padding: 25px;">
+                            <img src="UI/whatsnext/Summertime Lili.jpg" alt="Summertime Lili" style="width: 240px; height: 160px; border-radius: 15px; border: 3px solid #ff6b6b; object-fit: cover; box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);">
+                            <div>
+                                <h5 style="color: #ff6b6b; margin-bottom: 10px; font-size: 1.5rem; font-weight: bold;">Summer Event</h5>
+                                <p style="color: rgba(255, 255, 255, 0.9); margin: 0; line-height: 1.6; font-size: 1.1rem;">Featuring Summertime Lili skin and beach-themed content</p>
+                            </div>
+                        </div>
+
+                        <!-- Candyland + Menat -->
+                        <div style="display: flex; align-items: center; gap: 25px; background: rgba(255, 182, 193, 0.1); border-radius: 15px; padding: 25px;">
+                            <div style="display: flex; gap: 15px;">
+                                <img src="UI/whatsnext/Candyland Zasalamel.webp" alt="Candyland Zasalamel" style="width: 240px; height: 160px; border-radius: 15px; border: 3px solid #FFB6C1; object-fit: cover; box-shadow: 0 8px 20px rgba(255, 182, 193, 0.3);">
+                                <img src="UI/whatsnext/Menat.png" alt="Menat" style="width: 120px; height: 160px; border-radius: 15px; border: 3px solid #FFB6C1; object-fit: cover; box-shadow: 0 8px 20px rgba(255, 182, 193, 0.3);">
+                            </div>
+                            <div>
+                                <h5 style="color: #FFB6C1; margin-bottom: 10px; font-size: 1.5rem; font-weight: bold;">Candyland Event + New Champion</h5>
+                                <p style="color: rgba(255, 255, 255, 0.9); margin: 0; line-height: 1.6; font-size: 1.1rem;">
+                                    <strong>Menat Release:</strong> Shielding support with great damage potential<br>
+                                    <strong>Candyland Zasalamel:</strong> Sweet-themed skin variant
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Dawn Crystal Event -->
+                        <div style="display: flex; align-items: center; gap: 25px; background: rgba(255, 215, 0, 0.1); border-radius: 15px; padding: 25px;">
+                            <img src="UI/whatsnext/Dawn Crystal Shao Kahn.jpg" alt="Dawn Crystal Shao Kahn" style="width: 240px; height: 160px; border-radius: 15px; border: 3px solid #FFD700; object-fit: cover; box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);">
+                            <div>
+                                <h5 style="color: #FFD700; margin-bottom: 10px; font-size: 1.5rem; font-weight: bold;">Dawn Crystal Event</h5>
+                                <p style="color: rgba(255, 255, 255, 0.9); margin: 0; line-height: 1.6; font-size: 1.1rem;">Featuring the majestic Dawn Crystal Shao Kahn skin</p>
+                            </div>
+                        </div>
+
+                        <!-- Lush Jungle Event -->
+                        <div style="display: flex; align-items: center; gap: 25px; background: rgba(76, 175, 80, 0.1); border-radius: 15px; padding: 25px;">
+                            <img src="UI/whatsnext/Lush Jungle Nina.jfif" alt="Lush Jungle Nina" style="width: 240px; height: 160px; border-radius: 15px; border: 3px solid #4CAF50; object-fit: cover; box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);">
+                            <div>
+                                <h5 style="color: #4CAF50; margin-bottom: 10px; font-size: 1.5rem; font-weight: bold;">Lush Jungle Event</h5>
+                                <p style="color: rgba(255, 255, 255, 0.9); margin: 0; line-height: 1.6; font-size: 1.1rem;">Featuring the nature-themed Lush Jungle Nina skin</p>
+                            </div>
+                        </div>
+
+                        <!-- Liu Kang Release -->
+                        <div style="display: flex; align-items: center; gap: 15px; background: rgba(156, 39, 176, 0.1); border-radius: 10px; padding: 15px;">
+                            <div style="width: 80px; height: 80px; border-radius: 10px; border: 2px solid #9C27B0; display: flex; align-items: center; justify-content: center; background: rgba(156, 39, 176, 0.2);">
+                                <i class="fas fa-fire" style="font-size: 2rem; color: #9C27B0;"></i>
+                            </div>
+                            <div>
+                                <h5 style="color: #9C27B0; margin-bottom: 5px; font-size: 1.2rem;">Chapter End: Liu Kang Release</h5>
+                                <p style="color: rgba(255, 255, 255, 0.8); margin: 0; line-height: 1.4;">
+                                    <strong>Role:</strong> Jungler - Fighter<br>
+                                    <strong>Timing:</strong> Towards the end of the chapter/season
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="developer-notes">
+                <h4><i class="fas fa-compass"></i> The Adventure Continues</h4>
+                <p>
+                    The new chapter marks the beginning of an epic journey across diverse locations and exciting new content. 
+                    From summer beaches to mystical candylands, crystalline dawn realms to lush jungle territories - each event 
+                    will bring unique experiences, exclusive skins, and memorable gameplay moments.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Stay tuned for:</strong> Item reveal videos, UI showcases, and detailed event announcements as we approach June 22nd!
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

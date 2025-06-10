@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Art Movement Test - Modular</title>
+    <link rel="stylesheet" href="css/movement-test.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div id="controls" class="ui-panel">
+            <div><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> - Move</div>
+            <div><span class="key">C</span> - Crouch</div>
+            <div><span class="key">SHIFT</span> - Run</div>
+            <div><span class="key">F1</span> - Toggle Debug</div>
+        </div>
+        
+        <div id="status" class="ui-panel">
+            <div class="status-item">
+                <span class="status-label">State:</span>
+                <span id="currentState" class="status-value">idle</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Position:</span>
+                <span id="position" class="status-value">400, 300</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Frame:</span>
+                <span id="currentFrame" class="status-value">0</span>
+            </div>
+        </div>
+        
+        <div id="loadingScreen" class="loading-screen">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading Character...</div>
+            <div class="loading-progress">
+                <div id="loadingBar" class="loading-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Engine Scripts -->
+    <script src="js/character.js"></script>
+    <script src="js/game-manager.js"></script>
+    
+    <script>
+        class MovementTestGame {
+            constructor() {
+                this.gameManager = null;
+                this.character = null;
+                this.isLoaded = false;
+                
+                this.init();
+            }
+            
+            async init() {
+                try {
+                    // Show loading screen
+                    this.showLoading();
+                    
+                    // Initialize game manager
+                    this.gameManager = new GameManager('gameCanvas', {
+                        showDebug: false,
+                        backgroundColor: 'linear-gradient(45deg, #2c5f2d, #4a7c59)',
+                        constrainToBounds: true
+                    });
+                    
+                    // Create character
+                    this.character = new Character({
+                        x: 400,
+                        y: 300,
+                        width: 170,  // Scaled down from 341px for better gameplay
+                        height: 170, // Scaled down from 341px for better gameplay
+                        speed: 3,
+                        runSpeed: 6,
+                        spriteSheetPath: 'UI/20250531_2250_Pixel Art Movesheet_remix_01jwm1q60zek48ptnx3d7ckhey.png'
+                    });
+                    
+                    // Add character to game
+                    this.gameManager.addCharacter(this.character);
+                    this.gameManager.setPlayer(this.character);
+                    
+                    // Setup additional controls
+                    this.setupControls();
+                    
+                    // Wait for sprite to load
+                    await this.waitForSpriteLoad();
+                    
+                    // Hide loading screen and start game
+                    this.hideLoading();
+                    this.gameManager.start();
+                    
+                    console.log('Movement test initialized successfully');
+                    
+                } catch (error) {
+                    console.error('Failed to initialize movement test:', error);
+                    this.showError(error.message);
+                }
+            }
+            
+            setupControls() {
+                // Add F1 debug toggle
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'F1') {
+                        e.preventDefault();
+                        this.gameManager.toggleDebug();
+                    }
+                });
+                
+                // Add state change listener for UI updates
+                this.gameManager.addEventListener('stateChange', (data) => {
+                    this.updateStateDisplay(data);
+                });
+            }
+            
+            waitForSpriteLoad() {
+                return new Promise((resolve, reject) => {
+                    if (this.character.spriteSheet.complete) {
+                        resolve();
+                        return;
+                    }
+                    
+                    let progress = 0;
+                    const progressInterval = setInterval(() => {
+                        progress += 10;
+                        this.updateLoadingProgress(progress);
+                        
+                        if (progress >= 100) {
+                            clearInterval(progressInterval);
+                        }
+                    }, 100);
+                    
+                    this.character.spriteSheet.onload = () => {
+                        clearInterval(progressInterval);
+                        this.updateLoadingProgress(100);
+                        setTimeout(resolve, 200);
+                    };
+                    
+                    this.character.spriteSheet.onerror = () => {
+                        clearInterval(progressInterval);
+                        reject(new Error('Failed to load character sprite sheet'));
+                    };
+                    
+                    // Timeout after 10 seconds
+                    setTimeout(() => {
+                        if (!this.character.spriteSheet.complete) {
+                            clearInterval(progressInterval);
+                            reject(new Error('Sprite loading timeout'));
+                        }
+                    }, 10000);
+                });
+            }
+            
+            showLoading() {
+                const loadingScreen = document.getElementById('loadingScreen');
+                if (loadingScreen) {
+                    loadingScreen.style.display = 'flex';
+                }
+            }
+            
+            hideLoading() {
+                const loadingScreen = document.getElementById('loadingScreen');
+                if (loadingScreen) {
+                    loadingScreen.style.display = 'none';
+                }
+            }
+            
+            updateLoadingProgress(percent) {
+                const loadingBar = document.getElementById('loadingBar');
+                if (loadingBar) {
+                    loadingBar.style.width = `${percent}%`;
+                }
+            }
+            
+            showError(message) {
+                const loadingScreen = document.getElementById('loadingScreen');
+                if (loadingScreen) {
+                    loadingScreen.innerHTML = `
+                        <div style="color: #e94560; font-size: 18px; margin-bottom: 10px;">Error</div>
+                        <div style="color: #fff; text-align: center; max-width: 300px;">${message}</div>
+                        <button class="game-button" onclick="location.reload()" style="margin-top: 20px;">Retry</button>
+                    `;
+                }
+            }
+            
+            updateStateDisplay(data) {
+                // Update state class for styling
+                const stateElement = document.getElementById('currentState');
+                if (stateElement) {
+                    stateElement.className = `status-value state-${data.state}`;
+                }
+            }
+        }
+        
+        // Initialize the game when page loads
+        window.addEventListener('load', () => {
+            new MovementTestGame();
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            // Could add responsive canvas resizing here if needed
+        });
+    </script>
+</body>
+</html> 

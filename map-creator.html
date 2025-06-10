@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProjectFighters Map Creator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .creator-container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 800px;
+            width: 90%;
+        }
+
+        .title {
+            font-size: 3em;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            opacity: 0.8;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .option-card:hover {
+            border-color: #ff6b6b;
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .option-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .option-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #ff6b6b;
+        }
+
+        .option-description {
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+        .quick-start {
+            background: rgba(76, 175, 80, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border: 1px solid #4caf50;
+        }
+
+        .quick-start h3 {
+            color: #4caf50;
+            margin-bottom: 15px;
+        }
+
+        .template-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .template-btn {
+            background: #4caf50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .template-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
+        .footer {
+            margin-top: 30px;
+            opacity: 0.6;
+            font-size: 0.9em;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="creator-container">
+        <h1 class="title">🎮 Map Creator</h1>
+        <p class="subtitle">Create epic levels for ProjectFighters with our powerful visual tools</p>
+
+        <div class="options-grid">
+            <div class="option-card" onclick="openFullEditor()">
+                <div class="option-icon">🛠️</div>
+                <h3 class="option-title">Advanced Editor</h3>
+                <p class="option-description">Full-featured map editor with layers, advanced tools, and precise controls. Perfect for complex level designs.</p>
+            </div>
+
+            <div class="option-card" onclick="openSimpleCreator()">
+                <div class="option-icon">✨</div>
+                <h3 class="option-title">Quick Creator</h3>
+                <p class="option-description">Simple drag-and-drop interface for rapid prototyping. Great for beginners and quick level sketches.</p>
+            </div>
+
+            <div class="option-card" onclick="loadExistingMap()">
+                <div class="option-icon">📁</div>
+                <h3 class="option-title">Load Map</h3>
+                <p class="option-description">Open and edit existing maps. Continue working on your projects or modify community levels.</p>
+            </div>
+        </div>
+
+        <div class="quick-start">
+            <h3>🚀 Quick Start Templates</h3>
+            <p>Jump-start your creativity with pre-made level templates:</p>
+            <div class="template-buttons">
+                <button class="template-btn" onclick="createFromTemplate('arena')">⚔️ Arena</button>
+                <button class="template-btn" onclick="createFromTemplate('platformer')">🏃‍♂️ Platformer</button>
+                <button class="template-btn" onclick="createFromTemplate('forest')">🌲 Forest</button>
+                <button class="template-btn" onclick="createFromTemplate('cave')">🕳️ Cave</button>
+                <button class="template-btn" onclick="createFromTemplate('castle')">🏰 Castle</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎯 Tip: All created levels can be exported and used directly in your ProjectFighters game!</p>
+        </div>
+    </div>
+
+    <!-- Hidden file input -->
+    <input type="file" id="fileInput" style="display: none;" accept=".json" onchange="handleFileLoad(event)">
+
+    <script>
+        function openFullEditor() {
+            window.open('map-editor.html', '_blank');
+        }
+
+        function openSimpleCreator() {
+            // For now, open the same editor but could be a simplified version
+            alert('🚧 Simple Creator coming soon! Opening Advanced Editor for now.');
+            openFullEditor();
+        }
+
+        function loadExistingMap() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFileLoad(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Open editor with the file data
+                // For now, just open the editor
+                const url = `map-editor.html?load=${encodeURIComponent(file.name)}`;
+                window.open(url, '_blank');
+            }
+        }
+
+        function createFromTemplate(templateType) {
+            const templates = {
+                arena: {
+                    name: 'Arena Template',
+                    description: 'Circular fighting arena with platforms',
+                    width: 19200,
+                    height: 1080,
+                    boundaries: [
+                        { x: 0, y: 800, width: 19200, height: 280, type: 'ground' },
+                        { x: 300, y: 650, width: 200, height: 20, type: 'platform' },
+                        { x: 700, y: 650, width: 200, height: 20, type: 'platform' },
+                        { x: 500, y: 500, width: 200, height: 20, type: 'platform' },
+                        { x: 50, y: 0, width: 20, height: 800, type: 'wall' },
+                        { x: 19130, y: 0, width: 20, height: 800, type: 'wall' }
+                    ],
+                    spawnPoints: [
+                        { x: 200, y: 750, name: 'Player 1' },
+                        { x: 1000, y: 750, name: 'Player 2' }
+                    ],
+                    enemies: [
+                        { x: 600, y: 750, width: 50, height: 50, type: 'enemy', enemyType: 'basic' }
+                    ]
+                },
+                platformer: {
+                    name: 'Platformer Template',
+                    description: 'Side-scrolling platformer level',
+                    width: 19200,
+                    height: 1080,
+                    boundaries: [
+                        { x: 0, y: 800, width: 19200, height: 280, type: 'ground' },
+                        { x: 300, y: 850, width: 150, height: 20, type: 'platform' },
+                        { x: 500, y: 750, width: 150, height: 20, type: 'platform' },
+                        { x: 700, y: 650, width: 150, height: 20, type: 'platform' },
+                        { x: 1000, y: 800, width: 100, height: 150, type: 'wall' },
+                        { x: 1200, y: 700, width: 200, height: 20, type: 'platform' },
+                        { x: 1500, y: 850, width: 150, height: 20, type: 'platform' }
+                    ],
+                    spawnPoints: [
+                        { x: 100, y: 750, name: 'Start' }
+                    ],
+                    interactables: [
+                        { x: 800, y: 620, width: 30, height: 30, type: 'checkpoint', action: 'save' },
+                        { x: 1300, y: 670, width: 25, height: 25, type: 'health_potion', action: 'heal' }
+                    ]
+                },
+                forest: {
+                    name: 'Forest Template',
+                    description: 'Natural forest environment',
+                    width: 19200,
+                    height: 1080,
+                    boundaries: [
+                        { x: 0, y: 800, width: 19200, height: 280, type: 'ground' },
+                        { x: 200, y: 700, width: 80, height: 100, type: 'pillar' },
+                        { x: 400, y: 650, width: 100, height: 150, type: 'pillar' },
+                        { x: 650, y: 720, width: 120, height: 20, type: 'platform' },
+                        { x: 900, y: 680, width: 100, height: 120, type: 'crystal' },
+                        { x: 1200, y: 750, width: 150, height: 20, type: 'platform' }
+                    ],
+                    spawnPoints: [
+                        { x: 100, y: 750, name: 'Forest Entry' }
+                    ],
+                    enemies: [
+                        { x: 500, y: 750, width: 50, height: 50, type: 'enemy', enemyType: 'basic' },
+                        { x: 1100, y: 750, width: 50, height: 50, type: 'enemy', enemyType: 'fast' }
+                    ],
+                    interactables: [
+                        { x: 350, y: 620, width: 25, height: 25, type: 'health_potion', action: 'heal' }
+                    ]
+                },
+                cave: {
+                    name: 'Cave Template',
+                    description: 'Underground cave system',
+                    width: 19200,
+                    height: 1080,
+                    boundaries: [
+                        { x: 0, y: 800, width: 19200, height: 280, type: 'ground' },
+                        { x: 0, y: 0, width: 19200, height: 50, type: 'ceiling' },
+                        { x: 0, y: 0, width: 50, height: 1080, type: 'wall' },
+                        { x: 19150, y: 0, width: 50, height: 1080, type: 'wall' },
+                        { x: 300, y: 50, width: 40, height: 150, type: 'stalactite' },
+                        { x: 600, y: 50, width: 40, height: 200, type: 'stalactite' },
+                        { x: 1200, y: 50, width: 40, height: 180, type: 'stalactite' },
+                        { x: 400, y: 750, width: 150, height: 20, type: 'platform' },
+                        { x: 700, y: 650, width: 150, height: 20, type: 'platform' },
+                        { x: 1000, y: 700, width: 200, height: 20, type: 'platform' }
+                    ],
+                    spawnPoints: [
+                        { x: 100, y: 750, name: 'Cave Entrance' }
+                    ],
+                    enemies: [
+                        { x: 800, y: 750, width: 60, height: 60, type: 'enemy', enemyType: 'strong' }
+                    ],
+                    interactables: [
+                        { x: 1100, y: 670, width: 30, height: 30, type: 'crystal', action: 'collect' }
+                    ]
+                },
+                castle: {
+                    name: 'Castle Template',
+                    description: 'Medieval castle layout',
+                    width: 19200,
+                    height: 1080,
+                    boundaries: [
+                        { x: 0, y: 800, width: 19200, height: 280, type: 'ground' },
+                        { x: 200, y: 700, width: 40, height: 200, type: 'pillar' },
+                        { x: 400, y: 600, width: 40, height: 300, type: 'pillar' },
+                        { x: 600, y: 500, width: 40, height: 400, type: 'pillar' },
+                        { x: 800, y: 400, width: 200, height: 30, type: 'platform' },
+                        { x: 1100, y: 500, width: 40, height: 400, type: 'pillar' },
+                        { x: 1300, y: 600, width: 40, height: 300, type: 'pillar' },
+                        { x: 1500, y: 700, width: 40, height: 200, type: 'pillar' }
+                    ],
+                    spawnPoints: [
+                        { x: 100, y: 750, name: 'Castle Gate' }
+                    ],
+                    enemies: [
+                        { x: 500, y: 750, width: 50, height: 50, type: 'enemy', enemyType: 'basic' },
+                        { x: 900, y: 370, width: 80, height: 80, type: 'boss', enemyType: 'boss' }
+                    ],
+                    interactables: [
+                        { x: 300, y: 670, width: 30, height: 30, type: 'checkpoint', action: 'save' },
+                        { x: 850, y: 350, width: 40, height: 40, type: 'treasure', action: 'collect' }
+                    ]
+                }
+            };
+
+            const template = templates[templateType];
+            if (template) {
+                // Create URL with template data
+                const templateData = encodeURIComponent(JSON.stringify(template));
+                const url = `map-editor.html?template=${templateData}`;
+                window.open(url, '_blank');
+            }
+        }
+
+        // Add some visual flair
+        document.addEventListener('DOMContentLoaded', function() {
+            const title = document.querySelector('.title');
+            title.classList.add('pulse');
+            
+            // Remove pulse after animation
+            setTimeout(() => {
+                title.classList.remove('pulse');
+            }, 4000);
+        });
+    </script>
+</body>
+</html> 

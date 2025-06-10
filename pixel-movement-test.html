@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Art Movement Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            background: linear-gradient(45deg, #0f3460, #16537e);
+            border: 3px solid #e94560;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(233, 69, 96, 0.3);
+        }
+
+        #gameCanvas {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            background: linear-gradient(45deg, #2c5f2d, #4a7c59);
+            background-size: 50px 50px;
+            background-image: 
+                linear-gradient(45deg, rgba(0,0,0,.1) 25%, transparent 25%), 
+                linear-gradient(-45deg, rgba(0,0,0,.1) 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, rgba(0,0,0,.1) 75%), 
+                linear-gradient(-45deg, transparent 75%, rgba(0,0,0,.1) 75%);
+        }
+
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        #status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .key {
+            background: #e94560;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div id="controls">
+            <div><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> - Move</div>
+            <div><span class="key">C</span> - Crouch</div>
+            <div><span class="key">SHIFT</span> - Run</div>
+        </div>
+        
+        <div id="status">
+            <div>State: <span id="currentState">idle</span></div>
+            <div>Position: <span id="position">400, 300</span></div>
+            <div>Frame: <span id="currentFrame">0</span></div>
+        </div>
+    </div>
+
+    <script>
+        class PixelMovementTest {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.ctx.imageSmoothingEnabled = false;
+                
+                // Character properties
+                this.character = {
+                    x: 400,
+                    y: 300,
+                    width: 170,  // Scaled down from 341px for better gameplay
+                    height: 170, // Scaled down from 341px for better gameplay
+                    speed: 2,
+                    runSpeed: 4,
+                    state: 'idle',
+                    direction: 'right',
+                    frame: 0,
+                    frameTimer: 0,
+                    frameDelay: 8,
+                    isCrouching: false,
+                    isRunning: false
+                };
+                
+                // Input handling
+                this.keys = {};
+                this.setupEventListeners();
+                
+                // Sprite sheet setup
+                this.spriteSheet = new Image();
+                this.spriteSheet.onload = () => {
+                    this.gameLoop();
+                };
+                this.spriteSheet.src = 'UI/20250531_2250_Pixel Art Movesheet_remix_01jwm1q60zek48ptnx3d7ckhey.png';
+                
+                // Sprite configuration (3x3 grid)
+                this.spriteConfig = {
+                    frameWidth: 341,  // Exact frame size from 1024x1024 spritesheet
+                    frameHeight: 341, // Exact frame size from 1024x1024 spritesheet
+                    cols: 3,
+                    rows: 3,
+                    // Row 0: Normal movement frames 1-3
+                    // Row 1: Normal movement frames 4-6  
+                    // Row 2: Crouch frames 7-9
+                    animations: {
+                        idle: { row: 0, frames: [0], speed: 1 },
+                        walk: { row: 0, frames: [0, 1, 2], speed: 8 },
+                        run: { row: 1, frames: [0, 1, 2], speed: 6 },
+                        crouch: { row: 2, frames: [0], speed: 1 },
+                        crouchWalk: { row: 2, frames: [0, 1, 2], speed: 10 }
+                    }
+                };
+                
+                this.updateStatus();
+            }
+            
+            setupEventListeners() {
+                document.addEventListener('keydown', (e) => {
+                    this.keys[e.key.toLowerCase()] = true;
+                    e.preventDefault();
+                });
+                
+                document.addEventListener('keyup', (e) => {
+                    this.keys[e.key.toLowerCase()] = false;
+                    e.preventDefault();
+                });
+            }
+            
+            update() {
+                const prevState = this.character.state;
+                const prevDirection = this.character.direction;
+                
+                // Handle input
+                this.handleInput();
+                
+                // Update animation frame
+                this.updateAnimation();
+                
+                // Update status display if state changed
+                if (prevState !== this.character.state || prevDirection !== this.character.direction) {
+                    this.updateStatus();
+                }
+            }
+            
+            handleInput() {
+                let moving = false;
+                let dx = 0, dy = 0;
+                
+                // Check for crouch
+                this.character.isCrouching = this.keys['c'];
+                
+                // Check for run
+                this.character.isRunning = this.keys['shift'] && !this.character.isCrouching;
+                
+                // Movement input
+                if (this.keys['a']) {
+                    dx = -1;
+                    this.character.direction = 'left';
+                    moving = true;
+                }
+                if (this.keys['d']) {
+                    dx = 1;
+                    this.character.direction = 'right';
+                    moving = true;
+                }
+                if (this.keys['w']) {
+                    dy = -1;
+                    moving = true;
+                }
+                if (this.keys['s']) {
+                    dy = 1;
+                    moving = true;
+                }
+                
+                // Normalize diagonal movement
+                if (dx !== 0 && dy !== 0) {
+                    dx *= 0.707;
+                    dy *= 0.707;
+                }
+                
+                // Apply movement
+                if (moving) {
+                    const speed = this.character.isRunning ? this.character.runSpeed : this.character.speed;
+                    this.character.x += dx * speed;
+                    this.character.y += dy * speed;
+                    
+                    // Keep character in bounds
+                    this.character.x = Math.max(32, Math.min(this.canvas.width - 32, this.character.x));
+                    this.character.y = Math.max(32, Math.min(this.canvas.height - 32, this.character.y));
+                }
+                
+                // Determine state
+                if (this.character.isCrouching) {
+                    this.character.state = moving ? 'crouchWalk' : 'crouch';
+                } else if (moving) {
+                    this.character.state = this.character.isRunning ? 'run' : 'walk';
+                } else {
+                    this.character.state = 'idle';
+                }
+            }
+            
+            updateAnimation() {
+                const anim = this.spriteConfig.animations[this.character.state];
+                
+                this.character.frameTimer++;
+                if (this.character.frameTimer >= anim.speed) {
+                    this.character.frameTimer = 0;
+                    this.character.frame = (this.character.frame + 1) % anim.frames.length;
+                }
+            }
+            
+            render() {
+                // Clear canvas
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw character
+                this.drawCharacter();
+                
+                // Draw simple ground grid
+                this.drawGrid();
+            }
+            
+            drawCharacter() {
+                const anim = this.spriteConfig.animations[this.character.state];
+                const frameIndex = anim.frames[this.character.frame];
+                const col = frameIndex % this.spriteConfig.cols;
+                const row = anim.row;
+                
+                const sx = col * this.spriteConfig.frameWidth;
+                const sy = row * this.spriteConfig.frameHeight;
+                
+                this.ctx.save();
+                
+                // Flip sprite for left direction
+                if (this.character.direction === 'left') {
+                    this.ctx.scale(-1, 1);
+                    this.ctx.drawImage(
+                        this.spriteSheet,
+                        sx, sy,
+                        this.spriteConfig.frameWidth, this.spriteConfig.frameHeight,
+                        -this.character.x - this.character.width/2, this.character.y - this.character.height/2,
+                        this.character.width, this.character.height
+                    );
+                } else {
+                    this.ctx.drawImage(
+                        this.spriteSheet,
+                        sx, sy,
+                        this.spriteConfig.frameWidth, this.spriteConfig.frameHeight,
+                        this.character.x - this.character.width/2, this.character.y - this.character.height/2,
+                        this.character.width, this.character.height
+                    );
+                }
+                
+                this.ctx.restore();
+                
+                // Draw character shadow
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                this.ctx.ellipse(
+                    this.character.x, 
+                    this.character.y + this.character.height/2 - 5,
+                    20, 8, 0, 0, Math.PI * 2
+                );
+                this.ctx.fill();
+            }
+            
+            drawGrid() {
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                this.ctx.lineWidth = 1;
+                
+                // Vertical lines
+                for (let x = 0; x < this.canvas.width; x += 50) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, 0);
+                    this.ctx.lineTo(x, this.canvas.height);
+                    this.ctx.stroke();
+                }
+                
+                // Horizontal lines
+                for (let y = 0; y < this.canvas.height; y += 50) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(this.canvas.width, y);
+                    this.ctx.stroke();
+                }
+            }
+            
+            updateStatus() {
+                document.getElementById('currentState').textContent = this.character.state;
+                document.getElementById('position').textContent = `${Math.round(this.character.x)}, ${Math.round(this.character.y)}`;
+                document.getElementById('currentFrame').textContent = this.character.frame;
+            }
+            
+            gameLoop() {
+                this.update();
+                this.render();
+                requestAnimationFrame(() => this.gameLoop());
+            }
+        }
+        
+        // Start the game when page loads
+        window.addEventListener('load', () => {
+            new PixelMovementTest();
+        });
+    </script>
+</body>
+</html> 

@@ -1,5 +1,30 @@
 // Export the sticker data for use in other files
 export const stickers = {
+    // New Stickers
+    "ayane_bruh": {
+        name: "Ayane Bruh",
+        image: "Stickers/ayane_bruh.png",
+        price: 350,
+        category: "regular"
+    },
+    "fang_spray": {
+        name: "Fang Spray",
+        image: "Stickers/fang_spray.png",
+        price: 350,
+        category: "regular"
+    },
+    "ibuki_grin": {
+        name: "Ibuki Grin",
+        image: "Stickers/ibuki_grin.png",
+        price: 350,
+        category: "regular"
+    },
+    "megaman_overcharged": {
+        name: "Megaman Overcharged",
+        image: "Stickers/megaman_overcharged.png",
+        price: 350,
+        category: "regular"
+    },
     "kokoro_wink": {
         name: "Kokoro Wink",
         image: "Stickers/kokoro_wink.png",

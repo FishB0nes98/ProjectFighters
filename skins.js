@@ -121,6 +121,7 @@ const skinReference = {
         { name: "Royal Guard Astaroth", price: 1000, imagePath: "Skins/Royal Guard Astaroth.png" }
     ],
     Ibuki: [
+        { name: "Rebellious Ibuki", price: 2000, imagePath: "Skins/Rebellious Ibuki.jpg" },
         { name: "Heartbreaker Ibuki", price: "UNAVAILABLE", imagePath: "Skins/Heartbreaker Ibuki.jpeg" },
         { name: "Steampunk Ibuki", price: 1000, imagePath: "Skins/Steampunk Ibuki.jpeg" },
         { name: "DJ Ibuki", price: 2000, imagePath: "Skins/DJ Ibuki.png" },
@@ -193,6 +194,7 @@ const skinReference = {
         { name: "Farmer Nina", price: 1000, imagePath: "Skins/Farmer Nina.png" }
     ],
     Ayane: [
+        { name: "Rebellious Ayane", price: 2000, imagePath: "Skins/Rebellious Ayane.jfif" },
         { name: "Monster Trainer Ayane", price: 2000, imagePath: "Skins/Monster Trainer Ayane.jfif" },
         { name: "Tokyo Mew Mew Ayane", price: 5000, imagePath: "Skins/Tokyo Mew Mew Ayane.png" },
         { name: "Bunny Ayane", price: "UNAVAILABLE", imagePath: "Skins/Bunny Ayane.jpg" },
@@ -235,6 +237,7 @@ const skinReference = {
         { name: "Samurai Shizumaru", price: 1000, imagePath: "Skins/Samurai Shizumaru.jpeg" }
     ],
     Christie: [
+        { name: "Rebellious Christie", price: 2000, imagePath: "Skins/Rebellious Christie.jpg" },
         { name: "Atlantean Christie", price: 2000, imagePath: "Skins/Atlantean Christie.jpeg" },
         { name: "Pajama Party Christie", price: 1000, imagePath: "Skins/Pajama Party Christie.jpeg" },
         { name: "Chris T", price: 1000, imagePath: "Skins/Chris T.png" }
@@ -276,11 +279,11 @@ const skinReference = {
         { name: "Spectral Archer Kagome", price: 2000, imagePath: "Skins/Spectral Archer Kagome.jpeg" }
     ],
     Kabal: [
+        { name: "Rebellious Kabal", price: 2000, imagePath: "Skins/Rebellious Kabal.jpg" },
         { name: "Winter Festival Kabal", price: "UNAVAILABLE", imagePath: "Skins/Winter Festival Kabal.jpeg" },
         { name: "Steamforged Kabal", price: 1000, imagePath: "Skins/Steamforged Kabal.jpeg" },
         { name: "Executioner Kabal", price: 1000, imagePath: "Skins/Executioner Kabal.jpeg" },
-        { name: "Frosted Kabal", price: 2000, imagePath: "Skins/Frosted Kabal.jpeg" },
-        { name: "Atlantean Kotal Kahn", price: 2000, imagePath: "Skins/Atlantean Kotal Kahn.jpeg" }
+        { name: "Frosted Kabal", price: 2000, imagePath: "Skins/Frosted Kabal.jpeg" }
     ],
     Kuma: [
         { name: "Blossom Panda", price: 2000, imagePath: "Skins/Blossom Panda.webp" },
@@ -295,6 +298,7 @@ const skinReference = {
         { name: "Mythic Sentinel Alice", price: 1000, imagePath: "Skins/Mythic Sentinel Alice.jpeg" }
     ],
     FANG: [
+        { name: "Rebellious FANG", price: 2000, imagePath: "Skins/Rebellious FANG.jpg" },
         { name: "Monster Trainer FANG", price: 2000, imagePath: "Skins/Monster Trainer FANG.jfif" },
         { name: "Farmer FANG", price: 3000, imagePath: "Skins/Farmer FANG.jpeg" },
         { name: "Voidborn FANG", price: 2000, imagePath: "Skins/Voidborn FANG.jpeg" }
@@ -308,6 +312,7 @@ const skinReference = {
         { name: "Battle Bistro Lili", price: 1000, imagePath: "Skins/Battle Bistro Lili.jpeg" }
     ],
     "Mega Man": [
+        { name: "Rebellious Mega Man", price: 3000, imagePath: "Skins/Rebellious Mega Man.jpg" },
         { name: "Date Night Mega Man", price: "UNAVAILABLE", imagePath: "Skins/Date Night Mega Man.jpeg" },
         { name: "Steamcore Megaman", price: 2000, imagePath: "Skins/Steamcore Megaman.jpeg" },
         { name: "Pyromancer Mega Man", price: 2000, imagePath: "Skins/Pyromancer Mega Man.jpeg" }
@@ -329,6 +334,9 @@ const skinReference = {
     ],
     "Shao Kahn": [
         { name: "Thunderstrike Shao Kahn", price: 2000, imagePath: "Skins/Thunderstrike Shao Kahn.jfif" }
+    ],
+    Anna: [
+        { name: "Rebellious Anna", price: 2000, imagePath: "Skins/Rebellious Anna.jpg" }
     ]
 };
 

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprite Analyzer</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a2e;
+            color: white;
+            font-family: 'Courier New', monospace;
+        }
+        
+        #container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        #spriteCanvas {
+            border: 2px solid #e94560;
+            background: #333;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            cursor: crosshair;
+        }
+        
+        #info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            border: 2px solid #e94560;
+        }
+        
+        .grid-overlay {
+            position: absolute;
+            pointer-events: none;
+            border: 1px solid rgba(233, 69, 96, 0.5);
+        }
+        
+        #controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            border: 2px solid #e94560;
+        }
+        
+        button {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            margin: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+        }
+        
+        button:hover {
+            background: #ff5577;
+        }
+        
+        input {
+            background: #333;
+            color: white;
+            border: 1px solid #e94560;
+            padding: 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            width: 80px;
+        }
+        
+        .highlight {
+            color: #e94560;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Sprite Sheet Analyzer</h1>
+        
+        <div id="controls">
+            <div>
+                <label>Frame Width: <input type="number" id="frameWidth" value="192" min="1"></label>
+                <label>Frame Height: <input type="number" id="frameHeight" value="192" min="1"></label>
+                <label>Columns: <input type="number" id="cols" value="3" min="1"></label>
+                <label>Rows: <input type="number" id="rows" value="3" min="1"></label>
+            </div>
+            <div style="margin-top: 10px;">
+                <button onclick="updateGrid()">Update Grid</button>
+                <button onclick="toggleGrid()">Toggle Grid</button>
+                <button onclick="analyzeSprite()">Auto Analyze</button>
+                <button onclick="exportConfig()">Export Config</button>
+            </div>
+        </div>
+        
+        <div style="position: relative; display: inline-block;">
+            <canvas id="spriteCanvas"></canvas>
+            <div id="gridOverlay"></div>
+        </div>
+        
+        <div id="info">
+            <h3>Sprite Information</h3>
+            <div>Image Size: <span id="imageSize" class="highlight">Loading...</span></div>
+            <div>Frame Size: <span id="frameSize" class="highlight">192x192</span></div>
+            <div>Grid: <span id="gridInfo" class="highlight">3x3</span></div>
+            <div>Mouse Position: <span id="mousePos" class="highlight">0, 0</span></div>
+            <div>Current Frame: <span id="currentFrame" class="highlight">0, 0</span></div>
+            
+            <h4>Suggested Configuration:</h4>
+            <pre id="configOutput">Loading...</pre>
+        </div>
+    </div>
+
+    <script>
+        class SpriteAnalyzer {
+            constructor() {
+                this.canvas = document.getElementById('spriteCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.ctx.imageSmoothingEnabled = false;
+                
+                this.spriteSheet = new Image();
+                this.spriteSheet.onload = () => {
+                    this.setupCanvas();
+                    this.analyzeSprite();
+                };
+                this.spriteSheet.src = 'UI/20250531_2250_Pixel Art Movesheet_remix_01jwm1q60zek48ptnx3d7ckhey.png';
+                
+                this.showGrid = true;
+                this.setupEventListeners();
+            }
+            
+            setupCanvas() {
+                // Scale down the image for better viewing if it's too large
+                const maxWidth = 800;
+                const maxHeight = 600;
+                
+                let displayWidth = this.spriteSheet.width;
+                let displayHeight = this.spriteSheet.height;
+                
+                if (displayWidth > maxWidth || displayHeight > maxHeight) {
+                    const scale = Math.min(maxWidth / displayWidth, maxHeight / displayHeight);
+                    displayWidth *= scale;
+                    displayHeight *= scale;
+                }
+                
+                this.canvas.width = displayWidth;
+                this.canvas.height = displayHeight;
+                this.scale = displayWidth / this.spriteSheet.width;
+                
+                this.drawSprite();
+                this.updateInfo();
+            }
+            
+            drawSprite() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.drawImage(this.spriteSheet, 0, 0, this.canvas.width, this.canvas.height);
+                
+                if (this.showGrid) {
+                    this.drawGrid();
+                }
+            }
+            
+            drawGrid() {
+                const frameWidth = parseInt(document.getElementById('frameWidth').value) * this.scale;
+                const frameHeight = parseInt(document.getElementById('frameHeight').value) * this.scale;
+                const cols = parseInt(document.getElementById('cols').value);
+                const rows = parseInt(document.getElementById('rows').value);
+                
+                this.ctx.strokeStyle = 'rgba(233, 69, 96, 0.8)';
+                this.ctx.lineWidth = 2;
+                
+                // Draw vertical lines
+                for (let i = 0; i <= cols; i++) {
+                    const x = i * frameWidth;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, 0);
+                    this.ctx.lineTo(x, this.canvas.height);
+                    this.ctx.stroke();
+                }
+                
+                // Draw horizontal lines
+                for (let i = 0; i <= rows; i++) {
+                    const y = i * frameHeight;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(this.canvas.width, y);
+                    this.ctx.stroke();
+                }
+                
+                // Draw frame numbers
+                this.ctx.fillStyle = 'rgba(233, 69, 96, 0.9)';
+                this.ctx.font = '14px monospace';
+                this.ctx.textAlign = 'center';
+                
+                for (let row = 0; row < rows; row++) {
+                    for (let col = 0; col < cols; col++) {
+                        const x = col * frameWidth + frameWidth / 2;
+                        const y = row * frameHeight + frameHeight / 2;
+                        const frameNum = row * cols + col;
+                        this.ctx.fillText(`${frameNum}`, x, y);
+                        this.ctx.fillText(`(${col},${row})`, x, y + 20);
+                    }
+                }
+            }
+            
+            setupEventListeners() {
+                this.canvas.addEventListener('mousemove', (e) => {
+                    const rect = this.canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    // Convert to actual image coordinates
+                    const actualX = Math.floor(x / this.scale);
+                    const actualY = Math.floor(y / this.scale);
+                    
+                    document.getElementById('mousePos').textContent = `${actualX}, ${actualY}`;
+                    
+                    // Calculate which frame we're in
+                    const frameWidth = parseInt(document.getElementById('frameWidth').value);
+                    const frameHeight = parseInt(document.getElementById('frameHeight').value);
+                    const frameCol = Math.floor(actualX / frameWidth);
+                    const frameRow = Math.floor(actualY / frameHeight);
+                    
+                    document.getElementById('currentFrame').textContent = `${frameCol}, ${frameRow}`;
+                });
+                
+                // Update grid when inputs change
+                ['frameWidth', 'frameHeight', 'cols', 'rows'].forEach(id => {
+                    document.getElementById(id).addEventListener('input', () => {
+                        this.updateGrid();
+                    });
+                });
+            }
+            
+            updateGrid() {
+                this.drawSprite();
+                this.updateInfo();
+            }
+            
+            toggleGrid() {
+                this.showGrid = !this.showGrid;
+                this.drawSprite();
+            }
+            
+            analyzeSprite() {
+                // Try to auto-detect sprite dimensions
+                const imageWidth = this.spriteSheet.width;
+                const imageHeight = this.spriteSheet.height;
+                
+                // Assume 3x3 grid and calculate frame size
+                const frameWidth = Math.floor(imageWidth / 3);
+                const frameHeight = Math.floor(imageHeight / 3);
+                
+                document.getElementById('frameWidth').value = frameWidth;
+                document.getElementById('frameHeight').value = frameHeight;
+                
+                this.updateGrid();
+            }
+            
+            updateInfo() {
+                const imageWidth = this.spriteSheet.width;
+                const imageHeight = this.spriteSheet.height;
+                const frameWidth = parseInt(document.getElementById('frameWidth').value);
+                const frameHeight = parseInt(document.getElementById('frameHeight').value);
+                const cols = parseInt(document.getElementById('cols').value);
+                const rows = parseInt(document.getElementById('rows').value);
+                
+                document.getElementById('imageSize').textContent = `${imageWidth}x${imageHeight}`;
+                document.getElementById('frameSize').textContent = `${frameWidth}x${frameHeight}`;
+                document.getElementById('gridInfo').textContent = `${cols}x${rows}`;
+                
+                // Generate configuration
+                const config = {
+                    frameWidth: frameWidth,
+                    frameHeight: frameHeight,
+                    cols: cols,
+                    rows: rows,
+                    animations: {
+                        idle: { row: 0, frames: [0], speed: 1 },
+                        walk: { row: 0, frames: [0, 1, 2], speed: 8 },
+                        run: { row: 1, frames: [0, 1, 2], speed: 6 },
+                        crouch: { row: 2, frames: [0], speed: 1 },
+                        crouchWalk: { row: 2, frames: [0, 1, 2], speed: 10 }
+                    }
+                };
+                
+                document.getElementById('configOutput').textContent = JSON.stringify(config, null, 2);
+            }
+            
+            exportConfig() {
+                const config = document.getElementById('configOutput').textContent;
+                navigator.clipboard.writeText(config).then(() => {
+                    alert('Configuration copied to clipboard!');
+                });
+            }
+        }
+        
+        // Global functions for buttons
+        function updateGrid() {
+            analyzer.updateGrid();
+        }
+        
+        function toggleGrid() {
+            analyzer.toggleGrid();
+        }
+        
+        function analyzeSprite() {
+            analyzer.analyzeSprite();
+        }
+        
+        function exportConfig() {
+            analyzer.exportConfig();
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', () => {
+            window.analyzer = new SpriteAnalyzer();
+        });
+    </script>
+</body>
+</html> 

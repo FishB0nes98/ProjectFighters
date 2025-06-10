@@ -1,0 +1,58 @@
+.butterfly {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    animation: flutter 1s infinite alternate ease-in-out;
+}
+
+@keyframes flutter {
+    0% {
+        transform: rotate(-10deg) scale(1);
+    }
+    100% {
+        transform: rotate(10deg) scale(1.1);
+    }
+}
+
+.butterfly-wing {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #FF69B4, #FFB6C1);
+    border-radius: 50% 50% 0 50%;
+    opacity: 0.8;
+    filter: blur(1px);
+}
+
+.butterfly-wing.left {
+    transform: scaleX(-1);
+}
+
+.butterfly-body {
+    position: absolute;
+    width: 4px;
+    height: 12px;
+    background: #FF1493;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 2px;
+}
+
+.butterfly-trail {
+    position: absolute;
+    background: rgba(255, 105, 180, 0.2);
+    border-radius: 10px;
+    pointer-events: none;
+    animation: fadeOut 5s forwards;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 0.3;
+    }
+    100% {
+        opacity: 0;
+    }
+} 

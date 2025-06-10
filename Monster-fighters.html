@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monster Fighters - Retro Monster Battle Game</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/monster-tamers.css">
+    <link rel="stylesheet" href="css/battle-ui.css">
+    <link rel="stylesheet" href="css/battle-vfx.css">
+    <link rel="stylesheet" href="css/xp-system.css">
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js" type="module"></script>
+    
+    <!-- Game Scripts -->
+    <script type="module" src="firebase-config.js"></script>
+    
+    <style>
+        /* Loading screen styles */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+            font-family: 'Press Start 2P', monospace;
+        }
+        
+        .loading-title {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+            animation: pulse 2s infinite;
+        }
+        
+        .loading-progress {
+            width: 300px;
+            height: 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        
+        .loading-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #00BCD4, #2196F3);
+            width: 0%;
+            transition: width 0.3s ease;
+            animation: shine 1.5s infinite;
+        }
+        
+        .loading-text {
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        @keyframes shine {
+            0% { background: linear-gradient(45deg, #00BCD4, #2196F3); }
+            50% { background: linear-gradient(45deg, #2196F3, #00BCD4); }
+            100% { background: linear-gradient(45deg, #00BCD4, #2196F3); }
+        }
+        
+        /* Hide main content initially */
+        #main-content {
+            display: none;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Monster Stats Modal */
+        .stats-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            font-family: 'Press Start 2P', monospace;
+        }
+        
+        .stats-modal-content {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border: 4px solid #00BCD4;
+            border-radius: 15px;
+            padding: 2rem;
+            max-width: 900px;
+            width: 95%;
+            max-height: 85vh;
+            overflow-y: auto;
+            color: white;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0, 188, 212, 0.5);
+        }
+        
+        .modal-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-header h2 {
+            margin: 0 0 1rem 0;
+            font-size: 1.4rem;
+            color: #00BCD4;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+        }
+        
+        .monster-basic-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .level-badge {
+            background: linear-gradient(45deg, #FF9800, #F57C00);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            border: 2px solid #FFB74D;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+        }
+        
+        .type-badges {
+            display: flex;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+        }
+        
+        .stats-grid {
+            text-align: left;
+            font-size: 0.75rem;
+            line-height: 2.0;
+        }
+        
+        .hp-section, .combat-stats, .ability-section, .status-section, .moves-section {
+            margin-bottom: 1.5rem;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .stat-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.0rem;
+            gap: 1.2rem;
+        }
+        
+        .stat-label {
+            font-weight: bold;
+            min-width: 120px;
+            color: #E0E0E0;
+            font-size: 0.8rem;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            color: #00BCD4;
+            min-width: 50px;
+            text-align: right;
+            font-size: 0.9rem;
+        }
+        
+        .stat-bar, .hp-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-left: 0.5rem;
+        }
+        
+        .stat-fill, .hp-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .hp-fill {
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+        }
+        
+        .hp-fill.low {
+            background: linear-gradient(90deg, #FF9800, #FFC107);
+        }
+        
+        .hp-fill.critical {
+            background: linear-gradient(90deg, #F44336, #FF5722);
+            animation: pulse-critical 1s infinite alternate;
+        }
+        
+        @keyframes pulse-critical {
+            from { opacity: 0.7; }
+            to { opacity: 1; }
+        }
+        
+        .ability-info, .status-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .ability-label, .status-label {
+            font-weight: bold;
+            color: #E0E0E0;
+        }
+        
+        .ability-name {
+            color: #FFD700;
+            font-weight: bold;
+        }
+        
+        .ability-description {
+            font-size: 0.6rem;
+            color: #B0B0B0;
+            line-height: 1.4;
+            font-style: italic;
+        }
+        
+        .status-condition {
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.6rem;
+            font-weight: bold;
+        }
+        
+        .status-condition.poison {
+            background: #9C27B0;
+            color: white;
+        }
+        
+        .status-condition.burn {
+            background: #FF5722;
+            color: white;
+        }
+        
+        .status-condition.paralysis {
+            background: #FFC107;
+            color: black;
+        }
+        
+        .status-condition.sleep {
+            background: #607D8B;
+            color: white;
+        }
+        
+        .status-condition.freeze {
+            background: #00BCD4;
+            color: white;
+        }
+        
+        .status-turns {
+            color: #B0B0B0;
+            font-size: 0.6rem;
+        }
+        
+        .moves-label {
+            font-weight: bold;
+            color: #E0E0E0;
+            margin-bottom: 0.8rem;
+        }
+        
+        .moves-list {
+            display: grid;
+            gap: 0.5rem;
+        }
+        
+        .move-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .move-name {
+            font-weight: bold;
+            color: #FFFFFF;
+            flex: 1;
+        }
+        
+        .move-type {
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.6rem;
+            font-weight: bold;
+            color: white;
+            margin: 0 0.5rem;
+        }
+        
+        .move-pp {
+            color: #B0B0B0;
+            font-size: 0.6rem;
+            min-width: 40px;
+            text-align: right;
+        }
+        
+        .stats-close {
+            background: linear-gradient(45deg, #00BCD4, #2196F3);
+            border: none;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            transition: all 0.3s ease;
+            border: 2px solid #00E5FF;
+        }
+        
+        .stats-close:hover {
+            background: linear-gradient(45deg, #2196F3, #00BCD4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 188, 212, 0.3);
+        }
+        
+        /* Type badges */
+        .type-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+            margin: 0 2px;
+            text-transform: uppercase;
+        }
+        
+        .monster-level-type {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .monster-types {
+            display: flex;
+            gap: 4px;
+        }
+        
+        /* XP Mini Bars for Team Slots */
+        .team-slot .xp-mini-bar {
+            width: 90%;
+            height: 3px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 2px;
+            margin: 2px auto 0;
+            overflow: hidden;
+        }
+        
+        .team-slot .xp-mini-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00E676, #4CAF50);
+            transition: width 0.5s ease;
+            border-radius: 2px;
+        }
+        
+        .team-slot .xp-mini-text {
+            font-size: 6px;
+            color: #B0B0B0;
+            text-align: center;
+            margin-top: 1px;
+            line-height: 1;
+        }
+        
+        .team-slot.filled {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4px;
+        }
+        
+        .team-slot .monster-sprite {
+            width: 32px;
+            height: 32px;
+        }
+        
+        .team-slot .monster-level {
+            font-size: 7px;
+            margin-top: 2px;
+        }
+        
+        /* Team slot improvements for better XP display */
+        .user-team {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        
+        .team-title {
+            font-size: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .team-icon {
+            font-size: 16px;
+        }
+        
+        .team-status {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: auto;
+        }
+        
+        .team-status.empty {
+            background: #555;
+            color: #ccc;
+        }
+        
+        .team-status.partial {
+            background: #FF9800;
+            color: white;
+        }
+        
+        .team-status.full {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .team-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        
+        .team-slot {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .team-slot.filled {
+            border-color: #00BCD4;
+            background: rgba(0, 188, 212, 0.1);
+        }
+        
+        .team-slot.empty {
+            border-style: dashed;
+            color: #888;
+        }
+        
+        .team-slot:hover {
+            border-color: #00E5FF;
+            transform: translateY(-2px);
+        }
+        
+        .slot-placeholder {
+            font-size: 20px;
+            opacity: 0.5;
+        }
+        
+        .team-slot .monster-sprite {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 4px;
+        }
+        
+        .team-slot .monster-level {
+            font-size: 7px;
+            color: #FFD700;
+            margin: 2px 0;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .team-preview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .team-preview {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-title">MONSTER FIGHTERS</div>
+        <div class="loading-progress">
+            <div id="loading-bar" class="loading-bar"></div>
+        </div>
+        <div id="loading-text" class="loading-text">Loading game assets...</div>
+    </div>
+
+    <!-- Main Game Content -->
+    <div id="main-content"></div>
+
+    <!-- Game Initialization Script -->
+    <script type="module">
+        import { gameEngine } from './js/monster-game-engine.js';
+        
+        // Loading progress simulation
+        const loadingSteps = [
+            { text: "Loading game assets...", duration: 500 },
+            { text: "Initializing monster data...", duration: 800 },
+            { text: "Setting up battle engine...", duration: 600 },
+            { text: "Loading user authentication...", duration: 400 },
+            { text: "Preparing battle interface...", duration: 500 },
+            { text: "Ready to fight!", duration: 300 }
+        ];
+        
+        let currentStep = 0;
+        const loadingBar = document.getElementById('loading-bar');
+        const loadingText = document.getElementById('loading-text');
+        const loadingScreen = document.getElementById('loading-screen');
+        const mainContent = document.getElementById('main-content');
+        
+        function updateLoading() {
+            if (currentStep < loadingSteps.length) {
+                const step = loadingSteps[currentStep];
+                loadingText.textContent = step.text;
+                loadingBar.style.width = `${((currentStep + 1) / loadingSteps.length) * 100}%`;
+                
+                setTimeout(() => {
+                    currentStep++;
+                    updateLoading();
+                }, step.duration);
+            } else {
+                // Loading complete
+                setTimeout(() => {
+                    loadingScreen.classList.add('hidden');
+                    mainContent.style.display = 'block';
+                    
+                    // Start the game engine
+                    console.log('🎮 Starting Monster Fighters...');
+                    
+                    // The game engine will initialize automatically
+                    // and show the main menu when ready
+                    
+                }, 500);
+            }
+        }
+        
+        // Start loading
+        setTimeout(updateLoading, 1000);
+        
+        // Make game engine globally available for debugging
+        window.gameEngine = gameEngine;
+        
+        // Global functions for UI interactions
+        window.startQuickBattle = () => gameEngine.quickBattle();
+        window.returnToMenu = () => gameEngine.returnToMenu();
+        window.setAIDifficulty = (difficulty) => gameEngine.setAIDifficulty(difficulty);
+        window.setAIPersonality = (personality) => gameEngine.setAIPersonality(personality);
+        window.openTeamManagement = () => window.location.href = 'monster-tamers.html';
+        window.openMonsterShop = () => window.location.href = 'monster-shop.html';
+        window.openMonsterDex = () => window.location.href = 'monsterdex.html';
+        window.openEggCollection = () => window.location.href = 'egg-collection.html';
+        
+        // Add trainer battle functions
+        window.startTrainerBattle = (trainerId) => gameEngine.startTrainerBattle(trainerId);
+        window.showTrainerSelection = () => gameEngine.showTrainerSelection();
+        
+        // Add map mode functions
+        window.showMapMode = () => gameEngine.showMapMode();
+        window.mapMode = null; // Will be set when game engine initializes
+        
+        // Set map mode reference when game engine is ready
+        setTimeout(() => {
+            if (gameEngine && gameEngine.mapMode) {
+                window.mapMode = gameEngine.mapMode;
+            }
+        }, 2000);
+        
+        // Global function to show monster stats
+        window.showMonsterStats = (monsterName, event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            // Get monster data from the battle state
+            const battleState = gameEngine.battleManager?.getBattleState();
+            if (!battleState) return;
+            
+            // Find the monster (check both player and opponent)
+            let monster = null;
+            if (battleState.activePlayer?.name === monsterName) {
+                monster = battleState.activePlayer;
+            } else if (battleState.activeOpponent?.name === monsterName) {
+                monster = battleState.activeOpponent;
+            }
+            
+            if (!monster) return;
+            
+            // Calculate stat percentages for visual bars
+            const maxStat = Math.max(
+                monster.stats.attack, 
+                monster.stats.defense, 
+                monster.stats.specialAttack, 
+                monster.stats.specialDefense, 
+                monster.stats.speed
+            );
+            
+            const getStatBarWidth = (stat) => Math.min(100, (stat / maxStat) * 100);
+            const getStatColor = (stat) => {
+                if (stat >= maxStat * 0.8) return '#4CAF50';
+                if (stat >= maxStat * 0.6) return '#FFC107';
+                if (stat >= maxStat * 0.4) return '#FF9800';
+                return '#F44336';
+            };
+            
+            // Create and show enhanced stats modal
+            const modal = document.createElement('div');
+            modal.className = 'stats-modal';
+            modal.innerHTML = `
+                <div class="stats-modal-content">
+                    <div class="modal-header">
+                        <h2>${monster.name}</h2>
+                        <div class="monster-basic-info">
+                            <span class="level-badge">Level ${monster.level}</span>
+                            <div class="type-badges">
+                                ${monster.types.map(type => 
+                                    `<span class="type-badge type-${type.toLowerCase()}" style="background-color: ${getTypeColor(type)}">${type}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="hp-section">
+                            <div class="stat-row">
+                                <span class="stat-label">❤️ HP:</span>
+                                <span class="stat-value">${monster.currentHP}/${monster.maxHP}</span>
+                            </div>
+                            <div class="hp-bar-container">
+                                <div class="hp-bar">
+                                    <div class="hp-fill ${getHPClass(monster)}" style="width: ${(monster.currentHP / monster.maxHP) * 100}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="combat-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">⚔️ Attack:</span>
+                                <span class="stat-value">${monster.stats.attack}</span>
+                                <div class="stat-bar">
+                                    <div class="stat-fill" style="width: ${getStatBarWidth(monster.stats.attack)}%; background-color: ${getStatColor(monster.stats.attack)}"></div>
+                                </div>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">🛡️ Defense:</span>
+                                <span class="stat-value">${monster.stats.defense}</span>
+                                <div class="stat-bar">
+                                    <div class="stat-fill" style="width: ${getStatBarWidth(monster.stats.defense)}%; background-color: ${getStatColor(monster.stats.defense)}"></div>
+                                </div>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">✨ Sp. Attack:</span>
+                                <span class="stat-value">${monster.stats.specialAttack}</span>
+                                <div class="stat-bar">
+                                    <div class="stat-fill" style="width: ${getStatBarWidth(monster.stats.specialAttack)}%; background-color: ${getStatColor(monster.stats.specialAttack)}"></div>
+                                </div>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">🔮 Sp. Defense:</span>
+                                <span class="stat-value">${monster.stats.specialDefense}</span>
+                                <div class="stat-bar">
+                                    <div class="stat-fill" style="width: ${getStatBarWidth(monster.stats.specialDefense)}%; background-color: ${getStatColor(monster.stats.specialDefense)}"></div>
+                                </div>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">💨 Speed:</span>
+                                <span class="stat-value">${monster.stats.speed}</span>
+                                <div class="stat-bar">
+                                    <div class="stat-fill" style="width: ${getStatBarWidth(monster.stats.speed)}%; background-color: ${getStatColor(monster.stats.speed)}"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${monster.ability ? `
+                            <div class="ability-section">
+                                <div class="ability-info">
+                                    <span class="ability-label">🌟 Ability:</span>
+                                    <span class="ability-name">${monster.ability.name}</span>
+                                </div>
+                                <div class="ability-description">${monster.ability.description || 'No description available.'}</div>
+                            </div>
+                        ` : ''}
+                        
+                        ${monster.statusCondition !== 'none' ? `
+                            <div class="status-section">
+                                <div class="status-info">
+                                    <span class="status-label">💫 Status:</span>
+                                    <span class="status-condition ${monster.statusCondition}">${monster.statusCondition.toUpperCase()}</span>
+                                    ${monster.statusTurns > 0 ? `<span class="status-turns">(${monster.statusTurns} turns)</span>` : ''}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="moves-section">
+                            <div class="moves-label">🎯 Moves:</div>
+                            <div class="moves-list">
+                                ${monster.moves.map(move => `
+                                    <div class="move-item">
+                                        <span class="move-name">${move.name}</span>
+                                        <span class="move-type" style="background-color: ${getTypeColor(move.type)}">${move.type}</span>
+                                        <span class="move-pp">${move.pp}/${move.maxPP}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="stats-close" onclick="this.parentElement.parentElement.remove()">Close</button>
+                </div>
+            `;
+            
+            // Helper functions for the modal
+            function getTypeColor(type) {
+                const typeColors = {
+                    'Normal': '#A8A878', 'Fighting': '#C03028', 'Flying': '#A890F0',
+                    'Poison': '#A040A0', 'Ground': '#E0C068', 'Rock': '#B8A038',
+                    'Bug': '#A8B820', 'Ghost': '#705898', 'Steel': '#B8B8D0',
+                    'Fire': '#F08030', 'Water': '#6890F0', 'Grass': '#78C850',
+                    'Electric': '#F8D030', 'Psychic': '#F85888', 'Ice': '#98D8D8',
+                    'Dragon': '#7038F8', 'Dark': '#705848', 'Fairy': '#EE99AC'
+                };
+                return typeColors[type] || '#68A090';
+            }
+            
+            function getHPClass(monster) {
+                const hpPercent = (monster.currentHP / monster.maxHP) * 100;
+                if (hpPercent <= 25) return 'critical';
+                if (hpPercent <= 50) return 'low';
+                return '';
+            }
+            
+            // Add to body
+            document.body.appendChild(modal);
+            
+            // Auto-close after 8 seconds (increased from 5)
+            setTimeout(() => {
+                if (modal.parentElement) {
+                    modal.remove();
+                }
+            }, 8000);
+        };
+        
+        // Debug functions
+        window.debugMode = {
+            generateTestTeam: () => gameEngine.generateTestTeam(),
+            addRandomMonster: () => {
+                const monsters = gameEngine.getAllMonsters();
+                const randomMonster = monsters[Math.floor(Math.random() * monsters.length)];
+                console.log('Adding random monster:', randomMonster.name);
+                // This would typically add to Firebase, but for demo we'll add to local team
+                const testMonster = gameEngine.createBattleMonster(randomMonster, {
+                    level: Math.floor(Math.random() * 20) + 5,
+                    ivs: gameEngine.generateRandomIVs()
+                });
+                gameEngine.userTeam.push(testMonster);
+                console.log('Monster added to team');
+            },
+            showTeamInfo: () => {
+                console.log('Current team:', gameEngine.userTeam);
+                gameEngine.userTeam.forEach((monster, index) => {
+                    console.log(`${index + 1}. ${monster.name} (Lv.${monster.level}) - ${monster.currentHP}/${monster.maxHP} HP`);
+                });
+            },
+            simulateBattle: () => {
+                console.log('Simulating battle...');
+                gameEngine.quickBattle();
+            },
+            startShowcase: async () => {
+                const { startDemo } = await import('./js/demo-showcase.js');
+                return startDemo(gameEngine);
+            },
+            checkAuthState: () => {
+                console.log('🔐 Authentication State:');
+                console.log('- Current User:', gameEngine.currentUser);
+                console.log('- Firebase Auth Current User:', window.firebaseAuth?.currentUser);
+                console.log('- User Team Length:', gameEngine.userTeam.length);
+                console.log('- Game State:', gameEngine.gameState);
+                console.log('- UI Current Screen:', gameEngine.uiManager?.currentScreen);
+                if (gameEngine.currentUser) {
+                    console.log('- User UID:', gameEngine.currentUser.uid);
+                    console.log('- User Email:', gameEngine.currentUser.email);
+                    console.log('- User Display Name:', gameEngine.currentUser.displayName);
+                }
+            },
+            refreshUI: () => {
+                console.log('🔄 Refreshing UI...');
+                gameEngine.uiManager.refreshUserInfo();
+            },
+            checkMonsterData: () => {
+                console.log('📊 Monster Data State:');
+                console.log('- Loaded monsters:', gameEngine.monstersData.size);
+                console.log('- Available monsters:', Array.from(gameEngine.monstersData.keys()));
+                console.log('- User team:', gameEngine.userTeam);
+                if (gameEngine.userTeam.length > 0) {
+                    gameEngine.userTeam.forEach((monster, i) => {
+                        console.log(`  ${i+1}. ${monster.name} (Lv.${monster.level}) - ${monster.currentHP}/${monster.maxHP} HP`);
+                    });
+                }
+            },
+            reloadUserTeam: async () => {
+                console.log('🔄 Manually reloading user team...');
+                await gameEngine.loadUserTeam();
+                console.log('✅ Reload complete!');
+            },
+            // VFX Debug Functions
+            testVFX: () => {
+                console.log('🎨 Testing VFX System...');
+                const battleVFX = window.battleVFX || gameEngine.battleManager?.battleVFX;
+                if (!battleVFX) {
+                    console.error('❌ BattleVFX not found');
+                    return;
+                }
+                
+                console.log('- VFX Initialized:', battleVFX.initialized);
+                console.log('- Effect Container:', !!battleVFX.effectContainer);
+                console.log('- Active Effects:', battleVFX.activeEffects.size);
+                
+                // Test basic VFX
+                if (battleVFX.effectContainer) {
+                    console.log('✅ VFX system appears functional');
+                    debugMode.testVFXEffect();
+                } else {
+                    console.warn('⚠️ VFX container not found, initializing...');
+                    battleVFX.initialize();
+                }
+            },
+            testVFXEffect: () => {
+                console.log('🎆 Testing VFX effect...');
+                const battleScreen = document.querySelector('#main-content');
+                if (!battleScreen) {
+                    console.error('❌ No battle screen found');
+                    return;
+                }
+                
+                // Create test elements
+                const testUser = document.createElement('div');
+                testUser.style.cssText = 'position: absolute; top: 50%; left: 20%; width: 100px; height: 100px; background: blue; z-index: 999;';
+                const testTarget = document.createElement('div');
+                testTarget.style.cssText = 'position: absolute; top: 50%; right: 20%; width: 100px; height: 100px; background: red; z-index: 999;';
+                
+                battleScreen.appendChild(testUser);
+                battleScreen.appendChild(testTarget);
+                
+                // Import and test VFX
+                import('./Monsters/animations/battle-vfx.js').then(({ battleVFX }) => {
+                    console.log('🎨 Creating test VFX...');
+                    battleVFX.initialize();
+                    
+                    // Test different VFX types
+                    setTimeout(() => battleVFX.createProjectile('💥', '#FF0000', testUser.getBoundingClientRect(), testTarget.getBoundingClientRect()), 100);
+                    setTimeout(() => battleVFX.createProjectile('⚡', '#FFD700', testUser.getBoundingClientRect(), testTarget.getBoundingClientRect()), 500);
+                    setTimeout(() => battleVFX.createProjectile('💧', '#0099FF', testUser.getBoundingClientRect(), testTarget.getBoundingClientRect()), 900);
+                    
+                    // Clean up test elements after 4 seconds
+                    setTimeout(() => {
+                        testUser.remove();
+                        testTarget.remove();
+                        console.log('✅ VFX test complete');
+                    }, 4000);
+                }).catch(error => {
+                    console.error('❌ VFX test failed:', error);
+                    testUser.remove();
+                    testTarget.remove();
+                });
+            },
+            checkBattleState: () => {
+                console.log('⚔️ Battle State Debug:');
+                const battleManager = gameEngine.battleManager;
+                if (!battleManager) {
+                    console.log('❌ No battle manager');
+                    return;
+                }
+                
+                const battleState = battleManager.getBattleState();
+                console.log('- Turn:', battleState.turn);
+                console.log('- Phase:', battleState.phase);
+                console.log('- Player Monster:', battleState.activePlayer?.name);
+                console.log('- Opponent Monster:', battleState.activeOpponent?.name);
+                console.log('- Actions Locked:', battleManager.actionsLocked);
+                console.log('- Is Animating:', battleManager.isAnimating);
+                console.log('- Show VFX:', battleManager.showVFX);
+                console.log('- Message Queue Length:', battleManager.messageQueue.length);
+            },
+            forceTurnIncrement: () => {
+                console.log('🔄 Force incrementing turn...');
+                const battleManager = gameEngine.battleManager;
+                if (battleManager && battleManager.battleState) {
+                    battleManager.battleState.turn++;
+                    gameEngine.uiManager.updateTurnCounter(battleManager.battleState);
+                    console.log('✅ Turn incremented to:', battleManager.battleState.turn);
+                } else {
+                    console.log('❌ No battle in progress');
+                }
+            },
+            checkSpritePositions: () => {
+                console.log('🖼️ Checking sprite positions...');
+                const playerSprite = document.querySelector('.player-area .monster-sprite');
+                const opponentSprite = document.querySelector('.opponent-area .monster-sprite');
+                
+                if (playerSprite) {
+                    const rect = playerSprite.getBoundingClientRect();
+                    console.log('Player sprite:', {
+                        left: rect.left,
+                        top: rect.top,
+                        width: rect.width,
+                        height: rect.height,
+                        center: { x: rect.left + rect.width/2, y: rect.top + rect.height/2 }
+                    });
+                } else {
+                    console.log('❌ Player sprite not found');
+                }
+                
+                if (opponentSprite) {
+                    const rect = opponentSprite.getBoundingClientRect();
+                    console.log('Opponent sprite:', {
+                        left: rect.left,
+                        top: rect.top,
+                        width: rect.width,
+                        height: rect.height,
+                        center: { x: rect.left + rect.width/2, y: rect.top + rect.height/2 }
+                    });
+                } else {
+                    console.log('❌ Opponent sprite not found');
+                }
+            },
+            // Egg System Debug Functions
+            createTestEgg: async (type = 'WATER', rarity = null) => {
+                console.log(`🥚 Creating test ${type} egg...`);
+                try {
+                    const { eggSystem } = await import('./js/egg-system.js');
+                    if (!gameEngine.currentUser) {
+                        console.error('❌ No user logged in');
+                        return;
+                    }
+                    const egg = await eggSystem.createEgg(type, rarity, gameEngine.currentUser.uid);
+                    console.log('✅ Test egg created:', egg);
+                } catch (error) {
+                    console.error('❌ Error creating test egg:', error);
+                }
+            },
+            testKotalKahnReward: async () => {
+                console.log('🏆 Testing Kotal Kahn egg reward...');
+                try {
+                    const { trainerBattleHandler } = await import('./js/trainer-battle-handler.js');
+                    if (!gameEngine.currentUser) {
+                        console.error('❌ No user logged in');
+                        return;
+                    }
+                    const result = await trainerBattleHandler.handleTrainerDefeat('kotal_kahn', gameEngine.currentUser.uid);
+                    console.log('✅ Kotal Kahn reward result:', result);
+                } catch (error) {
+                    console.error('❌ Error testing Kotal Kahn reward:', error);
+                }
+            },
+            checkEggSystem: async () => {
+                console.log('🥚 Checking egg system status...');
+                try {
+                    const { eggSystem } = await import('./js/egg-system.js');
+                    console.log('- User ID:', eggSystem.userUID);
+                    console.log('- Active eggs:', eggSystem.userEggs.length);
+                    console.log('- Active timers:', eggSystem.hatchTimers.size);
+                    if (gameEngine.currentUser) {
+                        const canReceive = await eggSystem.canReceiveDailyEgg();
+                        console.log('- Can receive daily egg:', canReceive);
+                    }
+                } catch (error) {
+                    console.error('❌ Error checking egg system:', error);
+                }
+            },
+            openEggCollection: () => {
+                console.log('🥚 Opening egg collection...');
+                window.location.href = 'egg-collection.html';
+            },
+            createFastEgg: async (type = 'WATER') => {
+                console.log(`🥚 Creating fast-hatching ${type} egg...`);
+                try {
+                    const { eggSystem } = await import('./js/egg-system.js');
+                    if (!gameEngine.currentUser) {
+                        console.error('❌ No user logged in');
+                        return;
+                    }
+                    
+                    // Create egg with custom short hatch time
+                    const egg = await eggSystem.createEgg(type, 'COMMON', gameEngine.currentUser.uid);
+                    
+                    // Override hatch time to 10 seconds for testing
+                    egg.hatchTime = Date.now() + 10000; // 10 seconds
+                    
+                    // Update in Firebase
+                    const { ref, update } = await import('https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js');
+                    const eggRef = ref(window.firebaseDatabase, `users/${gameEngine.currentUser.uid}/eggs/${egg.id}`);
+                    await update(eggRef, { hatchTime: egg.hatchTime });
+                    
+                    console.log('✅ Fast egg created! Will hatch in 10 seconds:', egg);
+                    console.log('🥚 Go to Egg Collection to watch it hatch!');
+                } catch (error) {
+                    console.error('❌ Error creating fast egg:', error);
+                }
+            },
+            // Beginner Egg Debug Commands
+            checkBeginnerEggStatus: async () => {
+                console.log('🥚 Checking beginner egg status...');
+                try {
+                    const { eggSystem } = await import('./js/egg-system.js');
+                    if (!gameEngine.currentUser) {
+                        console.error('❌ No user logged in');
+                        return;
+                    }
+                    const hasReceived = await eggSystem.hasReceivedBeginnerEgg();
+                    console.log('- Has received beginner egg:', hasReceived);
+                } catch (error) {
+                    console.error('❌ Error checking beginner egg status:', error);
+                }
+            },
+            resetBeginnerEgg: async () => {
+                console.log('🔄 Resetting beginner egg status...');
+                try {
+                    if (!gameEngine.currentUser) {
+                        console.error('❌ No user logged in');
+                        return;
+                    }
+                    const { ref, set } = await import('https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js');
+                    const beginnerEggRef = ref(window.firebaseDatabase, `users/${gameEngine.currentUser.uid}/beginnerEgg`);
+                    await set(beginnerEggRef, false);
+                    console.log('✅ Beginner egg status reset! User can now receive beginner egg again.');
+                } catch (error) {
+                    console.error('❌ Error resetting beginner egg status:', error);
+                }
+            },
+            forceBeginnerEgg: async () => {
+                console.log('🎉 Forcing beginner egg award...');
+                try {
+                    const { eggSystem } = await import('./js/egg-system.js');
+                    if (!gameEngine.currentUser) {
+                        console.error('❌ No user logged in');
+                        return;
+                    }
+                    const result = await eggSystem.awardBeginnerEgg();
+                    if (result) {
+                        console.log('✅ Beginner egg awarded:', result);
+                    } else {
+                        console.log('❌ Could not award beginner egg (may have already been received)');
+                    }
+                } catch (error) {
+                    console.error('❌ Error forcing beginner egg:', error);
+                }
+            },
+            testTimeAccelerator: async () => {
+                console.log('⏰ Testing Time Accelerator...');
+                try {
+                    const { eggSystem } = await import('./js/egg-system.js');
+                    if (!gameEngine.currentUser) {
+                        console.error('❌ No user logged in');
+                        return;
+                    }
+                    
+                    // Create a test egg with 5 minutes remaining
+                    const testEgg = await eggSystem.createEgg('WATER', 'COMMON', gameEngine.currentUser.uid);
+                    testEgg.hatchTime = Date.now() + (5 * 60 * 1000); // 5 minutes
+                    
+                    // Update in Firebase
+                    const { ref, update } = await import('https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js');
+                    const eggRef = ref(window.firebaseDatabase, `users/${gameEngine.currentUser.uid}/eggs/${testEgg.id}`);
+                    await update(eggRef, { hatchTime: testEgg.hatchTime });
+                    
+                    console.log('✅ Test egg created with 5 minutes remaining');
+                    console.log('🚀 Now apply Time Accelerator to see it halve to 2.5 minutes!');
+                    console.log('📍 Go to Egg Collection to test the accelerator');
+                    
+                } catch (error) {
+                    console.error('❌ Error creating test egg:', error);
+                }
+            },
+            testInstantHatch: async () => {
+                console.log('🐣 Testing instant hatch...');
+                try {
+                    const { eggSystem } = await import('./js/egg-system.js');
+                    if (!gameEngine.currentUser) {
+                        console.error('❌ No user logged in');
+                        return;
+                    }
+                    
+                    // Create a test egg that's ready to hatch immediately
+                    const testEgg = await eggSystem.createEgg('FIRE', 'RARE', gameEngine.currentUser.uid);
+                    testEgg.hatchTime = Date.now() - 1000; // Already past hatch time
+                    
+                    // Update in Firebase
+                    const { ref, update } = await import('https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js');
+                    const eggRef = ref(window.firebaseDatabase, `users/${gameEngine.currentUser.uid}/eggs/${testEgg.id}`);
+                    await update(eggRef, { hatchTime: testEgg.hatchTime });
+                    
+                    // Trigger hatching manually
+                    await eggSystem.triggerEggHatch(testEgg);
+                    
+                    console.log('✅ Test egg hatched! Check your monster collection.');
+                    
+                } catch (error) {
+                    console.error('❌ Error testing instant hatch:', error);
+                }
+            },
+            // Monster Release Testing
+            testMonsterRelease: () => {
+                console.log('🕊️ Testing monster release functionality...');
+                console.log('📍 Go to Monster Tamers page and click on any monster to see the release button');
+                console.log('⚠️ WARNING: This will actually release monsters from your collection!');
+                window.location.href = 'monster-tamers.html';
+            },
+            openMonsterTamers: () => {
+                console.log('🏗️ Opening Monster Tamers...');
+                window.location.href = 'monster-tamers.html';
+            },
+            
+            // Battle Context Testing
+            testMapBattle: (trainerId = 'rookie_riley') => {
+                console.log(`🗺️ Testing MAP battle against ${trainerId}...`);
+                console.log('📊 This SHOULD update map progress');
+                gameEngine.startTrainerBattle(trainerId, 'map');
+            },
+            testFreeBattle: (trainerId = 'rookie_riley') => {
+                console.log(`🎲 Testing FREE battle against ${trainerId}...`);
+                console.log('📊 This should NOT update map progress');
+                gameEngine.startTrainerBattle(trainerId, 'free');
+            },
+            checkBattleContext: () => {
+                const battleState = gameEngine.battleManager?.getBattleState();
+                if (battleState) {
+                    console.log('⚔️ Current Battle Context:');
+                    console.log('- Battle Context:', battleState.battleContext);
+                    console.log('- Trainer:', battleState.trainer?.name || 'None');
+                    console.log('- Is Wild:', battleState.isWild);
+                } else {
+                    console.log('❌ No active battle');
+                }
+            }
+        };
+        
+        // Console welcome message
+        console.log(`
+        🎮 MONSTER FIGHTERS - Debug Console
+        
+        Available commands:
+        - gameEngine: Main game engine instance
+        - debugMode.generateTestTeam(): Generate a test team
+        - debugMode.addRandomMonster(): Add a random monster to your team
+        - debugMode.showTeamInfo(): Show current team information
+        - debugMode.simulateBattle(): Start a quick battle
+        - debugMode.startShowcase(): Run interactive feature showcase
+        - debugMode.checkAuthState(): Check authentication status
+        - debugMode.refreshUI(): Manually refresh the user interface
+        - debugMode.checkMonsterData(): Check monster data state
+        - debugMode.reloadUserTeam(): Reload user team from Firebase
+        
+        🥊 Trainer Battle Commands:
+        - gameEngine.showTrainerSelection(): Show trainer selection screen
+        - gameEngine.startTrainerBattle('younger_sammy'): Fight Younger Sammy
+        - window.showTrainerSelection(): Alternative trainer selection
+        
+        🎨 VFX Debug Commands:
+        - debugMode.testVFX(): Test VFX system status
+        - debugMode.testVFXEffect(): Create a test VFX effect
+        - debugMode.checkBattleState(): Show current battle state
+        - debugMode.forceTurnIncrement(): Force increment turn counter
+        - debugMode.checkSpritePositions(): Check sprite positioning
+        
+        ⚔️ Battle Commands:
+        - startQuickBattle(): Start a battle with current team
+        - setAIDifficulty('easy'|'normal'|'hard'): Change AI difficulty
+        - setAIPersonality('aggressive'|'defensive'|'balanced'|'smart'): Change AI personality
+        
+        🥚 Egg System Commands:
+        - debugMode.createTestEgg(): Create a test egg
+        - debugMode.createFastEgg(): Create a fast-hatching test egg (10 seconds)
+        - debugMode.testKotalKahnReward(): Test Kotal Kahn egg reward
+        - debugMode.checkEggSystem(): Check egg system status
+        - debugMode.openEggCollection(): Open egg collection page
+        
+        🎉 Beginner Egg Commands:
+        - debugMode.checkBeginnerEggStatus(): Check if user has received beginner egg
+        - debugMode.resetBeginnerEgg(): Reset beginner egg status (allows re-receiving)
+        - debugMode.forceBeginnerEgg(): Force award beginner egg to current user
+        
+        ⏰ Time Accelerator Testing:
+        - debugMode.testTimeAccelerator(): Create test egg with 5min remaining to test accelerator
+        - debugMode.testInstantHatch(): Create and instantly hatch a test egg to verify database saving
+        
+        🕊️ Monster Release Commands:
+        - debugMode.testMonsterRelease(): Open Monster Tamers to test release functionality
+        - debugMode.openMonsterTamers(): Open Monster Tamers page directly
+        
+        🎯 Battle Context Testing:
+        - debugMode.testMapBattle('trainer_id'): Test map battle (SHOULD update progress)
+        - debugMode.testFreeBattle('trainer_id'): Test free battle (should NOT update progress)
+        - debugMode.checkBattleContext(): Check current battle context
+        
+        Have fun battling! ⚔️
+        `);
+
+        // Initialize Egg System and Trainer Battle Handler
+        (async () => {
+            try {
+                // Import and initialize Egg System
+                const { eggSystem } = await import('./js/egg-system.js');
+                window.EggSystem = eggSystem;
+                console.log('✅ Egg System loaded');
+                
+                // Import Trainer Battle Handler
+                const { trainerBattleHandler } = await import('./js/trainer-battle-handler.js');
+                window.TrainerBattleHandler = trainerBattleHandler;
+                console.log('✅ Trainer Battle Handler loaded');
+                
+                // Initialize egg system when user is available
+                const initEggSystem = async () => {
+                    if (gameEngine && gameEngine.currentUser) {
+                        eggSystem.setUserID(gameEngine.currentUser.uid);
+                        console.log('🥚 Egg System initialized for user:', gameEngine.currentUser.uid);
+                        
+                        // Check for beginner egg after a short delay to ensure everything is loaded
+                        setTimeout(async () => {
+                            try {
+                                const hasBeginnerEgg = await eggSystem.hasReceivedBeginnerEgg();
+                                if (!hasBeginnerEgg) {
+                                    console.log('🎉 New user detected! Awarding beginner egg...');
+                                    await eggSystem.awardBeginnerEgg();
+                                } else {
+                                    console.log('🥚 User has already received their beginner egg');
+                                }
+                            } catch (error) {
+                                console.error('❌ Error checking/awarding beginner egg:', error);
+                            }
+                        }, 2000); // 2 second delay to ensure UI is ready
+                    } else {
+                        // Retry in 1 second if user not ready
+                        setTimeout(initEggSystem, 1000);
+                    }
+                };
+                
+                // Start initialization check
+                initEggSystem();
+                
+            } catch (error) {
+                console.error('❌ Failed to load Egg System components:', error);
+            }
+        })();
+        
+    </script>
+</body>
+</html> 

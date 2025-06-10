@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProjectFighters Map Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .editor-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .toolbar {
+            width: 250px;
+            background: #2d2d2d;
+            border-right: 2px solid #444;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .toolbar-section {
+            margin-bottom: 20px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .toolbar-section h3 {
+            color: #ff69b4;
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+        }
+
+        .tool-btn {
+            background: #3a3a3a;
+            border: 2px solid #555;
+            color: #fff;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 10px;
+            text-align: center;
+            transition: all 0.2s;
+            min-height: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tool-btn:hover {
+            background: #4a4a4a;
+            border-color: #ff69b4;
+        }
+
+        .tool-btn.active {
+            background: #ff69b4;
+            border-color: #ff1493;
+            color: #000;
+        }
+
+        .tool-btn .icon {
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            background: #0a0a0a;
+            overflow: hidden;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        #mapCanvas {
+            background: #000;
+            cursor: crosshair;
+            image-rendering: pixelated;
+        }
+
+        .properties-panel {
+            width: 300px;
+            background: #2d2d2d;
+            border-left: 2px solid #444;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .property-group {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #3a3a3a;
+            border-radius: 6px;
+        }
+
+        .property-group h4 {
+            color: #ff69b4;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .property-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .property-row label {
+            flex: 1;
+            font-size: 11px;
+            color: #ccc;
+        }
+
+        .property-row input, .property-row select {
+            flex: 1.5;
+            background: #1a1a1a;
+            border: 1px solid #555;
+            color: #fff;
+            padding: 4px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .control-bar {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            background: #ff69b4;
+            border: none;
+            color: #000;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+
+        .control-btn:hover {
+            background: #ff1493;
+        }
+
+        .control-btn.secondary {
+            background: #555;
+            color: #fff;
+        }
+
+        .control-btn.secondary:hover {
+            background: #666;
+        }
+
+        .zoom-info {
+            color: #ccc;
+            font-size: 12px;
+            margin-left: auto;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .context-menu {
+            position: absolute;
+            background: #2d2d2d;
+            border: 1px solid #555;
+            border-radius: 4px;
+            padding: 5px 0;
+            z-index: 2000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+
+        .context-menu-item {
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+
+        .context-menu-item:hover {
+            background: #3a3a3a;
+        }
+
+        .layer-panel {
+            background: #3a3a3a;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .layer-item {
+            display: flex;
+            align-items: center;
+            padding: 5px;
+            margin-bottom: 3px;
+            background: #2d2d2d;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .layer-item.active {
+            background: #ff69b4;
+            color: #000;
+        }
+
+        .layer-visibility {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .minimap {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 200px;
+            height: 120px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #555;
+            border-radius: 4px;
+            z-index: 1000;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 25px;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 11px;
+            color: #ccc;
+            z-index: 1000;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            pointer-events: none;
+            z-index: 3000;
+            display: none;
+        }
+
+        /* Element type colors */
+        .element-wall { border-left: 4px solid #8b4513; }
+        .element-platform { border-left: 4px solid #228b22; }
+        .element-ramp { border-left: 4px solid #ffa500; }
+        .element-enemy { border-left: 4px solid #ff4500; }
+        .element-spawn { border-left: 4px solid #00ff00; }
+        .element-interactable { border-left: 4px solid #ff69b4; }
+    </style>
+</head>
+<body>
+    <div class="editor-container">
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="toolbar-section">
+                <h3>🎮 Basic Tools</h3>
+                <div class="tool-grid">
+                    <div class="tool-btn active" data-tool="select" title="Select and move elements">
+                        <div class="icon">🎯</div>
+                        <div>Select</div>
+                    </div>
+                    <div class="tool-btn" data-tool="pan" title="Pan around the map">
+                        <div class="icon">✋</div>
+                        <div>Pan</div>
+                    </div>
+                    <div class="tool-btn" data-tool="delete" title="Delete elements">
+                        <div class="icon">🗑️</div>
+                        <div>Delete</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toolbar-section">
+                <h3>🧱 Boundaries</h3>
+                <div class="tool-grid">
+                    <div class="tool-btn" data-tool="wall" data-element-type="wall" title="Solid walls">
+                        <div class="icon">🧱</div>
+                        <div>Wall</div>
+                    </div>
+                    <div class="tool-btn" data-tool="platform" data-element-type="platform" title="Jumpable platforms">
+                        <div class="icon">📋</div>
+                        <div>Platform</div>
+                    </div>
+                    <div class="tool-btn" data-tool="ground" data-element-type="ground" title="Ground surface">
+                        <div class="icon">🌍</div>
+                        <div>Ground</div>
+                    </div>
+                    <div class="tool-btn" data-tool="ramp_up" data-element-type="ramp_up" title="Upward ramp">
+                        <div class="icon">📈</div>
+                        <div>Ramp Up</div>
+                    </div>
+                    <div class="tool-btn" data-tool="ramp_down" data-element-type="ramp_down" title="Downward ramp">
+                        <div class="icon">📉</div>
+                        <div>Ramp Down</div>
+                    </div>
+                    <div class="tool-btn" data-tool="ceiling" data-element-type="ceiling" title="Ceiling barrier">
+                        <div class="icon">🔝</div>
+                        <div>Ceiling</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toolbar-section">
+                <h3>🏔️ Special Terrain</h3>
+                <div class="tool-grid">
+                    <div class="tool-btn" data-tool="ice_platform" data-element-type="ice_platform" title="Slippery ice platform">
+                        <div class="icon">🧊</div>
+                        <div>Ice</div>
+                    </div>
+                    <div class="tool-btn" data-tool="lava_platform" data-element-type="lava_platform" title="Hot lava platform">
+                        <div class="icon">🌋</div>
+                        <div>Lava</div>
+                    </div>
+                    <div class="tool-btn" data-tool="weak_platform" data-element-type="weak_platform" title="Breakable platform">
+                        <div class="icon">💥</div>
+                        <div>Weak</div>
+                    </div>
+                    <div class="tool-btn" data-tool="crystal" data-element-type="crystal" title="Crystal formation">
+                        <div class="icon">💎</div>
+                        <div>Crystal</div>
+                    </div>
+                    <div class="tool-btn" data-tool="stalactite" data-element-type="stalactite" title="Hanging stalactite">
+                        <div class="icon">🪨</div>
+                        <div>Stalactite</div>
+                    </div>
+                    <div class="tool-btn" data-tool="pillar" data-element-type="pillar" title="Stone pillar">
+                        <div class="icon">🏛️</div>
+                        <div>Pillar</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toolbar-section">
+                <h3>👾 Characters</h3>
+                <div class="tool-grid">
+                    <div class="tool-btn" data-tool="spawn" data-element-type="spawn" title="Player spawn point">
+                        <div class="icon">🏁</div>
+                        <div>Spawn</div>
+                    </div>
+                    <div class="tool-btn" data-tool="enemy" data-element-type="enemy" title="Enemy placement">
+                        <div class="icon">👹</div>
+                        <div>Enemy</div>
+                    </div>
+                    <div class="tool-btn" data-tool="boss" data-element-type="boss" title="Boss enemy">
+                        <div class="icon">👺</div>
+                        <div>Boss</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toolbar-section">
+                <h3>🎁 Interactables</h3>
+                <div class="tool-grid">
+                    <div class="tool-btn" data-tool="checkpoint" data-element-type="checkpoint" title="Save checkpoint">
+                        <div class="icon">🚩</div>
+                        <div>Checkpoint</div>
+                    </div>
+                    <div class="tool-btn" data-tool="health_potion" data-element-type="health_potion" title="Health restoration">
+                        <div class="icon">🧪</div>
+                        <div>Health</div>
+                    </div>
+                    <div class="tool-btn" data-tool="switch" data-element-type="switch" title="Activatable switch">
+                        <div class="icon">🔘</div>
+                        <div>Switch</div>
+                    </div>
+                    <div class="tool-btn" data-tool="door" data-element-type="door" title="Door or gate">
+                        <div class="icon">🚪</div>
+                        <div>Door</div>
+                    </div>
+                    <div class="tool-btn" data-tool="treasure" data-element-type="treasure" title="Treasure chest">
+                        <div class="icon">📦</div>
+                        <div>Treasure</div>
+                    </div>
+                    <div class="tool-btn" data-tool="portal" data-element-type="portal" title="Teleportation portal">
+                        <div class="icon">🌀</div>
+                        <div>Portal</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toolbar-section">
+                <h3>⚡ Hazards</h3>
+                <div class="tool-grid">
+                    <div class="tool-btn" data-tool="hazard" data-element-type="hazard" title="Damage area">
+                        <div class="icon">⚠️</div>
+                        <div>Hazard</div>
+                    </div>
+                    <div class="tool-btn" data-tool="spikes" data-element-type="spikes" title="Deadly spikes">
+                        <div class="icon">⚡</div>
+                        <div>Spikes</div>
+                    </div>
+                    <div class="tool-btn" data-tool="pit" data-element-type="pit" title="Bottomless pit">
+                        <div class="icon">🕳️</div>
+                        <div>Pit</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Canvas Area -->
+        <div class="canvas-container">
+            <div class="control-bar">
+                <button class="control-btn" onclick="newMap()">🆕 New</button>
+                <button class="control-btn" onclick="saveMap()">💾 Save</button>
+                <button class="control-btn" onclick="document.getElementById('loadInput').click()">📁 Load</button>
+                <button class="control-btn" onclick="exportToJS()">📋 Export JS</button>
+                <button class="control-btn secondary" onclick="toggleGrid()">📐 Grid</button>
+                <button class="control-btn secondary" onclick="toggleSnap()">🧲 Snap</button>
+                <button class="control-btn secondary" onclick="toggleCharacter()">👤 Character</button>
+                <button class="control-btn secondary" onclick="testMap()">▶️ Test</button>
+                <span class="zoom-info">Zoom: <span id="zoomLevel">100%</span> | <span id="coords">0, 0</span></span>
+            </div>
+
+            <div class="canvas-wrapper">
+                <canvas id="mapCanvas"></canvas>
+            </div>
+
+            <div class="minimap">
+                <canvas id="minimapCanvas"></canvas>
+            </div>
+
+            <div class="status-bar">
+                <span id="statusText">Ready - Select a tool and start creating!</span>
+                <span style="margin-left: auto;">Elements: <span id="elementCount">0</span></span>
+            </div>
+        </div>
+
+        <!-- Properties Panel -->
+        <div class="properties-panel">
+            <div class="layer-panel">
+                <h4 style="color: #ff69b4; margin-bottom: 10px;">🎭 Layers</h4>
+                <div class="layer-item active" data-layer="boundaries">
+                    <span class="layer-visibility">👁️</span>
+                    <span>Boundaries</span>
+                </div>
+                <div class="layer-item" data-layer="characters">
+                    <span class="layer-visibility">👁️</span>
+                    <span>Characters</span>
+                </div>
+                <div class="layer-item" data-layer="interactables">
+                    <span class="layer-visibility">👁️</span>
+                    <span>Interactables</span>
+                </div>
+                <div class="layer-item" data-layer="hazards">
+                    <span class="layer-visibility">👁️</span>
+                    <span>Hazards</span>
+                </div>
+            </div>
+
+            <div class="property-group">
+                <h4>🗺️ Map Settings</h4>
+                <div class="property-row">
+                    <label>Name:</label>
+                    <input type="text" id="mapName" value="New Map" />
+                </div>
+                <div class="property-row">
+                    <label>Width:</label>
+                    <input type="number" id="mapWidth" value="19200" />
+                </div>
+                <div class="property-row">
+                    <label>Height:</label>
+                    <input type="number" id="mapHeight" value="1080" />
+                </div>
+                <div class="property-row">
+                    <label>Background:</label>
+                    <input type="text" id="mapBackground" value="UI/map.webp" />
+                </div>
+            </div>
+
+            <div class="property-group" id="elementProperties" style="display: none;">
+                <h4>📝 Element Properties</h4>
+                <div class="property-row">
+                    <label>Type:</label>
+                    <input type="text" id="elementType" readonly />
+                </div>
+                <div class="property-row">
+                    <label>X:</label>
+                    <input type="number" id="elementX" />
+                </div>
+                <div class="property-row">
+                    <label>Y:</label>
+                    <input type="number" id="elementY" />
+                </div>
+                <div class="property-row">
+                    <label>Width:</label>
+                    <input type="number" id="elementWidth" />
+                </div>
+                <div class="property-row">
+                    <label>Height:</label>
+                    <input type="number" id="elementHeight" />
+                </div>
+                <div class="property-row" id="enemyProperties" style="display: none;">
+                    <label>Enemy Type:</label>
+                    <select id="enemyType">
+                        <option value="basic">Basic</option>
+                        <option value="fast">Fast</option>
+                        <option value="strong">Strong</option>
+                        <option value="ranged">Ranged</option>
+                        <option value="boss">Boss</option>
+                    </select>
+                </div>
+                <div class="property-row" id="interactableAction" style="display: none;">
+                    <label>Action:</label>
+                    <input type="text" id="actionType" placeholder="heal, save, activate" />
+                </div>
+                <button class="control-btn" onclick="updateSelectedElement()" style="width: 100%; margin-top: 10px;">✅ Apply Changes</button>
+                <button class="control-btn secondary" onclick="deleteSelectedElement()" style="width: 100%; margin-top: 5px;">🗑️ Delete Element</button>
+            </div>
+
+            <div class="property-group">
+                <h4>👤 Character Sprite</h4>
+                <button class="control-btn" onclick="document.getElementById('spriteInput').click()" style="width: 100%; margin-bottom: 5px;">📁 Load Sprite</button>
+                <button class="control-btn secondary" onclick="reloadCharacterSprite()" style="width: 100%; margin-bottom: 5px;">🔄 Reload Default</button>
+                <div class="property-row">
+                    <label>Frames:</label>
+                    <input type="number" id="spriteFrames" value="9" min="1" max="20" title="Total frames in 3x3 grid" />
+                </div>
+                <div class="property-row">
+                    <label>Layout:</label>
+                    <input type="text" value="3x3 Grid" readonly style="background: #222; color: #888;" />
+                </div>
+            </div>
+
+            <div class="property-group">
+                <h4>🎮 Quick Actions</h4>
+                <button class="control-btn" onclick="centerView()" style="width: 100%; margin-bottom: 5px;">🎯 Center View</button>
+                <button class="control-btn" onclick="fitToView()" style="width: 100%; margin-bottom: 5px;">🔍 Fit All</button>
+                <button class="control-btn secondary" onclick="clearAll()" style="width: 100%; margin-bottom: 5px;">🧹 Clear All</button>
+                <button class="control-btn secondary" onclick="showHelp()" style="width: 100%;">❓ Help</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file inputs -->
+    <input type="file" id="loadInput" class="file-input" accept=".json" onchange="loadMap(event)" />
+    <input type="file" id="spriteInput" class="file-input" accept=".png,.jpg,.jpeg,.gif,.webp" onchange="loadCustomSprite(event)" />
+
+    <!-- Context menu -->
+    <div class="context-menu" id="contextMenu">
+        <div class="context-menu-item" onclick="copyElement()">📋 Copy</div>
+        <div class="context-menu-item" onclick="duplicateElement()">📑 Duplicate</div>
+        <div class="context-menu-item" onclick="deleteElement()">🗑️ Delete</div>
+        <div class="context-menu-item" onclick="bringToFront()">⬆️ Bring to Front</div>
+        <div class="context-menu-item" onclick="sendToBack()">⬇️ Send to Back</div>
+    </div>
+
+    <!-- Tooltip -->
+    <div class="tooltip" id="tooltip"></div>
+
+    <script src="js/map-integration.js"></script>
+    <script src="js/map-editor.js"></script>
+</body>
+</html> 

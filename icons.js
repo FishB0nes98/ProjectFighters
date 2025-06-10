@@ -12,6 +12,7 @@ export const profileIcons = {
     ],
     // Special icons
     special: [
+        'rebellious_kabal', 'rebellious_anna', 'rebellious_christie', 'rebellious_ibuki',
         'trainer_kokoro', 'trainer_fang', 'trainer_ayane', 'trainer_kotal', 'trainer_eagle',
         'talim_desert', 'astaroth_desert', 'jun_desert', 'blanka_desert', 'scorpion_desert', 'shoma_desert',
         'ayane_bunny', 'peacock_bunny', 'shinnok_bunny_rage', 'shinnok_bunny',
@@ -22,8 +23,8 @@ export const profileIcons = {
         'Jade_Panda', 'Jade_Yugo', 'Jade_Claws', 'Arcade_Raiden', 'Arcade_Sub_Zero',
         'Ayane_Blade', 'Bistro_Kuma', 'Bistro_Shizumaru', 'Captain_Akuma', 'Elphelt_Heart',
         'Forest_Goddess_Angel', 'Goth_Shield', 'Infernal_Birdie', 'Infernal_Ibuki', 'Infernal_Raiden',
-        'Kokoro_Butterfly', 'Morrigan_Darkness', 'Neoncore_ErronBlack', 'Neoncore_SubZero',
-        'Pajama_ChamCham', 'Pajama_Shoma', 'Pirate_Shoma', 'Primal_kid_Shoma', 'Primal_Scorpion',
+        'Kokoro_Butterfly', 'Neoncore_ErronBlack', 'Neoncore_SubZero',
+        'Pajama_ChamCham', 'Pajama_Shoma', 'Primal_kid_Shoma', 'Primal_Scorpion',
         'Rainy_Day_Shinnok', 'Regal_Ayane_Emerald', 'Regal_Julia', 'Root', 'Schoolgirl_Julia',
         'Summertime_Nina', 'Summertime_Shoma', 'Void_Akuma', 'Void_Blanka', 'Panda',
         'battleborn_scythe', 'battleborn_yugo', 'battleborn_ayane',

@@ -308,13 +308,13 @@
             <img id="basicbox" src="res/img/basicbox.png" alt="Basic Lootbox" class="lootbox-image" onclick="selectBox('basicbox')">
         </div>
         <div class="lootbox-container">
-            <img id="blossombox" src="res/img/blossombox.png" alt="Blossom Lootbox" class="lootbox-image unavailable">
+            <img id="blossombox" src="res/img/blossombox.png" alt="Blossom Lootbox" class="lootbox-image" onclick="selectBox('blossombox')">
         </div>
         <div class="lootbox-container">
-            <img id="pajamapartybox" src="res/img/pajamapartybox.png" alt="Pajama Party Lootbox" class="lootbox-image unavailable">
+            <img id="pajamapartybox" src="res/img/pajamapartybox.png" alt="Pajama Party Lootbox" class="lootbox-image" onclick="selectBox('pajamapartybox')">
         </div>
         <div class="lootbox-container">
-            <img id="halloweenbox" src="res/img/halloweenbox.png" alt="Halloween Lootbox" class="lootbox-image unavailable">
+            <img id="halloweenbox" src="res/img/halloweenbox.png" alt="Halloween Lootbox" class="lootbox-image" onclick="selectBox('halloweenbox')">
         </div>
     </div>
 
@@ -363,8 +363,6 @@ window.onload = function() {
                 userHalloweenBox = (userData.freelootbox && userData.freelootbox.halloweenbox) || 0;
                 document.getElementById('fm-amount').textContent = userFM;
                 document.getElementById('cm-amount').textContent = userCM;
-                document.getElementById('free-lootbox-count').textContent = userBasicbox;
-                document.getElementById('free-halloweenbox-count').textContent = userHalloweenBox;
                 userSkins = userData.skins || {};
                 updateLootboxButton();
             }
@@ -386,9 +384,6 @@ window.onload = function() {
         let userRef = null;
 
         window.selectBox = function selectBox(boxType) {
-            // Prevent selection of 'pajamapartybox' and 'halloweenbox'
-            if (boxType === 'pajamapartybox' || boxType === 'halloweenbox' || boxType === 'blossombox') return;
-
             selectedBox = boxType;
             document.querySelectorAll('.lootbox-image').forEach(img => {
                 img.classList.remove('selected');
@@ -400,33 +395,71 @@ window.onload = function() {
         function updateLootboxButton() {
             const openButton = document.getElementById('open-button');
             const freeLootboxCountContainer = document.getElementById('free-lootbox-count-container');
-            const freeHalloweenBoxCountContainer = document.getElementById('free-halloweenbox-count-container');
 
             if (selectedBox === 'basicbox') {
                 if (userBasicbox > 0) {
                     openButton.textContent = 'Open Basic Lootbox for FREE';
-                    freeLootboxCountContainer.style.display = 'block';
+                    openButton.disabled = false;
+                    freeLootboxCountContainer.style.display = 'flex';
                     document.getElementById('free-lootbox-count').textContent = userBasicbox;
-                } else {
+                } else if (userFM >= 1000) {
                     openButton.textContent = 'Open Basic Lootbox for 1000 FM';
+                    openButton.disabled = false;
+                    freeLootboxCountContainer.style.display = 'none';
+                } else {
+                    openButton.textContent = 'Insufficient FM (Need 1000 FM)';
+                    openButton.disabled = true;
                     freeLootboxCountContainer.style.display = 'none';
                 }
             } else if (selectedBox === 'blossombox') {
                 if (userBlossombox > 0) {
                     openButton.textContent = 'Open Blossom Box for FREE';
-                    freeLootboxCountContainer.style.display = 'block';
+                    openButton.disabled = false;
+                    freeLootboxCountContainer.style.display = 'flex';
                     document.getElementById('free-lootbox-count').textContent = userBlossombox;
-                } else {
+                } else if (userFM >= 1000) {
                     openButton.textContent = 'Open Blossom Box for 1000 FM';
+                    openButton.disabled = false;
+                    freeLootboxCountContainer.style.display = 'none';
+                } else {
+                    openButton.textContent = 'Insufficient FM (Need 1000 FM)';
+                    openButton.disabled = true;
+                    freeLootboxCountContainer.style.display = 'none';
+                }
+            } else if (selectedBox === 'pajamapartybox') {
+                if (userPajamaPartyBox > 0) {
+                    openButton.textContent = 'Open Pajama Party Box for FREE';
+                    openButton.disabled = false;
+                    freeLootboxCountContainer.style.display = 'flex';
+                    document.getElementById('free-lootbox-count').textContent = userPajamaPartyBox;
+                } else if (userFM >= 1000) {
+                    openButton.textContent = 'Open Pajama Party Box for 1000 FM';
+                    openButton.disabled = false;
+                    freeLootboxCountContainer.style.display = 'none';
+                } else {
+                    openButton.textContent = 'Insufficient FM (Need 1000 FM)';
+                    openButton.disabled = true;
                     freeLootboxCountContainer.style.display = 'none';
                 }
             } else if (selectedBox === 'halloweenbox') {
-                openButton.textContent = 'Unavailable';
-                freeHalloweenBoxCountContainer.style.display = 'none';
+                if (userHalloweenBox > 0) {
+                    openButton.textContent = 'Open Halloween Box for FREE';
+                    openButton.disabled = false;
+                    freeLootboxCountContainer.style.display = 'flex';
+                    document.getElementById('free-lootbox-count').textContent = userHalloweenBox;
+                } else if (userFM >= 1000) {
+                    openButton.textContent = 'Open Halloween Box for 1000 FM';
+                    openButton.disabled = false;
+                    freeLootboxCountContainer.style.display = 'none';
+                } else {
+                    openButton.textContent = 'Insufficient FM (Need 1000 FM)';
+                    openButton.disabled = true;
+                    freeLootboxCountContainer.style.display = 'none';
+                }
             } else {
-                openButton.textContent = 'Unavailable';
+                openButton.textContent = 'Select a Lootbox';
+                openButton.disabled = true;
                 freeLootboxCountContainer.style.display = 'none';
-                freeHalloweenBoxCountContainer.style.display = 'none';
             }
         }
 
@@ -438,6 +471,8 @@ window.onload = function() {
                 userLootboxCount = userBasicbox;
             } else if (lootboxType === 'blossombox') {
                 userLootboxCount = userBlossombox;
+            } else if (lootboxType === 'pajamapartybox') {
+                userLootboxCount = userPajamaPartyBox;
             } else if (lootboxType === 'halloweenbox') {
                 userLootboxCount = userHalloweenBox;
             } else {
@@ -450,14 +485,14 @@ window.onload = function() {
                 await update(userRef, { [`freelootbox/${lootboxType}`]: userLootboxCount });
                 if (lootboxType === 'basicbox') {
                     userBasicbox = userLootboxCount;
-                    document.getElementById('free-lootbox-count').textContent = userBasicbox;
                 } else if (lootboxType === 'blossombox') {
                     userBlossombox = userLootboxCount;
-                    document.getElementById('free-lootbox-count').textContent = userBlossombox;
+                } else if (lootboxType === 'pajamapartybox') {
+                    userPajamaPartyBox = userLootboxCount;
                 } else if (lootboxType === 'halloweenbox') {
                     userHalloweenBox = userLootboxCount;
-                    document.getElementById('free-halloweenbox-count').textContent = userHalloweenBox;
                 }
+                updateLootboxButton(); // Update button after free lootbox count changes
             } else {
                 if (userFM < 1000) {
                     alert("You don't have enough FM to open this lootbox.");
@@ -467,6 +502,7 @@ window.onload = function() {
                 userFM -= 1000;
                 await update(userRef, { FM: userFM });
                 document.getElementById('fm-amount').textContent = userFM;
+                updateLootboxButton(); // Update button after FM changes
             }
 
             // Proceed to open the lootbox

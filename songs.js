@@ -3,6 +3,30 @@
 
 const songs = [
     {
+        id: "razor_kisses",
+        title: "Razor Kisses",
+        artist: "Rebellious",
+        path: "Songs/Razor Kisses (Rebellious Ayane Theme).mp3",
+        description: "Rebellious Ayane's Theme",
+        cover: "Loading Screen/Rebellious Ayane.png"
+    },
+    {
+        id: "love_and_fire",
+        title: "Love and Fire",
+        artist: "Rebellious",
+        path: "Songs/Love and Fire (Rebellious Anna Theme).mp3",
+        description: "Rebellious Anna's Theme",
+        cover: "Loading Screen/Rebellious Anna.png"
+    },
+    {
+        id: "neon_chains",
+        title: "Neon Chains",
+        artist: "Rebellious",
+        path: "Songs/Neon Chains (Rebellious Kabal Theme).mp3",
+        description: "Rebellious Kabal's Theme",
+        cover: "Loading Screen/Rebellious Kabal.png"
+    },
+    {
         id: "unstoppable_ice",
         title: "Unstoppable Ice",
         artist: "Monster Trainer",

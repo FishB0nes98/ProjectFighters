@@ -568,6 +568,17 @@
             const container = document.querySelector('.talents-grid');
             container.innerHTML = '';
 
+            // Check if talents exist
+            if (!talents) {
+                container.innerHTML = `
+                    <div class="no-talents-message">
+                        <h3>Talents Coming Soon</h3>
+                        <p>This character's talents are still being designed.</p>
+                    </div>
+                `;
+                return;
+            }
+
             Object.entries(talents).forEach(([level, tierTalents]) => {
                 const tier = document.createElement('div');
                 tier.className = 'talent-tier';

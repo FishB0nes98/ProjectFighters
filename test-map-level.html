@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Map Level - 16:9 Forest Arena</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 1280px;  /* 16:9 aspect ratio */
+            height: 720px;  /* 16:9 aspect ratio */
+            background: linear-gradient(45deg, #0f3460, #16537e);
+            border: 3px solid #e94560;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(233, 69, 96, 0.3);
+        }
+
+        #gameCanvas {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            background: #2c5f2d;
+        }
+
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 250px;
+        }
+
+        #status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            min-width: 200px;
+        }
+
+        #levelInfo {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.4;
+            max-width: 300px;
+        }
+
+        .key {
+            background: #e94560;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin: 0 2px;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 18px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .stage-loaded {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .stage-error {
+            color: #f44336;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="1280" height="720"></canvas>
+        
+        <div id="controls">
+            <div><strong>Movement:</strong></div>
+            <div><span class="key">A</span><span class="key">D</span> - Move Left/Right</div>
+            <div><span class="key">SPACE</span> - Jump</div>
+            <div><span class="key">C</span> - Crouch</div>
+            <div><span class="key">SHIFT</span> - Run</div>
+            <div><span class="key">LEFT CLICK</span> - Attack</div>
+            <div><strong>Abilities:</strong></div>
+            <div><span class="key">Q</span> - Teleport Dagger</div>
+            <div><span class="key">E</span> - Butterfly Trail</div>
+            <div><strong>Debug:</strong></div>
+            <div><span class="key">F1</span> - Toggle Debug</div>
+            <div><span class="key">R</span> - Reload Level</div>
+            <div><span class="key">ESC</span> - Clear Stuck Keys</div>
+            <div><strong>Cheats:</strong></div>
+            <div><span class="key">NUM1</span> - Freeze Enemies</div>
+        </div>
+        
+        <div id="status">
+            <div><strong>Game Status:</strong></div>
+            <div>State: <span id="currentState">idle</span></div>
+            <div>Position: <span id="position">0, 0</span></div>
+            <div>Frame: <span id="currentFrame">0</span></div>
+            <div>Attacking: <span id="attackState">No</span></div>
+            <div>FPS: <span id="fps">0</span></div>
+            <div>Stage: <span id="currentStage">Loading...</span></div>
+        </div>
+
+        <div id="levelInfo">
+            <div><strong>Level: Test Map - Forest Arena (Extended)</strong></div>
+            <div>Size: 19200x1080 (10x wider with repeated backgrounds)</div>
+            <div>Spawn Points: 10 (distributed across map)</div>
+            <div>Background: map.webp (repeated 10 times)</div>
+            <div>Camera follows player with smooth tracking</div>
+        </div>
+
+        <div id="loadingIndicator" class="loading" style="display: none;">
+            Loading level assets...
+        </div>
+    </div>
+
+    <!-- Load game engine scripts -->
+    <script src="js/character.js"></script>
+    <script src="js/enemy.js"></script>
+    <script src="js/game-manager.js"></script>
+    <script src="js/stage-manager.js"></script>
+    <script src="js/map-integration.js"></script>
+    <script src="js/levels/test-map-level.js"></script>
+
+    <script>
+        class TestMapGame {
+            constructor() {
+                this.gameManager = null;
+                this.stageManager = null;
+                this.character = null;
+                this.isInitialized = false;
+                this.currentMapId = null;
+                
+                this.init();
+            }
+            
+            async init() {
+                try {
+                    console.log('Initializing Test Map Game...');
+                    
+                    // Show loading indicator
+                    this.showLoading(true);
+                    
+                    // Check for custom map parameter
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const testMapId = urlParams.get('testMap');
+                    
+                    // Initialize game manager
+                    this.gameManager = new GameManager('gameCanvas', {
+                        showDebug: false,
+                        backgroundColor: '#2c5f2d',
+                        constrainToBounds: true  // Enable bounds checking for the larger map
+                    });
+                    
+                    // Initialize stage manager
+                    this.stageManager = new StageManager();
+                    this.gameManager.setStageManager(this.stageManager);
+                    
+                    let levelToLoad = 'test-map-01';
+                    let levelData = null;
+                    
+                    if (testMapId && window.mapLoader) {
+                        // Try to load custom map
+                        const customMapData = window.mapLoader.getMap(testMapId);
+                        if (customMapData) {
+                            console.log('Loading custom map:', customMapData.name);
+                            levelData = window.mapLoader.convertToGameLevel(customMapData);
+                            levelToLoad = testMapId;
+                            this.currentMapId = testMapId;
+                            
+                            // Register the custom level
+                            this.stageManager.registerStage(testMapId, levelData);
+                            
+                            // Update level info display
+                            this.updateLevelInfo(customMapData);
+                        } else {
+                            console.warn('Custom map not found, falling back to default test map');
+                        }
+                    }
+                    
+                    if (!levelData) {
+                        // Register the default test map level
+                        this.stageManager.registerStage('test-map-01', testMapLevel);
+                    }
+                    
+                    // Create player character
+                    this.character = new Character({
+                        x: 300,
+                        y: 760,  // Ground level position
+                        width: 120,  // Increased from 64 for better visibility
+                        height: 120, // Increased from 64 for better visibility
+                        speed: 4,    // Slightly increased speed
+                        runSpeed: 8, // Increased run speed
+                        spriteSheetPath: 'UI/20250531_2250_Pixel Art Movesheet_remix_01jwm1q60zek48ptnx3d7ckhey.png',
+                        attackSpriteSheetPath: 'UI/attack.png',
+                        idleSpriteSheetPath: 'UI/idle.png'
+                    });
+                    
+                    // Add character to game
+                    this.gameManager.addCharacter(this.character);
+                    this.gameManager.setPlayer(this.character);
+                    // Make gameManager globally accessible for enemy projectiles
+                    window.gameManager = this.gameManager;
+
+                    // Load the level first to get spawn points
+                    const levelLoaded = await this.gameManager.loadStage(levelToLoad);
+                    
+                    if (levelLoaded) {
+                        // Position player at first spawn point if available
+                        const spawnPoints = this.stageManager.getSpawnPoints();
+                        if (spawnPoints && spawnPoints.length > 0) {
+                            this.character.setPosition(spawnPoints[0].x, spawnPoints[0].y);
+                            console.log(`Player spawned at: ${spawnPoints[0].x}, ${spawnPoints[0].y}`);
+                        }
+                        
+                        // Spawn enemies if this is a custom map
+                        if (levelData && levelData.enemies) {
+                            this.spawnCustomEnemies(levelData.enemies);
+                        } else if (!levelData) {
+                            // Spawn default enemies for test map
+                            this.spawnDefaultEnemies();
+                        }
+                        
+                        console.log('Level loaded successfully!');
+                        this.updateStageStatus(levelData ? levelData.name : 'Test Map - Forest Arena', 'stage-loaded');
+                        
+                        // Setup additional event listeners
+                        this.setupEventListeners();
+                        
+                        // Start the game
+                        this.gameManager.start();
+                        this.isInitialized = true;
+                        
+                        // Hide loading indicator
+                        this.showLoading(false);
+                        
+                        console.log('Game started successfully!');
+                    } else {
+                        throw new Error('Failed to load level');
+                    }
+                    
+                } catch (error) {
+                    console.error('Failed to initialize game:', error);
+                    this.updateStageStatus('Error loading level', 'stage-error');
+                    this.showLoading(false);
+                }
+            }
+            
+            spawnCustomEnemies(enemies) {
+                console.log(`Spawning ${enemies.length} custom enemies`);
+                enemies.forEach((enemyData, index) => {
+                    try {
+                        const enemy = new Enemy({
+                            x: enemyData.x,
+                            y: enemyData.y,
+                            width: enemyData.width || 120,
+                            height: enemyData.height || 120,
+                            speed: 3,
+                            runSpeed: 6,
+                            health: enemyData.health || 100,
+                            damage: enemyData.damage || 10,
+                            detectionRange: 300,
+                            aggroRange: 150,
+                            movementPattern: 'patrol',
+                            patrolPoints: [
+                                { x: enemyData.x, y: enemyData.y },
+                                { x: enemyData.x + 100, y: enemyData.y }
+                            ],
+                            spriteSheetPath: 'UI/enemy.png'
+                        });
+                        this.gameManager.addEnemy(enemy);
+                    } catch (error) {
+                        console.error(`Error spawning enemy ${index}:`, error);
+                    }
+                });
+            }
+            
+            spawnDefaultEnemies() {
+                // Spawn 10 enemies spaced out from x=0 to x=19200
+                const enemyCount = 10;
+                for (let i = 0; i < enemyCount; i++) {
+                    const x = Math.round(i * (19200 / (enemyCount - 1)));
+                    const y = 760;
+                    const patrolStart = x;
+                    const patrolEnd = Math.min(x + 200, 19200);
+                    const enemy = new Enemy({
+                        x: x,
+                        y: y,
+                        width: 120,
+                        height: 120,
+                        speed: 3,
+                        runSpeed: 6,
+                        health: 100,
+                        damage: 10,
+                        detectionRange: 300,
+                        aggroRange: 150,
+                        movementPattern: 'patrol',
+                        patrolPoints: [
+                            { x: patrolStart, y: y },
+                            { x: patrolEnd, y: y },
+                            { x: patrolEnd, y: y - 28 },
+                            { x: patrolStart, y: y - 28 }
+                        ],
+                        spriteSheetPath: 'UI/enemy.png'
+                    });
+                    this.gameManager.addEnemy(enemy);
+                }
+            }
+            
+            updateLevelInfo(mapData) {
+                const levelInfoElement = document.getElementById('levelInfo');
+                if (levelInfoElement && mapData) {
+                    levelInfoElement.innerHTML = `
+                        <div><strong>Level: ${mapData.name}</strong></div>
+                        <div>Size: ${mapData.width}x${mapData.height}</div>
+                        <div>Spawn Points: ${mapData.spawnPoints.length}</div>
+                        <div>Enemies: ${mapData.enemies.length}</div>
+                        <div>Boundaries: ${mapData.boundaries.length}</div>
+                        <div>Custom map created with Map Editor</div>
+                    `;
+                }
+            }
+            
+            setupEventListeners() {
+                // Additional keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    switch(e.key) {
+                        case 'F1':
+                            this.gameManager.toggleDebug();
+                            e.preventDefault();
+                            break;
+                        case 'Escape':
+                            // Clear stuck keys
+                            if (this.gameManager && this.gameManager.inputManager) {
+                                this.gameManager.inputManager.clearAllKeys();
+                                console.log('Cleared all stuck keys');
+                            }
+                            e.preventDefault();
+                            break;
+                    }
+                });
+                
+                // Update FPS display
+                setInterval(() => {
+                    if (this.gameManager) {
+                        const fpsElement = document.getElementById('fps');
+                        if (fpsElement) {
+                            fpsElement.textContent = this.gameManager.fps || 0;
+                        }
+                        
+                        // Update character position display
+                        if (this.character) {
+                            const positionElement = document.getElementById('position');
+                            const stateElement = document.getElementById('currentState');
+                            const frameElement = document.getElementById('currentFrame');
+                            const attackElement = document.getElementById('attackState');
+                            
+                            if (positionElement) {
+                                positionElement.textContent = `${Math.round(this.character.x)}, ${Math.round(this.character.y)}`;
+                            }
+                            if (stateElement) {
+                                stateElement.textContent = this.character.state;
+                            }
+                            if (frameElement) {
+                                frameElement.textContent = this.character.frame;
+                            }
+                            if (attackElement) {
+                                attackElement.textContent = this.character.isAttacking ? 
+                                    `Yes (${this.character.attackTimer}/${this.character.attackDuration})` : 'No';
+                            }
+                        }
+                    }
+                }, 100); // Update more frequently for position
+            }
+            
+            async reloadLevel() {
+                if (!this.isInitialized) return;
+                
+                console.log('Reloading level...');
+                this.showLoading(true);
+                this.updateStageStatus('Reloading...', '');
+                
+                try {
+                    // Reload the stage
+                    const success = await this.gameManager.loadStage('test-map-01');
+                    
+                    if (success) {
+                        this.updateStageStatus('Test Map - Forest Arena', 'stage-loaded');
+                        console.log('Level reloaded successfully!');
+                    } else {
+                        this.updateStageStatus('Reload failed', 'stage-error');
+                    }
+                } catch (error) {
+                    console.error('Failed to reload level:', error);
+                    this.updateStageStatus('Reload error', 'stage-error');
+                }
+                
+                this.showLoading(false);
+            }
+            
+            showLoading(show) {
+                const loadingElement = document.getElementById('loadingIndicator');
+                if (loadingElement) {
+                    loadingElement.style.display = show ? 'block' : 'none';
+                }
+            }
+            
+            updateStageStatus(text, className = '') {
+                const stageElement = document.getElementById('currentStage');
+                if (stageElement) {
+                    stageElement.textContent = text;
+                    stageElement.className = className;
+                }
+            }
+        }
+        
+        // Initialize the game when the page loads
+        window.addEventListener('load', () => {
+            console.log('Page loaded, starting Test Map Game...');
+            new TestMapGame();
+        });
+        
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', () => {
+            if (window.testMapGame && window.testMapGame.gameManager) {
+                if (document.hidden) {
+                    console.log('Page hidden, pausing game');
+                    // Could pause game here if needed
+                } else {
+                    console.log('Page visible, resuming game');
+                    // Could resume game here if needed
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

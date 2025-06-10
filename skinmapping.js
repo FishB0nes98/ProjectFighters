@@ -515,4 +515,11 @@ export const skinToBaseCharacterMap = {
     'Monster Trainer Lili': 'Lili',
     'Monster Trainer Peacock': 'Peacock',
     'Monster Trainer Shoma': 'Shoma',
+    'Rebellious Ibuki': 'Ibuki',
+    'Rebellious Ayane': 'Ayane',
+    'Rebellious Christie': 'Christie',
+    'Rebellious Kabal': 'Kabal',
+    'Rebellious FANG': 'FANG',
+    'Rebellious Anna': 'Anna',
+    'Rebellious Mega Man': 'Mega Man',
 };

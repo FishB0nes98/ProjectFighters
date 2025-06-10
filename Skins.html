@@ -500,21 +500,20 @@
             text-shadow: 0 0 3px rgba(0,0,0,0.8);
         }
 
-        /* Add Monster Trainer tag style */
-        .tag-monster {
-            background: linear-gradient(45deg, #E3350D, #3B4CCA);
-            box-shadow: 0 0 10px rgba(227, 53, 13, 0.3);
-            animation: monsterGlow 2s ease-in-out infinite;
+        /* Add Rebellious tag style */
+        .tag-rebellious {
+            background: linear-gradient(45deg, #4B0082, #800080);
+            box-shadow: 0 0 10px rgba(75, 0, 130, 0.3);
+            animation: rebelliousGlow 2s ease-in-out infinite;
             color: #FFFFFF;
             text-shadow: 0 0 3px rgba(0,0,0,0.5);
         }
 
-        @keyframes monsterGlow {
-            0% { box-shadow: 0 0 10px rgba(227, 53, 13, 0.3); }
-            50% { box-shadow: 0 0 20px rgba(59, 76, 202, 0.5); }
-            100% { box-shadow: 0 0 10px rgba(227, 53, 13, 0.3); }
+        @keyframes rebelliousGlow {
+            0% { box-shadow: 0 0 10px rgba(75, 0, 130, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(128, 0, 128, 0.5); }
+            100% { box-shadow: 0 0 10px rgba(75, 0, 130, 0.3); }
         }
-        
 
     </style>
 </head>
@@ -587,12 +586,12 @@
         // Initialize champions grid
         function initChampionsGrid() {
             const grid = document.getElementById('champions-grid');
-            // Only Monster Trainer skins are new for Patch 2.6
-            const newSkins = ["Eagle", "Kotal Kahn", "Peacock", "Ayane", "Shoma", "Lili", "FANG", "Kokoro"];
-            // Add FANG and Kokoro to Season 2 characters if they aren't already there
-            const seasonTwoSkins = ["Juri", "Shoma", "Blanka", "Scorpion", "Akuma", "Jun", "Zasalamel", "Talim", "Yugo", "Eagle", "Ayane", "Julia", "Mai", "Raiden", "Shizumaru", "Kuma", "Peacock", "R.Mika", "Shinnok", "Alice", "Tanya", "Shao Kahn", "Kotal Kahn", "Kagome", "Reptile", "Lili", "Cham Cham", "FANG", "Kokoro"];
-            // Characters with Monster Trainer skins
-            const monsterTrainerSkins = ["Eagle", "Kotal Kahn", "Peacock", "Ayane", "Shoma", "Lili", "FANG", "Kokoro"];
+            // Characters with Rebellious skins get NEW tags for Patch 2.6
+            const newSkins = ["Ibuki", "Ayane", "Christie", "Kabal", "FANG", "Anna", "Mega Man"];
+            // Add characters with rebellious skins to Season 2 characters
+            const seasonTwoSkins = ["Juri", "Shoma", "Blanka", "Scorpion", "Akuma", "Jun", "Zasalamel", "Talim", "Yugo", "Eagle", "Ayane", "Julia", "Mai", "Raiden", "Shizumaru", "Kuma", "Peacock", "R.Mika", "Shinnok", "Alice", "Tanya", "Shao Kahn", "Kotal Kahn", "Kagome", "Reptile", "Lili", "Cham Cham", "FANG", "Kokoro", "Ibuki", "Christie", "Kabal", "Anna", "Mega Man"];
+            // Characters with Rebellious skins
+            const rebelliousSkins = ["Ibuki", "Ayane", "Christie", "Kabal", "FANG", "Anna", "Mega Man"];
             // Free skins
             const freeSkins = ["Kuma"];
             
@@ -663,11 +662,11 @@
                     badgeRow1.appendChild(s2Badge);
                 }
                 
-                if (monsterTrainerSkins.includes(champion)) {
-                    const monsterBadge = document.createElement('div');
-                    monsterBadge.className = 'skin-tag tag-monster';
-                    monsterBadge.textContent = 'MONSTER';
-                    badgeRow2.appendChild(monsterBadge);
+                if (rebelliousSkins.includes(champion)) {
+                    const rebelliousBadge = document.createElement('div');
+                    rebelliousBadge.className = 'skin-tag tag-rebellious';
+                    rebelliousBadge.textContent = 'REBEL';
+                    badgeRow2.appendChild(rebelliousBadge);
                 }
 
                 if (freeSkins.includes(champion)) {
@@ -728,7 +727,7 @@
                     s2Tag.textContent = 'S2';
                     tagsContainer.appendChild(s2Tag);
                 }
-
+                
                 // Add Tokyo Mew Mew tag for COLLAB skins (without NEW tag)
                 if (skin.name.includes('Tokyo Mew Mew')) {
                     const COLLABTag = document.createElement('div');
@@ -736,9 +735,9 @@
                     COLLABTag.textContent = 'COLLAB';
                     tagsContainer.appendChild(COLLABTag);
                 }
-                
-                // Add COLLAB COLLAB tag for specific skins
-                if (skin.COLLAB === "COLLAB" || 
+
+                // Add COLLAB tag for specific skins
+                if (skin.collab === "Collab" || 
                     skin.name === "Lady Deadpool Ibuki" || 
                     skin.name === "Wolverine Yugo" || 
                     skin.name === "Deadpool Scorpion") {
@@ -748,17 +747,22 @@
                     tagsContainer.appendChild(COLLABTag);
                 }
 
-                // Add Monster Trainer tag for these skins (with NEW tag)
-                if (skin.name.includes('Monster Trainer')) {
-                    const monsterTag = document.createElement('div');
-                    monsterTag.className = 'skin-tag tag-monster';
-                    monsterTag.textContent = 'MONSTER';
-                    tagsContainer.appendChild(monsterTag);
+                // Add Rebellious tag for these skins (with NEW tag)
+                if (skin.name.includes('Rebellious')) {
+                    const rebelliousTag = document.createElement('div');
+                    rebelliousTag.className = 'skin-tag tag-rebellious';
+                    rebelliousTag.textContent = 'REBEL';
+                    tagsContainer.appendChild(rebelliousTag);
                     
                     const newTag = document.createElement('div');
                     newTag.className = 'skin-tag tag-new';
                     newTag.textContent = 'NEW';
                     tagsContainer.appendChild(newTag);
+                    
+                    const s2Tag = document.createElement('div');
+                    s2Tag.className = 'skin-tag tag-s2';
+                    s2Tag.textContent = 'S2';
+                    tagsContainer.appendChild(s2Tag);
                 }
 
                 // Add appropriate tags based on conditions
